@@ -1,26 +1,27 @@
-﻿@using Microsoft.AspNetCore.Identity
-@inject SignInManager<IdentityUser> SignInManager
-@inject UserManager<IdentityUser> UserManager
-
+@using SourcingTenderSystem.Security
 <ul class="navbar-nav">
-@if (SignInManager.IsSignedIn(User))
+@if (User.Identity?.IsAuthenticated == true)
 {
+    if (User.IsInRole(Roles.Admin))
+    {
+        <li class="nav-item"><a class="nav-link" asp-controller="AdminDashboard" asp-action="Index">Administration</a></li>
+        <li class="nav-item"><a class="nav-link" asp-controller="Departments" asp-action="Index">Departments</a></li>
+        <li class="nav-item"><a class="nav-link" asp-controller="Employees" asp-action="Index">Employees</a></li>
+        <li class="nav-item"><a class="nav-link" asp-controller="Suppliers" asp-action="Index">Suppliers</a></li>
+    }
+    else if (!Roles.EmployeeRoles.Any(User.IsInRole))
+    {
+        <li class="nav-item"><a class="nav-link" asp-controller="SupplierRegistration" asp-action="RegistrationStatus">Registration status</a></li>
+    }
     <li class="nav-item">
-        <a  class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @User.Identity?.Name!</a>
-    </li>
-    <li class="nav-item">
-        <form  class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-            <button  type="submit" class="nav-link btn btn-link text-dark">Logout</button>
+        <form asp-controller="Account" asp-action="Logout" method="post">
+            <button type="submit" class="nav-link btn btn-link">Sign out</button>
         </form>
     </li>
 }
 else
 {
-    <li class="nav-item">
-        <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">Register</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">Login</a>
-    </li>
+    <li class="nav-item"><a class="nav-link" asp-controller="SupplierRegistration" asp-action="Register">Supplier registration</a></li>
+    <li class="nav-item"><a class="nav-link" asp-controller="Account" asp-action="Login">Sign in</a></li>
 }
 </ul>

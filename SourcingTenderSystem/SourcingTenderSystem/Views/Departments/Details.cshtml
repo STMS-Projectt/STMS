@@ -1,0 +1,10 @@
+@model Department
+@{ ViewData["Title"] = "Department details"; }
+<h1>@ViewData["Title"]</h1>
+<dl class="row">
+    <dt class="col-sm-4">Name</dt><dd class="col-sm-8">@Model.Name</dd>
+    <dt class="col-sm-4">Description</dt><dd class="col-sm-8">@(Model.Description ?? "—")</dd>
+    <dt class="col-sm-4">Status</dt><dd class="col-sm-8">@(Model.IsActive ? "Active" : "Inactive")</dd>
+    <dt class="col-sm-4">Employees</dt><dd class="col-sm-8">@Model.EmployeeProfiles.Count</dd>
+</dl>
+<a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model.Id">Edit</a> <a class="btn btn-outline-secondary" asp-action="Index">Back to list</a>

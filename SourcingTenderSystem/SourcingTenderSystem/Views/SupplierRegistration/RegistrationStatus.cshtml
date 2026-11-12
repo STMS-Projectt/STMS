@@ -1,0 +1,14 @@
+@model SupplierProfile
+@{ ViewData["Title"] = "Registration status"; }
+<h1>@ViewData["Title"]</h1>
+<dl class="row">
+    <dt class="col-sm-4">Company</dt><dd class="col-sm-8">@Model.CompanyName</dd>
+    <dt class="col-sm-4">Status</dt><dd class="col-sm-8">@Model.Status</dd>
+    <dt class="col-sm-4">Decision reason</dt><dd class="col-sm-8">@(Model.StatusReason ?? "—")</dd>
+</dl>
+@if (Model.Status == SupplierStatus.Pending)
+{
+    <p>@(Model.SupplierDocuments.Count == 0 ? "Upload your supporting documents to make your application eligible for approval." : "Your application is awaiting review.")</p>
+    <p><a class="btn btn-primary" asp-action="UploadDocuments">Upload a document</a></p>
+}
+<partial name="_SupplierDocuments" model="Model.SupplierDocuments" />
