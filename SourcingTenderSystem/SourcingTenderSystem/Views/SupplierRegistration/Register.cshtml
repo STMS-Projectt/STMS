@@ -1,0 +1,50 @@
+@model RegistrationInput
+@{ ViewData["Title"] = "Supplier registration"; }
+<h1>Supplier registration</h1>
+<form method="post" asp-antiforgery="true" class="admin-form" >
+    <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+    <p>Enter your company details to create an account. You can upload documents after registering.</p>
+<div class="mb-3">
+    <label asp-for="CompanyName" class="form-label"></label>
+    <input asp-for="CompanyName" class="form-control" >
+    <span asp-validation-for="CompanyName" class="text-danger"></span>
+</div>
+<div class="mb-3">
+    <label asp-for="TaxNumber" class="form-label"></label>
+    <input asp-for="TaxNumber" class="form-control" >
+    <span asp-validation-for="TaxNumber" class="text-danger"></span>
+</div>
+<div class="mb-3">
+    <label asp-for="CommercialRegNo" class="form-label"></label>
+    <input asp-for="CommercialRegNo" class="form-control" >
+    <span asp-validation-for="CommercialRegNo" class="text-danger"></span>
+</div>
+<div class="mb-3">
+    <label asp-for="ContactPhone" class="form-label"></label>
+    <input asp-for="ContactPhone" class="form-control" >
+    <span asp-validation-for="ContactPhone" class="text-danger"></span>
+</div>
+<div class="mb-3">
+    <label asp-for="Address" class="form-label"></label>
+    <input asp-for="Address" class="form-control" >
+    <span asp-validation-for="Address" class="text-danger"></span>
+</div>
+<div class="mb-3">
+    <label asp-for="Email" class="form-label"></label>
+    <input asp-for="Email" class="form-control" >
+    <span asp-validation-for="Email" class="text-danger"></span>
+</div>
+<div class="mb-3">
+    <label asp-for="Password" class="form-label"></label>
+    <input asp-for="Password" class="form-control" autocomplete="new-password">
+    <span asp-validation-for="Password" class="text-danger"></span>
+</div>
+<div class="mb-3">
+    <label asp-for="ConfirmPassword" class="form-label"></label>
+    <input asp-for="ConfirmPassword" class="form-control" autocomplete="new-password">
+    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+</div>
+    <button class="btn btn-primary" type="submit">Create supplier account</button>
+</form>
+
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

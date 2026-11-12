@@ -1,0 +1,9 @@
+@model EmployeeProfile
+@{ ViewData["Title"] = "Deactivate employee"; }
+<h1>Deactivate employee</h1>
+<p>Deactivate <strong>@Model.FullName</strong>? They will be signed out and unable to sign in.</p>
+<form asp-action="Deactivate" asp-route-id="@Model.Id" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+    <button class="btn btn-danger" type="submit">Deactivate</button>
+    <a class="btn btn-outline-secondary" asp-action="Details" asp-route-id="@Model.Id">Cancel</a>
+</form>

@@ -1,0 +1,28 @@
+@model DashboardCounts
+@{ ViewData["Title"] = "Administration"; }
+<h1>Administration</h1>
+<p>Manage accounts, departments and supplier applications.</p>
+<div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3">
+@foreach (var metric in new (string Label, int Value, string? Controller, string? Status)[]
+{
+    ("User accounts", Model.Users, null, null),
+    ("Departments", Model.Departments, "Departments", null),
+    ("Active employees", Model.ActiveEmployees, "Employees", null),
+    ("Pending suppliers", Model.PendingSuppliers, "Suppliers", SupplierStatus.Pending),
+    ("Approved suppliers", Model.ApprovedSuppliers, "Suppliers", SupplierStatus.Approved),
+    ("Rejected suppliers", Model.RejectedSuppliers, "Suppliers", SupplierStatus.Rejected),
+    ("Suspended suppliers", Model.SuspendedSuppliers, "Suppliers", SupplierStatus.Suspended),
+    ("Purchase requests", Model.Requests, null, null),
+    ("Tenders", Model.Tenders, null, null)
+})
+{
+    <div class="col"><div class="card h-100"><div class="card-body">
+        <h2 class="h6">@metric.Label</h2>
+        <p class="fs-2 mb-2">@metric.Value</p>
+        @if (metric.Controller is not null)
+        {
+            <a asp-controller="@metric.Controller" asp-action="Index" asp-route-status="@metric.Status">View @metric.Label.ToLowerInvariant()</a>
+        }
+    </div></div></div>
+}
+</div>

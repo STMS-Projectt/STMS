@@ -1,0 +1,18 @@
+@model ICollection<SupplierDocument>
+<h2 class="h4">Documents</h2>
+@if (Model.Count == 0)
+{
+    <p class="text-muted">No documents uploaded.</p>
+}
+else
+{
+    <ul class="list-group mb-4">
+    @foreach (var document in Model.OrderByDescending(x => x.UploadedAt))
+    {
+        <li class="list-group-item d-flex flex-wrap gap-2 justify-content-between">
+            <span>@document.DocumentType · uploaded @document.UploadedAt.ToString("yyyy-MM-dd") · expires @(document.ExpiryDate?.ToString("yyyy-MM-dd") ?? "—")</span>
+            <a asp-action="DownloadDocument" asp-route-id="@document.Id" aria-label="Download @document.DocumentType PDF">Download PDF</a>
+        </li>
+    }
+    </ul>
+}

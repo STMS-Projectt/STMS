@@ -1,0 +1,18 @@
+@model DecisionInput
+@{
+    var supplier = (SupplierProfile)ViewBag.Supplier;
+    ViewData["Title"] = ViewBag.Decision;
+}
+<h1>Set supplier status to @ViewBag.Decision</h1>
+<p><strong>@supplier.CompanyName</strong> is currently @supplier.Status. The supplier can see the reason you enter.</p>
+<form method="post" asp-antiforgery="true" class="admin-form">
+    <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+    <div class="mb-3">
+    <label asp-for="Reason" class="form-label"></label>
+    <textarea asp-for="Reason" class="form-control" rows="4"></textarea>
+    <span asp-validation-for="Reason" class="text-danger"></span>
+</div>
+    <button class="btn btn-primary" type="submit">Confirm decision</button>
+    <a class="btn btn-outline-secondary" asp-action="Details" asp-route-id="@supplier.Id">Cancel</a>
+</form>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }
