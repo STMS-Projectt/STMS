@@ -1,0 +1,229 @@
+@model BidDetailsViewModel
+@{
+    var bid = Model.Bid;
+    ViewData["Title"] = "Bid details";
+}
+<h1>Bid for: @bid.Tender.Title</h1>
+<partial name="_Alerts" />
+
+@if (bid.Status == "Draft" && !Model.TenderIsOpen)
+{
+    <div class="alert alert-warning" role="alert">The tender is closed. This draft can no longer be changed or submitted.</div>
+}
+
+<div class="row g-3 mb-4">
+    @* Tender information *@
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header">Tender</div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">Title</dt>
+                    <dd class="col-sm-8">@bid.Tender.Title</dd>
+                    <dt class="col-sm-4">Description</dt>
+                    <dd class="col-sm-8">@bid.Tender.Description</dd>
+                    <dt class="col-sm-4">Terms</dt>
+                    <dd class="col-sm-8">@bid.Tender.Terms</dd>
+                    <dt class="col-sm-4">Closes (UTC)</dt>
+                    <dd class="col-sm-8">@bid.Tender.CloseDate.ToString("yyyy-MM-dd HH:mm")</dd>
+                    <dt class="col-sm-4">Tender status</dt>
+                    <dd class="col-sm-8">@bid.Tender.Status</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    @* My bid information *@
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header">My bid</div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-5">Status</dt>
+                    <dd class="col-sm-7"><partial name="_StatusBadge" model="bid.Status" /></dd>
+                    <dt class="col-sm-5">Total price</dt>
+                    <dd class="col-sm-7">@bid.TotalPrice.ToString("N2") @bid.Currency</dd>
+                    <dt class="col-sm-5">Delivery</dt>
+                    <dd class="col-sm-7">@bid.DeliveryDays days</dd>
+                    <dt class="col-sm-5">Offer validity</dt>
+                    <dd class="col-sm-7">@bid.ValidityDays days</dd>
+                    <dt class="col-sm-5">Submitted (UTC)</dt>
+                    <dd class="col-sm-7">@(bid.SubmittedAt?.ToString("yyyy-MM-dd HH:mm") ?? "—")</dd>
+                    @if (bid.ComplianceNotes != null)
+                    {
+                        <dt class="col-sm-5">Compliance notes</dt>
+                        <dd class="col-sm-7">@bid.ComplianceNotes</dd>
+                    }
+                </dl>
+                @if (Model.CanChange)
+                {
+                    <a class="btn btn-sm btn-outline-primary" asp-action="Edit" asp-route-id="@bid.Id">Edit bid info</a>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@* Requested items + my prices *@
+<h2 class="h4">Requested items and my prices</h2>
+@if (Model.Rows.Count == 0)
+{
+    <p class="text-muted">This tender has no requested items.</p>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-striped align-middle">
+            <thead>
+                <tr>
+                    <th scope="col">Item</th>
+                    <th scope="col">Specifications</th>
+                    <th scope="col" class="text-end">Quantity</th>
+                    <th scope="col" class="text-end">Unit price</th>
+                    <th scope="col" class="text-end">Line total</th>
+                    <th scope="col">Notes</th>
+                    @if (Model.CanChange)
+                    {
+                        <th scope="col">Actions</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var row in Model.Rows)
+                {
+                    <tr>
+                        <td>@row.RequestedItem.ItemName</td>
+                        <td>@row.RequestedItem.Specifications</td>
+                        <td class="text-end">@row.RequestedItem.Quantity @row.RequestedItem.Unit</td>
+                        @if (row.BidItem == null)
+                        {
+                            <td class="text-end"><span class="badge bg-warning text-dark">No price</span></td>
+                            <td class="text-end">—</td>
+                            <td>—</td>
+                            @if (Model.CanChange)
+                            {
+                                <td>
+                                    <a class="btn btn-sm btn-primary" asp-controller="BidItems" asp-action="Create"
+                                       asp-route-bidId="@bid.Id" asp-route-purchaseRequisitionItemId="@row.RequestedItem.Id">Add price</a>
+                                </td>
+                            }
+                        }
+                        else
+                        {
+                            <td class="text-end">@row.BidItem.UnitPrice.ToString("N2")</td>
+                            <td class="text-end">@((row.BidItem.UnitPrice * row.BidItem.Quantity).ToString("N2"))</td>
+                            <td>@(row.BidItem.Notes ?? "—")</td>
+                            @if (Model.CanChange)
+                            {
+                                <td>
+                                    <a class="btn btn-sm btn-outline-primary" asp-controller="BidItems" asp-action="Edit" asp-route-id="@row.BidItem.Id">Edit</a>
+                                    <form asp-controller="BidItems" asp-action="Delete" asp-route-id="@row.BidItem.Id" method="post"
+                                          asp-antiforgery="true" class="d-inline" onsubmit="return confirm('Delete the price for this item?');">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                    </form>
+                                </td>
+                            }
+                        }
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th colspan="4" class="text-end">Total</th>
+                    <th class="text-end">@bid.TotalPrice.ToString("N2") @bid.Currency</th>
+                    <th colspan="@(Model.CanChange ? 2 : 1)"></th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+}
+
+@* Documents *@
+<h2 class="h4">Documents</h2>
+@if (Model.CanChange)
+{
+    <p><a class="btn btn-sm btn-primary" asp-controller="BidDocuments" asp-action="Upload" asp-route-bidId="@bid.Id">Upload document</a></p>
+}
+@if (bid.BidDocuments.Count == 0)
+{
+    <p class="text-muted">No documents uploaded.</p>
+}
+else
+{
+    <ul class="list-group mb-4">
+        @foreach (var document in bid.BidDocuments)
+        {
+            <li class="list-group-item d-flex flex-wrap gap-2 justify-content-between align-items-center">
+                <span>
+                    <strong>@document.DocumentType</strong> · @document.FileName · uploaded @document.UploadedAt.ToString("yyyy-MM-dd")
+                </span>
+                <span>
+                    <a class="btn btn-sm btn-outline-secondary" asp-controller="BidDocuments" asp-action="Download" asp-route-id="@document.Id">Download</a>
+                    @if (Model.CanChange)
+                    {
+                        <form asp-controller="BidDocuments" asp-action="Delete" asp-route-id="@document.Id" method="post"
+                              asp-antiforgery="true" class="d-inline" onsubmit="return confirm('Delete this document?');">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                        </form>
+                    }
+                </span>
+            </li>
+        }
+    </ul>
+}
+
+@* Checklist + Submit / Withdraw buttons *@
+@if (Model.CanChange)
+{
+    <div class="card mb-3">
+        <div class="card-header">Before you submit</div>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+                @if (Model.Rows.Count > 0 && Model.MissingPrices == 0)
+                {
+                    <span class="badge bg-success">OK</span>
+                }
+                else
+                {
+                    <span class="badge bg-danger">Missing</span>
+                }
+                Prices: @(Model.Rows.Count - Model.MissingPrices) of @Model.Rows.Count items have a price
+            </li>
+            <li class="list-group-item">
+                @if (bid.BidDocuments.Count > 0)
+                {
+                    <span class="badge bg-success">OK</span>
+                }
+                else
+                {
+                    <span class="badge bg-danger">Missing</span>
+                }
+                Documents: @bid.BidDocuments.Count uploaded (at least 1 required)
+            </li>
+        </ul>
+    </div>
+}
+
+<div class="d-flex flex-wrap gap-2">
+    @if (Model.CanSubmit)
+    {
+        <form asp-action="Submit" asp-route-id="@bid.Id" method="post" asp-antiforgery="true"
+              onsubmit="return confirm('Submit this bid? You will not be able to change it after submitting.');">
+            <button type="submit" class="btn btn-success">Submit bid</button>
+        </form>
+    }
+    else if (Model.CanChange)
+    {
+        <button type="button" class="btn btn-success" disabled>Submit bid</button>
+    }
+
+    @if (Model.CanWithdraw)
+    {
+        <form asp-action="Withdraw" asp-route-id="@bid.Id" method="post" asp-antiforgery="true"
+              onsubmit="return confirm('Withdraw this bid? You will NOT be able to bid again on this tender.');">
+            <button type="submit" class="btn btn-outline-danger">Withdraw bid</button>
+        </form>
+    }
+
+    <a class="btn btn-outline-secondary" asp-action="MyBids">Back to my bids</a>
+</div>

@@ -1,0 +1,10 @@
+@* Shows the messages my controllers put in TempData before a redirect.
+   Msg = success (green), Error = a rule was not met (red). *@
+@if (TempData["Msg"] != null)
+{
+    <div class="alert alert-success" role="status">@TempData["Msg"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger" role="alert">@TempData["Error"]</div>
+}

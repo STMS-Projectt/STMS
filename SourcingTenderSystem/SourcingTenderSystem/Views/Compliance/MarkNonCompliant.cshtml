@@ -1,0 +1,36 @@
+@model NonCompliantViewModel
+@{
+    var bid = (Bid)ViewBag.Bid;
+    ViewData["Title"] = "Mark bid as non-compliant";
+}
+<h1>Mark bid as non-compliant</h1>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <dl class="row mb-0">
+            <dt class="col-sm-3">Tender</dt>
+            <dd class="col-sm-9">@bid.Tender.Title</dd>
+            <dt class="col-sm-3">Supplier</dt>
+            <dd class="col-sm-9">@bid.SupplierProfile.CompanyName</dd>
+            <dt class="col-sm-3">Total price</dt>
+            <dd class="col-sm-9">@bid.TotalPrice.ToString("N2") @bid.Currency</dd>
+            <dt class="col-sm-3">Status</dt>
+            <dd class="col-sm-9"><partial name="~/Views/Bids/_StatusBadge.cshtml" model="bid.Status" /></dd>
+        </dl>
+    </div>
+</div>
+
+@* The bid id goes in the URL (/Compliance/MarkNonCompliant/5); the controller checks the bid again on POST *@
+<form asp-action="MarkNonCompliant" asp-route-id="@bid.Id" method="post" asp-antiforgery="true" class="admin-form"
+      onsubmit="return confirm('Mark this bid as Non-Compliant? The supplier will see the reason.');">
+    <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+    <div class="mb-3">
+        <label asp-for="Reason" class="form-label"></label>
+        <textarea asp-for="Reason" class="form-control" rows="4"></textarea>
+        <span asp-validation-for="Reason" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-danger">Mark as non-compliant</button>
+    <a class="btn btn-outline-secondary" asp-action="Review" asp-route-tenderId="@bid.TenderId">Cancel</a>
+</form>
+
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

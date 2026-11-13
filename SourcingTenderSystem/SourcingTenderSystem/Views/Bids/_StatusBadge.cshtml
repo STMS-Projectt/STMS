@@ -1,0 +1,30 @@
+@model string
+@* Coloured Bootstrap badge for a bid status. Usage: <partial name="_StatusBadge" model="bid.Status" /> *@
+@{
+    string css = "bg-secondary";
+    switch (Model)
+    {
+        case "Draft":
+            css = "bg-secondary";
+            break;
+        case "Submitted":
+            css = "bg-primary";
+            break;
+        case "Compliant":
+            css = "bg-success";
+            break;
+        case "Non-Compliant":
+            css = "bg-danger";
+            break;
+        case "Withdrawn":
+            css = "bg-dark";
+            break;
+        case "Accepted":
+            css = "bg-success";
+            break;
+        case "Rejected":
+            css = "bg-danger";
+            break;
+    }
+}
+<span class="badge @css">@Model</span>

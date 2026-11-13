@@ -1,0 +1,59 @@
+@model List<CompliancePendingRow>
+@{
+    ViewData["Title"] = "Compliance check";
+}
+<h1>Compliance check</h1>
+<partial name="~/Views/Bids/_Alerts.cshtml" />
+<p class="text-muted">Closed tenders with submitted bids. Check every bid, then send the tender to evaluation.</p>
+
+@if (Model.Count == 0)
+{
+    <p class="text-muted">There are no closed tenders with submitted bids.</p>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-striped align-middle">
+            <thead>
+                <tr>
+                    <th scope="col">Tender</th>
+                    <th scope="col">Closed (UTC)</th>
+                    <th scope="col" class="text-center">Not checked</th>
+                    <th scope="col" class="text-center">Compliant</th>
+                    <th scope="col" class="text-center">Non-Compliant</th>
+                    <th scope="col">State</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var row in Model)
+                {
+                    <tr>
+                        <td>@row.Tender.Title</td>
+                        <td>@row.Tender.CloseDate.ToString("yyyy-MM-dd HH:mm")</td>
+                        <td class="text-center">@row.SubmittedCount</td>
+                        <td class="text-center">@row.CompliantCount</td>
+                        <td class="text-center">@row.NonCompliantCount</td>
+                        <td>
+                            @if (row.ReadyForEvaluation)
+                            {
+                                <span class="badge bg-success">Ready for evaluation</span>
+                            }
+                            else if (row.SubmittedCount > 0)
+                            {
+                                <span class="badge bg-warning text-dark">@row.SubmittedCount to check</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">No compliant bid</span>
+                            }
+                        </td>
+                        <td>
+                            <a class="btn btn-sm btn-primary" asp-action="Review" asp-route-tenderId="@row.Tender.Id">Review &amp; compare</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
