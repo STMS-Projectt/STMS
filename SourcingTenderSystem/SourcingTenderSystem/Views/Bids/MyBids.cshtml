@@ -1,0 +1,82 @@
+@model MyBidsViewModel
+@{
+    ViewData["Title"] = "My bids";
+}
+<h1>My bids</h1>
+<partial name="_Alerts" />
+
+@* Section (a): tenders I was invited to (and accepted) that still wait for my bid *@
+<div class="card mb-4">
+    <div class="card-header">
+        <h2 class="h5 mb-0">Tenders waiting for your bid</h2>
+    </div>
+    <div class="card-body">
+        @if (Model.WaitingInvitations.Count == 0)
+        {
+            <p class="text-muted mb-0">No open tenders are waiting for your bid.</p>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-striped align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th scope="col">Tender</th>
+                            <th scope="col">Closes (UTC)</th>
+                            <th scope="col">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var invitation in Model.WaitingInvitations)
+                        {
+                            <tr>
+                                <td>@invitation.Tender.Title</td>
+                                <td>@invitation.Tender.CloseDate.ToString("yyyy-MM-dd HH:mm")</td>
+                                <td>
+                                    <a class="btn btn-sm btn-primary" asp-action="Create" asp-route-tenderId="@invitation.TenderId">Create bid</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+
+@* Section (b): all my bids *@
+<h2 class="h4">My bids</h2>
+@if (Model.MyBids.Count == 0)
+{
+    <p class="text-muted">You have no bids yet.</p>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-striped align-middle">
+            <thead>
+                <tr>
+                    <th scope="col">Tender</th>
+                    <th scope="col" class="text-end">Total price</th>
+                    <th scope="col">Currency</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Submitted (UTC)</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var bid in Model.MyBids)
+                {
+                    <tr>
+                        <td>@bid.Tender.Title</td>
+                        <td class="text-end">@bid.TotalPrice.ToString("N2")</td>
+                        <td>@bid.Currency</td>
+                        <td><partial name="_StatusBadge" model="bid.Status" /></td>
+                        <td>@(bid.SubmittedAt?.ToString("yyyy-MM-dd HH:mm") ?? "—")</td>
+                        <td><a asp-action="Details" asp-route-id="@bid.Id">Details</a></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

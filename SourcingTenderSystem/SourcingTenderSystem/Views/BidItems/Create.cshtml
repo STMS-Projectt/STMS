@@ -1,0 +1,37 @@
+@model BidItemFormViewModel
+@{
+    var bid = (Bid)ViewBag.Bid;
+    var item = (PurchaseRequisitionItem)ViewBag.RequestedItem;
+    ViewData["Title"] = "Add price";
+}
+<h1>Add price</h1>
+<p>Bid for: <strong>@bid.Tender.Title</strong></p>
+
+@* The requested item (read only) *@
+<div class="card mb-3">
+    <div class="card-header">Requested item</div>
+    <div class="card-body">
+        <dl class="row mb-0">
+            <dt class="col-sm-3">Item</dt>
+            <dd class="col-sm-9">@item.ItemName</dd>
+            <dt class="col-sm-3">Specifications</dt>
+            <dd class="col-sm-9">@item.Specifications</dd>
+            <dt class="col-sm-3">Quantity</dt>
+            <dd class="col-sm-9">@item.Quantity @item.Unit <small class="text-muted">(fixed by the requesting department)</small></dd>
+            <dt class="col-sm-3">Currency</dt>
+            <dd class="col-sm-9">@bid.Currency</dd>
+        </dl>
+    </div>
+</div>
+
+@* bidId and purchaseRequisitionItemId go in the URL; the controller checks them again on POST *@
+<form asp-action="Create" asp-route-bidId="@bid.Id" asp-route-purchaseRequisitionItemId="@item.Id"
+      method="post" asp-antiforgery="true" class="admin-form">
+    <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+    <partial name="_BidItemFields" model="Model" />
+    <p class="form-text">Line total = unit price × @item.Quantity</p>
+    <button type="submit" class="btn btn-primary">Save price</button>
+    <a class="btn btn-outline-secondary" asp-controller="Bids" asp-action="Details" asp-route-id="@bid.Id">Cancel</a>
+</form>
+
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

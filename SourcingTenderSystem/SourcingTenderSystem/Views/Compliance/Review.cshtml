@@ -1,0 +1,227 @@
+@model ComplianceReviewViewModel
+@{
+    var tender = Model.Tender;
+    ViewData["Title"] = "Review & compare offers";
+}
+<h1>Review &amp; compare offers</h1>
+<partial name="~/Views/Bids/_Alerts.cshtml" />
+
+@* Tender information *@
+<div class="card mb-3">
+    <div class="card-body">
+        <h2 class="h5 card-title">@tender.Title</h2>
+        <p class="card-text">@tender.Description</p>
+        <p class="card-text mb-0">
+            <small class="text-muted">Closed @tender.CloseDate.ToString("yyyy-MM-dd HH:mm") (UTC) · Tender status: @tender.Status</small>
+        </p>
+    </div>
+</div>
+
+@if (!Model.TenderIsClosed)
+{
+    <div class="alert alert-info" role="alert">This tender is "@tender.Status", so this page is read only.</div>
+}
+
+@if (Model.MixedCurrencies)
+{
+    <div class="alert alert-warning" role="alert">The bids use different currencies. The order by total price does not convert currencies.</div>
+}
+
+@if (Model.Bids.Count == 0)
+{
+    <p class="text-muted">This tender has no submitted bids.</p>
+}
+else
+{
+    <p class="text-muted">One column per bid, sorted by total price (lowest first).</p>
+
+    @* Side-by-side table: rows = information, columns = bids *@
+    <div class="table-responsive mb-4">
+        <table class="table table-bordered align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th scope="col">Supplier</th>
+                    @foreach (var bid in Model.Bids)
+                    {
+                        <th scope="col">@bid.SupplierProfile.CompanyName</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th scope="row">Status</th>
+                    @foreach (var bid in Model.Bids)
+                    {
+                        <td><partial name="~/Views/Bids/_StatusBadge.cshtml" model="bid.Status" /></td>
+                    }
+                </tr>
+                <tr>
+                    <th scope="row">Total price</th>
+                    @foreach (var bid in Model.Bids)
+                    {
+                        <td><strong>@bid.TotalPrice.ToString("N2") @bid.Currency</strong></td>
+                    }
+                </tr>
+                <tr>
+                    <th scope="row">Delivery</th>
+                    @foreach (var bid in Model.Bids)
+                    {
+                        <td>@bid.DeliveryDays days</td>
+                    }
+                </tr>
+                <tr>
+                    <th scope="row">Offer validity</th>
+                    @foreach (var bid in Model.Bids)
+                    {
+                        <td>@bid.ValidityDays days</td>
+                    }
+                </tr>
+                <tr>
+                    <th scope="row">Submitted (UTC)</th>
+                    @foreach (var bid in Model.Bids)
+                    {
+                        <td>@(bid.SubmittedAt?.ToString("yyyy-MM-dd HH:mm") ?? "—")</td>
+                    }
+                </tr>
+
+                @* One row per requested item: the unit price of every bid *@
+                @foreach (var item in Model.RequestedItems)
+                {
+                    <tr>
+                        <th scope="row">
+                            @item.ItemName
+                            <br /><small class="text-muted fw-normal">@item.Quantity @item.Unit</small>
+                        </th>
+                        @foreach (var bid in Model.Bids)
+                        {
+                            var bidItem = bid.BidItems.FirstOrDefault(bi => bi.PurchaseRequisitionItemId == item.Id);
+                            <td>
+                                @if (bidItem == null)
+                                {
+                                    <span class="badge bg-warning text-dark">No price</span>
+                                }
+                                else
+                                {
+                                    <span>@bidItem.UnitPrice.ToString("N2")</span>
+                                    <small class="text-muted">× @bidItem.Quantity = @((bidItem.UnitPrice * bidItem.Quantity).ToString("N2"))</small>
+                                    @if (bidItem.Notes != null)
+                                    {
+                                        <br /><small class="text-muted">@bidItem.Notes</small>
+                                    }
+                                }
+                            </td>
+                        }
+                    </tr>
+                }
+
+                <tr>
+                    <th scope="row">Documents</th>
+                    @foreach (var bid in Model.Bids)
+                    {
+                        <td>
+                            @if (bid.BidDocuments.Count == 0)
+                            {
+                                <span class="text-muted">None</span>
+                            }
+                            else
+                            {
+                                <ul class="list-unstyled mb-0">
+                                    @foreach (var document in bid.BidDocuments)
+                                    {
+                                        <li>
+                                            <a asp-controller="BidDocuments" asp-action="Download" asp-route-id="@document.Id">@document.DocumentType</a>
+                                            <small class="text-muted">@document.FileName</small>
+                                        </li>
+                                    }
+                                </ul>
+                            }
+                        </td>
+                    }
+                </tr>
+                <tr>
+                    <th scope="row">Compliance notes</th>
+                    @foreach (var bid in Model.Bids)
+                    {
+                        <td>@(bid.ComplianceNotes ?? "—")</td>
+                    }
+                </tr>
+
+                @if (Model.TenderIsClosed)
+                {
+                    <tr>
+                        <th scope="row">Actions</th>
+                        @foreach (var bid in Model.Bids)
+                        {
+                            <td>
+                                @if (bid.Status == "Submitted")
+                                {
+                                    <div class="d-flex flex-wrap gap-1">
+                                        <form asp-action="MarkCompliant" asp-route-id="@bid.Id" method="post" asp-antiforgery="true"
+                                              onsubmit="return confirm('Mark this bid as Compliant?');">
+                                            <button type="submit" class="btn btn-sm btn-success">Compliant</button>
+                                        </form>
+                                        <a class="btn btn-sm btn-outline-danger" asp-action="MarkNonCompliant" asp-route-id="@bid.Id">Non-compliant</a>
+                                        @* Placeholder: clarification requests belong to Person 4 (ClarificationsController).
+                                           Replace this with the real link when it is ready. *@
+                                        <a class="btn btn-sm btn-outline-secondary disabled" aria-disabled="true">Request clarification</a>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">—</span>
+                                }
+                            </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@* Send to evaluation: only while the tender is Closed *@
+@if (Model.TenderIsClosed)
+{
+    <div class="card mb-3">
+        <div class="card-header">Send to evaluation</div>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+                @if (Model.SubmittedCount == 0)
+                {
+                    <span class="badge bg-success">OK</span>
+                }
+                else
+                {
+                    <span class="badge bg-danger">Missing</span>
+                }
+                All bids checked (@Model.SubmittedCount not checked)
+            </li>
+            <li class="list-group-item">
+                @if (Model.CompliantCount > 0)
+                {
+                    <span class="badge bg-success">OK</span>
+                }
+                else
+                {
+                    <span class="badge bg-danger">Missing</span>
+                }
+                At least one compliant bid (@Model.CompliantCount compliant)
+            </li>
+        </ul>
+        <div class="card-body">
+            @if (Model.CanSendToEvaluation)
+            {
+                <form asp-action="SendToEvaluation" asp-route-tenderId="@tender.Id" method="post" asp-antiforgery="true"
+                      onsubmit="return confirm('Send this tender to evaluation? The compliance check will be closed.');">
+                    <button type="submit" class="btn btn-primary">Send to evaluation</button>
+                </form>
+            }
+            else
+            {
+                <button type="button" class="btn btn-primary" disabled>Send to evaluation</button>
+            }
+        </div>
+    </div>
+}
+
+<a class="btn btn-outline-secondary" asp-action="Pending">Back to compliance list</a>

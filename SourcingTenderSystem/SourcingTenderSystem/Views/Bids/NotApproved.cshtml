@@ -1,0 +1,9 @@
+@{
+    ViewData["Title"] = "Bids not available";
+}
+<h1>My bids</h1>
+<div class="alert alert-warning" role="alert">
+    Your supplier account is not approved (current status: <strong>@ViewBag.SupplierStatus</strong>).
+    You can't create, edit or submit bids until your account is approved.
+</div>
+<a class="btn btn-outline-secondary" asp-controller="SupplierRegistration" asp-action="RegistrationStatus">View registration status</a>
