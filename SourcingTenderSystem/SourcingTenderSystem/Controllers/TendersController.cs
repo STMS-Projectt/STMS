@@ -11,7 +11,7 @@ using SourcingTenderSystem.Models;
 
 namespace SourcingTenderSystem.Controllers;
 
-[Authorize(Roles = "SourcingOfficer")]
+//[Authorize(Roles = "SourcingOfficer")]
 public class TendersController : Controller
 {
     private const string DraftStatus = "Draft";
