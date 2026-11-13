@@ -1,0 +1,172 @@
+@model SourcingTenderSystem.ViewModels.TenderApprovals.PendingApprovalsViewModel
+@{
+    ViewData["Title"] = "Pending Tender Approvals";
+}
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="h3 fw-bold text-dark mb-1">
+                <i class="bi bi-shield-check text-primary me-2"></i>Tender Approvals & Reviews
+            </h2>
+            <p class="text-muted mb-0">Review unified evaluation reports and issue manager decisions or committee referrals.</p>
+        </div>
+        <div>
+            <span class="badge bg-primary fs-6 px-3 py-2 rounded-pill shadow-sm">
+                @Model.TotalPendingCount Pending Reports
+            </span>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>@TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (TempData["WarningMessage"] != null)
+    {
+        <div class="alert alert-warning alert-dismissible fade show shadow-sm" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>@TempData["WarningMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (TempData["InfoMessage"] != null)
+    {
+        <div class="alert alert-info alert-dismissible fade show shadow-sm" role="alert">
+            <i class="bi bi-info-circle-fill me-2"></i>@TempData["InfoMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+            <i class="bi bi-x-circle-fill me-2"></i>@TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Search & Filter Card -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body p-3">
+            <form method="get" asp-action="Pending" class="row g-3 align-items-center">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0">
+                            <i class="bi bi-search text-muted"></i>
+                        </span>
+                        <input type="text" name="searchQuery" value="@Model.SearchQuery" class="form-control border-start-0" placeholder="Search by Tender, Department, or Supplier..." />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <select name="statusFilter" class="form-select">
+                        <option value="">-- All Statuses --</option>
+                        <option value="Awaiting Manager Review" selected="@(Model.StatusFilter == "Awaiting Manager Review")">Awaiting Manager Review</option>
+                        <option value="Awaiting Committee Decision" selected="@(Model.StatusFilter == "Awaiting Committee Decision")">Awaiting Committee Decision</option>
+                        <option value="Returned for Review" selected="@(Model.StatusFilter == "Returned for Review")">Returned for Review</option>
+                        <option value="Manager Approved" selected="@(Model.StatusFilter == "Manager Approved")">Manager Approved</option>
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        Filter
+                    </button>
+                    @if (!string.IsNullOrEmpty(Model.SearchQuery) || !string.IsNullOrEmpty(Model.StatusFilter))
+                    {
+                        <a asp-action="Pending" class="btn btn-outline-secondary">Reset</a>
+                    }
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Reports Table Card -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+            @if (!Model.Reports.Any())
+            {
+                <div class="text-center py-5">
+                    <div class="mb-3">
+                        <i class="bi bi-inbox text-muted display-4"></i>
+                    </div>
+                    <h5 class="fw-semibold text-secondary">No Reports Awaiting Decision</h5>
+                    <p class="text-muted small">Evaluation reports submitted by committees will appear here for your review and approval.</p>
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light text-uppercase fs-7 text-muted">
+                            <tr>
+                                <th class="ps-4"># Report</th>
+                                <th>Tender Title</th>
+                                <th>Department</th>
+                                <th>Recommended Supplier</th>
+                                <th>Offer Value</th>
+                                <th>Prepared By</th>
+                                <th>Status</th>
+                                <th class="text-end pe-4">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Reports)
+                            {
+                                <tr>
+                                    <td class="ps-4 fw-bold text-dark">
+                                        #@item.EvaluationReportId
+                                    </td>
+                                    <td>
+                                        <div class="fw-bold text-dark">@item.TenderTitle</div>
+                                        <small class="text-muted">Tender ID: #@item.TenderId</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-light text-dark border">
+                                            @item.DepartmentName
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="fw-semibold text-primary">@item.RecommendedSupplierName</div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-bold text-success">
+                                            @item.RecommendedBidPrice.ToString("N2") @item.Currency
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <small class="text-muted d-block">@item.PreparedByName</small>
+                                        <small class="text-muted">@item.CreatedAt.ToString("MMM dd, yyyy")</small>
+                                    </td>
+                                    <td>
+                                        @if (item.TenderStatus == "Awaiting Manager Review")
+                                        {
+                                            <span class="badge bg-warning text-dark px-2 py-1">Awaiting Review</span>
+                                        }
+                                        else if (item.TenderStatus == "Awaiting Committee Decision")
+                                        {
+                                            <span class="badge bg-info text-white px-2 py-1">Top Committee</span>
+                                        }
+                                        else if (item.TenderStatus == "Returned for Review")
+                                        {
+                                            <span class="badge bg-danger text-white px-2 py-1">Returned</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary px-2 py-1">@item.TenderStatus</span>
+                                        }
+                                    </td>
+                                    <td class="text-end pe-4">
+                                        <a asp-action="Details" asp-route-id="@item.EvaluationReportId" class="btn btn-sm btn-outline-primary px-3 shadow-sm">
+                                            Review & Decide <i class="bi bi-chevron-right ms-1"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>

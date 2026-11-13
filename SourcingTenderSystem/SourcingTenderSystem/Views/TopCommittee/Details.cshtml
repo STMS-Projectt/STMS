@@ -1,0 +1,289 @@
+@model SourcingTenderSystem.ViewModels.TopCommittee.TopCommitteeDetailsViewModel
+@{
+    ViewData["Title"] = "Top Committee - Tender Dossier & Vote";
+}
+
+<div class="container-fluid py-4">
+    <!-- Header Navigation -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <a asp-action="Pending" class="btn btn-sm btn-outline-secondary mb-2">
+                <i class="bi bi-arrow-left me-1"></i> Back to Pending Decisions
+            </a>
+            <h2 class="h3 fw-bold text-dark mb-0">
+                Top Committee Dossier: <span class="text-primary">@Model.TenderTitle</span>
+            </h2>
+            <small class="text-muted">Tender ID: #@Model.TenderId | Department: @Model.DepartmentName | Requisition: @Model.RequisitionTitle</small>
+        </div>
+        <div>
+            <a asp-action="Results" asp-route-id="@Model.TenderId" class="btn btn-outline-info me-2">
+                <i class="bi bi-bar-chart-line me-1"></i> View Live Results
+            </a>
+            <span class="badge @(Model.TenderStatus == "Committee Approved" ? "bg-success" : Model.TenderStatus == "Committee Rejected" ? "bg-danger" : "bg-warning text-dark") px-3 py-2 fs-6">
+                @Model.TenderStatus
+            </span>
+        </div>
+    </div>
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+            <i class="bi bi-exclamation-octagon-fill me-2"></i>@TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="row g-4">
+        <!-- Main Dossier Column -->
+        <div class="col-lg-8">
+            <!-- Sourcing Manager Endorsement Banner -->
+            <div class="card border-0 shadow-sm border-start border-4 border-primary mb-4">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <span class="badge bg-primary-subtle text-primary border border-primary px-2 py-1 mb-2">
+                                <i class="bi bi-person-check-fill me-1"></i> Sourcing Manager Endorsement
+                            </span>
+                            <h5 class="fw-bold text-dark mb-1">Referred by: @Model.SourcingManagerName</h5>
+                            <p class="text-muted small mb-2">Decision: <strong class="text-success">@Model.SourcingManagerDecision</strong> on @(Model.SourcingManagerDecidedAt?.ToString("MMM dd, yyyy HH:mm") ?? "N/A")</p>
+                        </div>
+                    </div>
+                    @if (!string.IsNullOrEmpty(Model.SourcingManagerComments))
+                    {
+                        <div class="p-3 bg-light rounded text-secondary small">
+                            <i class="bi bi-quote fs-5 text-muted me-1"></i>@Model.SourcingManagerComments
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Recommended Offer Details -->
+            <div class="card border-0 shadow-sm border-start border-4 border-success mb-4">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="badge bg-success text-white px-2 py-1 mb-2">Recommended Bid</span>
+                            <h4 class="fw-bold text-dark mb-1">@Model.RecommendedSupplierName</h4>
+                            <p class="text-muted mb-0 small">Delivery Timeline: @Model.RecommendedDeliveryDays Days</p>
+                        </div>
+                        <div class="text-end">
+                            <span class="fs-4 fw-bold text-success d-block">
+                                @Model.RecommendedPrice.ToString("N2") @Model.RecommendedCurrency
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Unified Evaluation Report -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white border-bottom py-3">
+                    <h5 class="fw-bold mb-0 text-dark">
+                        <i class="bi bi-file-earmark-text text-primary me-2"></i>Technical & Financial Findings
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="mb-4">
+                        <h6 class="fw-bold text-secondary text-uppercase fs-7">Executive Summary</h6>
+                        <div class="p-3 bg-light rounded text-dark">
+                            @(string.IsNullOrWhiteSpace(Model.ReportSummary) ? "No summary recorded." : Model.ReportSummary)
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <h6 class="fw-bold text-secondary text-uppercase fs-7">Supplier Comparison Matrix</h6>
+                        <div class="p-3 bg-light rounded text-dark">
+                            @(string.IsNullOrWhiteSpace(Model.ReportComparison) ? "No comparative analysis recorded." : Model.ReportComparison)
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <h6 class="fw-bold text-secondary text-uppercase fs-7">Justified Committee Recommendation</h6>
+                        <div class="p-3 bg-light rounded text-dark">
+                            @(string.IsNullOrWhiteSpace(Model.ReportRecommendation) ? "No recommendation text recorded." : Model.ReportRecommendation)
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Competing Offers Side-by-Side -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white border-bottom py-3">
+                    <h5 class="fw-bold mb-0 text-dark">
+                        <i class="bi bi-table text-primary me-2"></i>All Bids Submitted
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light text-uppercase fs-7 text-muted">
+                                <tr>
+                                    <th class="ps-4">Supplier</th>
+                                    <th>Total Price</th>
+                                    <th>Delivery</th>
+                                    <th>Validity</th>
+                                    <th>Compliance</th>
+                                    <th class="text-end pe-4">Verdict</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var b in Model.Bids)
+                                {
+                                    <tr class="@(b.IsRecommended ? "table-success bg-opacity-25" : "")">
+                                        <td class="ps-4">
+                                            <span class="fw-bold text-dark">@b.SupplierName</span>
+                                            @if (b.IsRecommended)
+                                            {
+                                                <span class="badge bg-success ms-1">Recommended</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <span class="fw-semibold">@b.TotalPrice.ToString("N2") @b.Currency</span>
+                                        </td>
+                                        <td>@b.DeliveryDays Days</td>
+                                        <td>@b.ValidityDays Days</td>
+                                        <td>
+                                            <span class="badge bg-light text-dark border">@b.Status</span>
+                                        </td>
+                                        <td class="text-end pe-4">
+                                            @if (b.IsRecommended)
+                                            {
+                                                <i class="bi bi-star-fill text-warning"></i>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted small">Evaluated</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Committee Members Voting Status -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white border-bottom py-3">
+                    <h5 class="fw-bold mb-0 text-dark">
+                        <i class="bi bi-people text-secondary me-2"></i>Top Committee Voting Status
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-3">
+                        @foreach (var member in Model.CommitteeMembers)
+                        {
+                            <div class="col-md-6">
+                                <div class="p-3 border rounded @(member.HasVoted ? "bg-light" : "")">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <strong class="text-dark">@member.MemberName</strong>
+                                        @if (member.HasVoted)
+                                        {
+                                            <span class="badge @(member.Decision == "Approved" ? "bg-success" : member.Decision == "Rejected" ? "bg-danger" : "bg-warning text-dark")">
+                                                @member.Decision
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">Pending Vote</span>
+                                        }
+                                    </div>
+                                    <small class="text-muted d-block">@member.MemberRole</small>
+                                    @if (member.HasVoted && !string.IsNullOrEmpty(member.Justification))
+                                    {
+                                        <div class="mt-2 text-muted small fst-italic">
+                                            "@member.Justification"
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Member Voting Card -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm sticky-top" style="top: 20px;">
+                <div class="card-header bg-dark text-white py-3">
+                    <h5 class="fw-bold mb-0">
+                        <i class="bi bi-pencil-square me-2"></i>Official Committee Ballot
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    @if (Model.CurrentUserHasVoted)
+                    {
+                        <div class="alert alert-info shadow-sm mb-3">
+                            <i class="bi bi-check-circle-fill me-2"></i>Your vote has already been submitted for this tender. You may update your vote below if needed.
+                        </div>
+                    }
+
+                    <form method="post" asp-action="Vote">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="VoteForm.TenderId" />
+                        <input type="hidden" asp-for="VoteForm.EvaluationReportId" />
+                        <input type="hidden" asp-for="VoteForm.ApproverEmployeeProfileId" />
+
+                        <!-- Vote Decision Options -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-dark">Your Vote Decision</label>
+                            <div class="form-check mb-2 p-2 border rounded">
+                                <input class="form-check-input ms-1" type="radio" asp-for="VoteForm.Decision" value="Approved" id="voteApprove" checked>
+                                <label class="form-check-label ms-2 fw-semibold text-success" for="voteApprove">
+                                    <i class="bi bi-check-circle-fill me-1"></i> Approve Tender Award
+                                </label>
+                            </div>
+                            <div class="form-check mb-2 p-2 border rounded">
+                                <input class="form-check-input ms-1" type="radio" asp-for="VoteForm.Decision" value="Rejected" id="voteReject">
+                                <label class="form-check-label ms-2 fw-semibold text-danger" for="voteReject">
+                                    <i class="bi bi-x-circle-fill me-1"></i> Reject Tender Award
+                                </label>
+                            </div>
+                            <div class="form-check p-2 border rounded">
+                                <input class="form-check-input ms-1" type="radio" asp-for="VoteForm.Decision" value="NeedMoreDetails" id="voteDetails">
+                                <label class="form-check-label ms-2 fw-semibold text-warning" for="voteDetails">
+                                    <i class="bi bi-question-circle-fill me-1"></i> Request Further Clarification
+                                </label>
+                            </div>
+                            <span asp-validation-for="VoteForm.Decision" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Selected Bid -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-dark">Confirm Winning Bid</label>
+                            <select asp-for="VoteForm.SelectedBidId" class="form-select">
+                                @foreach (var b in Model.Bids)
+                                {
+                                    <option value="@b.BidId" selected="@(b.BidId == Model.RecommendedBidId)">
+                                        @b.SupplierName — @b.TotalPrice.ToString("N2") @b.Currency
+                                    </option>
+                                }
+                            </select>
+                            <span asp-validation-for="VoteForm.SelectedBidId" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Comments / Justifications -->
+                        <div class="mb-4">
+                            <label asp-for="VoteForm.Comments" class="form-label fw-bold text-dark">Documented Justifications</label>
+                            <textarea asp-for="VoteForm.Comments" class="form-control" rows="5" placeholder="Enter formal legal, technical, and financial justifications for your vote..."></textarea>
+                            <span asp-validation-for="VoteForm.Comments" class="text-danger small"></span>
+                            <small class="text-muted d-block mt-1">Mandatory for official audit logs.</small>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary py-2 fw-semibold shadow-sm">
+                                <i class="bi bi-send-check me-1"></i> Submit Official Vote
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

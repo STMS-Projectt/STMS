@@ -1,0 +1,267 @@
+@model SourcingTenderSystem.ViewModels.TenderApprovals.ApprovalDetailsViewModel
+@{
+    ViewData["Title"] = "Evaluation Report Review & Approval";
+}
+
+<div class="container-fluid py-4">
+    <!-- Header Navigation -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <a asp-action="Pending" class="btn btn-sm btn-outline-secondary mb-2">
+                <i class="bi bi-arrow-left me-1"></i> Back to Pending Approvals
+            </a>
+            <h2 class="h3 fw-bold text-dark mb-0">
+                Tender Evaluation Review: <span class="text-primary">@Model.TenderTitle</span>
+            </h2>
+            <small class="text-muted">Report #@Model.EvaluationReportId | Tender #@Model.TenderId | Requisition: @Model.RequisitionTitle (@Model.DepartmentName)</small>
+        </div>
+        <div>
+            @if (Model.TenderStatus == "Awaiting Manager Review")
+            {
+                <span class="badge bg-warning text-dark px-3 py-2 fs-6">Awaiting Manager Review</span>
+            }
+            else if (Model.TenderStatus == "Awaiting Committee Decision")
+            {
+                <span class="badge bg-info text-white px-3 py-2 fs-6">Awaiting Top Committee</span>
+            }
+            else
+            {
+                <span class="badge bg-secondary px-3 py-2 fs-6">@Model.TenderStatus</span>
+            }
+        </div>
+    </div>
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+            <i class="bi bi-exclamation-octagon-fill me-2"></i>@TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="row g-4">
+        <!-- Left Column: Report Details & Bids Comparison -->
+        <div class="col-lg-8">
+            <!-- Recommended Offer Highlight Card -->
+            <div class="card border-0 shadow-sm border-start border-4 border-success mb-4">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <span class="badge bg-success-subtle text-success border border-success px-2 py-1 mb-2">
+                                <i class="bi bi-star-fill me-1"></i> Committee Recommended Offer
+                            </span>
+                            <h4 class="fw-bold text-dark mb-1">@Model.RecommendedSupplierName</h4>
+                            <p class="text-muted mb-2">Bid ID: #@Model.RecommendedBidId</p>
+                        </div>
+                        <div class="text-end">
+                            <span class="fs-4 fw-bold text-success d-block">
+                                @Model.RecommendedPrice.ToString("N2") @Model.RecommendedCurrency
+                            </span>
+                            <small class="text-muted">Delivery: @Model.RecommendedDeliveryDays Days</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Committee Unified Report Findings -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white border-bottom py-3">
+                    <h5 class="fw-bold mb-0 text-dark">
+                        <i class="bi bi-file-earmark-text text-primary me-2"></i>Unified Committee Report
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="mb-4">
+                        <h6 class="fw-bold text-secondary text-uppercase fs-7">Executive Summary</h6>
+                        <div class="p-3 bg-light rounded text-dark">
+                            @(string.IsNullOrWhiteSpace(Model.Summary) ? "No summary provided." : Model.Summary)
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <h6 class="fw-bold text-secondary text-uppercase fs-7">Supplier Comparison & Technical/Financial Analysis</h6>
+                        <div class="p-3 bg-light rounded text-dark">
+                            @(string.IsNullOrWhiteSpace(Model.SupplierComparison) ? "No comparison provided." : Model.SupplierComparison)
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <h6 class="fw-bold text-secondary text-uppercase fs-7">Final Justified Recommendation</h6>
+                        <div class="p-3 bg-light rounded text-dark">
+                            @(string.IsNullOrWhiteSpace(Model.Recommendation) ? "No recommendation text provided." : Model.Recommendation)
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between text-muted small pt-2 border-top">
+                        <span>Prepared by: <strong class="text-dark">@Model.PreparedByName</strong></span>
+                        <span>Date: @Model.PreparedAt.ToString("MMM dd, yyyy HH:mm")</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- All Bids Comparison Table -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white border-bottom py-3">
+                    <h5 class="fw-bold mb-0 text-dark">
+                        <i class="bi bi-bar-chart-steps text-primary me-2"></i>All Submitted Offers Comparison
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light text-uppercase fs-7 text-muted">
+                                <tr>
+                                    <th class="ps-4">Supplier</th>
+                                    <th>Total Price</th>
+                                    <th>Delivery Time</th>
+                                    <th>Validity</th>
+                                    <th>Compliance</th>
+                                    <th class="text-end pe-4">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var bid in Model.Bids)
+                                {
+                                    <tr class="@(bid.IsRecommended ? "table-success bg-opacity-25" : "")">
+                                        <td class="ps-4">
+                                            <span class="fw-bold text-dark">@bid.SupplierName</span>
+                                            @if (bid.IsRecommended)
+                                            {
+                                                <span class="badge bg-success ms-2">Recommended</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <span class="fw-semibold">@bid.TotalPrice.ToString("N2") @bid.Currency</span>
+                                        </td>
+                                        <td>@bid.DeliveryDays Days</td>
+                                        <td>@bid.ValidityDays Days</td>
+                                        <td>
+                                            <span class="badge bg-light text-dark border">@bid.Status</span>
+                                        </td>
+                                        <td class="text-end pe-4">
+                                            @if (bid.IsRecommended)
+                                            {
+                                                <i class="bi bi-check-circle-fill text-success fs-5"></i>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted small">Standard</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Approval History / Audit Trail -->
+            @if (Model.ApprovalHistory.Any())
+            {
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-white border-bottom py-3">
+                        <h5 class="fw-bold mb-0 text-dark">
+                            <i class="bi bi-clock-history text-secondary me-2"></i>Decision & Review History
+                        </h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <ul class="list-group list-group-flush">
+                            @foreach (var log in Model.ApprovalHistory)
+                            {
+                                <li class="list-group-item px-0 py-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <span class="fw-bold text-dark">@log.ApproverName</span>
+                                        <small class="text-muted">@log.DecidedAt.ToString("MMM dd, yyyy HH:mm")</small>
+                                    </div>
+                                    <div class="mb-1">
+                                        <span class="badge @(log.Decision == "Approved" ? "bg-success" : log.Decision == "Rejected" ? "bg-danger" : "bg-warning text-dark")">
+                                            @log.Decision
+                                        </span>
+                                        @if (!string.IsNullOrEmpty(log.SelectedSupplierName))
+                                        {
+                                            <span class="small text-muted ms-2">Selected: @log.SelectedSupplierName</span>
+                                        }
+                                    </div>
+                                    @if (!string.IsNullOrEmpty(log.Comments))
+                                    {
+                                        <p class="mb-0 text-secondary small bg-light p-2 rounded">@log.Comments</p>
+                                    }
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Right Column: Decision Action Form -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm sticky-top" style="top: 20px;">
+                <div class="card-header bg-primary text-white py-3">
+                    <h5 class="fw-bold mb-0">
+                        <i class="bi bi-check2-square me-2"></i>Manager Decision Panel
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" id="decisionForm">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="EvaluationReportId" />
+                        <input type="hidden" asp-for="TenderId" />
+                        <input type="hidden" asp-for="CurrentApproverProfileId" />
+
+                        <!-- Selected Bid Selection -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-dark">Select Winning Supplier Bid</label>
+                            <select asp-for="SelectedBidId" class="form-select">
+                                @foreach (var b in Model.Bids)
+                                {
+                                    <option value="@b.BidId" selected="@(b.BidId == Model.RecommendedBidId)">
+                                        @b.SupplierName — @b.TotalPrice.ToString("N2") @b.Currency @(b.IsRecommended ? "(Recommended)" : "")
+                                    </option>
+                                }
+                            </select>
+                            <small class="text-muted">Defaults to committee recommendation.</small>
+                        </div>
+
+                        <!-- Forward to Top Committee Checkbox -->
+                        <div class="form-check form-switch mb-3 p-3 bg-light rounded">
+                            <input class="form-check-input" type="checkbox" asp-for="ForwardToTopCommittee" id="forwardTopCommitteeCheck">
+                            <label class="form-check-label fw-semibold text-dark" for="forwardTopCommitteeCheck">
+                                Forward to Top Committee
+                            </label>
+                            <small class="d-block text-muted">
+                                Required for high-value or strategic tenders requiring collective decision.
+                            </small>
+                        </div>
+
+                        <!-- Comments / Notes Field -->
+                        <div class="mb-4">
+                            <label asp-for="Comments" class="form-label fw-bold text-dark">Decision Notes & Justifications</label>
+                            <textarea asp-for="Comments" class="form-control" rows="4" placeholder="Enter review feedback, justifications, or required modifications..."></textarea>
+                            <span asp-validation-for="Comments" class="text-danger small"></span>
+                            <small class="text-muted d-block mt-1">Mandatory when Rejecting or Returning for review.</small>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-grid gap-2">
+                            <button type="submit" asp-action="Approve" class="btn btn-success py-2 fw-semibold shadow-sm">
+                                <i class="bi bi-check-circle me-1"></i> Approve Recommendation
+                            </button>
+                            <button type="submit" asp-action="Return" class="btn btn-warning py-2 fw-semibold text-dark shadow-sm">
+                                <i class="bi bi-arrow-counterclockwise me-1"></i> Return for Review
+                            </button>
+                            <button type="submit" asp-action="Reject" class="btn btn-outline-danger py-2 fw-semibold">
+                                <i class="bi bi-x-circle me-1"></i> Reject Recommendation
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,105 @@
+@model SourcingTenderSystem.ViewModels.Awards.AwardConfirmationViewModel
+@{
+    ViewData["Title"] = "Confirm Tender Award";
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="d-flex align-items-center mb-3">
+                <a asp-action="Index" class="btn btn-sm btn-outline-secondary me-3">
+                    <i class="bi bi-arrow-left me-1"></i> Back to Awards
+                </a>
+                <h3 class="fw-bold text-dark mb-0">Confirm Tender Award</h3>
+            </div>
+
+            <!-- Award Summary Card -->
+            <div class="card border-0 shadow-sm border-top border-4 border-success mb-4">
+                <div class="card-body p-4">
+                    <div class="row g-3">
+                        <div class="col-md-7">
+                            <span class="badge bg-success-subtle text-success border border-success px-2 py-1 mb-2">
+                                Official Award Recipient
+                            </span>
+                            <h4 class="fw-bold text-dark mb-1">@Model.WinningSupplierName</h4>
+                            <p class="text-muted mb-0">Tender: <strong>@Model.TenderTitle</strong> (ID: #@Model.TenderId)</p>
+                            <small class="text-muted">Requesting Department: @Model.DepartmentName</small>
+                        </div>
+                        <div class="col-md-5 text-md-end">
+                            <span class="text-muted small d-block">Award Contract Value</span>
+                            <h3 class="fw-bold text-success mb-0">
+                                @Model.AwardAmount.ToString("N2") @Model.Currency
+                            </h3>
+                            <small class="text-muted">Estimated Delivery: @Model.DeliveryDays Days</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Confirmation Form -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-bottom py-3">
+                    <h5 class="fw-bold mb-0 text-dark">
+                        <i class="bi bi-file-earmark-lock text-primary me-2"></i>Official Award Contract Issuance
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" asp-action="Confirm">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="TenderId" />
+                        <input type="hidden" asp-for="WinningBidId" />
+                        <input type="hidden" asp-for="WinningSupplierName" />
+                        <input type="hidden" asp-for="TenderTitle" />
+                        <input type="hidden" asp-for="AwardAmount" />
+                        <input type="hidden" asp-for="Currency" />
+
+                        <!-- Contract Reference Number -->
+                        <div class="mb-3">
+                            <label asp-for="ContractReferenceNumber" class="form-label fw-bold text-dark"></label>
+                            <input asp-for="ContractReferenceNumber" class="form-control" />
+                            <span asp-validation-for="ContractReferenceNumber" class="text-danger small"></span>
+                            <small class="text-muted">Auto-generated contract code; may be modified per company PO numbering rules.</small>
+                        </div>
+
+                        <!-- Agreed Delivery Target Date -->
+                        <div class="mb-3">
+                            <label asp-for="AgreedDeliveryDate" class="form-label fw-bold text-dark"></label>
+                            <input asp-for="AgreedDeliveryDate" type="date" class="form-control" />
+                            <span asp-validation-for="AgreedDeliveryDate" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Official Notes -->
+                        <div class="mb-4">
+                            <label asp-for="AwardNotes" class="form-label fw-bold text-dark"></label>
+                            <textarea asp-for="AwardNotes" class="form-control" rows="4" placeholder="Enter formal terms, legal provisions, warranty requirements, or closing instructions..."></textarea>
+                            <span asp-validation-for="AwardNotes" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Confirmation Checkbox -->
+                        <div class="form-check p-3 bg-light rounded border mb-4">
+                            <input class="form-check-input ms-1" type="checkbox" asp-for="AcknowledgeConfirmation" id="ackCheck">
+                            <label class="form-check-label ms-2 fw-semibold text-dark" for="ackCheck">
+                                I confirm and authorize the formal awarding of this tender to @Model.WinningSupplierName.
+                            </label>
+                            <small class="d-block text-muted ms-2 mt-1">
+                                This action will finalize the tender, notify the winning supplier, notify the department, update bid statuses, and create an immutable audit record.
+                            </small>
+                            <span asp-validation-for="AcknowledgeConfirmation" class="text-danger small ms-2 d-block"></span>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a asp-action="Index" class="btn btn-outline-secondary px-4">Cancel</a>
+                            <button type="submit" class="btn btn-success px-4 py-2 fw-semibold shadow-sm">
+                                <i class="bi bi-award-fill me-1"></i> Issue Formal Award & Close Tender
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
