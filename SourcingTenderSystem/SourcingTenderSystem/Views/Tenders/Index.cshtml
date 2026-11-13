@@ -1,0 +1,123 @@
+﻿@model IEnumerable<SourcingTenderSystem.Models.Tender>
+
+@{
+    ViewData["Title"] = "Tenders";
+}
+
+@functions {
+    static string BadgeClass(string status) => status switch
+    {
+        "Draft" => "bg-secondary",
+        "Published" => "bg-info text-dark",
+        "Open" => "bg-primary",
+        "Closed" => "bg-dark",
+        "Under Evaluation" => "bg-warning text-dark",
+        "Awaiting Manager Review" => "bg-warning text-dark",
+        "Awaiting Committee Decision" => "bg-warning text-dark",
+        "Awarded" => "bg-success",
+        "Cancelled" => "bg-danger",
+        _ => "bg-secondary"
+    };
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0">Tenders</h1>
+    <a asp-action="Create" class="btn btn-primary">+ New Tender</a>
+</div>
+
+@if (TempData["Success"] is string successMessage)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @successMessage
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+@if (TempData["Error"] is string errorMessage)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @errorMessage
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="table-responsive">
+    <table class="table table-hover align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>#</th>
+                <th>Title</th>
+                <th>Purchase Request</th>
+                <th>Open Date</th>
+                <th>Close Date</th>
+                <th>Status</th>
+                <th>Created By</th>
+                <th>Created At</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var t in Model)
+            {
+                var isDraft = t.Status == "Draft";
+                var canAssign = isDraft || t.Status == "Published" || t.Status == "Open" || t.Status == "Closed";
+                <tr>
+                    <td>@t.Id</td>
+                    <td>@t.Title</td>
+                    <td>@t.PurchaseRequisition.Title</td>
+                    <td class="text-nowrap">@t.OpenDate.ToString("yyyy-MM-dd HH:mm")</td>
+                    <td class="text-nowrap">@t.CloseDate.ToString("yyyy-MM-dd HH:mm")</td>
+                    <td><span class="badge @BadgeClass(t.Status)">@t.Status</span></td>
+                    <td>@t.CreatedByEmployeeProfile.FullName</td>
+                    <td class="text-nowrap">@t.CreatedAt.ToString("yyyy-MM-dd")</td>
+                    <td>
+                        <div class="d-flex flex-wrap gap-1">
+                            <a asp-action="Details" asp-route-id="@t.Id" class="btn btn-sm btn-outline-info">Details</a>
+
+                            @if (isDraft)
+                            {
+                                <a asp-action="Edit" asp-route-id="@t.Id" class="btn btn-sm btn-outline-primary">Edit</a>
+                                <form asp-action="Delete" asp-route-id="@t.Id" method="post" class="d-inline"
+                                      onsubmit="return confirm('Delete this tender? The purchase request will go back to Approved.');">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                </form>
+                            }
+                            else
+                            {
+                                <button type="button" class="btn btn-sm btn-outline-secondary" disabled
+                                        title="Only draft tenders can be edited">
+                                    Edit
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" disabled
+                                        title="Only draft tenders can be deleted">
+                                    Delete
+                                </button>
+                            }
+
+                            <a asp-controller="Invitations" asp-action="Index" asp-route-tenderId="@t.Id"
+                               class="btn btn-sm btn-outline-success">Invitation</a>
+
+                            @if (canAssign)
+                            {
+                                <a asp-action="AssignCommittee" asp-route-id="@t.Id"
+                                   class="btn btn-sm btn-outline-dark">Assign</a>
+                            }
+                            else
+                            {
+                                <button type="button" class="btn btn-sm btn-outline-secondary" disabled
+                                        title="The committee cannot be changed after the evaluation has started">
+                                    Assign
+                                </button>
+                            }
+                        </div>
+                    </td>
+                </tr>
+            }
+            @if (!Model.Any())
+            {
+                <tr>
+                    <td colspan="9" class="text-center text-muted py-4">No tenders yet.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
