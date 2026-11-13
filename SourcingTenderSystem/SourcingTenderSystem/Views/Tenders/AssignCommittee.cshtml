@@ -1,0 +1,68 @@
+﻿@model SourcingTenderSystem.Controllers.AssignCommitteeViewModel
+
+@{
+    ViewData["Title"] = "Assign Evaluation Committee";
+}
+
+<h1 class="h3 mb-1">Assign Evaluation Committee</h1>
+<p class="text-muted mb-3">
+    Tender: <strong>@Model.TenderTitle</strong>
+    &middot; Requesting department: <strong>@Model.DepartmentName</strong>
+</p>
+
+@if (Model.Problems.Any())
+{
+    <div class="alert alert-danger">
+        <ul class="mb-0">
+            @foreach (var problem in Model.Problems)
+            {
+                <li>@problem</li>
+            }
+        </ul>
+    </div>
+}
+
+<div class="row">
+    <div class="col-lg-8">
+        <p>
+            The committee has 4 members: 3 fixed members and the employee who created the purchase request.
+            @if (Model.AlreadyAssigned)
+            {
+                <span class="badge bg-success ms-1">Already assigned</span>
+            }
+        </p>
+
+        <div class="list-group mb-3">
+            @foreach (var member in Model.Members)
+            {
+                <div class="list-group-item d-flex flex-wrap align-items-center justify-content-between gap-2">
+                    <div>
+                        <div class="fw-semibold">@member.FullName</div>
+                        <small class="text-muted">
+                            @member.JobTitle
+                            @if (!string.IsNullOrEmpty(member.Department))
+                            {
+                                <text>&middot; @member.Department</text>
+                            }
+                        </small>
+                    </div>
+                    <div class="text-end">
+                        <span class="badge bg-primary">@member.Role</span>
+                        <span class="badge @(member.IsFixed ? "bg-secondary" : "bg-info text-dark")">
+                            @(member.IsFixed ? "Fixed" : "Requester")
+                        </span>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <form asp-action="AssignCommittee" asp-route-id="@Model.TenderId" method="post">
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary" disabled="@Model.Problems.Any()">
+                    @(Model.AlreadyAssigned ? "Update Committee" : "Assign Committee")
+                </button>
+                <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
