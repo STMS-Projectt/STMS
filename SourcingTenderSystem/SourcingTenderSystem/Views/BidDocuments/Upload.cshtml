@@ -1,0 +1,33 @@
+@model BidDocumentUploadViewModel
+@{
+    var bid = (Bid)ViewBag.Bid;
+    ViewData["Title"] = "Upload document";
+}
+<h1>Upload document</h1>
+<p>Bid for: <strong>@bid.Tender.Title</strong></p>
+
+@* enctype="multipart/form-data" is required, otherwise the file is not sent *@
+<form asp-action="Upload" asp-route-bidId="@bid.Id" method="post" enctype="multipart/form-data"
+      asp-antiforgery="true" class="admin-form">
+    <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+
+    <div class="mb-3">
+        <label asp-for="DocumentType" class="form-label"></label>
+        <select asp-for="DocumentType" asp-items="ViewBag.DocumentTypes" class="form-select">
+            <option value="">-- Choose a type --</option>
+        </select>
+        <span asp-validation-for="DocumentType" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="File" class="form-label"></label>
+        <input asp-for="File" type="file" accept=".pdf,application/pdf" class="form-control" />
+        <div class="form-text">PDF only, maximum 10 MB.</div>
+        <span asp-validation-for="File" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Upload</button>
+    <a class="btn btn-outline-secondary" asp-controller="Bids" asp-action="Details" asp-route-id="@bid.Id">Cancel</a>
+</form>
+
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

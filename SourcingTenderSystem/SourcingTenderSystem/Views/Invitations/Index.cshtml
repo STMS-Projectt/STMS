@@ -1,0 +1,76 @@
+@model IEnumerable<SourcingTenderSystem.Models.Invitation>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Tender)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SupplierProfile.CompanyName)
+            </th>  
+            
+            <th>
+                @Html.DisplayNameFor(model => model.SentAt)
+            </th>
+           
+            <th>
+                @Html.DisplayNameFor(model => model.ExpiresAt)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DeclineReason)
+            </th>
+            <th>
+                Action
+            </th>
+
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                    @Html.DisplayFor(model => item.Tender.Title)
+            </td>
+            <td>
+                    @Html.DisplayFor(model => item.SupplierProfile.CompanyName)
+            </td>
+           
+            <td>
+                @Html.DisplayFor(model => item.SentAt)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.ExpiresAt)
+            </td>
+          @* <td>
+                @Html.DisplayFor(model => item.RespondedAt)
+               </td>*@
+                <td>
+                    @Html.DisplayFor(model => item.Status)
+                </td>
+            <td>
+                @Html.DisplayFor(model => item.DeclineReason)
+            </td>
+          
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

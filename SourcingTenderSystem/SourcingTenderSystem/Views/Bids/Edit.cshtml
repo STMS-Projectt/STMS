@@ -1,0 +1,17 @@
+@model BidFormViewModel
+@{
+    var bid = (Bid)ViewBag.Bid;
+    ViewData["Title"] = "Edit bid";
+}
+<h1>Edit bid</h1>
+<p>Tender: <strong>@bid.Tender.Title</strong> · closes @bid.Tender.CloseDate.ToString("yyyy-MM-dd HH:mm") (UTC)</p>
+
+@* The bid id goes in the URL (/Bids/Edit/5); the controller loads the bid again and checks the owner *@
+<form asp-action="Edit" asp-route-id="@bid.Id" method="post" asp-antiforgery="true" class="admin-form">
+    <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+    <partial name="_BidFields" model="Model" />
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a class="btn btn-outline-secondary" asp-action="Details" asp-route-id="@bid.Id">Cancel</a>
+</form>
+
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

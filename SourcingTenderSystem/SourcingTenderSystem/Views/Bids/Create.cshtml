@@ -1,0 +1,24 @@
+@model BidFormViewModel
+@{
+    var tender = (Tender)ViewBag.Tender;
+    ViewData["Title"] = "Create bid";
+}
+<h1>Create bid</h1>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <h2 class="h5 card-title">@tender.Title</h2>
+        <p class="card-text">@tender.Description</p>
+        <p class="card-text mb-0"><small class="text-muted">Closes @tender.CloseDate.ToString("yyyy-MM-dd HH:mm") (UTC)</small></p>
+    </div>
+</div>
+
+@* tenderId goes in the URL (asp-route-tenderId); the controller checks it again on POST *@
+<form asp-action="Create" asp-route-tenderId="@tender.Id" method="post" asp-antiforgery="true" class="admin-form">
+    <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+    <partial name="_BidFields" model="Model" />
+    <button type="submit" class="btn btn-primary">Create draft bid</button>
+    <a class="btn btn-outline-secondary" asp-action="MyBids">Cancel</a>
+</form>
+
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }
