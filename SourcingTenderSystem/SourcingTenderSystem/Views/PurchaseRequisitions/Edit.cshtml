@@ -1,9 +1,12 @@
 @model RequisitionInput
 @{ ViewData["Title"] = "Edit purchase request"; }
-<h1>Edit purchase request</h1>
-<form asp-action="Edit" asp-route-id="@ViewBag.RequestId" method="post" class="col-lg-8">
-    <partial name="_Fields" model="Model" />
-    <button class="btn btn-primary" type="submit">Save changes</button>
-    <a class="btn btn-outline-secondary" asp-action="Details" asp-route-id="@ViewBag.RequestId">Cancel</a>
-</form>
+<a class="back-link" asp-controller="PurchaseRequisitions" asp-action="Details" asp-route-id="@ViewBag.RequestId"><partial name="_Icon" model='@("back")' /> Request details</a>
+<header class="page-heading"><div><p class="eyebrow">PURCHASE REQUESTS</p><h1>Edit purchase request</h1><p>Update the request information before sending it for review.</p></div></header>
+<div class="form-shell">
+    <form class="surface form-card" asp-action="Edit" asp-route-id="@ViewBag.RequestId" method="post">
+        <partial name="_Fields" model="Model" />
+        <div class="button-row"><button class="btn btn-primary" type="submit">Save changes</button><a class="btn btn-outline-secondary" asp-controller="PurchaseRequisitions" asp-action="Details" asp-route-id="@ViewBag.RequestId">Cancel</a></div>
+    </form>
+    <aside class="surface helper-card"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("file")' /></span><h2>Review notes</h2><p class="mb-0">If this request was returned, check the review notes on the request details page.</p></aside>
+</div>
 @section Scripts { <partial name="_ValidationScriptsPartial" /> }

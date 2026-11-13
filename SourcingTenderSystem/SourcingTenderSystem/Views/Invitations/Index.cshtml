@@ -1,13 +1,17 @@
 @model IEnumerable<SourcingTenderSystem.Models.Invitation>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Supplier invitations";
 }
 
-<h1>Index</h1>
+<h1>Supplier invitations</h1>
+@if (ViewData["TenderTitle"] is string tenderTitle)
+{
+    <p class="subtle">Invitations for <strong>@tenderTitle</strong> · <a asp-action="Index">Show all invitations</a></p>
+}
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a class="btn btn-primary" asp-action="Create" asp-route-tenderId="@(Context.Request.Query["tenderId"].ToString())">New invitation</a>
 </p>
 <table class="table">
     <thead>

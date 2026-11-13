@@ -30,6 +30,14 @@ builder.Services.AddSingleton<SupplierFileStore>();
 
 var app = builder.Build();
 
+if (args.Contains("--reset-local-test-data"))
+{
+    if (!app.Environment.IsDevelopment())
+        throw new InvalidOperationException("Test data reset requires Development.");
+    await using var scope = app.Services.CreateAsyncScope();
+    await LocalTestReset.RunAsync(scope.ServiceProvider, app.Configuration);
+    return;
+}
 if (args.Contains("--initialize-admin"))
 {
     await using var scope = app.Services.CreateAsyncScope();
@@ -37,6 +45,14 @@ if (args.Contains("--initialize-admin"))
     return;
 }
 
+if (args.Contains("--initialize-sourcing-demo"))
+{
+    if (!app.Environment.IsDevelopment())
+        throw new InvalidOperationException("Sourcing demo accounts can only be created in Development.");
+    await using var scope = app.Services.CreateAsyncScope();
+    await SourcingDemoSetup.InitializeAsync(scope.ServiceProvider, app.Configuration);
+    return;
+}
 if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();

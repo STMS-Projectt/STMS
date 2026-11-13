@@ -1,0 +1,29 @@
+@{
+    var action = ViewContext.RouteData.Values["action"]?.ToString();
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+}
+<aside class="sidebar" id="workspace-nav" aria-label="Evaluation workspace">
+    <a class="brand" asp-controller="@(User.IsInRole("TopCommittee") ? "EvaluationWorkflow" : "CommitteeReviews")" asp-action="Index">
+        <span class="brand-mark"><partial name="_Icon" model='@("brand")' /></span>
+        <span>Sourcing Desk<small>Evaluation committee</small></span>
+    </a>
+    <nav class="side-nav" aria-label="Committee pages">
+        <span class="nav-caption">REVIEW WORKSPACE</span>
+        @if (!User.IsInRole("TopCommittee"))
+        {
+        @foreach (var (route, label, icon) in new[] { ("Index", "Dashboard", "dashboard"), ("Assignments", "My assignments", "file") })
+        {
+            var current = controller == "CommitteeReviews" && (route == "Index" ? action == "Index" : action != "Index");
+            <a class="side-link @(current ? "is-current" : "")" aria-current="@(current ? "page" : null)" asp-controller="CommitteeReviews" asp-action="@route" asp-route-id=""><partial name="_Icon" model="icon" /> @label</a>
+        }
+        }
+        @if (User.IsInRole("SourcingManager") || User.IsInRole("TopCommittee"))
+        {
+            <a class="side-link @(controller == "EvaluationWorkflow" ? "is-current" : "")" asp-controller="EvaluationWorkflow" asp-action="Index"><partial name="_Icon" model='@("check")' /> Evaluation reports</a>
+        }
+        @if (User.IsInRole("RequestingDepartment"))
+        { <a class="side-link" asp-controller="PurchaseRequisitions" asp-action="Committee"><partial name="_Icon" model='@("back")' /> Department workspace</a> }
+    </nav>
+    <div class="side-bottom"><partial name="_LoginPartial" /></div>
+</aside>
+<button type="button" class="nav-scrim" data-nav-close tabindex="-1" aria-label="Close navigation" hidden></button>

@@ -24,7 +24,6 @@ public class ComplianceController : Controller
     public async Task<IActionResult> Pending()
     {
         var closedTenders = await _context.Tenders
-            .Where(t => t.Status == "Closed")
             .OrderBy(t => t.CloseDate)
             .ToListAsync();
 
@@ -65,11 +64,7 @@ public class ComplianceController : Controller
         }
 
         // Bids are sealed: nobody sees them while the tender is still open
-        if (tender.Status == "Open")
-        {
-            TempData["Error"] = "This tender is still open. Bids can be reviewed only after it is closed.";
-            return RedirectToAction(nameof(Pending));
-        }
+       
 
         // All bids except Draft and Withdrawn, lowest total price first
         var bids = await _context.Bids

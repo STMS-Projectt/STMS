@@ -1,97 +1,43 @@
-@model SourcingTenderSystem.Models.Invitation
-
+@model Invitation
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "New supplier invitation";
+    var suppliers = (IReadOnlyList<SupplierProfile>)ViewData["Suppliers"]!;
+    var selected = (HashSet<int>)ViewData["SelectedSuppliers"]!;
 }
-
-<h1>Create</h1>
-
-<h4>Invitation</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-            <div class="form-group">
-                <label asp-for="TenderId" class="control-label  fw-bold"> Tender</label>
-                <select asp-for="TenderId" class="form-control" asp-items="ViewBag.TenderId">
-                    <option value="">-- Select Tender --</option>
-                </select>
-            </div>
-
-            <div class="form-group mb-3">
-                <label class="control-label fw-bold">Suppliers:</label>
-                <div class="dropdown">
-                    <!--  dropdown -->
-                    <button class="btn btn-outline-secondary dropdown-toggle w-100 text-start d-flex justify-content-between align-items-center" type="button" id="supplierDropdownButton" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
-                        <span id="dropdownButtonText">-- Select Suppliers --</span>
-                    </button>
-
-                    <!--  Checkboxes -->
-                    <ul class="dropdown-menu w-100 p-3 shadow" aria-labelledby="supplierDropdownButton" style="max-height: 220px; overflow-y: auto;">
-                        @if (ViewBag.Suppliers != null)
-                        {
-                            foreach (var supplier in ViewBag.Suppliers)
-                            {
-                                <li class="mb-2">
-                                    <div class="form-check">
-                                        <input class="form-check-input supplier-checkbox" type="checkbox" name="selectedSuppliers" value="@supplier.Id" id="supplier_@supplier.Id" data-name="@supplier.CompanyName">
-                                        <label class="form-check-label" for="supplier_@supplier.Id">
-                                            @supplier.CompanyName
-                                        </label>
-                                    </div>
-                                </li>
-                            }
-                        }
-                        else
-                        {
-                            <li class="dropdown-item text-muted">No suppliers available</li>
-                        }
-                    </ul>
+<a class="back-link" asp-action="Index"><partial name="_Icon" model='@("back")' /> Supplier invitations</a>
+<header class="page-heading"><div><p class="eyebrow">SUPPLIER INVITATIONS</p><h1>New invitation</h1><p>Choose a tender, its suppliers, and the invitation expiry date.</p></div></header>
+<div class="form-shell">
+    <form class="surface form-card" asp-action="Create" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+        <div class="mb-3">
+            <label asp-for="TenderId" class="form-label">Tender</label>
+            <select asp-for="TenderId" class="form-select" asp-items="ViewBag.TenderId" required><option value="">Select a tender</option></select>
+            <span asp-validation-for="TenderId" class="text-danger"></span>
+        </div>
+        <fieldset class="mb-3">
+            <legend class="form-label">Approved suppliers</legend>
+            @if (suppliers.Count == 0)
+            {
+                <p class="subtle mb-0">No approved suppliers are available. Ask an administrator to approve a supplier account.</p>
+            }
+            else
+            {
+                <div class="border rounded p-3 overflow-auto" style="max-height: 16rem">
+                    @foreach (var supplier in suppliers)
+                    {
+                        <label class="form-check">
+                            <input class="form-check-input" type="checkbox" name="selectedSuppliers" value="@supplier.Id" checked="@selected.Contains(supplier.Id)" />
+                            <span class="form-check-label">@supplier.CompanyName</span>
+                        </label>
+                    }
                 </div>
-            </div>
-           @* <div class="form-group">
-                <label asp-for="SentAt" class="control-label"></label>
-                <input asp-for="SentAt" class="form-control" />
-                <span asp-validation-for="SentAt" class="text-danger"></span>
-            </div>
-            *@
-
-
-            <div class="form-group">
-                <label asp-for="ExpiresAt" class="control-label  fw-bold"> Expires Date</label>
-                <input asp-for="ExpiresAt" class="form-control" />
-                <span asp-validation-for="ExpiresAt" class="text-danger"></span>
-            </div>
-
-         @* <div class="form-group">
-                <label asp-for="RespondedAt" class="control-label"></label>
-                <input asp-for="RespondedAt" class="form-control" />
-                <span asp-validation-for="RespondedAt" class="text-danger"></span>
-            </div> *@
-
-       
-
-          
-         @*  <div class="form-group">
-                <label asp-for="SupplierProfile" class="control-label"></label>
-                <input asp-for="SupplierProfile" class="form-control" />
-                <span asp-validation-for="SupplierProfile" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>*@
-
-
-            <div class="form-group mt-4">
-                <input type="submit" value="Send Invitations" class="btn btn-success btn-lg w-100" />
-            </div>
-            <br />
-        </form>
-    </div>
-</div>
-<br />
-<div>
-    <a asp-action="Index">Back to List</a>
+            }
+        </fieldset>
+        <div class="mb-3">
+            <label asp-for="ExpiresAt" class="form-label">Expires at (UTC)</label>
+            <input asp-for="ExpiresAt" class="form-control" required />
+            <span asp-validation-for="ExpiresAt" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-primary" disabled="@(suppliers.Count == 0)">Send invitations</button>
+    </form>
 </div>

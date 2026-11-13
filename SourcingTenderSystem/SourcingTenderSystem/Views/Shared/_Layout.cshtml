@@ -1,7 +1,18 @@
 @using SourcingTenderSystem.Security
+@using System.Security.Claims
+@using Microsoft.EntityFrameworkCore
+@inject SourcingTenderSystem.Data.ApplicationDbContext WorkspaceDb
 @{
     var admin = User.IsInRole(Roles.Admin);
+    var sourcing = !admin && User.IsInRole(Roles.SourcingOfficer);
+    var committee = !admin && !sourcing && (User.IsInRole(Roles.TechnicalCommittee) || User.IsInRole(Roles.FinancialCommittee) || User.IsInRole(Roles.SourcingManager) || User.IsInRole(Roles.TopCommittee) || ViewContext.RouteData.Values["controller"]?.ToString() == "CommitteeReviews" && User.IsInRole("RequestingDepartment"));
+    var department = !admin && !sourcing && !committee && User.IsInRole("RequestingDepartment");
     var signedIn = User.Identity?.IsAuthenticated == true;
+    var supplierStatus = signedIn && !Roles.EmployeeRoles.Any(User.IsInRole)
+        ? await WorkspaceDb.SupplierProfiles.AsNoTracking().Where(s => s.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier))
+            .Select(s => s.Status).SingleOrDefaultAsync()
+        : null;
+    var supplier = supplierStatus != null;
     var controller = ViewContext.RouteData.Values["controller"]?.ToString();
     var title = ViewData["Title"]?.ToString();
 }
@@ -14,10 +25,27 @@
     <link rel="icon" type="image/svg+xml" href="~/sourcing-desk.svg" asp-append-version="true">
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true">
+    @if (department) { <link rel="stylesheet" href="~/css/department.css" asp-append-version="true"> }
 </head>
-<body class="@(admin ? "workspace" : "portal")">
+<body class="@(admin || department || sourcing || supplier || committee ? "workspace" : "portal") @(department ? "department-workspace" : "")">
     <a class="skip-link" href="#main">Skip to content</a>
-    @if (admin)
+    @if (sourcing)
+    {
+        <partial name="_SourcingNavigation" />
+    }
+    else if (committee)
+    {
+        <partial name="_CommitteeNavigation" />
+    }
+    else if (department)
+    {
+        <partial name="_DepartmentNavigation" />
+    }
+    else if (supplier)
+    {
+        <partial name="_SupplierNavigation" model="supplierStatus" />
+    }
+    else if (admin)
     {
         <aside class="sidebar" id="workspace-nav" aria-label="Administration">
             <a class="brand" asp-controller="AdminDashboard" asp-action="Index">
@@ -41,7 +69,17 @@
         <button type="button" class="nav-scrim" data-nav-close tabindex="-1" aria-label="Close navigation" hidden></button>
     }
     <div class="site-body">
-        @if (admin)
+        @if (department || sourcing || supplier || committee)
+        {
+            <header class="workspace-bar">
+                <div class="bar-context">
+                    <button class="btn btn-outline-secondary menu-toggle" type="button" data-nav-toggle aria-controls="workspace-nav" aria-expanded="false" aria-label="Open navigation"><partial name="_Icon" model='@("menu")' /></button>
+                    <span class="context-root">@(sourcing ? "Sourcing" : supplier ? "Supplier" : committee ? "Evaluation" : "Department")</span><span class="context-separator" aria-hidden="true">/</span><strong>@title</strong>
+                </div>
+                <div class="bar-profile"><span class="avatar" aria-hidden="true">@((User.Identity?.Name ?? "D").FirstOrDefault().ToString().ToUpperInvariant())</span><span><strong>@(sourcing ? "Sourcing officer" : supplier ? "Supplier" : committee ? "Committee reviewer" : "Department employee")</strong><small title="@User.Identity?.Name">@User.Identity?.Name</small></span></div>
+            </header>
+        }
+        else if (admin)
         {
             <header class="workspace-bar">
                 <div class="bar-context">

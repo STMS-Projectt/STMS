@@ -1,9 +1,12 @@
 @model RequisitionItemInput
-@{ ViewData["Title"] = "Add request item"; }
-<h1>Add item to request #@ViewBag.RequestId</h1>
-<form asp-action="Create" asp-route-requestId="@ViewBag.RequestId" method="post" class="col-lg-8">
-    <partial name="_Fields" model="Model" />
-    <button type="submit" class="btn btn-primary">Add item</button>
-    <a class="btn btn-outline-secondary" asp-controller="PurchaseRequisitions" asp-action="Details" asp-route-id="@ViewBag.RequestId">Cancel</a>
-</form>
+@{ ViewData["Title"] = "Add item"; }
+<a class="back-link" asp-controller="PurchaseRequisitions" asp-action="Details" asp-route-id="@ViewBag.RequestId"><partial name="_Icon" model='@("back")' /> Request details</a>
+<header class="page-heading"><div><p class="eyebrow">PURCHASE REQUESTS</p><h1>Add item</h1><p>Add one line for each product or service you need.</p></div></header>
+<div class="form-shell">
+    <form class="surface form-card" asp-action="Create" asp-route-requestId="@ViewBag.RequestId" method="post">
+        <partial name="_Fields" model="Model" />
+        <div class="button-row"><button class="btn btn-primary" type="submit">Add item</button><a class="btn btn-outline-secondary" asp-controller="PurchaseRequisitions" asp-action="Details" asp-route-id="@ViewBag.RequestId">Cancel</a></div>
+    </form>
+    <aside class="surface helper-card"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("file")' /></span><h2>Specifications</h2><p class="mb-0">Include the features, dimensions, or service requirements the reviewer needs to understand the item.</p></aside>
+</div>
 @section Scripts { <partial name="_ValidationScriptsPartial" /> }

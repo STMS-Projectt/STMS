@@ -1,31 +1,34 @@
-@model List<PurchaseRequisition>
-@{ ViewData["Title"] = ViewBag.Heading; }
-<h1>@ViewBag.Heading</h1>
-<div class="d-flex gap-2 mb-3">
-    <a class="btn btn-primary" asp-action="Create">New request</a>
-    <a class="btn btn-outline-secondary" asp-action="MyRequests">My requests</a>
-    <a class="btn btn-outline-secondary" asp-action="Index">Department requests</a>
-</div>
-@if (Model.Count == 0)
-{
-    <p>No purchase requests yet.</p>
-}
-else
-{
-    <div class="table-responsive">
-        <table class="table table-striped align-middle">
-            <thead><tr><th>Title</th><th>Created by</th><th>Priority</th><th>Target date</th><th>Status</th><th></th></tr></thead>
-            <tbody>
-            @foreach (var request in Model)
-            {
-                <tr>
-                    <td>@request.Title</td><td>@request.CreatedByEmployeeProfile.FullName</td>
-                    <td>@request.Priority</td><td>@request.TargetDate.ToString("yyyy-MM-dd")</td>
-                    <td>@request.Status</td>
-                    <td><a asp-action="Details" asp-route-id="@request.Id">Details</a></td>
-                </tr>
-            }
-            </tbody>
-        </table>
-    </div>
-}
+@model DepartmentRequestList
+@{ ViewData["Title"] = "My Requests"; }
+<header class="page-heading">
+    <div><p class="eyebrow">REQUEST TRACKER</p><h1>My Requests</h1><p>Purchase requests from everyone in @Model.Department.</p></div>
+    <a class="btn btn-primary" asp-action="Create"><partial name="_Icon" model='@("plus")' /> New request</a>
+</header>
+<section class="surface directory" aria-label="Department requests">
+    <form class="directory-toolbar request-filters" asp-action="MyRequests" method="get" role="search">
+        <label class="search-box">
+            <span class="visually-hidden">Search by request title</span><partial name="_Icon" model='@("search")' />
+            <input class="form-control" name="q" value="@Model.Query" placeholder="Search request titles" />
+        </label>
+        <label><span class="visually-hidden">Status</span>
+            <select class="form-select" name="status">
+                <option value="">All statuses</option>
+                @foreach (var status in Model.Statuses) { <option value="@status" selected="@(status == Model.Status)">@status</option> }
+            </select>
+        </label>
+        <button class="btn btn-outline-secondary" type="submit">Filter</button>
+        @if (Model.Status != null || !string.IsNullOrEmpty(Model.Query)) { <a class="text-link" asp-action="MyRequests">Clear filters</a> }
+        <span class="result-count">@Model.Requests.Count request(s)</span>
+    </form>
+    @if (Model.Requests.Count > 0) { <partial name="_RequestTable" model="Model.Requests" /> }
+    else
+    {
+        <div class="empty-state">
+            <span class="icon-tile tone-teal"><partial name="_Icon" model='@("file")' /></span>
+            @if (Model.Status != null || !string.IsNullOrEmpty(Model.Query))
+            { <h2>No matching requests</h2><p>Try a different title or status.</p> }
+            else
+            { <h2>No purchase requests yet</h2><p>Start a draft when your department needs to buy something.</p><a class="btn btn-primary" asp-action="Create">Create a draft</a> }
+        </div>
+    }
+</section>

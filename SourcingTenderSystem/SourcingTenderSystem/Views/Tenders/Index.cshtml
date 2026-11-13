@@ -1,4 +1,4 @@
-﻿@model IEnumerable<SourcingTenderSystem.Models.Tender>
+@model IEnumerable<SourcingTenderSystem.Models.Tender>
 
 @{
     ViewData["Title"] = "Tenders";
@@ -59,7 +59,7 @@
             @foreach (var t in Model)
             {
                 var isDraft = t.Status == "Draft";
-                var canAssign = isDraft || t.Status == "Published" || t.Status == "Open" || t.Status == "Closed";
+                var canAssign = isDraft || t.Status == "Published" || t.Status == "Open";
                 <tr>
                     <td>@t.Id</td>
                     <td>@t.Title</td>
@@ -104,7 +104,7 @@
                             else
                             {
                                 <button type="button" class="btn btn-sm btn-outline-secondary" disabled
-                                        title="The committee cannot be changed after the evaluation has started">
+                                        title="Committee assignment is unavailable after bidding closes">
                                     Assign
                                 </button>
                             }

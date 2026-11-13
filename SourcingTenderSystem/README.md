@@ -23,3 +23,23 @@ The setup command creates the administrator and roles through Identity. If the s
 For an existing database, use `dotnet ef database update --project SourcingTenderSystem` with an EF CLI that matches the project's EF Core version instead of running the demo SQL. Set the connection string and initial administrator credentials for that environment before running the setup command.
 
 Store `App_Data/SupplierDocuments` in a private, writable directory and back it up with the SQL database. Uploaded PDFs are served through authorized download endpoints.
+
+### Sourcing demo accounts
+
+After applying the database schema, run from the solution directory with the
+same development connection string used by the app:
+
+```powershell
+$env:ASPNETCORE_ENVIRONMENT = 'Development'
+$env:SourcingDemo__Password = '<choose a password that meets Identity requirements>'
+dotnet run --project SourcingTenderSystem -- --initialize-sourcing-demo
+Remove-Item Env:SourcingDemo__Password
+```
+
+The command adds the three fixed evaluation employees (Tariq Salameh, Rana
+Abuzaid, and Yousef Qasem) and approved demo suppliers
+`supplier1@example.test`, `supplier2@example.test`, and
+`supplier3@example.test`. It can be rerun without duplicating the accounts
+or resetting existing passwords. When a sourcing officer creates a tender,
+the three active employees must hold the SourcingManager, TechnicalCommittee, and FinancialCommittee roles respectively (one active employee per role), and the
+request author fills the fourth seat.

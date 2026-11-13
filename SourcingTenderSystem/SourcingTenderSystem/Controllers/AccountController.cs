@@ -29,8 +29,16 @@ public sealed class AccountController(SignInManager<IdentityUser> signIn, UserMa
         {
             if (Url.IsLocalUrl(input.ReturnUrl)) return LocalRedirect(input.ReturnUrl);
             if (await users.IsInRoleAsync(user, Roles.Admin)) return RedirectToAction("Index", "AdminDashboard");
+            if (await users.IsInRoleAsync(user, Roles.SourcingOfficer))
+                return RedirectToAction("Index", "SourcingDashboard");
+            if (await users.IsInRoleAsync(user, Roles.TechnicalCommittee) || await users.IsInRoleAsync(user, Roles.FinancialCommittee) || await users.IsInRoleAsync(user, Roles.SourcingManager))
+                return RedirectToAction("Index", "CommitteeReviews");
+            if (await users.IsInRoleAsync(user, Roles.TopCommittee))
+                return RedirectToAction("Index", "EvaluationWorkflow");
+            if (await users.IsInRoleAsync(user, "RequestingDepartment"))
+                return RedirectToAction("Dashboard", "PurchaseRequisitions");
             if (await db.SupplierProfiles.AnyAsync(x => x.UserId == user.Id))
-                return RedirectToAction("RegistrationStatus", "SupplierRegistration");
+                return RedirectToAction("Index", "SupplierWorkspace");
             return RedirectToAction("Index", "Home");
         }
 

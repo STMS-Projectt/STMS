@@ -1,10 +1,14 @@
-﻿@model SourcingTenderSystem.Controllers.TenderFormViewModel
+@model SourcingTenderSystem.Controllers.TenderFormViewModel
 
 @{
     ViewData["Title"] = "New Tender";
 }
 
 <h1 class="h3 mb-3">New Tender</h1>
+@if (TempData["Success"] is string message)
+{
+    <div class="alert alert-success" role="status">@message</div>
+}
 
 @if (!Model.PurchaseRequests.Any())
 {

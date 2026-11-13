@@ -1,4 +1,4 @@
-﻿@model SourcingTenderSystem.Models.Tender
+@model SourcingTenderSystem.Models.Tender
 
 @{
     ViewData["Title"] = "Tender Details";
@@ -51,6 +51,14 @@
     @if (isDraft)
     {
         <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary">Edit</a>
+    }
+    @if (Model.Status is "Draft" or "Published" or "Open")
+    {
+        <a asp-action="AssignCommittee" asp-route-id="@Model.Id" class="btn btn-primary">Evaluation committee</a>
+    }
+    @if (Model.Status == "Open" && Model.CloseDate <= DateTime.UtcNow)
+    {
+        <form asp-action="Close" asp-route-id="@Model.Id" method="post"><button class="btn btn-primary" type="submit">Close tender</button></form>
     }
     <a asp-controller="Invitations" asp-action="Index" asp-route-tenderId="@Model.Id"
        class="btn btn-outline-success">Invitation</a>

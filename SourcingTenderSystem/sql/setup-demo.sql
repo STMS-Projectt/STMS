@@ -982,3 +982,14 @@ END;
 COMMIT;
 GO
 
+
+IF NOT EXISTS (SELECT 1 FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20261113190000_AddEvaluationReportFile')
+BEGIN
+    BEGIN TRANSACTION;
+    IF COL_LENGTH('dbo.EvaluationReports', 'FileKey') IS NULL
+        ALTER TABLE [dbo].[EvaluationReports] ADD [FileKey] nvarchar(max) NULL;
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20261113190000_AddEvaluationReportFile', N'10.0.0');
+    COMMIT;
+END;
+GO

@@ -1,0 +1,42 @@
+@{
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+    var action = ViewContext.RouteData.Values["action"]?.ToString();
+    var currentAction = controller switch {
+        "RequisitionReviews" => action == "Index" ? "Index" : "Pending",
+        "Tenders" or "Invitations" => action == "Create" ? "Create" : "Index",
+        "Compliance" => "Pending",
+        _ => "Index"
+    };
+    var groups = new[] {
+        ("OVERVIEW", new[] { ("SourcingDashboard", "Index", "Dashboard", "dashboard") }),
+        ("PURCHASE REQUESTS", new[] { ("RequisitionReviews", "Pending", "Review queue", "clock"),
+            ("RequisitionReviews", "Index", "All requests", "file") }),
+        ("TENDER MANAGEMENT", new[] { ("Tenders", "Index", "Tenders & committees", "users"),
+            ("Tenders", "Create", "New tender", "plus"),
+            ("Invitations", "Index", "Supplier invitations", "supplier"),
+            ("Invitations", "Create", "New invitation", "plus"),
+            ("Compliance", "Pending", "Bid compliance", "shield"), ("EvaluationWorkflow", "Index", "Evaluation progress", "check") })
+    };
+}
+<aside class="sidebar" id="workspace-nav" aria-label="Sourcing workspace">
+    <a class="brand" asp-controller="SourcingDashboard" asp-action="Index">
+        <span class="brand-mark"><partial name="_Icon" model='@("brand")' /></span>
+        <span>Sourcing Desk<small>Sourcing Officer</small></span>
+    </a>
+    <nav class="side-nav" aria-label="Sourcing pages">
+        @foreach (var (group, entries) in groups)
+        {
+            <span class="nav-caption">@group</span>
+            @foreach (var (target, route, label, icon) in entries)
+            {
+                var current = controller == target && currentAction == route;
+                <a class="side-link @(current ? "is-current" : "")" aria-current="@(current ? "page" : null)"
+                   asp-controller="@target" asp-action="@route" asp-route-id="">
+                    <partial name="_Icon" model="icon" /> @label
+                </a>
+            }
+        }
+    </nav>
+    <div class="side-bottom"><partial name="_LoginPartial" /></div>
+</aside>
+<button type="button" class="nav-scrim" data-nav-close tabindex="-1" aria-label="Close navigation" hidden></button>

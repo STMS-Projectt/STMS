@@ -1,10 +1,12 @@
 @model RequisitionInput
 @{ ViewData["Title"] = "New purchase request"; }
-<h1>New purchase request</h1>
-<p>Save the draft first, then add the items you need.</p>
-<form asp-action="Create" method="post" class="col-lg-8">
-    <partial name="_Fields" model="Model" />
-    <button class="btn btn-primary" type="submit">Create draft</button>
-    <a class="btn btn-outline-secondary" asp-action="MyRequests">Cancel</a>
-</form>
+<a class="back-link" asp-controller="PurchaseRequisitions" asp-action="MyRequests" ><partial name="_Icon" model='@("back")' /> My Requests</a>
+<header class="page-heading"><div><p class="eyebrow">PURCHASE REQUESTS</p><h1>New purchase request</h1><p>Start with the reason and target date. Add your item lines after saving.</p></div></header>
+<div class="form-shell">
+    <form class="surface form-card" asp-action="Create"  method="post">
+        <partial name="_Fields" model="Model" />
+        <div class="button-row"><button class="btn btn-primary" type="submit">Save draft</button><a class="btn btn-outline-secondary" asp-controller="PurchaseRequisitions" asp-action="MyRequests" >Cancel</a></div>
+    </form>
+    <aside class="surface helper-card"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("file")' /></span><h2>Draft workflow</h2><p class="mb-0">Add one line per item with its quantity and specifications. You can edit your draft until you submit it.</p></aside>
+</div>
 @section Scripts { <partial name="_ValidationScriptsPartial" /> }

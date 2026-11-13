@@ -1,0 +1,46 @@
+@model DepartmentDashboard
+@{
+    ViewData["Title"] = "Dashboard";
+    var stats = new[] {
+        (Model.Total, "Total requests", "file", "teal", (string?)null),
+        (Model.Count("Draft"), "Drafts", "file", "violet", "Draft"),
+        (Model.Count("Submitted") + Model.Count("Under Review"), "Awaiting review", "clock", "blue", (string?)null),
+        (Model.Count("Returned"), "Returned", "warning", "amber", "Returned")
+    };
+}
+<section class="review-banner department-hero" aria-labelledby="department-heading">
+    <div class="review-copy">
+        <p class="banner-label"><partial name="_Icon" model='@("building")' /> REQUESTING DEPARTMENT</p>
+        <h1 id="department-heading">@Model.Department dashboard</h1>
+        <p>Track your department’s purchase requests from draft to decision.</p>
+        <a class="btn btn-light" asp-action="Create"><partial name="_Icon" model='@("plus")' /> New request</a>
+    </div>
+    <div class="banner-art" aria-hidden="true"><span></span><span></span><span></span></div>
+</section>
+<section class="metrics-grid" aria-label="Department statistics">
+    @foreach (var (count, label, icon, tone, status) in stats)
+    {
+        <div class="metric surface">
+            <span class="icon-tile tone-@tone"><partial name="_Icon" model="icon" /></span>
+            <strong>@count</strong>
+            @if (status != null) { <a class="text-link" asp-action="MyRequests" asp-route-status="@status">@label</a> }
+            else { <span>@label</span> }
+        </div>
+    }
+</section>
+<div class="department-dashboard-grid">
+    <section class="surface directory">
+        <div class="directory-toolbar"><h2 class="mb-0">Recent requests</h2><a class="text-link" asp-action="MyRequests">View all <partial name="_Icon" model='@("arrow")' /></a></div>
+        @if (Model.Recent.Count > 0) { <partial name="_RequestTable" model="Model.Recent" /> }
+        else { <div class="empty-state"><h3>No requests yet</h3><p>Create your first draft to get started.</p></div> }
+    </section>
+    <section class="surface dashboard-card">
+        <h2>Status breakdown</h2>
+        <div class="status-legend mt-3">
+            @foreach (var status in new[] { "Draft", "Submitted", "Under Review", "Returned", "Approved", "Rejected", "Converted to Tender" })
+            {
+                <a asp-action="MyRequests" asp-route-status="@status"><partial name="_RequestStatus" model="status" /><span></span><strong>@Model.Count(status)</strong></a>
+            }
+        </div>
+    </section>
+</div>

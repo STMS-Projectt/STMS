@@ -1,8 +1,11 @@
 @model PurchaseRequisitionItem
-@{ ViewData["Title"] = "Delete request item"; }
-<h1>Delete item</h1>
-<p>Delete <strong>@Model.ItemName</strong> (@Model.Quantity @Model.Unit) from this request?</p>
-<form asp-action="Delete" asp-route-id="@Model.Id" method="post">
-    <button type="submit" class="btn btn-danger">Delete item</button>
-    <a class="btn btn-outline-secondary" asp-controller="PurchaseRequisitions" asp-action="Details" asp-route-id="@Model.PurchaseRequisitionId">Cancel</a>
-</form>
+@{ ViewData["Title"] = "Remove item"; }
+<a class="back-link" asp-controller="PurchaseRequisitions" asp-action="Details" asp-route-id="@Model.PurchaseRequisitionId"><partial name="_Icon" model='@("back")' /> Request details</a>
+<header class="page-heading"><div><p class="eyebrow">REQUEST PR-@Model.PurchaseRequisitionId</p><h1>Remove item</h1></div></header>
+<section class="surface form-card">
+    <h2>@Model.ItemName</h2><p>Remove this line (@Model.Quantity @Model.Unit) from the purchase request?</p>
+    <form asp-action="Delete" asp-route-id="@Model.Id" method="post" class="button-row">
+        <button class="btn btn-danger" type="submit">Remove item</button>
+        <a class="btn btn-outline-secondary" asp-controller="PurchaseRequisitions" asp-action="Details" asp-route-id="@Model.PurchaseRequisitionId">Keep item</a>
+    </form>
+</section>

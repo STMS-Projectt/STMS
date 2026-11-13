@@ -1,0 +1,52 @@
+@model CommitteeTender
+@{ ViewData["Title"] = "Tender evaluation"; }
+<a class="back-link" asp-action="Assignments"><partial name="_Icon" model='@("back")' /> My assignments</a>
+<header class="page-heading"><div><p class="eyebrow">TENDER #@Model.Tender.Id</p><h1>@Model.Tender.Title</h1><p>Open a compliant bid to review its details and score it.</p></div></header>
+@if (TempData["ReviewError"] is string error) { <div class="alert alert-warning" role="alert">@error</div> }
+@if (User.IsInRole("SourcingManager"))
+{
+    <p><a class="btn btn-outline-secondary" asp-controller="EvaluationWorkflow" asp-action="Details" asp-route-id="@Model.Tender.Id">Evaluation progress and final report</a></p>
+}
+<section class="surface directory mb-3">
+    <div class="directory-toolbar"><h2 class="mb-0">Compliant bids</h2></div>
+    @if (Model.Tender.Bids.Count == 0) { <div class="empty-state">No compliant bids to review.</div> }
+    else
+    {
+        <div class="table-responsive" role="region" aria-label="Compliant bids" tabindex="0">
+            <table class="directory-table"><thead><tr><th scope="col">Supplier</th><th scope="col">Quoted total</th><th scope="col">Your progress</th><th scope="col">Action</th></tr></thead><tbody>
+            @foreach (var bid in Model.Tender.Bids.OrderBy(b => b.SupplierProfile.CompanyName))
+            {
+                <tr><td>@bid.SupplierProfile.CompanyName</td><td>@bid.TotalPrice.ToString("N2") @bid.Currency</td>
+                <td>@Model.ReviewedCriteria.GetValueOrDefault(bid.Id) / @Model.Tender.EvaluationCriteria.Count(c => c.Type is "Technical" or "Financial") criteria scored</td>
+                <td><a class="table-action" asp-action="Bid" asp-route-id="@bid.Id">Review bid</a></td></tr>
+            }
+            </tbody></table>
+        </div>
+    }
+</section>
+<section class="surface detail-card">
+    <h2>Evaluation criteria</h2>
+    @if (Model.Tender.EvaluationCriteria.Count == 0) { <p class="subtle">The committee lead must add criteria before scoring can start.</p> }
+    else
+    {
+        <ul>
+            @foreach (var criterion in Model.Tender.EvaluationCriteria.OrderBy(c => c.Type).ThenBy(c => c.Id))
+            { <li><strong>@criterion.Name</strong> · @criterion.Type · @criterion.WeightPercent% weight · @criterion.MaxScore points</li> }
+        </ul>
+    }
+    @if (Model.CanManageCriteria)
+    {
+        <details><summary>Add an evaluation criterion</summary>
+        <form class="mt-3" asp-action="AddCriterion" asp-route-id="@Model.Tender.Id" method="post">
+            <p class="subtle">Agree on the criteria before scoring. The total weight cannot exceed 100%.</p>
+            <div class="form-grid mb-3">
+                <label class="field">Criterion name<input class="form-control" name="Name" required maxlength="120" /></label>
+                <label class="field">Type<select class="form-select" name="Type"><option>Technical</option><option>Financial</option></select></label>
+                <label class="field">Maximum score<input class="form-control" name="MaxScore" type="number" min="1" max="100" value="100" required /></label>
+                <label class="field">Weight (%)<input class="form-control" name="WeightPercent" type="number" min=".01" max="100" step=".01" required /></label>
+            </div>
+            <button class="btn btn-primary" type="submit">Add criterion</button>
+        </form>
+        </details>
+    }
+</section>

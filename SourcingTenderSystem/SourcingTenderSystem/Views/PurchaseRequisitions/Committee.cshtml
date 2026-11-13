@@ -1,0 +1,24 @@
+@model IReadOnlyList<DepartmentAssignment>
+@{ ViewData["Title"] = "My Committee"; }
+<header class="page-heading"><div><p class="eyebrow">EVALUATION COMMITTEE</p><h1>My Committee</h1><p>Tenders where you represent your department.</p></div></header>
+<section class="surface directory" aria-label="Committee assignments">
+    @if (Model.Count == 0)
+    {
+        <div class="empty-state"><span class="icon-tile tone-violet"><partial name="_Icon" model='@("users")' /></span><h2>No assignments yet</h2><p>Your tenders will appear here when you are assigned as the department representative.</p></div>
+    }
+    else
+    {
+        <div class="table-responsive" role="region" aria-label="Assigned tenders" tabindex="0">
+            <table class="directory-table">
+                <thead><tr><th scope="col">Tender</th><th scope="col">Status</th><th scope="col">Purchase request</th></tr></thead>
+                <tbody>
+                @foreach (var assignment in Model)
+                {
+                    <tr><td><span class="record-name"><span>@assignment.Title<small>Tender #@assignment.TenderId</small></span></span></td>
+                        <td>@assignment.Status @if (assignment.Status == "Under Evaluation") { <a class="table-action ms-2" asp-controller="CommitteeReviews" asp-action="Details" asp-route-id="@assignment.TenderId">Review bids</a> }</td><td><a class="table-action" asp-action="Details" asp-route-id="@assignment.RequestId">PR-@assignment.RequestId <partial name="_Icon" model='@("arrow")' /></a></td></tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>
