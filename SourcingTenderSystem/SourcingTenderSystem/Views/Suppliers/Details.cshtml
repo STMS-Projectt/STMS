@@ -1,29 +1,35 @@
 @model SupplierProfile
 @{ ViewData["Title"] = "Supplier details"; }
-<h1>@ViewData["Title"]</h1>
-<dl class="row">
-    <dt class="col-sm-4">Company</dt><dd class="col-sm-8">@Model.CompanyName</dd>
-    <dt class="col-sm-4">Tax number</dt><dd class="col-sm-8">@Model.TaxNumber</dd>
-    <dt class="col-sm-4">Commercial registration</dt><dd class="col-sm-8">@Model.CommercialRegNo</dd>
-    <dt class="col-sm-4">Email</dt><dd class="col-sm-8">@Model.User.Email</dd>
-    <dt class="col-sm-4">Phone</dt><dd class="col-sm-8">@Model.ContactPhone</dd>
-    <dt class="col-sm-4">Address</dt><dd class="col-sm-8">@Model.Address</dd>
-    <dt class="col-sm-4">Status</dt><dd class="col-sm-8">@Model.Status</dd>
-    <dt class="col-sm-4">Decision reason</dt><dd class="col-sm-8">@(Model.StatusReason ?? "—")</dd>
-</dl>
-<partial name="_SupplierDocuments" model="Model.SupplierDocuments" />
-<div class="d-flex flex-wrap gap-2">
-    @if ((Model.Status is SupplierStatus.Pending or SupplierStatus.Suspended) && Model.SupplierDocuments.Count > 0)
-    {
-        <a class="btn btn-success" asp-action="Approve" asp-route-id="@Model.Id">Approve</a>
-    }
-    @if (Model.Status == SupplierStatus.Pending)
-    {
-        <a class="btn btn-outline-danger" asp-action="Reject" asp-route-id="@Model.Id">Reject</a>
-    }
-    @if (Model.Status == SupplierStatus.Approved)
-    {
-        <a class="btn btn-outline-danger" asp-action="Suspend" asp-route-id="@Model.Id">Suspend</a>
-    }
-    <a class="btn btn-outline-secondary" asp-action="Index">Back to suppliers</a>
+<a class="back-link" asp-action="Index"><partial name="_Icon" model='@("back")' /> Suppliers</a>
+<header class="page-heading"><div><p class="eyebrow">SUPPLIER APPLICATION</p><h1>@Model.CompanyName</h1><p>Registered @Model.CreatedAt.ToString("dd MMM yyyy") (UTC)</p></div><partial name="_Status" model="Model.Status" /></header>
+<div class="form-shell">
+    <div class="stack">
+        <section class="surface detail-card"><h2>Company information</h2>
+            <dl class="detail-grid">
+                <div><dt>Tax number</dt><dd>@Model.TaxNumber</dd></div>
+                <div><dt>Commercial registration</dt><dd>@Model.CommercialRegNo</dd></div>
+                <div><dt>Email</dt><dd>@Model.User.Email</dd></div>
+                <div><dt>Phone</dt><dd>@Model.ContactPhone</dd></div>
+                <div><dt>Address</dt><dd>@Model.Address</dd></div>
+            </dl>
+        </section>
+        <partial name="_SupplierDocuments" model="Model.SupplierDocuments" />
+    </div>
+    <aside class="surface helper-card">
+        <span class="icon-tile tone-teal"><partial name="_Icon" model='@("shield")' /></span>
+        <h2>Review decision</h2>
+        @if (Model.StatusReason is not null) { <p>@Model.StatusReason</p> }
+        @if (Model.Status == SupplierStatus.Pending && Model.SupplierDocuments.Count == 0)
+        { <div class="callout callout-warning">Approval becomes available after the supplier uploads a document.</div> }
+        else if (Model.Status == SupplierStatus.Pending)
+        { <p>Review the company information and documents before making a decision.</p> }
+        <div class="button-row">
+            @if ((Model.Status is SupplierStatus.Pending or SupplierStatus.Suspended) && Model.SupplierDocuments.Count > 0)
+            { <a class="btn btn-primary" asp-action="Approve" asp-route-id="@Model.Id"><partial name="_Icon" model='@("check")' /> Approve</a> }
+            @if (Model.Status == SupplierStatus.Pending)
+            { <a class="btn btn-outline-danger" asp-action="Reject" asp-route-id="@Model.Id">Reject</a> }
+            @if (Model.Status == SupplierStatus.Approved)
+            { <a class="btn btn-outline-danger" asp-action="Suspend" asp-route-id="@Model.Id">Suspend</a> }
+        </div>
+    </aside>
 </div>

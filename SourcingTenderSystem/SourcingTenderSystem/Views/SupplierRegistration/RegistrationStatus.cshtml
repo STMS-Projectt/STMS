@@ -1,14 +1,34 @@
 @model SupplierProfile
-@{ ViewData["Title"] = "Registration status"; }
-<h1>@ViewData["Title"]</h1>
-<dl class="row">
-    <dt class="col-sm-4">Company</dt><dd class="col-sm-8">@Model.CompanyName</dd>
-    <dt class="col-sm-4">Status</dt><dd class="col-sm-8">@Model.Status</dd>
-    <dt class="col-sm-4">Decision reason</dt><dd class="col-sm-8">@(Model.StatusReason ?? "—")</dd>
-</dl>
-@if (Model.Status == SupplierStatus.Pending)
-{
-    <p>@(Model.SupplierDocuments.Count == 0 ? "Upload your supporting documents to make your application eligible for approval." : "Your application is awaiting review.")</p>
-    <p><a class="btn btn-primary" asp-action="UploadDocuments">Upload a document</a></p>
-}
-<partial name="_SupplierDocuments" model="Model.SupplierDocuments" />
+@{ ViewData["Title"] = "My application"; }
+<header class="page-heading">
+    <div><p class="eyebrow">SUPPLIER APPLICATION</p><h1>My application</h1><p>Track the application for @Model.CompanyName.</p></div>
+    <partial name="_Status" model="Model.Status" />
+</header>
+<partial name="_ApplicationSteps" model="3" />
+<div class="form-shell">
+    <div class="stack">
+        <section class="surface detail-card">
+            <h2>Application status</h2>
+            <dl class="detail-grid">
+                <div><dt>Company</dt><dd>@Model.CompanyName</dd></div>
+                <div><dt>Current status</dt><dd><partial name="_Status" model="Model.Status" /></dd></div>
+            </dl>
+            @if (!string.IsNullOrWhiteSpace(Model.StatusReason))
+            { <div class="callout mt-3 mb-0"><strong>Decision note</strong><p>@Model.StatusReason</p></div> }
+        </section>
+        <partial name="_SupplierDocuments" model="Model.SupplierDocuments" />
+    </div>
+    <aside class="surface helper-card">
+        <span class="icon-tile tone-teal"><partial name="_Icon" model='@("clock")' /></span>
+        @if (Model.Status == SupplierStatus.Pending)
+        {
+            <h2>@(Model.SupplierDocuments.Count == 0 ? "Upload your first document" : "Awaiting review")</h2>
+            <p>@(Model.SupplierDocuments.Count == 0 ? "Add a supporting PDF so the team can review your application." : "Your documents are available to the review team. You can add more while the application is pending.")</p>
+            <a class="btn btn-primary" asp-action="UploadDocuments"><partial name="_Icon" model='@("upload")' /> Upload document</a>
+        }
+        else
+        {
+            <h2>Review complete</h2><p class="mb-0">The latest decision and any note from the review team are shown on this page.</p>
+        }
+    </aside>
+</div>

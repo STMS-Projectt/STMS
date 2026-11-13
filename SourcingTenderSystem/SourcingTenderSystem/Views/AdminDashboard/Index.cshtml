@@ -1,28 +1,56 @@
 @model DashboardCounts
-@{ ViewData["Title"] = "Administration"; }
-<h1>Administration</h1>
-<p>Manage accounts, departments and supplier applications.</p>
-<div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3">
-@foreach (var metric in new (string Label, int Value, string? Controller, string? Status)[]
-{
-    ("User accounts", Model.Users, null, null),
-    ("Departments", Model.Departments, "Departments", null),
-    ("Active employees", Model.ActiveEmployees, "Employees", null),
-    ("Pending suppliers", Model.PendingSuppliers, "Suppliers", SupplierStatus.Pending),
-    ("Approved suppliers", Model.ApprovedSuppliers, "Suppliers", SupplierStatus.Approved),
-    ("Rejected suppliers", Model.RejectedSuppliers, "Suppliers", SupplierStatus.Rejected),
-    ("Suspended suppliers", Model.SuspendedSuppliers, "Suppliers", SupplierStatus.Suspended),
-    ("Purchase requests", Model.Requests, null, null),
-    ("Tenders", Model.Tenders, null, null)
-})
-{
-    <div class="col"><div class="card h-100"><div class="card-body">
-        <h2 class="h6">@metric.Label</h2>
-        <p class="fs-2 mb-2">@metric.Value</p>
-        @if (metric.Controller is not null)
-        {
-            <a asp-controller="@metric.Controller" asp-action="Index" asp-route-status="@metric.Status">View @metric.Label.ToLowerInvariant()</a>
-        }
-    </div></div></div>
+@{
+    ViewData["Title"] = "Overview";
+    var total = Model.PendingSuppliers + Model.ApprovedSuppliers + Model.RejectedSuppliers + Model.SuspendedSuppliers;
+    var pending = total == 0 ? 0 : 100d * Model.PendingSuppliers / total;
+    var approved = pending + (total == 0 ? 0 : 100d * Model.ApprovedSuppliers / total);
+    var rejected = approved + (total == 0 ? 0 : 100d * Model.RejectedSuppliers / total);
+    var chart = FormattableString.Invariant($"--pending:{pending:F3}%;--approved:{approved:F3}%;--rejected:{rejected:F3}%");
 }
+<header class="page-heading overview-heading">
+    <div><p class="eyebrow">ADMIN WORKSPACE</p><h1>Overview</h1><p>Monitor your organization and manage supplier applications.</p></div>
+</header>
+<section class="review-banner">
+    <div class="banner-art" aria-hidden="true"><span></span><span></span><span></span></div>
+    <div class="review-copy">
+        <div class="banner-label"><partial name="_Icon" model='@("shield")' /> SUPPLIER VERIFICATION</div>
+        <h2>@(Model.PendingSuppliers == 0 ? "You’re all caught up" : Model.PendingSuppliers == 1 ? "1 application awaiting review" : $"{Model.PendingSuppliers} applications awaiting review")</h2>
+        <p>@(Model.PendingSuppliers == 0 ? "New supplier applications will appear in your review queue." : "Open the review queue to check company details and supporting documents.")</p>
+        <a class="btn btn-light" asp-controller="Suppliers" asp-action="Index" asp-route-status="@SupplierStatus.Pending">@(Model.PendingSuppliers == 0 ? "Open review queue" : "Review applications") <partial name="_Icon" model='@("arrow")' /></a>
+    </div>
+</section>
+<section aria-labelledby="snapshot-title">
+    <div class="section-heading"><h2 id="snapshot-title">Organization snapshot</h2><span>Current totals</span></div>
+    <div class="metrics-grid">
+        @foreach (var item in new[] { ("User accounts", Model.Users, "users", "violet"), ("Departments", Model.Departments, "building", "blue"), ("Active employees", Model.ActiveEmployees, "shield", "teal"), ("Supplier applications", total, "supplier", "amber") })
+        {
+            <div class="metric surface"><span class="icon-tile tone-@item.Item4"><partial name="_Icon" model="item.Item3" /></span><strong>@item.Item2</strong><span>@item.Item1</span></div>
+        }
+    </div>
+</section>
+<div class="dashboard-grid">
+    <section class="surface dashboard-card">
+        <div class="card-heading"><div><h2>Supplier status</h2><p>Application breakdown</p></div><a class="text-link" asp-controller="Suppliers" asp-action="Index">View suppliers <partial name="_Icon" model='@("arrow")' /></a></div>
+        <div class="status-overview">
+            <div class="donut @(total == 0 ? "donut-empty" : "")" style="@chart"><div><strong>@total</strong><span>Total</span></div></div>
+            <div class="status-legend">
+                @foreach (var item in new[] { ("Pending", Model.PendingSuppliers, "waiting"), ("Approved", Model.ApprovedSuppliers, "positive"), ("Rejected", Model.RejectedSuppliers, "negative"), ("Suspended", Model.SuspendedSuppliers, "neutral") })
+                {
+                    <a asp-controller="Suppliers" asp-action="Index" asp-route-status="@item.Item1"><span class="legend-dot dot-@item.Item3"></span><span>@item.Item1</span><strong>@item.Item2</strong></a>
+                }
+            </div>
+        </div>
+    </section>
+    <section class="surface dashboard-card">
+        <div class="card-heading"><div><h2>Quick actions</h2><p>Common administration tasks</p></div></div>
+        <div class="quick-actions">
+            <a asp-controller="Departments" asp-action="Create"><span class="icon-tile tone-blue"><partial name="_Icon" model='@("building")' /></span><span><strong>Add department</strong><small>Organize employees by team</small></span><partial name="_Icon" model='@("arrow")' /></a>
+            <a asp-controller="Employees" asp-action="Create"><span class="icon-tile tone-violet"><partial name="_Icon" model='@("users")' /></span><span><strong>Add employee</strong><small>Create an account and assign access</small></span><partial name="_Icon" model='@("arrow")' /></a>
+            <a asp-controller="Suppliers" asp-action="Index"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("supplier")' /></span><span><strong>Manage suppliers</strong><small>Review applications and documents</small></span><partial name="_Icon" model='@("arrow")' /></a>
+        </div>
+    </section>
 </div>
+<section class="surface system-summary" aria-label="Sourcing totals">
+    <span><partial name="_Icon" model='@("file")' /> Purchase requests <strong>@Model.Requests</strong></span>
+    <span><partial name="_Icon" model='@("file")' /> Tenders <strong>@Model.Tenders</strong></span>
+</section>

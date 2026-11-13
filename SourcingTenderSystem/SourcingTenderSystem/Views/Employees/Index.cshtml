@@ -1,20 +1,31 @@
 @model IReadOnlyList<EmployeeProfile>
 @{ ViewData["Title"] = "Employees"; }
-<h1>Employees</h1>
-<p><a class="btn btn-primary" asp-action="Create">Add employee</a></p>
-@if (Model.Count == 0)
-{
-    <p class="text-muted">No records found.</p>
-}
-else
-{
-    <div class="table-responsive"><table class="table table-striped align-middle">
-        <thead><tr><th scope="col">Name</th><th scope="col">Email</th><th scope="col">Department</th><th scope="col">Status</th><th scope="col">Actions</th></tr></thead>
-        <tbody>
-        @foreach (var item in Model)
-        {
-            <tr><td>@item.FullName</td><td>@item.User.Email</td><td>@(item.Department?.Name ?? "—")</td><td>@(item.IsActive ? "Active" : "Inactive")</td><td><a asp-action="Details" asp-route-id="@item.Id">Details</a></td></tr>
-        }
-        </tbody>
-    </table></div>
-}
+<header class="page-heading"><div><p class="eyebrow">ADMINISTRATION</p><h1>Employees</h1><p>Manage employee accounts, department assignments and access.</p></div><a class="btn btn-primary" asp-action="Create" ><partial name="_Icon" model='@("plus")' /> Add employee</a></header>
+<section class="surface directory" aria-label="Employees directory" data-directory>
+    <div class="directory-toolbar">
+    <label class="search-box" hidden="@(Model.Count == 0)"><partial name="_Icon" model='@("search")' /><span class="visually-hidden">Search employees</span><input class="form-control" type="search" data-filter-search placeholder="Search employees"></label>
+    <span class="result-count" data-result-count aria-live="polite">@Model.Count records</span>
+</div>
+    @if (Model.Count == 0)
+    {
+        <div class="empty-state"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("users")' /></span><h2>No employees yet</h2><p>Create an account to give an employee access.</p><a class="btn btn-primary" asp-action="Create" >Add employee</a></div>
+    }
+    else
+    {
+        <table class="directory-table" role="table">
+            <thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Employee</th><th scope="col" role="columnheader">Department</th><th scope="col" role="columnheader">Status</th><th scope="col" role="columnheader">Actions</th></tr></thead>
+            <tbody role="rowgroup">
+            @foreach (var item in Model)
+            {
+                <tr role="row">
+                    <td role="cell"><div class="record-name"><span class="avatar"><partial name="_Icon" model='@("users")' /></span><span>@item.FullName<small>@item.User.Email</small></span></div></td>
+                    <td role="cell" data-label="Department">@(item.Department?.Name ?? "Unassigned")</td>
+                    <td role="cell" data-label="Status"><partial name="_Status" model='@(item.IsActive ? "Active" : "Inactive")' /></td>
+                    <td role="cell" data-label="Actions"><a class="table-action" asp-action="Details" asp-route-id="@item.Id">View details <partial name="_Icon" model='@("arrow")' /><span class="visually-hidden"> for @item.FullName</span></a></td>
+                </tr>
+            }
+            </tbody>
+        </table>
+        <div data-filter-empty hidden><div class="empty-state"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("search")' /></span><h2>No matching records</h2><p>Try a different name or clear your search.</p><button type="button" class="btn btn-outline-secondary">Clear search</button></div></div>
+    }
+</section>

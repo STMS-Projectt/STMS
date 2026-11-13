@@ -1,8 +1,28 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
-
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+@using SourcingTenderSystem.Security
+@{ ViewData["Title"] = "Supplier portal"; }
+<section class="public-hero">
+    <div class="banner-art" aria-hidden="true"><span></span><span></span><span></span></div>
+    <div class="public-hero-copy">
+        <p class="eyebrow">SOURCING DESK · SUPPLIER PORTAL</p>
+        <h1>Work with our<br class="desktop-break"> sourcing team.</h1>
+        <p>Create your company profile, submit supporting documents, and follow your application in one place.</p>
+        <div class="button-row">
+            @if (User.IsInRole(Roles.Admin))
+            { <a class="btn btn-light" asp-controller="AdminDashboard" asp-action="Index">Open administration <partial name="_Icon" model='@("arrow")' /></a> }
+            else if (User.Identity?.IsAuthenticated != true)
+            {
+                <a class="btn btn-light" asp-controller="SupplierRegistration" asp-action="Register">Register as a supplier <partial name="_Icon" model='@("arrow")' /></a>
+                <a class="btn btn-on-dark" asp-controller="Account" asp-action="Login">Sign in</a>
+            }
+            else if (!Roles.EmployeeRoles.Any(User.IsInRole))
+            { <a class="btn btn-light" asp-controller="SupplierRegistration" asp-action="RegistrationStatus">View my application <partial name="_Icon" model='@("arrow")' /></a> }
+        </div>
+    </div>
+</section>
+<div class="section-heading"><h2>How registration works</h2></div>
+<div class="steps-grid">
+    @foreach (var step in new[] { ("01", "building", "Create a company profile", "Provide your contact information, tax number and commercial registration details."), ("02", "upload", "Upload documents", "Add supporting PDF documents for the administration team to review."), ("03", "check", "Check your status", "Sign in to track the application and see the decision when it is available.") })
+    {
+        <section class="surface public-step"><div><span class="icon-tile tone-teal"><partial name="_Icon" model="step.Item2" /></span><span class="step-number">@step.Item1</span></div><h3>@step.Item3</h3><p>@step.Item4</p></section>
+    }
 </div>

@@ -1,20 +1,17 @@
 @model CreateEmployeeInput
 @{ ViewData["Title"] = "Add employee"; }
-<h1>Add employee</h1>
-<form method="post" asp-antiforgery="true" class="admin-form" >
-    <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
-    <partial name="_Fields" model="Model" />
-<div class="mb-3">
-    <label asp-for="Email" class="form-label"></label>
-    <input asp-for="Email" class="form-control" >
-    <span asp-validation-for="Email" class="text-danger"></span>
+<a class="back-link" asp-action="Index" ><partial name="_Icon" model='@("back")' /> Employees</a>
+<header class="page-heading"><div><p class="eyebrow">ADMINISTRATION</p><h1>Add employee</h1><p>Create an employee account and assign access.</p></div></header>
+<div class="form-shell">
+    <form method="post" asp-antiforgery="true" class="surface form-card" >
+        <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+        <partial name="_Fields" model="Model" /><section class="form-section"><h2>Sign-in credentials</h2><div class="form-grid mt-3"><div class="field "><label asp-for="Email" class="form-label"></label>
+    <input asp-for="Email" class="form-control" autocomplete="off" placeholder="name@example.com">
+    <span asp-validation-for="Email" class="text-danger"></span></div><div class="field "><label asp-for="Password" class="form-label"></label>
+    <div class="password-control"><input asp-for="Password" class="form-control" autocomplete="new-password" aria-describedby="Password-hint"><button type="button" class="btn btn-outline-secondary" data-password-toggle aria-controls="Password" aria-pressed="false" hidden>Show</button></div>
+    <p class="field-hint" id="Password-hint">Use at least 6 characters with uppercase, lowercase, a number and a symbol.</p><span asp-validation-for="Password" class="text-danger"></span></div></div></section>
+        <div class="form-actions"><button class="btn btn-primary" type="submit">Create employee <partial name="_Icon" model='@("arrow")' /></button><a class="btn btn-outline-secondary" asp-action="Index" >Cancel</a></div>
+    </form>
+    <aside class="surface helper-card"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("shield")' /></span><h2>Choose the right role</h2><p>The role controls what this employee can access.</p><p>Requesting department accounts must be assigned to a department.</p></aside>
 </div>
-<div class="mb-3">
-    <label asp-for="Password" class="form-label"></label>
-    <input asp-for="Password" class="form-control" autocomplete="new-password">
-    <span asp-validation-for="Password" class="text-danger"></span>
-</div>
-    <button class="btn btn-primary" type="submit">Create employee</button>
-</form>
-
 @section Scripts { <partial name="_ValidationScriptsPartial" /> }

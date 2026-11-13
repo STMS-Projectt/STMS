@@ -1,18 +1,18 @@
 @model DecisionInput
 @{
     var supplier = (SupplierProfile)ViewBag.Supplier;
-    ViewData["Title"] = ViewBag.Decision;
+    var decision = (string)ViewBag.Decision;
+    var action = decision switch { SupplierStatus.Approved => "Approve", SupplierStatus.Rejected => "Reject", _ => "Suspend" };
+    ViewData["Title"] = $"{action} supplier";
 }
-<h1>Set supplier status to @ViewBag.Decision</h1>
-<p><strong>@supplier.CompanyName</strong> is currently @supplier.Status. The supplier can see the reason you enter.</p>
-<form method="post" asp-antiforgery="true" class="admin-form">
+<a class="back-link" asp-action="Details" asp-route-id="@supplier.Id"><partial name="_Icon" model='@("back")' /> Back to application</a>
+<header class="page-heading"><div><p class="eyebrow">SUPPLIER APPLICATION</p><h1>@action supplier</h1><p>Confirm your decision for @supplier.CompanyName.</p></div></header>
+<form method="post" asp-antiforgery="true" class="surface form-card confirmation">
     <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
-    <div class="mb-3">
-    <label asp-for="Reason" class="form-label"></label>
-    <textarea asp-for="Reason" class="form-control" rows="4"></textarea>
-    <span asp-validation-for="Reason" class="text-danger"></span>
-</div>
-    <button class="btn btn-primary" type="submit">Confirm decision</button>
-    <a class="btn btn-outline-secondary" asp-action="Details" asp-route-id="@supplier.Id">Cancel</a>
+    <div class="callout @(decision == SupplierStatus.Approved ? "" : "callout-warning")">
+        <strong>@supplier.CompanyName</strong><p>Status will change from @supplier.Status to @decision. The supplier will be able to read the reason below.</p>
+    </div>
+    <div class="field"><label asp-for="Reason" class="form-label">Reason for decision</label><textarea asp-for="Reason" class="form-control" rows="4" maxlength="1000" placeholder="Explain the reason for this decision"></textarea><span asp-validation-for="Reason" class="text-danger"></span></div>
+    <div class="form-actions"><button class="btn @(decision == SupplierStatus.Approved ? "btn-primary" : "btn-danger")" type="submit">Confirm @action.ToLowerInvariant()</button><a class="btn btn-outline-secondary" asp-action="Details" asp-route-id="@supplier.Id">Cancel</a></div>
 </form>
 @section Scripts { <partial name="_ValidationScriptsPartial" /> }

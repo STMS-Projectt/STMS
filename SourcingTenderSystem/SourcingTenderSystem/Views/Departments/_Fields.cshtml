@@ -1,12 +1,6 @@
 @model DepartmentInput
-<div class="mb-3">
-    <label asp-for="Name" class="form-label"></label>
-    <input asp-for="Name" class="form-control" >
-    <span asp-validation-for="Name" class="text-danger"></span>
-</div>
-<div class="mb-3">
-    <label asp-for="Description" class="form-label"></label>
-    <textarea asp-for="Description" class="form-control" rows="3"></textarea>
-    <span asp-validation-for="Description" class="text-danger"></span>
-</div>
-<div class="form-check mb-3"><input class="form-check-input" asp-for="IsActive" /><label class="form-check-label" asp-for="IsActive"></label></div>
+<section class="form-section"><h2>Department information</h2><div class="form-grid mt-3"><div class="field field-wide"><label asp-for="Name" class="form-label"></label>
+    <input asp-for="Name" class="form-control" placeholder="e.g. Finance">
+    <span asp-validation-for="Name" class="text-danger"></span></div><div class="field field-wide"><label asp-for="Description" class="form-label"></label>
+    <textarea asp-for="Description" class="form-control" rows="3" placeholder="Describe this department (optional)"></textarea>
+    <span asp-validation-for="Description" class="text-danger"></span></div><div class="toggle-row field-wide"><div class="form-check form-switch mb-0"><input class="form-check-input" asp-for="IsActive"><label class="form-check-label" asp-for="IsActive">Active</label></div></div></div></section>

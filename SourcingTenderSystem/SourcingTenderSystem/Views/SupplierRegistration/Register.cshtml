@@ -1,50 +1,36 @@
 @model RegistrationInput
 @{ ViewData["Title"] = "Supplier registration"; }
-<h1>Supplier registration</h1>
-<form method="post" asp-antiforgery="true" class="admin-form" >
-    <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
-    <p>Enter your company details to create an account. You can upload documents after registering.</p>
-<div class="mb-3">
-    <label asp-for="CompanyName" class="form-label"></label>
-    <input asp-for="CompanyName" class="form-control" >
-    <span asp-validation-for="CompanyName" class="text-danger"></span>
+<header class="page-heading"><div><p class="eyebrow">SUPPLIER APPLICATION</p><h1>Register as a supplier</h1><p>Set up your company profile and sign-in details.</p></div></header>
+<partial name="_ApplicationSteps" model="1" />
+<div class="form-shell">
+    <form method="post" asp-antiforgery="true" class="surface form-card">
+        <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+        <section class="form-section"><h2>Company information</h2><div class="form-grid mt-3">
+            <div class="field field-wide"><label asp-for="CompanyName" class="form-label"></label><input asp-for="CompanyName" class="form-control" autocomplete="organization" placeholder="Registered company name">
+    <span asp-validation-for="CompanyName" class="text-danger"></span></div>
+            <div class="field"><label asp-for="TaxNumber" class="form-label"></label><input asp-for="TaxNumber" class="form-control" placeholder="Company tax number">
+    <span asp-validation-for="TaxNumber" class="text-danger"></span></div>
+            <div class="field"><label asp-for="CommercialRegNo" class="form-label"></label><input asp-for="CommercialRegNo" class="form-control" placeholder="Commercial registration number">
+    <span asp-validation-for="CommercialRegNo" class="text-danger"></span></div>
+            <div class="field"><label asp-for="ContactPhone" class="form-label"></label><input asp-for="ContactPhone" class="form-control" type="tel" autocomplete="tel" placeholder="e.g. +962 79 000 0000">
+    <span asp-validation-for="ContactPhone" class="text-danger"></span></div>
+            <div class="field"><label asp-for="Address" class="form-label"></label><input asp-for="Address" class="form-control" autocomplete="street-address" placeholder="Company address">
+    <span asp-validation-for="Address" class="text-danger"></span></div>
+        </div></section>
+        <section class="form-section"><h2>Sign-in details</h2><div class="form-grid mt-3">
+            <div class="field field-wide"><label asp-for="Email" class="form-label"></label><input asp-for="Email" class="form-control" autocomplete="email" placeholder="name@company.com">
+    <span asp-validation-for="Email" class="text-danger"></span></div>
+            <div class="field"><label asp-for="Password" class="form-label"></label><input asp-for="Password" class="form-control" autocomplete="new-password" aria-describedby="Password-hint">
+    <p class="field-hint" id="Password-hint">At least 6 characters, including uppercase, lowercase, a number and a symbol.</p><span asp-validation-for="Password" class="text-danger"></span></div>
+            <div class="field"><label asp-for="ConfirmPassword" class="form-label"></label><input asp-for="ConfirmPassword" class="form-control" autocomplete="new-password">
+    <span asp-validation-for="ConfirmPassword" class="text-danger"></span></div>
+        </div></section>
+        <div class="form-actions"><button class="btn btn-primary" type="submit">Create supplier account <partial name="_Icon" model='@("arrow")' /></button></div>
+    </form>
+    <aside class="surface helper-card">
+        <span class="icon-tile tone-teal"><partial name="_Icon" model='@("file")' /></span>
+        <h2>Have these ready</h2><ul><li>Your company tax number</li><li>Your commercial registration number</li><li>Supporting documents in PDF format for the next step</li></ul>
+        <p class="mt-3 mb-0">Already registered? <a asp-controller="Account" asp-action="Login">Sign in</a>.</p>
+    </aside>
 </div>
-<div class="mb-3">
-    <label asp-for="TaxNumber" class="form-label"></label>
-    <input asp-for="TaxNumber" class="form-control" >
-    <span asp-validation-for="TaxNumber" class="text-danger"></span>
-</div>
-<div class="mb-3">
-    <label asp-for="CommercialRegNo" class="form-label"></label>
-    <input asp-for="CommercialRegNo" class="form-control" >
-    <span asp-validation-for="CommercialRegNo" class="text-danger"></span>
-</div>
-<div class="mb-3">
-    <label asp-for="ContactPhone" class="form-label"></label>
-    <input asp-for="ContactPhone" class="form-control" >
-    <span asp-validation-for="ContactPhone" class="text-danger"></span>
-</div>
-<div class="mb-3">
-    <label asp-for="Address" class="form-label"></label>
-    <input asp-for="Address" class="form-control" >
-    <span asp-validation-for="Address" class="text-danger"></span>
-</div>
-<div class="mb-3">
-    <label asp-for="Email" class="form-label"></label>
-    <input asp-for="Email" class="form-control" >
-    <span asp-validation-for="Email" class="text-danger"></span>
-</div>
-<div class="mb-3">
-    <label asp-for="Password" class="form-label"></label>
-    <input asp-for="Password" class="form-control" autocomplete="new-password">
-    <span asp-validation-for="Password" class="text-danger"></span>
-</div>
-<div class="mb-3">
-    <label asp-for="ConfirmPassword" class="form-label"></label>
-    <input asp-for="ConfirmPassword" class="form-control" autocomplete="new-password">
-    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-</div>
-    <button class="btn btn-primary" type="submit">Create supplier account</button>
-</form>
-
 @section Scripts { <partial name="_ValidationScriptsPartial" /> }

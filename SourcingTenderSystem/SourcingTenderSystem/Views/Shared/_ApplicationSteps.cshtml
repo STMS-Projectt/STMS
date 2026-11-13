@@ -1,0 +1,7 @@
+@model int
+<ol class="flow-steps" aria-label="Supplier application steps">
+    @foreach (var step in new[] { (1, "Company profile"), (2, "Documents"), (3, "Application status") })
+    {
+        <li aria-current="@(Model == step.Item1 ? "step" : null)"><span aria-hidden="true">@step.Item1</span>@step.Item2</li>
+    }
+</ol>
