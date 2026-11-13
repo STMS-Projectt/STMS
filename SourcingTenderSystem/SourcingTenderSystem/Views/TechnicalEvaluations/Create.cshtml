@@ -1,0 +1,106 @@
+﻿@using SourcingTenderSystem.Models
+
+<h2>Create Technical Evaluation</h2>
+
+<form asp-action="Create" method="get">
+    <label for="bidId">Choose Bid</label>
+
+    <select id="bidId" name="bidId" onchange="this.form.submit()" required>
+        <option value="">-- Choose Bid --</option>
+
+        @foreach (Bid bid in ViewBag.Bids)
+        {
+            if (ViewBag.SelectedBid != null &&
+                ((Bid)ViewBag.SelectedBid).Id == bid.Id)
+            {
+                <option value="@bid.Id" selected>
+                    Bid #@bid.Id - @bid.SupplierProfile.CompanyName
+                </option>
+            }
+            else
+            {
+                <option value="@bid.Id">
+                    Bid #@bid.Id - @bid.SupplierProfile.CompanyName
+                </option>
+            }
+        }
+    </select>
+</form>
+
+@if (ViewBag.SelectedBid != null)
+{
+    Bid bid = ViewBag.SelectedBid;
+
+    <hr />
+
+    <h3>Bid Information</h3>
+
+    <p><strong>Tender:</strong> @bid.Tender.Title</p>
+    <p><strong>Supplier:</strong> @bid.SupplierProfile.CompanyName</p>
+    <p><strong>Total Price:</strong> @bid.TotalPrice @bid.Currency</p>
+    <p><strong>Delivery:</strong> @bid.DeliveryDays days</p>
+    <p><strong>Validity:</strong> @bid.ValidityDays days</p>
+
+    <h4>Bid Items</h4>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Required Specifications</th>
+                <th>Quantity</th>
+                <th>Unit Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (BidItem item in bid.BidItems)
+            {
+                <tr>
+                    <td>@item.PurchaseRequisitionItem.ItemName</td>
+                    <td>@item.PurchaseRequisitionItem.Specifications</td>
+                    <td>@item.Quantity</td>
+                    <td>@item.UnitPrice</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <h3>Technical Criteria</h3>
+
+    <form asp-action="Create" method="post">
+        <input type="hidden" name="bidId" value="@bid.Id" />
+
+        @foreach (EvaluationCriterion criterion in ViewBag.Criteria)
+        {
+            <div>
+                <p>
+                    <strong>@criterion.Name</strong>
+                    — Weight: @criterion.WeightPercent%
+                    — Maximum Score: @criterion.MaxScore
+                </p>
+
+                <label for="score_@criterion.Id">Score</label>
+                <input type="number"
+                       id="score_@criterion.Id"
+                       name="score_@criterion.Id"
+                       min="0"
+                       max="@criterion.MaxScore"
+                       step="0.01"
+                       required />
+
+                <label for="notes_@criterion.Id">Notes</label>
+                <textarea id="notes_@criterion.Id"
+                          name="notes_@criterion.Id"
+                          rows="3"></textarea>
+            </div>
+
+            <hr />
+        }
+
+        <button type="submit">Save Evaluation</button>
+    </form>
+}
+
+<p>
+    <a asp-action="Index">Back to Evaluations</a>
+</p>

@@ -1,0 +1,32 @@
+﻿@model IEnumerable<SourcingTenderSystem.Models.TechnicalEvaluation>
+
+<h2>Technical Evaluations</h2>
+
+<a asp-action="Create">Add Evaluation</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Bid ID</th>
+            <th>Criterion</th>
+            <th>Evaluator</th>
+            <th>Score</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var evaluation in Model)
+        {
+            <tr>
+                <td>@evaluation.BidId</td>
+                <td>@evaluation.EvaluationCriterion.Name</td>
+                <td>@evaluation.EvaluatorEmployeeProfile.FullName</td>
+                <td>@evaluation.Score</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@evaluation.Id">Details</a> |
+                    <a asp-action="Edit" asp-route-id="@evaluation.Id">Edit</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

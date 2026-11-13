@@ -1,0 +1,13 @@
+﻿@model SourcingTenderSystem.Models.TechnicalEvaluation
+
+<h2>Evaluation Details</h2>
+
+<p><strong>Bid ID:</strong> @Model.BidId</p>
+<p><strong>Criterion:</strong> @Model.EvaluationCriterion.Name</p>
+<p><strong>Evaluator:</strong> @Model.EvaluatorEmployeeProfile.FullName</p>
+<p><strong>Score:</strong> @Model.Score</p>
+<p><strong>Notes:</strong> @Model.Notes</p>
+<p><strong>Created:</strong> @Model.CreatedAt</p>
+
+<a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
+<a asp-action="Index">Back</a>

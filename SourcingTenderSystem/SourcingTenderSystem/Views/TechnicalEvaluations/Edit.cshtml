@@ -1,0 +1,69 @@
+﻿@model SourcingTenderSystem.Models.TechnicalEvaluation
+@using SourcingTenderSystem.Models
+
+<h2>Edit Technical Evaluation</h2>
+
+<h3>Bid Information</h3>
+
+<p><strong>Tender:</strong> @Model.Bid.Tender.Title</p>
+<p><strong>Supplier:</strong> @Model.Bid.SupplierProfile.CompanyName</p>
+<p><strong>Total Price:</strong> @Model.Bid.TotalPrice @Model.Bid.Currency</p>
+<p><strong>Delivery:</strong> @Model.Bid.DeliveryDays days</p>
+<p><strong>Validity:</strong> @Model.Bid.ValidityDays days</p>
+
+<h4>Bid Items</h4>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Item</th>
+            <th>Required Specifications</th>
+            <th>Quantity</th>
+            <th>Unit Price</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (BidItem item in Model.Bid.BidItems)
+        {
+            <tr>
+                <td>@item.PurchaseRequisitionItem.ItemName</td>
+                <td>@item.PurchaseRequisitionItem.Specifications</td>
+                <td>@item.Quantity</td>
+                <td>@item.UnitPrice</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<h3>Evaluation</h3>
+
+<p>
+    <strong>Criterion:</strong> @Model.EvaluationCriterion.Name
+    — Weight: @Model.EvaluationCriterion.WeightPercent%
+    — Maximum Score: @Model.EvaluationCriterion.MaxScore
+</p>
+
+<form asp-action="Edit" asp-route-id="@Model.Id" method="post">
+    <div>
+        <label for="score">Score</label>
+        <input type="number"
+               id="score"
+               name="score"
+               value="@Model.Score"
+               min="0"
+               max="@Model.EvaluationCriterion.MaxScore"
+               step="0.01"
+               required />
+    </div>
+
+    <div>
+        <label for="notes">Notes</label>
+        <textarea id="notes" name="notes" rows="3">@Model.Notes</textarea>
+    </div>
+
+    <button type="submit">Save Changes</button>
+</form>
+
+<p>
+    <a asp-action="Index">Back to Evaluations</a>
+</p>
