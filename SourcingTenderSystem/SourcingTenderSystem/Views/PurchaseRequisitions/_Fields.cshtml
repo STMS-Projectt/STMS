@@ -1,0 +1,24 @@
+@model RequisitionInput
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<div class="mb-3">
+    <label asp-for="Title" class="form-label"></label>
+    <input asp-for="Title" class="form-control" />
+    <span asp-validation-for="Title" class="text-danger"></span>
+</div>
+<div class="mb-3">
+    <label asp-for="Reason" class="form-label"></label>
+    <textarea asp-for="Reason" class="form-control" rows="3"></textarea>
+    <span asp-validation-for="Reason" class="text-danger"></span>
+</div>
+<div class="mb-3">
+    <label asp-for="Priority" class="form-label"></label>
+    <select asp-for="Priority" class="form-select">
+        <option>Low</option><option>Normal</option><option>High</option><option>Urgent</option>
+    </select>
+    <span asp-validation-for="Priority" class="text-danger"></span>
+</div>
+<div class="mb-3">
+    <label asp-for="TargetDate" class="form-label"></label>
+    <input asp-for="TargetDate" asp-format="{0:yyyy-MM-dd}" class="form-control" />
+    <span asp-validation-for="TargetDate" class="text-danger"></span>
+</div>

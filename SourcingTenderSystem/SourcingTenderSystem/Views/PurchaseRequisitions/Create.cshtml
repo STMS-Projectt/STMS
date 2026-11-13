@@ -1,0 +1,10 @@
+@model RequisitionInput
+@{ ViewData["Title"] = "New purchase request"; }
+<h1>New purchase request</h1>
+<p>Save the draft first, then add the items you need.</p>
+<form asp-action="Create" method="post" class="col-lg-8">
+    <partial name="_Fields" model="Model" />
+    <button class="btn btn-primary" type="submit">Create draft</button>
+    <a class="btn btn-outline-secondary" asp-action="MyRequests">Cancel</a>
+</form>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

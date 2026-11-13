@@ -10,7 +10,6 @@ using SourcingTenderSystem.ViewModels;
 
 namespace SourcingTenderSystem.Controllers;
 
-[Authorize(Roles = Roles.Admin)]
 public sealed class EmployeesController(ApplicationDbContext db, UserManager<IdentityUser> users) : Controller
 {
     private IQueryable<EmployeeProfile> Employees => db.EmployeeProfiles.Include(x => x.User).Include(x => x.Department);

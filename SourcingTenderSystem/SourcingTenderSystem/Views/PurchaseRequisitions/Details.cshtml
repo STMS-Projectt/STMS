@@ -1,0 +1,21 @@
+@model PurchaseRequisition
+@{ ViewData["Title"] = "Purchase request details"; bool canEdit = ViewBag.CanEdit == true; }
+<h1>Purchase request #@Model.Id</h1>
+<partial name="_RequisitionSummary" model="Model" />
+@if (canEdit)
+{
+    <div class="d-flex gap-2 mb-3">
+        <a class="btn btn-outline-primary" asp-action="Edit" asp-route-id="@Model.Id">Edit request</a>
+        <a class="btn btn-primary" asp-controller="RequisitionItems" asp-action="Create" asp-route-requestId="@Model.Id">Add item</a>
+    </div>
+}
+<partial name="_RequisitionItems" model="Model.Items" />
+@if (canEdit && Model.Items.Count > 0)
+{
+    <p>After submission you can edit this request only if the reviewer returns it.</p>
+    <form asp-action="Submit" asp-route-id="@Model.Id" method="post" class="mb-3">
+        <button type="submit" class="btn btn-success">Submit for review</button>
+    </form>
+}
+<a asp-action="MyRequests">My requests</a> | <a asp-action="Index">Department requests</a>
+
