@@ -1,0 +1,9 @@
+@model RequisitionItemInput
+@{ ViewData["Title"] = "Edit request item"; }
+<h1>Edit item</h1>
+<form asp-action="Edit" asp-route-id="@ViewBag.ItemId" method="post" class="col-lg-8">
+    <partial name="_Fields" model="Model" />
+    <button type="submit" class="btn btn-primary">Save changes</button>
+    <a class="btn btn-outline-secondary" asp-controller="PurchaseRequisitions" asp-action="Details" asp-route-id="@ViewBag.RequestId">Cancel</a>
+</form>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

@@ -1,0 +1,23 @@
+@model RequisitionReviewInput
+@{ ViewData["Title"] = "Review purchase request"; var request = (PurchaseRequisition)ViewBag.Request; }
+<h1>Review request #@request.Id</h1>
+<partial name="_RequisitionSummary" model="request" />
+<partial name="_RequisitionItems" model="request.Items" />
+@if (request.Status == "Submitted" || request.Status == "Under Review")
+{
+    <form asp-action="Approve" asp-route-id="@request.Id" method="post" class="mb-3">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <label asp-for="Notes" class="form-label"></label>
+        <textarea asp-for="Notes" class="form-control" rows="4"></textarea>
+        <span asp-validation-for="Notes" class="text-danger"></span>
+        <p class="form-text">Enter notes explaining your decision. Return allows the employee to edit and resubmit.</p>
+        <div class="d-flex flex-wrap gap-2">
+            <button type="submit" class="btn btn-success" asp-action="Approve" asp-route-id="@request.Id">Approve</button>
+            <button type="submit" class="btn btn-warning" asp-action="Return" asp-route-id="@request.Id">Return for changes</button>
+            <button type="submit" class="btn btn-danger" asp-action="Reject" asp-route-id="@request.Id">Reject</button>
+        </div>
+    </form>
+}
+<a asp-action="Pending">Back to pending requests</a>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }
+

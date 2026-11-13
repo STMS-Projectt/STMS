@@ -1,0 +1,26 @@
+@model List<PurchaseRequisition>
+@{ ViewData["Title"] = "Requests awaiting review"; }
+<h1>Requests awaiting review</h1>
+@if (Model.Count == 0)
+{
+    <p>No requests are waiting for review.</p>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-striped align-middle">
+            <thead><tr><th>Title</th><th>Department</th><th>Employee</th><th>Priority</th><th>Target date</th><th>Status</th><th></th></tr></thead>
+            <tbody>
+            @foreach (var request in Model)
+            {
+                <tr>
+                    <td>@request.Title</td><td>@request.Department.Name</td>
+                    <td>@request.CreatedByEmployeeProfile.FullName</td><td>@request.Priority</td>
+                    <td>@request.TargetDate.ToString("yyyy-MM-dd")</td><td>@request.Status</td>
+                    <td><a asp-action="Details" asp-route-id="@request.Id">Review</a></td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+}

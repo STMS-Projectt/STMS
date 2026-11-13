@@ -1,0 +1,37 @@
+@model ICollection<PurchaseRequisitionItem>
+@* جدول واحد للعناصر، تستخدمه صفحة الموظف وصفحة المراجع. *@
+@{ bool canEdit = ViewBag.CanEdit == true; }
+<h2>Items</h2>
+@if (Model.Count == 0)
+{
+    <p>No items yet. Add at least one item before submitting.</p>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Item</th><th>Quantity</th><th>Unit</th><th>Specifications</th>
+                    @if (canEdit) { <th>Actions</th> }
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var item in Model.OrderBy(x => x.Id))
+            {
+                <tr>
+                    <td>@item.ItemName</td><td>@item.Quantity</td><td>@item.Unit</td>
+                    <td style="white-space: pre-wrap; overflow-wrap: anywhere">@item.Specifications</td>
+                    @if (canEdit)
+                    {
+                        <td>
+                            <a asp-controller="RequisitionItems" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                            <a class="ms-2 text-danger" asp-controller="RequisitionItems" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                        </td>
+                    }
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+}
