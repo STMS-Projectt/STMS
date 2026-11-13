@@ -2,6 +2,3 @@
 # App settings
 appsettings.json
 appsettings.*.json
-# App settings
-appsettings.json
-appsettings.*.json

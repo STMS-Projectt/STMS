@@ -16,7 +16,16 @@ public class TendersController : Controller
 {
     private const string DraftStatus = "Draft";
     private const string EvaluationCommitteeType = "Evaluation";
-    private const string EvaluationCommitteeRole = "EvaluationCommittee";
+    private const string DepartmentRepresentativeRole = "Department Representative";
+
+    // The three fixed seats of every evaluation committee (role -> employee email).
+    // The 4th seat (Department Representative) is the employee who created the purchase request.
+    private static readonly (string Role, string Email)[] FixedCommitteeMembers =
+    {
+        ("Sourcing Manager", "tariq.salameh@demo.sourcing.jo"),
+        ("Financial Representative", "rana.abuzaid@demo.sourcing.jo"),
+        ("Technical Representative", "yousef.qasem@demo.sourcing.jo")
+    };
 
     // The committee can be changed until the evaluation starts.
     private static readonly string[] CommitteeEditableStatuses = { "Draft", "Published", "Open", "Closed" };
@@ -255,9 +264,8 @@ public class TendersController : Controller
     {
         if (id == null) return NotFound();
 
-        var tender = await _context.Tenders
+        var tender = await TendersWithCommitteeData()
             .AsNoTracking()
-            .Include(t => t.CommitteeMembers)
             .FirstOrDefaultAsync(t => t.Id == id);
 
         if (tender == null) return NotFound();
@@ -268,33 +276,25 @@ public class TendersController : Controller
             return RedirectToAction(nameof(Index));
         }
 
-        var members = await GetEligibleMembersAsync();
-        foreach (var current in tender.CommitteeMembers.Where(m => m.CommitteeType == EvaluationCommitteeType))
-        {
-            var option = members.FirstOrDefault(m => m.EmployeeProfileId == current.EmployeeProfileId);
-            if (option == null) continue;
-            option.IsSelected = true;
-            option.MemberRole = current.MemberRole;
-        }
+        var (slots, problems) = await BuildCommitteeAsync(tender);
 
         return View(new AssignCommitteeViewModel
         {
             TenderId = tender.Id,
             TenderTitle = tender.Title,
-            Members = members
+            DepartmentName = tender.PurchaseRequisition.Department.Name,
+            AlreadyAssigned = tender.CommitteeMembers.Any(m => m.CommitteeType == EvaluationCommitteeType),
+            Members = slots,
+            Problems = problems
         });
     }
 
     // POST: /Tenders/AssignCommittee/5
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> AssignCommittee(int id, AssignCommitteeViewModel model)
+    public async Task<IActionResult> AssignCommittee(int id)
     {
-        if (id != model.TenderId) return NotFound();
-
-        var tender = await _context.Tenders
-            .Include(t => t.CommitteeMembers)
-            .FirstOrDefaultAsync(t => t.Id == id);
+        var tender = await TendersWithCommitteeData().FirstOrDefaultAsync(t => t.Id == id);
 
         if (tender == null) return NotFound();
 
@@ -304,63 +304,35 @@ public class TendersController : Controller
             return RedirectToAction(nameof(Index));
         }
 
-        var eligible = await GetEligibleMembersAsync();
-        var selected = (model.Members ?? new List<CommitteeMemberOption>())
-            .Where(m => m.IsSelected)
-            .ToList();
-
-        if (selected.Count != AssignCommitteeViewModel.Roles.Length)
+        var (slots, problems) = await BuildCommitteeAsync(tender);
+        if (problems.Any())
         {
-            ModelState.AddModelError(string.Empty, "Select exactly 4 committee members.");
-        }
-        else if (selected.Any(s => eligible.All(e => e.EmployeeProfileId != s.EmployeeProfileId)))
-        {
-            ModelState.AddModelError(string.Empty, "One of the selected employees cannot be assigned to the committee.");
-        }
-        else if (selected.Select(s => s.MemberRole).Distinct().Count() != AssignCommitteeViewModel.Roles.Length
-                 || selected.Any(s => s.MemberRole == null || !AssignCommitteeViewModel.Roles.Contains(s.MemberRole)))
-        {
-            ModelState.AddModelError(string.Empty,
-                "Give each of the 4 members a different role: Sourcing Manager, Department Representative, Financial Representative and Technical Representative.");
-        }
-
-        if (!ModelState.IsValid)
-        {
-            // Keep what the user already ticked and show the form again.
-            foreach (var option in eligible)
-            {
-                var posted = model.Members?.FirstOrDefault(m => m.EmployeeProfileId == option.EmployeeProfileId);
-                if (posted == null) continue;
-                option.IsSelected = posted.IsSelected;
-                option.MemberRole = posted.MemberRole;
-            }
-            model.TenderTitle = tender.Title;
-            model.Members = eligible;
-            return View(model);
+            // The page shows the problems and keeps the button disabled.
+            return RedirectToAction(nameof(AssignCommittee), new { id });
         }
 
         // Update the Evaluation committee only (Top Committee rows are not touched).
         var existing = tender.CommitteeMembers.Where(m => m.CommitteeType == EvaluationCommitteeType).ToList();
 
-        foreach (var member in existing.Where(m => selected.All(s => s.EmployeeProfileId != m.EmployeeProfileId)))
+        foreach (var member in existing.Where(m => slots.All(s => s.EmployeeProfileId != m.EmployeeProfileId)))
         {
             _context.Remove(member);
         }
 
-        foreach (var s in selected)
+        foreach (var slot in slots)
         {
-            var current = existing.FirstOrDefault(m => m.EmployeeProfileId == s.EmployeeProfileId);
+            var current = existing.FirstOrDefault(m => m.EmployeeProfileId == slot.EmployeeProfileId);
             if (current != null)
             {
-                current.MemberRole = s.MemberRole!;
+                current.MemberRole = slot.Role;
             }
             else
             {
                 tender.CommitteeMembers.Add(new TenderCommitteeMember
                 {
-                    EmployeeProfileId = s.EmployeeProfileId,
+                    EmployeeProfileId = slot.EmployeeProfileId,
                     CommitteeType = EvaluationCommitteeType,
-                    MemberRole = s.MemberRole!
+                    MemberRole = slot.Role
                 });
             }
         }
@@ -375,24 +347,67 @@ public class TendersController : Controller
 
     // ---------------------------------------------------------------- helpers
 
-    // Active employees that have the EvaluationCommittee role.
-    private async Task<List<CommitteeMemberOption>> GetEligibleMembersAsync()
+    private IQueryable<Tender> TendersWithCommitteeData()
     {
-        var users = await _userManager.GetUsersInRoleAsync(EvaluationCommitteeRole);
-        var userIds = users.Select(u => u.Id).ToList();
+        return _context.Tenders
+            .Include(t => t.CommitteeMembers)
+            .Include(t => t.PurchaseRequisition).ThenInclude(r => r.Department)
+            .Include(t => t.PurchaseRequisition).ThenInclude(r => r.CreatedByEmployeeProfile).ThenInclude(e => e.Department);
+    }
 
-        return await _context.EmployeeProfiles
-            .AsNoTracking()
-            .Where(e => e.IsActive && userIds.Contains(e.UserId))
-            .OrderBy(e => e.FullName)
-            .Select(e => new CommitteeMemberOption
+    // 3 fixed members + the employee who requested the purchase = the 4 committee seats.
+    private async Task<(List<CommitteeSlot> Slots, List<string> Problems)> BuildCommitteeAsync(Tender tender)
+    {
+        var slots = new List<CommitteeSlot>();
+        var problems = new List<string>();
+
+        foreach (var (role, email) in FixedCommitteeMembers)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            var employee = user == null
+                ? null
+                : await _context.EmployeeProfiles
+                    .AsNoTracking()
+                    .Include(e => e.Department)
+                    .FirstOrDefaultAsync(e => e.UserId == user.Id && e.IsActive);
+
+            if (employee == null)
             {
-                EmployeeProfileId = e.Id,
-                FullName = e.FullName,
-                JobTitle = e.JobTitle,
-                Department = e.Department != null ? e.Department.Name : null
-            })
-            .ToListAsync();
+                problems.Add($"No active employee was found for the {role} ({email}).");
+                continue;
+            }
+            slots.Add(ToSlot(role, employee, isFixed: true));
+        }
+
+        var requester = tender.PurchaseRequisition.CreatedByEmployeeProfile;
+        if (!requester.IsActive)
+        {
+            problems.Add($"The employee who created the purchase request ({requester.FullName}) is not active.");
+        }
+        else
+        {
+            slots.Add(ToSlot(DepartmentRepresentativeRole, requester, isFixed: false));
+        }
+
+        if (slots.Select(s => s.EmployeeProfileId).Distinct().Count() != slots.Count)
+        {
+            problems.Add("The same person cannot hold two seats. The requester is already one of the fixed committee members.");
+        }
+
+        return (slots, problems);
+    }
+
+    private static CommitteeSlot ToSlot(string role, EmployeeProfile employee, bool isFixed)
+    {
+        return new CommitteeSlot
+        {
+            EmployeeProfileId = employee.Id,
+            Role = role,
+            FullName = employee.FullName,
+            JobTitle = employee.JobTitle,
+            Department = employee.Department?.Name,
+            IsFixed = isFixed
+        };
     }
 
     private async Task<EmployeeProfile?> GetCurrentEmployeeAsync()
@@ -431,31 +446,25 @@ public class TendersController : Controller
     }
 }
 
-// Form model used by the "Assign" page.
+// Model for the "Assign" page (the committee is built automatically, nothing is posted back).
 public class AssignCommitteeViewModel
 {
-    // The four seats of the evaluation committee (one member per role).
-    public static readonly string[] Roles =
-    {
-        "Sourcing Manager",
-        "Department Representative",
-        "Financial Representative",
-        "Technical Representative"
-    };
-
     public int TenderId { get; set; }
-    public string? TenderTitle { get; set; }
-    public List<CommitteeMemberOption> Members { get; set; } = new();
+    public string TenderTitle { get; set; } = string.Empty;
+    public string DepartmentName { get; set; } = string.Empty;
+    public bool AlreadyAssigned { get; set; }
+    public List<CommitteeSlot> Members { get; set; } = new();
+    public List<string> Problems { get; set; } = new();
 }
 
-public class CommitteeMemberOption
+public class CommitteeSlot
 {
     public int EmployeeProfileId { get; set; }
-    public string? FullName { get; set; }
+    public string Role { get; set; } = string.Empty;
+    public string FullName { get; set; } = string.Empty;
     public string? JobTitle { get; set; }
     public string? Department { get; set; }
-    public bool IsSelected { get; set; }
-    public string? MemberRole { get; set; }
+    public bool IsFixed { get; set; }
 }
 
 // Form model used by Create and Edit (keeps the validation rules out of the database entity).

@@ -1,94 +1,68 @@
-﻿@using Microsoft.AspNetCore.Mvc.Rendering
-@model SourcingTenderSystem.Controllers.AssignCommitteeViewModel
+﻿@model SourcingTenderSystem.Controllers.AssignCommitteeViewModel
 
 @{
     ViewData["Title"] = "Assign Evaluation Committee";
-    var roleItems = SourcingTenderSystem.Controllers.AssignCommitteeViewModel.Roles
-        .Select(r => new SelectListItem(r, r))
-        .ToList();
 }
 
 <h1 class="h3 mb-1">Assign Evaluation Committee</h1>
-<p class="text-muted mb-3">Tender: <strong>@Model.TenderTitle</strong></p>
+<p class="text-muted mb-3">
+    Tender: <strong>@Model.TenderTitle</strong>
+    &middot; Requesting department: <strong>@Model.DepartmentName</strong>
+</p>
 
-@if (!Model.Members.Any())
+@if (Model.Problems.Any())
 {
-    <div class="alert alert-warning">There are no employees with the Evaluation Committee role.</div>
-}
-else
-{
-    <div class="row">
-        <div class="col-lg-8">
-            <p>
-                Tick exactly <strong>4</strong> members and choose a different role for each one.
-                <span class="badge bg-secondary ms-1">Selected: <span id="selectedCount">0</span> / 4</span>
-            </p>
-
-            <form asp-action="AssignCommittee" asp-route-id="@Model.TenderId" method="post">
-                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
-                <input type="hidden" asp-for="TenderId" />
-
-                <div class="list-group mb-3">
-                    @for (var i = 0; i < Model.Members.Count; i++)
-                    {
-                        <div class="list-group-item d-flex flex-wrap align-items-center gap-3">
-                            <input type="hidden" asp-for="Members[i].EmployeeProfileId" />
-
-                            <div class="form-check mb-0 flex-grow-1">
-                                <input asp-for="Members[i].IsSelected" class="form-check-input member-check" />
-                                <label asp-for="Members[i].IsSelected" class="form-check-label">
-                                    @Model.Members[i].FullName
-                                    <small class="text-muted d-block">
-                                        @Model.Members[i].JobTitle
-                                        @if (!string.IsNullOrEmpty(Model.Members[i].Department))
-                                        {
-                                            <text>&middot; @Model.Members[i].Department</text>
-                                        }
-                                    </small>
-                                </label>
-                            </div>
-
-                            <select asp-for="Members[i].MemberRole" asp-items="roleItems"
-                                    class="form-select form-select-sm member-role" style="max-width: 260px;"
-                                    disabled="@(!Model.Members[i].IsSelected)">
-                                <option value="">-- Role --</option>
-                            </select>
-                        </div>
-                    }
-                </div>
-
-                <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-primary">Save Committee</button>
-                    <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
-                </div>
-            </form>
-        </div>
+    <div class="alert alert-danger">
+        <ul class="mb-0">
+            @foreach (var problem in Model.Problems)
+            {
+                <li>@problem</li>
+            }
+        </ul>
     </div>
 }
 
-@section Scripts {
-    <script>
-        (function () {
-            var rows = document.querySelectorAll('.list-group-item');
-            var counter = document.getElementById('selectedCount');
-
-            function refresh() {
-                var count = 0;
-                rows.forEach(function (row) {
-                    var check = row.querySelector('.member-check');
-                    var role = row.querySelector('.member-role');
-                    if (!check || !role) return;
-                    role.disabled = !check.checked;
-                    if (check.checked) count++;
-                });
-                if (counter) counter.textContent = count;
+<div class="row">
+    <div class="col-lg-8">
+        <p>
+            The committee has 4 members: 3 fixed members and the employee who created the purchase request.
+            @if (Model.AlreadyAssigned)
+            {
+                <span class="badge bg-success ms-1">Already assigned</span>
             }
+        </p>
 
-            rows.forEach(function (row) {
-                var check = row.querySelector('.member-check');
-                if (check) check.addEventListener('change', refresh);
-            });
-            refresh();
-        })();
-    </script>
-}
+        <div class="list-group mb-3">
+            @foreach (var member in Model.Members)
+            {
+                <div class="list-group-item d-flex flex-wrap align-items-center justify-content-between gap-2">
+                    <div>
+                        <div class="fw-semibold">@member.FullName</div>
+                        <small class="text-muted">
+                            @member.JobTitle
+                            @if (!string.IsNullOrEmpty(member.Department))
+                            {
+                                <text>&middot; @member.Department</text>
+                            }
+                        </small>
+                    </div>
+                    <div class="text-end">
+                        <span class="badge bg-primary">@member.Role</span>
+                        <span class="badge @(member.IsFixed ? "bg-secondary" : "bg-info text-dark")">
+                            @(member.IsFixed ? "Fixed" : "Requester")
+                        </span>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <form asp-action="AssignCommittee" asp-route-id="@Model.TenderId" method="post">
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary" disabled="@Model.Problems.Any()">
+                    @(Model.AlreadyAssigned ? "Update Committee" : "Assign Committee")
+                </button>
+                <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
