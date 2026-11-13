@@ -1,54 +1,87 @@
+@using SourcingTenderSystem.Security
+@{
+    var admin = User.IsInRole(Roles.Admin);
+    var signedIn = User.Identity?.IsAuthenticated == true;
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+    var title = ViewData["Title"]?.ToString();
+}
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - SourcingTenderSystem</title>
-    <script type="importmap"></script>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/SourcingTenderSystem.styles.css" asp-append-version="true" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@title · Sourcing Desk</title>
+    <link rel="icon" type="image/svg+xml" href="~/sourcing-desk.svg" asp-append-version="true">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true">
 </head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-controller="Home" asp-action="Index">SourcingTenderSystem</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
-                    <partial name="_LoginPartial" />
-                </div>
+<body class="@(admin ? "workspace" : "portal")">
+    <a class="skip-link" href="#main">Skip to content</a>
+    @if (admin)
+    {
+        <aside class="sidebar" id="workspace-nav" aria-label="Administration">
+            <a class="brand" asp-controller="AdminDashboard" asp-action="Index">
+                <span class="brand-mark"><partial name="_Icon" model='@("brand")' /></span>
+                <span>Sourcing Desk<small>Administration</small></span>
+            </a>
+            <div class="side-nav">
+                <span class="nav-caption">WORKSPACE</span>
+                @foreach (var item in new[] { ("AdminDashboard", "Overview", "dashboard"), ("Departments", "Departments", "building"), ("Employees", "Employees", "users"), ("Suppliers", "Suppliers", "supplier") })
+                {
+                    <a class="side-link @(controller == item.Item1 ? "is-current" : "")" aria-current="@(controller == item.Item1 ? "page" : null)" asp-controller="@item.Item1" asp-action="Index">
+                        <partial name="_Icon" model="item.Item3" /> @item.Item2
+                    </a>
+                }
             </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
+            <div class="side-bottom">
+                <a class="side-link" asp-controller="Home" asp-action="Index"><partial name="_Icon" model='@("arrow")' /> Public portal</a>
+                <partial name="_LoginPartial" />
+            </div>
+        </aside>
+        <button type="button" class="nav-scrim" data-nav-close tabindex="-1" aria-label="Close navigation" hidden></button>
+    }
+    <div class="site-body">
+        @if (admin)
+        {
+            <header class="workspace-bar">
+                <div class="bar-context">
+                    <button class="btn btn-outline-secondary menu-toggle" type="button" data-nav-toggle aria-controls="workspace-nav" aria-expanded="false" aria-label="Open navigation"><partial name="_Icon" model='@("menu")' /></button>
+                    <span class="context-root">Administration</span><span class="context-separator" aria-hidden="true">/</span><strong>@(controller == "AdminDashboard" ? "Overview" : controller == "Home" ? title : controller)</strong>
+                </div>
+                <div class="bar-profile"><span class="avatar" aria-hidden="true">@((User.Identity?.Name ?? "A").FirstOrDefault().ToString().ToUpperInvariant())</span><span><strong>Administrator</strong><small title="@User.Identity?.Name">@User.Identity?.Name</small></span></div>
+            </header>
+        }
+        else
+        {
+            <header class="portal-bar">
+                <div class="portal-bar-inner">
+                    <a class="brand" asp-controller="Home" asp-action="Index">
+                        <span class="brand-mark"><partial name="_Icon" model='@("brand")' /></span>
+                        <span>Sourcing Desk<small>Supplier portal</small></span>
+                    </a>
+                    <nav class="portal-nav" aria-label="Account">
+                        @if (signedIn && !Roles.EmployeeRoles.Any(User.IsInRole))
+                        { <a class="portal-link" asp-controller="SupplierRegistration" asp-action="RegistrationStatus">My application</a> }
+                        @if (!signedIn)
+                        {
+                            <a class="portal-link" asp-controller="Account" asp-action="Login">Sign in</a>
+                            <a class="btn btn-primary portal-register" asp-controller="SupplierRegistration" asp-action="Register">Supplier registration</a>
+                        }
+                        <partial name="_LoginPartial" />
+                    </nav>
+                </div>
+            </header>
+        }
+        <main id="main" class="page-content" tabindex="-1">
             @if (TempData["Message"] is string message)
             {
-                <div class="alert alert-success" role="status">@message</div>
+                <div class="notice notice-success" role="status"><partial name="_Icon" model='@("check")' /><span>@message</span><button class="icon-button" type="button" data-dismiss-notice aria-label="Dismiss notification"><partial name="_Icon" model='@("close")' /></button></div>
             }
             @RenderBody()
         </main>
+        <footer class="site-footer"><span>Sourcing Desk</span><a asp-controller="Home" asp-action="Privacy">Privacy</a></footer>
     </div>
-
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - SourcingTenderSystem - <a asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>

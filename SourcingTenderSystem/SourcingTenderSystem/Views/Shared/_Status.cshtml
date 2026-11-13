@@ -1,0 +1,5 @@
+@model string
+@{
+    var tone = Model switch { "Approved" or "Active" => "positive", "Pending" => "waiting", "Rejected" or "Suspended" => "negative", _ => "neutral" };
+}
+<span class="status-pill status-@tone"><span aria-hidden="true"></span>@Model</span>

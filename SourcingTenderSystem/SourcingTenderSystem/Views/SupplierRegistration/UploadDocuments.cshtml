@@ -1,27 +1,32 @@
 @model UploadInput
-@{ ViewData["Title"] = "Upload supplier document"; }
-<h1>Upload supplier document</h1>
-<form method="post" asp-antiforgery="true" class="admin-form" enctype="multipart/form-data">
-    <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
-    <p>Upload one PDF at a time, up to 10 MB per file.</p>
-<div class="mb-3">
-    <label asp-for="DocumentType" class="form-label"></label>
-    <select asp-for="DocumentType" class="form-select"><option value="">Select a type</option>
-        @foreach (var type in SupplierFileStore.DocumentTypes) { <option value="@type">@type</option> }
-    </select>
-    <span asp-validation-for="DocumentType" class="text-danger"></span>
+@{ ViewData["Title"] = "Upload document"; }
+<a class="back-link" asp-action="RegistrationStatus"><partial name="_Icon" model='@("back")' /> My application</a>
+<header class="page-heading"><div><p class="eyebrow">SUPPLIER APPLICATION</p><h1>Upload a document</h1><p>Add supporting evidence for your company application.</p></div></header>
+<partial name="_ApplicationSteps" model="2" />
+<div class="form-shell">
+    <form method="post" asp-antiforgery="true" class="surface form-card" enctype="multipart/form-data">
+        <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+        <section class="form-section">
+            <h2>Document information</h2>
+            <div class="form-grid mt-3">
+                <div class="field"><label asp-for="DocumentType" class="form-label"></label>
+                    <select asp-for="DocumentType" class="form-select"><option value="">Select a document type</option>
+                        @foreach (var type in SupplierFileStore.DocumentTypes) { <option value="@type">@type</option> }
+                    </select><span asp-validation-for="DocumentType" class="text-danger"></span>
+                </div>
+                <div class="field"><label asp-for="ExpiryDate" class="form-label">Expiry date (optional)</label><input asp-for="ExpiryDate" class="form-control"><span asp-validation-for="ExpiryDate" class="text-danger"></span></div>
+                <div class="field field-wide upload-zone" data-upload-zone>
+                    <span class="icon-tile tone-teal"><partial name="_Icon" model='@("upload")' /></span>
+                    <label asp-for="File" class="form-label d-block">Choose a PDF or drop it here</label>
+                    <p class="field-hint mb-2" id="upload-rules">One PDF per upload. Maximum size: 10 MB.</p>
+                    <input asp-for="File" class="form-control" type="file" accept=".pdf,application/pdf" aria-describedby="upload-rules file-status">
+                    <p id="file-status" class="field-hint" data-file-status aria-live="polite"></p>
+                    <span asp-validation-for="File" class="text-danger"></span>
+                </div>
+            </div>
+        </section>
+        <div class="form-actions"><button class="btn btn-primary" type="submit">Upload document <partial name="_Icon" model='@("upload")' /></button><a class="btn btn-outline-secondary" asp-action="RegistrationStatus">Cancel</a></div>
+    </form>
+    <aside class="surface helper-card"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("file")' /></span><h2>Before uploading</h2><ul><li>Check that the entire document is readable.</li><li>Choose the document type that matches your PDF.</li><li>Return here to add another document if needed.</li></ul></aside>
 </div>
-<div class="mb-3">
-    <label asp-for="ExpiryDate" class="form-label"></label>
-    <input asp-for="ExpiryDate" class="form-control" >
-    <span asp-validation-for="ExpiryDate" class="text-danger"></span>
-</div>
-<div class="mb-3">
-    <label asp-for="File" class="form-label"></label>
-    <input asp-for="File" class="form-control" type="file" accept=".pdf,application/pdf">
-    <span asp-validation-for="File" class="text-danger"></span>
-</div>
-    <button class="btn btn-primary" type="submit">Upload</button>
-</form>
-<p class="mt-3"><a asp-action="RegistrationStatus">Back to registration status</a></p>
 @section Scripts { <partial name="_ValidationScriptsPartial" /> }

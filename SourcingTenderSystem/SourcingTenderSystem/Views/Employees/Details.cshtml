@@ -1,16 +1,15 @@
 @model EmployeeProfile
 @{ ViewData["Title"] = "Employee details"; }
-<h1>@ViewData["Title"]</h1>
-<dl class="row">
-    <dt class="col-sm-4">Name</dt><dd class="col-sm-8">@Model.FullName</dd>
-    <dt class="col-sm-4">Email</dt><dd class="col-sm-8">@Model.User.Email</dd>
-    <dt class="col-sm-4">Job title</dt><dd class="col-sm-8">@(string.IsNullOrEmpty(Model.JobTitle) ? "—" : Model.JobTitle)</dd>
-    <dt class="col-sm-4">Department</dt><dd class="col-sm-8">@(Model.Department?.Name ?? "—")</dd>
-    <dt class="col-sm-4">Role</dt><dd class="col-sm-8">@ViewBag.Roles</dd>
-    <dt class="col-sm-4">Status</dt><dd class="col-sm-8">@(Model.IsActive ? "Active" : "Inactive")</dd>
-</dl>
-<a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model.Id">Edit</a> <a class="btn btn-outline-secondary" asp-action="Index">Back to list</a>
-@if (Model.IsActive && ViewBag.IsSelf == false)
-{
-    <a class="btn btn-outline-danger" asp-action="Deactivate" asp-route-id="@Model.Id">Deactivate</a>
-}
+<a class="back-link" asp-action="Index" ><partial name="_Icon" model='@("back")' /> Employees</a>
+<header class="page-heading"><div><p class="eyebrow">ADMINISTRATION</p><h1>@Model.FullName</h1><p>Employee profile and account access.</p></div><a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model.Id">Edit employee</a></header>
+<div class="form-shell">
+    <section class="surface detail-card"><h2>Employee information</h2><dl class="detail-grid"><div><dt>Email</dt><dd>@Model.User.Email</dd></div>
+<div><dt>Job title</dt><dd>@(string.IsNullOrWhiteSpace(Model.JobTitle) ? "Not specified" : Model.JobTitle)</dd></div>
+<div><dt>Department</dt><dd>@(Model.Department?.Name ?? "Unassigned")</dd></div>
+<div><dt>Role</dt><dd>@ViewBag.Roles</dd></div>
+<div><dt>Account status</dt><dd><partial name="_Status" model='@(Model.IsActive ? "Active" : "Inactive")' /></dd></div></dl></section>
+    @if (Model.IsActive && ViewBag.IsSelf == false)
+    {
+        <aside class="surface helper-card"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("shield")' /></span><h2>Account access</h2><p>Deactivate this account to revoke access. The employee record will remain in the directory.</p><a class="btn btn-outline-danger" asp-action="Deactivate" asp-route-id="@Model.Id">Deactivate account</a></aside>
+    }
+</div>

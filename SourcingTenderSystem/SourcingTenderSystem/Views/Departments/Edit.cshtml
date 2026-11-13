@@ -1,10 +1,13 @@
 @model DepartmentInput
 @{ ViewData["Title"] = "Edit department"; }
-<h1>Edit department</h1>
-<form method="post" asp-antiforgery="true" class="admin-form" >
-    <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
-    <partial name="_Fields" model="Model" />
-    <button class="btn btn-primary" type="submit">Save changes</button>
-</form>
-
+<a class="back-link" asp-action="Index" ><partial name="_Icon" model='@("back")' /> Departments</a>
+<header class="page-heading"><div><p class="eyebrow">ADMINISTRATION</p><h1>Edit department</h1><p>Update department information and availability.</p></div></header>
+<div class="form-shell">
+    <form method="post" asp-antiforgery="true" class="surface form-card" >
+        <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+        <partial name="_Fields" model="Model" />
+        <div class="form-actions"><button class="btn btn-primary" type="submit">Save changes <partial name="_Icon" model='@("arrow")' /></button><a class="btn btn-outline-secondary" asp-action="Index" >Cancel</a></div>
+    </form>
+    <aside class="surface helper-card"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("building")' /></span><h2>Department availability</h2><p>Inactive departments stay in existing employee records but are unavailable for new assignments.</p></aside>
+</div>
 @section Scripts { <partial name="_ValidationScriptsPartial" /> }
