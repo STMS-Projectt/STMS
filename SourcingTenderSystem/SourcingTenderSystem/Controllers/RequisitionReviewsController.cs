@@ -14,6 +14,16 @@ public class RequisitionReviewsController : RequisitionBaseController
     public RequisitionReviewsController(ApplicationDbContext db) : base(db) { }
 
     [HttpGet]
+    public async Task<IActionResult> Index()
+    {
+        if (await CurrentEmployeeAsync() == null) return Forbid();
+        var requests = await Db.PurchaseRequisitions.AsNoTracking().Include(x => x.Department)
+            .Include(x => x.CreatedByEmployeeProfile)
+            .OrderBy(x => x.CreatedAt).ToListAsync();
+        return View(requests);
+    }
+
+    [HttpGet]
     public async Task<IActionResult> Pending()
     {
         if (await CurrentEmployeeAsync() == null) return Forbid();
