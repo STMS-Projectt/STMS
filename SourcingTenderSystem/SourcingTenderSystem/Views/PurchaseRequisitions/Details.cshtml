@@ -1,21 +1,72 @@
 @model PurchaseRequisition
-@{ ViewData["Title"] = "Purchase request details"; bool canEdit = ViewBag.CanEdit == true; }
-<h1>Purchase request #@Model.Id</h1>
-<partial name="_RequisitionSummary" model="Model" />
-@if (canEdit)
-{
-    <div class="d-flex gap-2 mb-3">
-        <a class="btn btn-outline-primary" asp-action="Edit" asp-route-id="@Model.Id">Edit request</a>
-        <a class="btn btn-primary" asp-controller="RequisitionItems" asp-action="Create" asp-route-requestId="@Model.Id">Add item</a>
-    </div>
+@{
+    ViewData["Title"] = "Request details";
+    bool canEdit = ViewBag.CanEdit == true;
+    bool returned = Model.Status == "Returned";
 }
-<partial name="_RequisitionItems" model="Model.Items" />
+<a class="back-link" asp-action="MyRequests"><partial name="_Icon" model='@("back")' /> My Requests</a>
+<header class="page-heading">
+    <div><p class="eyebrow">PURCHASE REQUEST · PR-@Model.Id</p><h1>@Model.Title</h1><p>@Model.Department.Name · Requested by @Model.CreatedByEmployeeProfile.FullName</p></div>
+    <partial name="_RequestStatus" model="Model.Status" />
+</header>
+@if (TempData["RequestError"] is string error)
+{
+    <div class="alert alert-danger" role="alert">@error</div>
+}
+@if (!string.IsNullOrWhiteSpace(Model.ReviewNotes))
+{
+    <section class="surface detail-card request-review @(returned ? "request-returned" : "")">
+        <h2>@(returned ? "Changes requested" : "Latest review notes")</h2>
+        <p class="request-prose mb-0">@Model.ReviewNotes</p>
+        @if (Model.ReviewedByEmployeeProfile != null) { <small class="subtle">@Model.ReviewedByEmployeeProfile.FullName</small> }
+        @if (returned && canEdit) { <p class="subtle mt-2 mb-0">Update the request or its items, then submit it again.</p> }
+    </section>
+}
+<section class="surface detail-card request-section">
+    <div class="card-heading"><h2>Request overview</h2>
+        @if (canEdit) { <a class="btn btn-outline-secondary" asp-action="Edit" asp-route-id="@Model.Id">Edit request</a> }
+    </div>
+    <dl class="request-meta">
+        <div><dt>Priority <span lang="ar" dir="rtl">الأولوية</span></dt><dd>@Model.Priority</dd></div>
+        <div><dt>Target date</dt><dd>@Model.TargetDate.ToString("dd MMM yyyy")</dd></div>
+        <div><dt>Created</dt><dd>@Model.CreatedAt.ToString("dd MMM yyyy")</dd></div>
+    </dl>
+    <h3>Reason for purchase</h3><p class="request-prose mb-0">@Model.Reason</p>
+</section>
+<section class="surface directory request-section">
+    <div class="directory-toolbar">
+        <div><h2 class="mb-0">Requested items</h2><span class="result-count">@Model.Items.Count line item(s)</span></div>
+        @if (canEdit) { <a class="btn btn-outline-secondary" asp-controller="RequisitionItems" asp-action="Create" asp-route-requestId="@Model.Id"><partial name="_Icon" model='@("plus")' /> Add item</a> }
+    </div>
+    @if (Model.Items.Count == 0)
+    {
+        <div class="empty-state"><h3>No items yet</h3><p>Add at least one item before submitting this request.</p></div>
+    }
+    else
+    {
+        <div class="table-responsive" role="region" aria-label="Requested items" tabindex="0">
+            <table class="directory-table">
+                <thead><tr><th scope="col">Item</th><th scope="col">Quantity</th><th scope="col">Specifications <span lang="ar" dir="rtl">المواصفات</span></th>@if (canEdit) { <th scope="col">Actions</th> }</tr></thead>
+                <tbody>
+                @foreach (var item in Model.Items.OrderBy(x => x.Id))
+                {
+                    <tr><td><strong>@item.ItemName</strong></td><td>@item.Quantity @item.Unit</td><td class="request-prose">@item.Specifications</td>
+                    @if (canEdit)
+                    {
+                        <td><a class="table-action" asp-controller="RequisitionItems" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                            <a class="table-action text-danger ms-2" asp-controller="RequisitionItems" asp-action="Delete" asp-route-id="@item.Id">Remove</a></td>
+                    }
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>
 @if (canEdit && Model.Items.Count > 0)
 {
-    <p>After submission you can edit this request only if the reviewer returns it.</p>
-    <form asp-action="Submit" asp-route-id="@Model.Id" method="post" class="mb-3">
-        <button type="submit" class="btn btn-success">Submit for review</button>
+    <form asp-action="Submit" asp-route-id="@Model.Id" method="post" class="surface detail-card request-submit">
+        <div><h2>@(returned ? "Ready to send it back?" : "Ready for review?")</h2><p class="subtle mb-0">You can make changes again if the reviewer returns this request.</p></div>
+        <button type="submit" class="btn btn-primary">@(returned ? "Resubmit for review" : "Submit for review") <partial name="_Icon" model='@("arrow")' /></button>
     </form>
 }
-<a asp-action="MyRequests">My requests</a> | <a asp-action="Index">Department requests</a>
-

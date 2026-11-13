@@ -1,4 +1,4 @@
-﻿@model SourcingTenderSystem.Controllers.AssignCommitteeViewModel
+@model SourcingTenderSystem.Controllers.AssignCommitteeViewModel
 
 @{
     ViewData["Title"] = "Assign Evaluation Committee";
@@ -25,7 +25,7 @@
 <div class="row">
     <div class="col-lg-8">
         <p>
-            The committee has 4 members: 3 fixed members and the employee who created the purchase request.
+            The committee includes three evaluation employees and the employee who created the purchase request.
             @if (Model.AlreadyAssigned)
             {
                 <span class="badge bg-success ms-1">Already assigned</span>
@@ -56,10 +56,18 @@
             }
         </div>
 
+        @if (!Model.IsOpen)
+        {
+            <p class="subtle">Confirming the committee changes the tender status to Open. Suppliers can respond during the scheduled bidding window.</p>
+        }
+        @if (TempData["Error"] is string error)
+        {
+            <div class="alert alert-warning" role="alert">@error</div>
+        }
         <form asp-action="AssignCommittee" asp-route-id="@Model.TenderId" method="post">
             <div class="d-flex gap-2">
                 <button type="submit" class="btn btn-primary" disabled="@Model.Problems.Any()">
-                    @(Model.AlreadyAssigned ? "Update Committee" : "Assign Committee")
+                    @(Model.IsOpen ? "Update committee" : "Assign committee and open tender")
                 </button>
                 <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
             </div>

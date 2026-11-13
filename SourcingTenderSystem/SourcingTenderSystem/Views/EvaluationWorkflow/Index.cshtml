@@ -1,0 +1,16 @@
+@model IReadOnlyList<Tender>
+@{ ViewData["Title"] = "Evaluation progress"; }
+<header class="page-heading"><div><p class="eyebrow">EVALUATION WORKFLOW</p><h1>Evaluation progress</h1><p>Track committee reviews and approval of final reports.</p></div></header>
+<section class="surface directory">
+    @if (Model.Count == 0)
+    { <div class="empty-state"><h2>No evaluations to review</h2><p>Tenders appear here when they reach your workflow.</p></div> }
+    else
+    {
+        <div class="table-responsive" role="region" aria-label="Evaluation progress" tabindex="0"><table class="directory-table">
+            <thead><tr><th scope="col">Tender</th><th scope="col">Stage</th><th scope="col">Action</th></tr></thead>
+            <tbody>@foreach (var tender in Model)
+            { <tr><td>@tender.Title</td><td>@(tender.EvaluationReport?.Status ?? tender.Status)</td><td><a class="table-action" asp-action="Details" asp-route-id="@tender.Id">View evaluation</a></td></tr> }
+            </tbody>
+        </table></div>
+    }
+</section>

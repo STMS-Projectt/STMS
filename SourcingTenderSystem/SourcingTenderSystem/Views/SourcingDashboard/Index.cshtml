@@ -1,0 +1,58 @@
+@model SourcingDashboard
+@{
+    ViewData["Title"] = "Dashboard";
+    var metrics = new[] {
+        (Model.PendingRequests, "Requests awaiting review", "clock", "amber", "RequisitionReviews", "Pending"),
+        (Model.Tenders, "Total tenders", "file", "teal", "Tenders", "Index"),
+        (Model.Invitations, "Supplier invitations", "supplier", "violet", "Invitations", "Index"),
+        (Model.ComplianceQueue, "Tenders in compliance queue", "shield", "blue", "Compliance", "Pending")
+    };
+}
+<section class="review-banner" aria-labelledby="sourcing-heading">
+    <div class="review-copy">
+        <p class="banner-label"><partial name="_Icon" model='@("building")' /> SOURCING WORKSPACE</p>
+        <h1 id="sourcing-heading">Sourcing dashboard</h1>
+        <p>@Model.OfficerName · Review purchase requests, coordinate tenders, and check bids.</p>
+        <a class="btn btn-light" asp-controller="RequisitionReviews" asp-action="Pending">Open review queue <partial name="_Icon" model='@("arrow")' /></a>
+    </div>
+    <div class="banner-art" aria-hidden="true"><span></span><span></span><span></span></div>
+</section>
+<section class="metrics-grid" aria-label="Sourcing statistics">
+    @foreach (var (count, label, icon, tone, target, action) in metrics)
+    {
+        <article class="surface metric">
+            <span class="icon-tile tone-@tone"><partial name="_Icon" model="icon" /></span>
+            <strong>@count</strong>
+            <a class="text-link" asp-controller="@target" asp-action="@action">@label</a>
+        </article>
+    }
+</section>
+<section class="surface directory" aria-labelledby="queue-heading">
+    <div class="directory-toolbar">
+        <div class="card-heading mb-0"><div><h2 id="queue-heading">Requests to review</h2><p>Oldest requests first</p></div></div>
+        <a class="text-link" asp-controller="RequisitionReviews" asp-action="Pending">View queue <partial name="_Icon" model='@("arrow")' /></a>
+    </div>
+    @if (Model.Requests.Count == 0)
+    {
+        <div class="empty-state"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("check")' /></span><h3>No requests awaiting review</h3><p>Submitted requests will appear here.</p></div>
+    }
+    else
+    {
+        <div class="table-responsive" role="region" tabindex="0" aria-label="Requests awaiting review">
+            <table class="directory-table">
+                <thead><tr><th scope="col">Request</th><th scope="col">Department</th><th scope="col">Priority</th><th scope="col">Status</th><th scope="col"><span class="visually-hidden">Actions</span></th></tr></thead>
+                <tbody>
+                @foreach (var request in Model.Requests)
+                {
+                    <tr>
+                        <td><span class="record-name"><span>@request.Title<small>PR-@request.Id</small></span></span></td>
+                        <td>@request.Department</td><td>@request.Priority</td>
+                        <td><span class="status-pill status-waiting"><span aria-hidden="true"></span>@request.Status</span></td>
+                        <td><a class="table-action" asp-controller="RequisitionReviews" asp-action="Details" asp-route-id="@request.Id" aria-label="Review request PR-@request.Id">Review <partial name="_Icon" model='@("arrow")' /></a></td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>

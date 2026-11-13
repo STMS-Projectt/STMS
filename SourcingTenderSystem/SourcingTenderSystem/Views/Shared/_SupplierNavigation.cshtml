@@ -1,0 +1,38 @@
+@using SourcingTenderSystem.Security
+@model string
+@{
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+    var action = ViewContext.RouteData.Values["action"]?.ToString();
+    var entries = new List<(string Controller, string Action, string Label, string Icon)>
+    {
+        ("SupplierWorkspace", "Index", "Dashboard", "dashboard"),
+        ("SupplierRegistration", "RegistrationStatus", "My application", "file")
+    };
+    if (Model == SupplierStatus.Pending)
+        entries.Add(("SupplierRegistration", "UploadDocuments", "Upload documents", "upload"));
+    if (Model == SupplierStatus.Approved && User.IsInRole(Roles.Supplier))
+    {
+        entries.Add(("SupplierWorkspace", "Invitations", "Tender invitations", "supplier"));
+        entries.Add(("Bids", "MyBids", "My bids", "file"));
+    }
+}
+<aside class="sidebar" id="workspace-nav" aria-label="Supplier workspace">
+    <a class="brand" asp-controller="SupplierWorkspace" asp-action="Index">
+        <span class="brand-mark"><partial name="_Icon" model='@("brand")' /></span>
+        <span>Sourcing Desk<small>Supplier workspace</small></span>
+    </a>
+    <nav class="side-nav" aria-label="Supplier pages">
+        <span class="nav-caption">SUPPLIER WORKSPACE</span>
+        @foreach (var (target, route, label, icon) in entries)
+        {
+            var current = controller == target && (action == route || target == "Bids") ||
+                (target == "Bids" && controller is "BidItems" or "BidDocuments");
+            <a class="side-link @(current ? "is-current" : "")" aria-current="@(current ? "page" : null)"
+               asp-controller="@target" asp-action="@route" asp-route-id="">
+                <partial name="_Icon" model="icon" /> @label
+            </a>
+        }
+    </nav>
+    <div class="side-bottom"><partial name="_LoginPartial" /></div>
+</aside>
+<button type="button" class="nav-scrim" data-nav-close tabindex="-1" aria-label="Close navigation" hidden></button>

@@ -1,0 +1,25 @@
+@{
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+    var action = ViewContext.RouteData.Values["action"]?.ToString();
+    var current = controller == "RequisitionItems" ? "MyRequests" : controller == "PurchaseRequisitions"
+        ? action is "Details" or "Edit" ? "MyRequests" : action : null;
+}
+<aside class="sidebar" id="workspace-nav" aria-label="Department workspace">
+    <a class="brand" asp-controller="PurchaseRequisitions" asp-action="Dashboard">
+        <span class="brand-mark"><partial name="_Icon" model='@("brand")' /></span>
+        <span>Sourcing Desk<small lang="ar" dir="rtl">القسم الطالب</small></span>
+    </a>
+    <nav class="side-nav" aria-label="Department pages">
+        <span class="nav-caption">DEPARTMENT WORKSPACE</span>
+        @foreach (var (route, label, icon) in new[] { ("Dashboard", "Dashboard", "dashboard"),
+            ("MyRequests", "My Requests", "file"), ("Create", "New Request", "plus"), ("Committee", "My Committee", "users") })
+        {
+            <a class="side-link @(current == route ? "is-current" : "")" aria-current="@(current == route ? "page" : null)"
+               asp-controller="PurchaseRequisitions" asp-action="@route">
+                <partial name="_Icon" model="icon" /> @label
+            </a>
+        }
+    </nav>
+    <div class="side-bottom"><partial name="_LoginPartial" /></div>
+</aside>
+<button type="button" class="nav-scrim" data-nav-close tabindex="-1" aria-label="Close navigation" hidden></button>

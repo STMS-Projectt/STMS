@@ -13,36 +13,59 @@ public class PurchaseRequisitionsController : RequisitionBaseController
 {
     public PurchaseRequisitionsController(ApplicationDbContext db) : base(db) { }
 
-    // نفس الجدول: مرة لطلبات القسم، ومرة لطلبات الموظف فقط.
-    [HttpGet]
-    public Task<IActionResult> Index()
-    {
-        return ShowRequests(false);
-    }
+    private static readonly string[] Statuses =
+        ["Draft", "Submitted", "Under Review", "Returned", "Approved", "Rejected", "Converted to Tender"];
 
     [HttpGet]
-    public Task<IActionResult> MyRequests()
-    {
-        return ShowRequests(true);
-    }
+    public IActionResult Index() => RedirectToAction(nameof(MyRequests));
 
-    private async Task<IActionResult> ShowRequests(bool onlyMine)
+    [HttpGet]
+    public async Task<IActionResult> Dashboard()
     {
         var employee = await CurrentEmployeeAsync();
         if (!HasDepartment(employee)) return Forbid();
-        var requests = Db.PurchaseRequisitions.AsNoTracking()
-            .Where(x => x.DepartmentId == employee!.DepartmentId);
-        ViewBag.Heading = "Department purchase requests";
-        if (onlyMine)
-        {
-            requests = requests.Where(x => x.CreatedByEmployeeProfileId == employee!.Id);
-            ViewBag.Heading = "My purchase requests";
-        }
-        var list = await requests.Include(x => x.CreatedByEmployeeProfile)
-            .OrderByDescending(x => x.CreatedAt).ToListAsync();
-        return View("Index", list);
+        var requests = DepartmentRequests(employee!);
+        var counts = await requests.GroupBy(x => x.Status)
+            .Select(g => new { Status = g.Key, Count = g.Count() })
+            .ToDictionaryAsync(x => x.Status, x => x.Count);
+        var recent = await RequestRows(requests).Take(5).ToListAsync();
+        return View(new DepartmentDashboard(employee!.Department!.Name, counts, recent));
     }
 
+    [HttpGet]
+    public async Task<IActionResult> MyRequests(string? status, string? q)
+    {
+        var employee = await CurrentEmployeeAsync();
+        if (!HasDepartment(employee)) return Forbid();
+        var requests = DepartmentRequests(employee!);
+        status = Statuses.Contains(status) ? status : null;
+        q = q?.Trim();
+        if (status != null) requests = requests.Where(x => x.Status == status);
+        if (!string.IsNullOrEmpty(q)) requests = requests.Where(x => x.Title.Contains(q));
+        return View("Index", new DepartmentRequestList(employee!.Department!.Name, Statuses,
+            status, q, await RequestRows(requests).ToListAsync()));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Committee()
+    {
+        var employee = await CurrentEmployeeAsync();
+        if (!HasDepartment(employee)) return Forbid();
+        var assignments = await Db.Tenders.AsNoTracking()
+            .Where(t => t.PurchaseRequisition.DepartmentId == employee!.DepartmentId &&
+                t.CommitteeMembers.Any(m => m.EmployeeProfileId == employee.Id &&
+                    m.CommitteeType == "Evaluation" && m.MemberRole == "Department Representative"))
+            .OrderByDescending(t => t.CreatedAt)
+            .Select(t => new DepartmentAssignment(t.Id, t.Title, t.Status, t.PurchaseRequisitionId))
+            .ToListAsync();
+        return View(assignments);
+    }
+
+    private IQueryable<PurchaseRequisition> DepartmentRequests(EmployeeProfile employee) =>
+        Db.PurchaseRequisitions.AsNoTracking().Where(x => x.DepartmentId == employee.DepartmentId);
+
+    private static IOrderedQueryable<PurchaseRequisition> RequestRows(IQueryable<PurchaseRequisition> requests) =>
+        requests.Include(x => x.CreatedByEmployeeProfile).OrderByDescending(x => x.CreatedAt).ThenByDescending(x => x.Id);
     [HttpGet]
     public async Task<IActionResult> Create()
     {
@@ -137,7 +160,7 @@ public class PurchaseRequisitionsController : RequisitionBaseController
         if (!CanEdit(request)) return Conflict("This request has already been submitted or decided.");
         if (!ReadyToSubmit(request))
         {
-            TempData["Message"] = "Add at least one valid item and use a target date of today or later before submitting.";
+            TempData["RequestError"] = "Add at least one valid item and use a target date of today or later before submitting.";
             return RedirectToAction(nameof(Details), new { id });
         }
         request.Status = "Submitted";

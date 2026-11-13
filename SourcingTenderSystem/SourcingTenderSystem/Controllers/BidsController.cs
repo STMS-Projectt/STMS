@@ -58,7 +58,7 @@ public class BidsController : Controller
             .Where(i => i.SupplierProfileId == supplier.Id
                      && i.Status == "Accepted"
                      && i.Tender.Status == "Open"
-                     && i.Tender.CloseDate > now
+                     && i.Tender.OpenDate <= now && i.Tender.CloseDate > now
                      && !tenderIdsWithBid.Contains(i.TenderId))
             .OrderBy(i => i.Tender.CloseDate)
             .ToListAsync();
@@ -420,7 +420,8 @@ public class BidsController : Controller
     // Bidding is allowed only while the tender is "Open" and before CloseDate
     private bool IsOpenForBidding(Tender tender)
     {
-        return tender.Status == "Open" && DateTime.UtcNow < tender.CloseDate;
+        var now = DateTime.UtcNow;
+        return tender.Status == "Open" && tender.OpenDate <= now && now < tender.CloseDate;
     }
 
     // Returns an error message, or null if the supplier may create a bid on this tender

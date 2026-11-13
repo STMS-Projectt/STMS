@@ -21,7 +21,7 @@ public class BidDocumentsController : Controller
     private readonly IWebHostEnvironment _environment;
 
     // Who may call Download (a supplier is also checked to be the owner, inside the action)
-    private const string DownloadRoles = Roles.Supplier + ",SourcingOfficer,EvaluationCommittee,SourcingManager,TopCommittee";
+    private const string DownloadRoles = Roles.Supplier + ",SourcingOfficer,TechnicalCommittee,FinancialCommittee,RequestingDepartment,SourcingManager,TopCommittee";
 
     private const long MaxFileBytes = 10 * 1024 * 1024; // 10 MB
 
@@ -171,6 +171,16 @@ public class BidDocumentsController : Controller
             }
         }
 
+        if ((User.IsInRole(Roles.TechnicalCommittee) || User.IsInRole(Roles.FinancialCommittee) || User.IsInRole(Roles.SourcingManager) || User.IsInRole("RequestingDepartment")) &&
+            !User.IsInRole(Roles.SourcingOfficer) && !User.IsInRole("TopCommittee"))
+        {
+            var userId = _userManager.GetUserId(User);
+            var allowed = document.Bid.Status == "Compliant" &&
+                await _context.TenderCommitteeMembers.AnyAsync(m => m.TenderId == document.Bid.TenderId &&
+                    m.CommitteeType == "Evaluation" && m.EmployeeProfile.UserId == userId && m.EmployeeProfile.IsActive &&
+                    m.Tender.Status == "Under Evaluation");
+            if (!allowed) return NotFound();
+        }
         string fullPath = GetFullPath(document);
 
         // The file may be missing (for example, the demo rows have fake paths)

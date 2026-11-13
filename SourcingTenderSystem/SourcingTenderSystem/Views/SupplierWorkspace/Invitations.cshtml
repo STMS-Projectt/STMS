@@ -1,0 +1,62 @@
+@model SupplierInvitationList
+@{ ViewData["Title"] = "Tender invitations"; }
+<header class="page-heading"><div><p class="eyebrow">TENDER OPPORTUNITIES</p><h1>Tender invitations</h1><p>Review the tenders your company has been invited to bid on.</p></div></header>
+@if (TempData["InvitationError"] is string error) { <div class="alert alert-warning" role="alert">@error</div> }
+@if (Model.Invitations.Count == 0)
+{
+    <section class="surface empty-state"><span class="icon-tile tone-blue"><partial name="_Icon" model='@("supplier")' /></span><h2>No invitations yet</h2><p>Invitations sent to your company will appear here.</p></section>
+}
+else
+{
+    <div class="stack">
+        @foreach (var invitation in Model.Invitations)
+        {
+            var tender = invitation.Tender;
+            var open = tender.Status == "Open" && tender.OpenDate <= Model.Now && tender.CloseDate > Model.Now;
+            var expired = invitation.Status == "Pending" && invitation.ExpiresAt <= Model.Now;
+            var hasBid = Model.BidTenders.Contains(tender.Id);
+            <article class="surface detail-card">
+                <div class="card-heading">
+                    <div><p class="eyebrow">TENDER #@tender.Id · @tender.Status</p><h2>@tender.Title</h2></div>
+                    <span class="status-pill @(invitation.Status == "Accepted" ? "status-positive" : expired || invitation.Status == "Declined" ? "status-neutral" : "status-waiting")"><span aria-hidden="true"></span>@(expired ? "Expired" : invitation.Status)</span>
+                </div>
+                <dl class="detail-grid">
+                    <div><dt>Invitation expires (UTC)</dt><dd>@invitation.ExpiresAt.ToString("dd MMM yyyy HH:mm")</dd></div>
+                    <div><dt>Bidding opens (UTC)</dt><dd>@tender.OpenDate.ToString("dd MMM yyyy HH:mm")</dd></div>
+                    <div><dt>Bidding closes (UTC)</dt><dd>@tender.CloseDate.ToString("dd MMM yyyy HH:mm")</dd></div>
+                </dl>
+                @if (tender.Status == "Draft")
+                {
+                    <p class="subtle mb-0">Waiting for the sourcing officer to open this tender. You can respond once bidding opens, provided the invitation has not expired.</p>
+                }
+                else
+                {
+                <details class="mb-3">
+                    <summary>Tender description and terms</summary>
+                    <p class="mt-2" style="white-space:pre-wrap;overflow-wrap:anywhere">@tender.Description</p>
+                    <p class="mb-0" style="white-space:pre-wrap;overflow-wrap:anywhere">@tender.Terms</p>
+                </details>
+                }
+                @if (open && !expired && invitation.Status == "Pending")
+                {
+                    <form asp-action="Respond" asp-route-id="@invitation.Id" method="post" class="button-row">
+                        <button class="btn btn-primary" name="decision" value="Accepted" type="submit">Accept invitation</button>
+                        <button class="btn btn-outline-secondary" name="decision" value="Declined" type="submit">Decline</button>
+                    </form>
+                }
+                else if (tender.Status != "Draft" && invitation.Status == "Pending" && !expired && !open)
+                {
+                    <p class="subtle mb-0">This tender is outside its bidding window. Responses are only available while bidding is open.</p>
+                }
+                else if (invitation.Status == "Accepted" && hasBid)
+                {
+                    <a class="btn btn-outline-secondary" asp-controller="Bids" asp-action="MyBids">View my bids</a>
+                }
+                else if (open && invitation.Status == "Accepted")
+                {
+                    <a class="btn btn-primary" asp-controller="Bids" asp-action="Create" asp-route-tenderId="@tender.Id">Create bid</a>
+                }
+            </article>
+        }
+    </div>
+}

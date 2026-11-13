@@ -1,0 +1,51 @@
+@using SourcingTenderSystem.Security
+@model SupplierWorkspaceSummary
+@{
+    ViewData["Title"] = "Supplier dashboard";
+    var trading = Model.Status == SupplierStatus.Approved && User.IsInRole(Roles.Supplier);
+}
+<section class="review-banner" aria-labelledby="supplier-heading">
+    <div class="review-copy">
+        <p class="banner-label"><partial name="_Icon" model='@("supplier")' /> SUPPLIER WORKSPACE</p>
+        <h1 id="supplier-heading">@Model.Company</h1>
+        <p>@(trading ? "Manage tender invitations and follow your bids." : "Track your supplier application and supporting documents.")</p>
+        <div class="button-row">
+            @if (trading) { <a class="btn btn-light" asp-action="Invitations">Open tender invitations <partial name="_Icon" model='@("arrow")' /></a> }
+            else if (Model.Status == SupplierStatus.Pending) { <a class="btn btn-light" asp-controller="SupplierRegistration" asp-action="UploadDocuments">Upload document</a> }
+            <a class="btn btn-on-dark" asp-controller="SupplierRegistration" asp-action="RegistrationStatus">View application</a>
+        </div>
+    </div>
+    <div class="banner-art" aria-hidden="true"><span></span><span></span><span></span></div>
+</section>
+<section class="metrics-grid" aria-label="Supplier statistics">
+    <article class="surface metric">
+        <span class="icon-tile tone-teal"><partial name="_Icon" model='@("shield")' /></span>
+        <strong>@Model.Status</strong>
+        <span>Application status</span>
+    </article>
+    @if (trading)
+    {
+        <article class="surface metric"><span class="icon-tile tone-blue"><partial name="_Icon" model='@("supplier")' /></span><strong>@Model.Invitations</strong><a class="text-link" asp-action="Invitations">Invitations · @Model.AwaitingResponse awaiting response</a></article>
+        <article class="surface metric"><span class="icon-tile tone-violet"><partial name="_Icon" model='@("file")' /></span><strong>@Model.DraftBids</strong><a class="text-link" asp-controller="Bids" asp-action="MyBids">Draft bids</a></article>
+        <article class="surface metric"><span class="icon-tile tone-amber"><partial name="_Icon" model='@("check")' /></span><strong>@Model.SentBids</strong><a class="text-link" asp-controller="Bids" asp-action="MyBids">Bids submitted to date</a></article>
+    }
+    else
+    {
+        <article class="surface metric"><span class="icon-tile tone-blue"><partial name="_Icon" model='@("file")' /></span><strong>@Model.Documents</strong><span>Application documents</span></article>
+    }
+</section>
+<section class="surface detail-card">
+    <h2>@(trading ? "How to submit a bid" : "What happens next")</h2>
+    @if (trading)
+    {
+        <ol class="mb-0"><li>Review and accept an invitation while the tender is open.</li><li>Create a bid, enter your prices, and attach supporting documents.</li><li>Submit before the deadline and track the bid in <a asp-controller="Bids" asp-action="MyBids">My bids</a>.</li></ol>
+    }
+    else if (Model.Status == SupplierStatus.Pending)
+    {
+        <p class="subtle mb-0">Upload your supporting PDFs. Tender invitations and bidding become available after approval.</p>
+    }
+    else
+    {
+        <p class="subtle mb-0">Open your application to see the latest review decision and any notes.</p>
+    }
+</section>

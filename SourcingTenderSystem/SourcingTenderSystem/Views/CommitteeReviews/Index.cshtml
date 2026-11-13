@@ -1,0 +1,8 @@
+@model IReadOnlyList<CommitteeAssignment>
+@{ ViewData["Title"] = "Evaluation dashboard"; }
+<section class="review-banner"><div class="review-copy"><p class="banner-label">EVALUATION COMMITTEE</p><h1>Reviewer dashboard</h1><p>Review compliant bids for tenders assigned to you.</p><a class="btn btn-light" asp-action="Assignments">My assignments <partial name="_Icon" model='@("arrow")' /></a></div><div class="banner-art" aria-hidden="true"><span></span><span></span><span></span></div></section>
+<section class="metrics-grid" aria-label="Assignment statistics">
+    <article class="surface metric"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("file")' /></span><strong>@Model.Count</strong><span>Assigned tenders</span></article>
+    <article class="surface metric"><span class="icon-tile tone-blue"><partial name="_Icon" model='@("clock")' /></span><strong>@Model.Count(x => x.Status == "Under Evaluation")</strong><span>Ready for evaluation</span></article>
+</section>
+<partial name="_Assignments" model='@Model.Where(x => x.Status == "Under Evaluation").ToList()' />

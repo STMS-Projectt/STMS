@@ -49,7 +49,7 @@ public sealed class SupplierRegistrationController(ApplicationDbContext db, User
 
         await transaction.CommitAsync();
         await signIn.SignInAsync(user, isPersistent: false);
-        return RedirectToAction(nameof(UploadDocuments));
+        return RedirectToAction("Index", "SupplierWorkspace");
     }
 
     [HttpGet]

@@ -1,0 +1,42 @@
+@model CommitteeBid
+@{ ViewData["Title"] = "Review bid"; }
+<a class="back-link" asp-action="Details" asp-route-id="@Model.Bid.TenderId"><partial name="_Icon" model='@("back")' /> Tender evaluation</a>
+<header class="page-heading"><div><p class="eyebrow">@Model.Bid.Tender.Title</p><h1>@Model.Bid.SupplierProfile.CompanyName</h1><p>@Model.Bid.TotalPrice.ToString("N2") @Model.Bid.Currency · Delivery in @Model.Bid.DeliveryDays days</p></div></header>
+@if (TempData["ReviewError"] is string error) { <div class="alert alert-warning" role="alert">@error</div> }
+<section class="surface directory mb-3">
+    <div class="directory-toolbar"><h2 class="mb-0">Offered items</h2></div>
+    @if (Model.Bid.BidItems.Count == 0) { <div class="empty-state">No items were attached to this bid.</div> }
+    else
+    {
+        <div class="table-responsive" role="region" aria-label="Offered items" tabindex="0">
+        <table class="directory-table"><thead><tr><th scope="col">Item and specification</th><th scope="col">Quantity</th><th scope="col">Unit price</th><th scope="col">Supplier notes</th></tr></thead><tbody>
+        @foreach (var item in Model.Bid.BidItems)
+        { <tr><td><strong>@item.PurchaseRequisitionItem.ItemName</strong><br />@item.PurchaseRequisitionItem.Specifications</td><td>@item.Quantity</td><td>@item.UnitPrice.ToString("N2") @Model.Bid.Currency</td><td>@item.Notes</td></tr> }
+        </tbody></table></div>
+    }
+</section>
+<section class="surface detail-card mb-3"><h2>Bid documents</h2>
+    @if (Model.Bid.BidDocuments.Count == 0) { <p class="subtle mb-0">No documents attached.</p> }
+    else { <ul class="mb-0">@foreach (var doc in Model.Bid.BidDocuments) { <li><a asp-controller="BidDocuments" asp-action="Download" asp-route-id="@doc.Id">@doc.FileName</a> · @doc.DocumentType</li> }</ul> }
+</section>
+<section class="stack" aria-label="Your scores">
+    <h2>Your evaluation</h2>
+    @if (Model.Scores.Count == 0) { <div class="surface detail-card">No evaluation criteria have been set yet.</div> }
+    @foreach (var row in Model.Scores)
+    {
+        <form class="surface form-card" asp-action="SaveScore" asp-route-id="@Model.Bid.Id" asp-route-criterionId="@row.Criterion.Id" method="post">
+            <div class="card-heading"><div><p class="eyebrow">@row.Criterion.Type · @row.Criterion.WeightPercent% WEIGHT</p><h3>@row.Criterion.Name</h3></div>
+                @if (row.Score.HasValue) { <span class="status-pill status-positive"><span></span>Saved</span> }</div>
+            <div class="form-grid mb-3">
+                <label class="field">Score out of @row.Criterion.MaxScore<input class="form-control" name="Score" type="number" min="0" max="@row.Criterion.MaxScore" step=".01" required value="@row.Score" /></label>
+                @if (row.Criterion.Type == "Financial")
+                {
+                    <label class="field">Taxes and fees (@Model.Bid.Currency)<input class="form-control" name="Taxes" type="number" min="0" step=".01" value="@(row.Taxes ?? 0)" /></label>
+                    <label class="field">Additional costs (@Model.Bid.Currency)<input class="form-control" name="Extras" type="number" min="0" step=".01" value="@(row.Extras ?? 0)" /></label>
+                }
+                <label class="field field-wide">Review notes<textarea class="form-control" name="Notes" rows="2" maxlength="1000">@row.Notes</textarea></label>
+            </div>
+            <button class="btn btn-primary" type="submit">Save score</button>
+        </form>
+    }
+</section>

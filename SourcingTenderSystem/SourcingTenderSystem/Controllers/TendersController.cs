@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.Data;
+using SourcingTenderSystem.Security;
+using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -11,24 +13,15 @@ using SourcingTenderSystem.Models;
 
 namespace SourcingTenderSystem.Controllers;
 
-//[Authorize(Roles = "SourcingOfficer")]
+[Authorize(Roles = "SourcingOfficer")]
 public class TendersController : Controller
 {
     private const string DraftStatus = "Draft";
     private const string EvaluationCommitteeType = "Evaluation";
     private const string DepartmentRepresentativeRole = "Department Representative";
 
-    // The three fixed seats of every evaluation committee (role -> employee email).
-    // The 4th seat (Department Representative) is the employee who created the purchase request.
-    private static readonly (string Role, string Email)[] FixedCommitteeMembers =
-    {
-        ("Sourcing Manager", "tariq.salameh@demo.sourcing.jo"),
-        ("Financial Representative", "rana.abuzaid@demo.sourcing.jo"),
-        ("Technical Representative", "yousef.qasem@demo.sourcing.jo")
-    };
-
     // The committee can be changed until the evaluation starts.
-    private static readonly string[] CommitteeEditableStatuses = { "Draft", "Published", "Open", "Closed" };
+    private static readonly string[] CommitteeEditableStatuses = { "Draft", "Published", "Open" };
 
     private readonly ApplicationDbContext _context;
     private readonly UserManager<IdentityUser> _userManager;
@@ -77,12 +70,25 @@ public class TendersController : Controller
     }
 
     // GET: /Tenders/Create
-    public async Task<IActionResult> Create()
+    [HttpGet]
+    public async Task<IActionResult> Create(int? purchaseRequisitionId)
     {
         var model = new TenderFormViewModel
         {
             PurchaseRequests = await GetApprovedRequestsAsync()
         };
+        if (purchaseRequisitionId.HasValue)
+        {
+            var option = model.PurchaseRequests.SingleOrDefault(r => r.Value == purchaseRequisitionId.Value.ToString());
+            if (option == null)
+            {
+                ModelState.AddModelError(nameof(model.PurchaseRequisitionId), "This purchase request is not available for a new tender.");
+            }
+            else
+            {
+                model.PurchaseRequisitionId = purchaseRequisitionId;
+            }
+        }
         return View(model);
     }
 
@@ -91,11 +97,13 @@ public class TendersController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(TenderFormViewModel model)
     {
+        await using var transaction = await _context.Database.BeginTransactionAsync(IsolationLevel.Serializable);
         PurchaseRequisition? requisition = null;
         if (model.PurchaseRequisitionId != null)
         {
             requisition = await _context.PurchaseRequisitions
                 .Include(r => r.Tender)
+                .Include(r => r.CreatedByEmployeeProfile).ThenInclude(e => e.Department)
                 .FirstOrDefaultAsync(r => r.Id == model.PurchaseRequisitionId);
 
             if (requisition == null || requisition.Status != "Approved" || requisition.Tender != null)
@@ -117,6 +125,13 @@ public class TendersController : Controller
             return View(model);
         }
 
+        var (slots, problems) = await BuildCommitteeAsync(requisition!.CreatedByEmployeeProfile);
+        if (problems.Count > 0)
+        {
+            foreach (var problem in problems) ModelState.AddModelError(string.Empty, problem);
+            model.PurchaseRequests = await GetApprovedRequestsAsync();
+            return View(model);
+        }
         var tender = new Tender
         {
             PurchaseRequisitionId = requisition!.Id,
@@ -130,6 +145,15 @@ public class TendersController : Controller
             CreatedAt = DateTime.UtcNow
         };
 
+        foreach (var slot in slots)
+        {
+            tender.CommitteeMembers.Add(new TenderCommitteeMember
+            {
+                EmployeeProfileId = slot.EmployeeProfileId,
+                CommitteeType = EvaluationCommitteeType,
+                MemberRole = slot.Role
+            });
+        }
         requisition.Status = "Converted to Tender";
         _context.Tenders.Add(tender);
         await _context.SaveChangesAsync();
@@ -137,10 +161,23 @@ public class TendersController : Controller
         AddAuditLog(employee.Id, "Create", tender.Id, "Tender created from the approved request.");
         await _context.SaveChangesAsync();
 
-        TempData["Success"] = "Tender created successfully.";
+        await transaction.CommitAsync();
+        TempData["Success"] = "Tender created and evaluation committee assigned.";
         return RedirectToAction(nameof(Index));
     }
 
+    [HttpPost]
+    public async Task<IActionResult> Close(int id)
+    {
+        if (await GetCurrentEmployeeAsync() == null) return Forbid();
+        var now = DateTime.UtcNow;
+        var changed = await _context.Tenders.Where(t => t.Id == id && t.Status == "Open" && t.CloseDate <= now)
+            .ExecuteUpdateAsync(set => set.SetProperty(t => t.Status, "Closed"));
+        TempData[changed == 1 ? "Success" : "Error"] = changed == 1
+            ? "Tender closed and available for compliance review."
+            : "An open tender can be closed after its bidding deadline.";
+        return RedirectToAction(nameof(Index));
+    }
     // GET: /Tenders/Edit/5
     public async Task<IActionResult> Edit(int? id)
     {
@@ -272,18 +309,19 @@ public class TendersController : Controller
 
         if (!CommitteeEditableStatuses.Contains(tender.Status))
         {
-            TempData["Error"] = "The committee cannot be changed after the evaluation has started.";
+            TempData["Error"] = "The committee can only be assigned while a tender is draft, published, or open.";
             return RedirectToAction(nameof(Index));
         }
 
-        var (slots, problems) = await BuildCommitteeAsync(tender);
+        var (slots, problems) = await BuildCommitteeAsync(tender.PurchaseRequisition.CreatedByEmployeeProfile);
 
         return View(new AssignCommitteeViewModel
         {
             TenderId = tender.Id,
             TenderTitle = tender.Title,
             DepartmentName = tender.PurchaseRequisition.Department.Name,
-            AlreadyAssigned = tender.CommitteeMembers.Any(m => m.CommitteeType == EvaluationCommitteeType),
+            AlreadyAssigned = tender.CommitteeMembers.Count(m => m.CommitteeType == EvaluationCommitteeType) == 4,
+            IsOpen = tender.Status == "Open",
             Members = slots,
             Problems = problems
         });
@@ -294,23 +332,32 @@ public class TendersController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> AssignCommittee(int id)
     {
+        var employee = await GetCurrentEmployeeAsync();
+        if (employee == null) return Forbid();
+
+        await using var transaction = await _context.Database.BeginTransactionAsync(IsolationLevel.Serializable);
         var tender = await TendersWithCommitteeData().FirstOrDefaultAsync(t => t.Id == id);
 
         if (tender == null) return NotFound();
 
         if (!CommitteeEditableStatuses.Contains(tender.Status))
         {
-            TempData["Error"] = "The committee cannot be changed after the evaluation has started.";
+            TempData["Error"] = "The committee can only be assigned while a tender is draft, published, or open.";
             return RedirectToAction(nameof(Index));
         }
 
-        var (slots, problems) = await BuildCommitteeAsync(tender);
+        var (slots, problems) = await BuildCommitteeAsync(tender.PurchaseRequisition.CreatedByEmployeeProfile);
         if (problems.Any())
         {
             // The page shows the problems and keeps the button disabled.
             return RedirectToAction(nameof(AssignCommittee), new { id });
         }
 
+        if (tender.Status != "Open" && tender.CloseDate <= DateTime.UtcNow)
+        {
+            TempData["Error"] = "Update the tender's closing date before opening it.";
+            return RedirectToAction(nameof(AssignCommittee), new { id });
+        }
         // Update the Evaluation committee only (Top Committee rows are not touched).
         var existing = tender.CommitteeMembers.Where(m => m.CommitteeType == EvaluationCommitteeType).ToList();
 
@@ -321,7 +368,9 @@ public class TendersController : Controller
 
         foreach (var slot in slots)
         {
-            var current = existing.FirstOrDefault(m => m.EmployeeProfileId == slot.EmployeeProfileId);
+            var matching = existing.Where(m => m.EmployeeProfileId == slot.EmployeeProfileId).OrderBy(m => m.Id).ToList();
+            var current = matching.FirstOrDefault();
+            _context.RemoveRange(matching.Skip(1));
             if (current != null)
             {
                 current.MemberRole = slot.Role;
@@ -337,11 +386,15 @@ public class TendersController : Controller
             }
         }
 
-        var employee = await GetCurrentEmployeeAsync();
-        AddAuditLog(employee?.Id, "AssignCommittee", tender.Id, "Evaluation committee assigned (4 members).");
+        var opening = tender.Status != "Open";
+        tender.Status = "Open";
+        AddAuditLog(employee.Id, "AssignCommittee", tender.Id, opening
+            ? "Evaluation committee assigned (4 members) and tender opened."
+            : "Evaluation committee confirmed (4 members).");
         await _context.SaveChangesAsync();
+        await transaction.CommitAsync();
 
-        TempData["Success"] = "Evaluation committee assigned successfully.";
+        TempData["Success"] = opening ? "Evaluation committee assigned and tender opened." : "Evaluation committee updated.";
         return RedirectToAction(nameof(Index));
     }
 
@@ -356,30 +409,22 @@ public class TendersController : Controller
     }
 
     // 3 fixed members + the employee who requested the purchase = the 4 committee seats.
-    private async Task<(List<CommitteeSlot> Slots, List<string> Problems)> BuildCommitteeAsync(Tender tender)
+    private async Task<(List<CommitteeSlot> Slots, List<string> Problems)> BuildCommitteeAsync(EmployeeProfile requester)
     {
         var slots = new List<CommitteeSlot>();
         var problems = new List<string>();
 
-        foreach (var (role, email) in FixedCommitteeMembers)
+        foreach (var (role, seat) in SourcingRoster.Seats)
         {
-            var user = await _userManager.FindByEmailAsync(email);
-            var employee = user == null
-                ? null
-                : await _context.EmployeeProfiles
-                    .AsNoTracking()
-                    .Include(e => e.Department)
-                    .FirstOrDefaultAsync(e => e.UserId == user.Id && e.IsActive);
-
-            if (employee == null)
-            {
-                problems.Add($"No active employee was found for the {role} ({email}).");
-                continue;
-            }
-            slots.Add(ToSlot(role, employee, isFixed: true));
+            var users = await _userManager.GetUsersInRoleAsync(role);
+            var ids = users.Select(u => u.Id).ToList();
+            var employees = await _context.EmployeeProfiles.AsNoTracking().Include(e => e.Department)
+                .Where(e => e.IsActive && ids.Contains(e.UserId)).Take(2).ToListAsync();
+            if (employees.Count != 1)
+                problems.Add($"Configure exactly one active employee with the {role} role.");
+            else
+                slots.Add(ToSlot(seat, employees[0], isFixed: true));
         }
-
-        var requester = tender.PurchaseRequisition.CreatedByEmployeeProfile;
         if (!requester.IsActive)
         {
             problems.Add($"The employee who created the purchase request ({requester.FullName}) is not active.");
@@ -414,7 +459,7 @@ public class TendersController : Controller
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (userId == null) return null;
-        return await _context.EmployeeProfiles.FirstOrDefaultAsync(e => e.UserId == userId);
+        return await _context.EmployeeProfiles.FirstOrDefaultAsync(e => e.UserId == userId && e.IsActive);
     }
 
     // Only approved requests that do not have a tender yet can be turned into a tender.
@@ -453,6 +498,7 @@ public class AssignCommitteeViewModel
     public string TenderTitle { get; set; } = string.Empty;
     public string DepartmentName { get; set; } = string.Empty;
     public bool AlreadyAssigned { get; set; }
+    public bool IsOpen { get; set; }
     public List<CommitteeSlot> Members { get; set; } = new();
     public List<string> Problems { get; set; } = new();
 }
