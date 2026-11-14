@@ -1,6 +1,7 @@
 (() => {
-    const root = document.querySelector("[data-bio]");
-    if (!root) return;
+function bind(root) {
+    if (!root || root.dataset.bioReady) return;
+    root.dataset.bioReady = "true";
     const status = root.querySelector("[data-bio-status]");
     const token = root.querySelector('input[name="__RequestVerificationToken"]').value;
     const phone = root.querySelector("[data-phone-button]");
@@ -44,4 +45,39 @@
             : await navigator.credentials.get({ publicKey: PublicKeyCredential.parseRequestOptionsFromJSON(options) });
         return post(root.dataset.phone, JSON.stringify(credential));
     }));
+    tabs(root);
+}
+
+// Sign-in method tabs (WAI-ARIA tabs pattern with arrow-key navigation).
+function tabs(root) {
+    const list = root.querySelector("[data-auth-tabs]");
+    if (!list) return;
+    const all = [...list.querySelectorAll('[role="tab"]')];
+    const select = (tab, focus) => {
+        all.forEach(item => {
+            const on = item === tab;
+            item.setAttribute("aria-selected", on ? "true" : "false");
+            item.tabIndex = on ? 0 : -1;
+            document.getElementById(item.getAttribute("aria-controls")).hidden = !on;
+        });
+        if (focus) tab.focus();
+        const email = root.querySelector("[data-bio-email]"), faceEmail = root.querySelector("[data-face-email]");
+        if (tab.id === "tab-face" && faceEmail && !faceEmail.value && email?.value) faceEmail.value = email.value;
+    };
+    all.forEach((tab, index) => {
+        tab.addEventListener("click", () => select(tab, false));
+        tab.addEventListener("keydown", event => {
+            const move = { ArrowRight: 1, ArrowLeft: -1, Home: -index, End: all.length - 1 - index }[event.key];
+            if (move === undefined) return;
+            event.preventDefault();
+            select(all[(index + move + all.length) % all.length], true);
+        });
+    });
+    root.querySelectorAll("[data-auth-switch]").forEach(button =>
+        button.addEventListener("click", () => select(document.getElementById(button.dataset.authSwitch), true)));
+}
+
+function initialize() { document.querySelectorAll("[data-bio]").forEach(bind); }
+document.addEventListener("workspace:load", initialize);
+initialize();
 })();

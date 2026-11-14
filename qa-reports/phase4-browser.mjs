@@ -63,7 +63,8 @@ try {
   async function login(role, secret=password) {
     if(!await ev('location.pathname==="/Account/Login" && document.readyState==="complete"')) await go('/Account/Login');
     await wait('!!document.querySelector("#password-sign-in")','login form');
-    await ev('document.querySelector("#password-sign-in").closest("details").open=true');
+    // Password is the default sign-in tab; older markup used a <details> wrapper.
+    await ev('document.querySelector("#password-sign-in").closest("details")?.setAttribute("open","");document.querySelector("#tab-password")?.click()');
     await set('#Email',role+'@example.test'); await set('#Password',secret);
     await click('#password-sign-in button[type=submit]');
   }
@@ -171,7 +172,16 @@ try {
       await logout();
     });
   }
-  await lifecycle({go,wait,click,set,ev,login,logout,capture,test,resetSession:async()=>{await call('Page.navigate',{url:'about:blank'}); await wait('location.href==="about:blank"','blank between users'); await call('Storage.clearDataForOrigin',{origin:new URL(base).origin,storageTypes:'cookies'}); await call('Network.clearBrowserCookies'); await go('/Account/Login');}});
+  await lifecycle({go,wait,click,set,ev,login,logout,capture,test,resetSession:async()=>{
+    // Let any in-flight POST/redirect from the previous user finish first: Identity re-issues its cookie on every
+    // authenticated response (security stamp validated each request), which could otherwise restore the old session.
+    await sleep(400);
+    await call('Page.navigate',{url:'about:blank'}); await wait('location.href==="about:blank"','blank between users');
+    await sleep(250);
+    await call('Storage.clearDataForOrigin',{origin:new URL(base).origin,storageTypes:'cookies'}); await call('Network.clearBrowserCookies');
+    await until(async()=>!(await call('Network.getAllCookies')).cookies.some(c=>c.name.startsWith('.STMS.')),'session cookies cleared');
+    await go('/Account/Login');
+  }});
   await writeFile(join(evidence,'results.json'),JSON.stringify({results,errors,http},null,2));
   process.stdout.write(JSON.stringify({results,errors})+'\n');
   if(results.some(r=>r.status==='FAIL')) process.exitCode=1;

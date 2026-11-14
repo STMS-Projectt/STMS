@@ -1,3 +1,4 @@
+@inject SourcingTenderSystem.Services.Biometrics.FaceLab FaceLab
 @model LoginInput
 @{
     ViewData["Title"] = "Sign in";
@@ -6,33 +7,63 @@
     <aside class="auth-aside">
         <span class="brand-mark"><partial name="_Icon" model='@("shield")' /></span>
         <p class="eyebrow">SOURCING DESK</p><h2>Choose how to sign in</h2>
-        <p>Use a registered phone for quick access. Use your password when setting up a new account or switching accounts.</p>
+        <p>Use your password, a registered passkey, or face recognition if you enrolled it in Sign-in security.</p>
     </aside>
     <section class="surface auth-panel" data-bio data-return-url="@Model.ReturnUrl"
         data-phone-options="@Url.Action("DirectPhoneOptions")" data-phone="@Url.Action("DirectPhone")">
         <p class="eyebrow">WELCOME</p><h1>Sign in</h1>
         <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
-        <label class="field mt-2" for="Email">Email <span class="subtle">· when needed</span></label>
-        <input asp-for="Email" form="password-sign-in" type="email" class="form-control" autocomplete="username" data-bio-email aria-describedby="sign-in-email-hint" />
-        <span asp-validation-for="Email" class="text-danger"></span>
-        <p id="sign-in-email-hint" class="field-hint mb-3">Phone sign-in needs no email.</p>
 
-        <div class="stack" aria-label="Sign-in methods">
-            <button class="btn btn-primary justify-content-start w-100" type="button" data-phone-button><partial name="_Icon" model='@("check")' /> Use registered phone</button>
-            <details class="border rounded p-3">
-                <summary class="fw-semibold">Face recognition</summary><p class="field-hint mb-0">Face-only sign-in is unavailable. Use a password or passkey. If your device offers Face ID or another face unlock, you can use it through your registered passkey.</p></details>
-            <details class="border rounded p-3" open="@(!ViewData.ModelState.IsValid)">
-                <summary class="fw-semibold">Use password</summary>
-                <form id="password-sign-in" asp-action="Login" method="post" class="stack mt-2">
-                    <input asp-for="ReturnUrl" type="hidden" />
-                    <label class="field">Password<input asp-for="Password" class="form-control" autocomplete="current-password" /></label>
-                    <span asp-validation-for="Password" class="text-danger"></span>
-                    <label class="form-check"><input asp-for="RememberMe" class="form-check-input" /> Remember me</label>
-                    <button class="btn btn-outline-secondary" type="submit">Sign in with password</button>
-                </form>
-            </details>
+        <div class="auth-methods" role="tablist" aria-label="Sign-in method" data-auth-tabs>
+            <button type="button" role="tab" id="tab-password" aria-controls="panel-password" aria-selected="true" tabindex="0"><partial name="_Icon" model='@("key")' /> Password</button>
+            <button type="button" role="tab" id="tab-face" aria-controls="panel-face" aria-selected="false" tabindex="-1"><partial name="_Icon" model='@("face")' /> Face</button>
+            <button type="button" role="tab" id="tab-passkey" aria-controls="panel-passkey" aria-selected="false" tabindex="-1"><partial name="_Icon" model='@("shield")' /> Passkey</button>
+        </div>
+
+        <div role="tabpanel" id="panel-password" aria-labelledby="tab-password" class="auth-method-panel">
+            <form id="password-sign-in" asp-action="Login" method="post" class="stack">
+                <input asp-for="ReturnUrl" type="hidden" />
+                <label class="field" for="Email">Email</label>
+                <input asp-for="Email" type="email" class="form-control" autocomplete="username" data-bio-email />
+                <span asp-validation-for="Email" class="text-danger"></span>
+                <label class="field" for="Password">Password</label>
+                <input asp-for="Password" class="form-control" autocomplete="current-password" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+                <label class="form-check"><input asp-for="RememberMe" class="form-check-input" /> Remember me</label>
+                <button class="btn btn-primary" type="submit">Sign in with password</button>
+            </form>
+        </div>
+
+        <div role="tabpanel" id="panel-face" aria-labelledby="tab-face" class="auth-method-panel" hidden>
+            @if (FaceLab.DemoLoginEnabled)
+            {
+                <div data-face-lab data-mode="login" data-start="@Url.Action("FaceLoginStart")" data-frame="@Url.Action("FaceLoginCapture")" data-return-url="@Model.ReturnUrl">
+                    <div class="mb-3" data-face-show="idle failed">
+                        <label class="field" for="face-email">Email</label>
+                        <input id="face-email" type="email" class="form-control" autocomplete="username" data-face-email />
+                    </div>
+                    <partial name="_FaceCamera" />
+                    <div class="button-row mt-3">
+                        <button type="button" class="btn btn-primary" data-face-start data-face-show="idle failed"><partial name="_Icon" model='@("camera")' /> Start verification</button>
+                        <button type="button" class="btn btn-primary" data-face-capture data-face-show="ready" hidden><partial name="_Icon" model='@("face")' /> Capture</button>
+                        <button type="button" class="btn btn-outline-secondary" data-face-cancel data-face-show="starting ready checking" hidden>Cancel</button>
+                        <button type="button" class="btn btn-link px-0" data-auth-switch="tab-password">Use password instead</button>
+                    </div>
+                    <p class="field-hint mt-2 mb-0">Academic demo: compares your camera with your enrolled face using Face++. It has no certified liveness check.</p>
+                </div>
+            }
+            else
+            {
+                <p class="notice notice-muted mb-2"><partial name="_Icon" model='@("warning")' /><span>Face sign-in is not enabled in this environment. Use your password or a passkey.</span></p>
+                <button type="button" class="btn btn-link px-0" data-auth-switch="tab-password">Use password instead</button>
+            }
+        </div>
+
+        <div role="tabpanel" id="panel-passkey" aria-labelledby="tab-passkey" class="auth-method-panel" hidden>
+            <p class="subtle">Use the passkey registered on your phone or this device. No email is needed.</p>
+            <button class="btn btn-primary" type="button" data-phone-button><partial name="_Icon" model='@("check")' /> Use registered passkey</button>
         </div>
         <p class="subtle mt-3 mb-0" data-bio-status role="status" aria-live="polite"></p>
     </section>
 </div>
-@section Scripts { <partial name="_ValidationScriptsPartial" /><script src="~/js/biometrics.js" asp-append-version="true" defer></script> }
+@section Scripts { <partial name="_ValidationScriptsPartial" /><script src="~/js/biometrics.js" asp-append-version="true" defer></script><script src="~/js/face-lab.js" asp-append-version="true" defer></script> }

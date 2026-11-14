@@ -14,15 +14,20 @@ export async function lifecycle(b) {
  async function act(s){await click(s);await new Promise(r=>setTimeout(r,250));await confirm();}
  async function as(role,path){
    await wait('document.readyState==="complete"','settled before switching to '+role);
+   // The whole switch (reset, sign-in, navigation, identity check) is retried, so a stale session from the previous
+   // user can never leak into the next step; the identity shown by the server is the final authority.
    for(let attempt=0;;attempt++){
-     await resetSession();
-     try { await login(role); break; }
+     try {
+       await resetSession();
+       await login(role);
+       await wait('!document.querySelector("#password-sign-in") && document.readyState==="complete"',role+' signed in');
+       if(path)await go(path);
+       await has('form[action*=Logout]');
+       await wait('document.querySelector(".bar-profile small")?.textContent.toLowerCase().trim()==='+q(role.toLowerCase()+'@example.test'),role+' identity');
+       return;
+     }
      catch(error){ if(attempt===2) throw error; }
    }
-   await wait('!document.querySelector("#password-sign-in") && document.readyState==="complete"',role+' signed in');
-   if(path)await go(path);
-   await has('form[action*=Logout]');
-   await wait('document.querySelector(".bar-profile small")?.textContent.toLowerCase().trim()==='+q(role.toLowerCase()+'@example.test'),role+' identity');
  }
  async function fields(obj,root=''){for(const [name,value] of Object.entries(obj)) await set(root+'[name="'+name+'"]',String(value));}
  const iso=(minutes)=>new Date(Date.now()+minutes*60000).toISOString().slice(0,16);

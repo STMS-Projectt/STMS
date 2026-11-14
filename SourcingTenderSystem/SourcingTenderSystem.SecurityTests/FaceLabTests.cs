@@ -83,7 +83,127 @@ public sealed class FaceLabTests
         fixture.Provider.Yaw = turn.Instruction.EndsWith("left.") ? -25 : 25;
         var center = (await fixture.Lab.Capture("owner", "stamp", turn.Token, Frame(2), default))!;
         fixture.Provider.Yaw = 0;
-        Assert.Null(await fixture.Lab.Capture("owner", "stamp", center.Token, Frame(3), default));
+        var last = await fixture.Lab.Capture("owner", "stamp", center.Token, Frame(3), default);
+        if (!enroll) { Assert.Null(last); return; }
+        Assert.True(last!.ReadyToSave);
+        await fixture.Lab.ConfirmEnrollment("owner", "stamp", last.Token, default);
+    }
+
+    // ---------------- Academic demo face sign-in ----------------
+
+    private static async Task<FaceLab.LoginStep> Login(Fixture fixture, string? user, string? stamp = "stamp", int turnYaw = 25)
+    {
+        var start = fixture.Lab.StartLogin(user, stamp);
+        fixture.Provider.Yaw = 0;
+        var first = await fixture.Lab.CaptureLogin(start.Token, Frame(11), default);
+        fixture.Provider.Yaw = turnYaw;
+        var second = await fixture.Lab.CaptureLogin(first.Next!.Token, Frame(12), default);
+        fixture.Provider.Yaw = 0;
+        return await fixture.Lab.CaptureLogin(second.Next!.Token, Frame(13), default);
+    }
+
+    [Fact]
+    public async Task Enrolled_face_login_succeeds_only_for_the_challenged_account()
+    {
+        using var fixture = new Fixture();
+        await Complete(fixture, true);
+        var result = await Login(fixture, "owner", turnYaw: -25); // either turn direction is accepted unless strict
+        Assert.False(result.Rejected);
+        Assert.Equal(("owner", "stamp"), (result.User, result.Stamp));
+    }
+
+    [Fact]
+    public async Task Incorrect_face_or_malformed_compare_is_rejected()
+    {
+        using var fixture = new Fixture();
+        await Complete(fixture, true);
+        fixture.Provider.RejectReference = true;
+        var mismatch = await Login(fixture, "owner");
+        Assert.True(mismatch.Rejected);
+        Assert.Null(mismatch.Stamp);
+        fixture.Provider.RejectReference = false;
+        fixture.Provider.MalformedReferenceCompare = true;
+        var malformed = await Login(fixture, "owner");
+        Assert.True(malformed.Rejected);
+        Assert.Null(malformed.Stamp);
+    }
+
+    [Fact]
+    public async Task Unknown_or_unenrolled_accounts_get_an_indistinguishable_failing_decoy()
+    {
+        using var fixture = new Fixture();
+        var unknown = await Login(fixture, null, null);
+        Assert.True(unknown.Rejected);
+        Assert.Null(unknown.User);
+        var unenrolled = await Login(fixture, "nobody");
+        Assert.True(unenrolled.Rejected);
+        Assert.Null(unenrolled.User);
+        Assert.False(fixture.Lab.HasReference("nobody"));
+    }
+
+    [Fact]
+    public async Task Login_challenge_tokens_and_frames_cannot_be_replayed()
+    {
+        using var fixture = new Fixture();
+        await Complete(fixture, true);
+        var start = fixture.Lab.StartLogin("owner", "stamp");
+        fixture.Provider.Yaw = 0;
+        var first = await fixture.Lab.CaptureLogin(start.Token, Frame(21), default);
+        Assert.Equal(409, (await Assert.ThrowsAsync<FaceLabError>(() => fixture.Lab.CaptureLogin(start.Token, Frame(22), default))).Status);
+        fixture.Provider.Yaw = 25;
+        Assert.Equal(422, (await Assert.ThrowsAsync<FaceLabError>(() => fixture.Lab.CaptureLogin(first.Next!.Token, Frame(21), default))).Status);
+        Assert.Equal(409, (await Assert.ThrowsAsync<FaceLabError>(() => fixture.Lab.CaptureLogin(first.Next!.Token, Frame(23), default))).Status);
+        // Enrollment tokens are not valid for login and vice versa.
+        var enroll = fixture.Lab.Start("owner", "stamp", true);
+        Assert.Equal(409, (await Assert.ThrowsAsync<FaceLabError>(() => fixture.Lab.CaptureLogin(enroll.Token, Frame(24), default))).Status);
+    }
+
+    [Fact]
+    public async Task Provider_failure_and_quota_never_produce_a_login()
+    {
+        using var fixture = new Fixture();
+        await Complete(fixture, true);
+        fixture.Provider.Status = 503;
+        var start = fixture.Lab.StartLogin("owner", "stamp");
+        Assert.Equal(503, (await Assert.ThrowsAsync<FaceLabError>(() => fixture.Lab.CaptureLogin(start.Token, Frame(31), default))).Status);
+        fixture.Provider.Status = 429;
+        start = fixture.Lab.StartLogin("owner", "stamp");
+        Assert.Equal(429, (await Assert.ThrowsAsync<FaceLabError>(() => fixture.Lab.CaptureLogin(start.Token, Frame(32), default))).Status);
+    }
+
+    [Fact]
+    public async Task Enrollment_requires_confirmation_and_can_be_replaced_and_removed()
+    {
+        using var fixture = new Fixture();
+        var start = fixture.Lab.Start("owner", "stamp", true);
+        fixture.Provider.Yaw = 0;
+        var turn = (await fixture.Lab.Capture("owner", "stamp", start.Token, Frame(41), default))!;
+        fixture.Provider.Yaw = 25;
+        var center = (await fixture.Lab.Capture("owner", "stamp", turn.Token, Frame(42), default))!;
+        fixture.Provider.Yaw = 0;
+        var ready = (await fixture.Lab.Capture("owner", "stamp", center.Token, Frame(43), default))!;
+        Assert.True(ready.ReadyToSave);
+        Assert.False(fixture.Lab.HasReference("owner"));
+        Assert.Equal(409, (await Assert.ThrowsAsync<FaceLabError>(() => fixture.Lab.ConfirmEnrollment("intruder", "stamp", ready.Token, default))).Status);
+        await fixture.Lab.ConfirmEnrollment("owner", "stamp", ready.Token, default);
+        var original = File.ReadAllBytes(Directory.GetFiles(fixture.Root, "*.face", SearchOption.AllDirectories).Single());
+        await Complete(fixture, true); // replace
+        Assert.NotEqual(original, File.ReadAllBytes(Directory.GetFiles(fixture.Root, "*.face", SearchOption.AllDirectories).Single()));
+        fixture.Lab.Remove("owner");
+        Assert.True((await Login(fixture, "owner")).Rejected);
+    }
+
+    [Theory]
+    [InlineData("Development", "true", null, true)]
+    [InlineData("Development", "false", null, false)]
+    [InlineData("Development", null, null, false)]
+    [InlineData("Production", "true", null, false)]
+    [InlineData("Production", "true", "true", true)]
+    public void Demo_face_login_needs_explicit_flag_and_is_off_in_production(string environment, string? flag, string? production, bool expected)
+    {
+        using var fixture = new Fixture(demo: flag, environment: environment, production: production);
+        Assert.Equal(expected, fixture.Lab.DemoLoginEnabled);
+        if (!expected) Assert.Equal(503, Assert.Throws<FaceLabError>(() => fixture.Lab.StartLogin("owner", "stamp")).Status);
     }
 
     private static string Frame(byte b)
@@ -103,13 +223,14 @@ public sealed class FaceLabTests
         public FakeClock Clock { get; } = new();
         public FaceLab Lab { get; }
         public IConfiguration Config { get; }
-        public Fixture(int budget = 450)
+        public Fixture(int budget = 450, string? demo = "true", string environment = "Testing", string? production = null)
         {
             Config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string,string?> {
                 ["FacePlusPlus:EnableFreeLab"] = "true", ["FacePlusPlus:ApiKey"] = "synthetic", ["FacePlusPlus:ApiSecret"] = "synthetic",
-                ["FacePlusPlus:MonthlyCallsPerEndpoint"] = budget.ToString()
+                ["FacePlusPlus:MonthlyCallsPerEndpoint"] = budget.ToString(), ["FacePlusPlus:EnableDemoFaceLogin"] = demo,
+                ["FacePlusPlus:AllowDemoFaceLoginInProduction"] = production
             }).Build();
-            Lab = new(Provider, Config, new Host { ContentRootPath = Root }, new EphemeralDataProtectionProvider(), Clock);
+            Lab = new(Provider, Config, new Host { ContentRootPath = Root, EnvironmentName = environment }, new EphemeralDataProtectionProvider(), Clock);
         }
         public void Dispose() { if (Directory.Exists(Root)) Directory.Delete(Root, true); }
     }
@@ -123,15 +244,17 @@ public sealed class FaceLabTests
     private sealed class FakeProvider : HttpMessageHandler, IHttpClientFactory
     {
         public int Status = 200, Calls, Yaw;
-        public bool RejectReference;
+        public bool RejectReference, MalformedReferenceCompare;
         public HttpClient CreateClient(string name) => new(this, disposeHandler: false);
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken token)
         {
             Calls++;
             var content = await request.Content!.ReadAsStringAsync(token);
+            var reference = content.Contains("image_base64_2=");
             var json = request.RequestUri!.AbsolutePath.EndsWith("detect")
                 ? "{\"faces\":[{\"face_token\":\"synthetic\",\"attributes\":{\"headpose\":{\"yaw_angle\":" + Yaw + "}}}]}"
-                : "{\"confidence\":" + (RejectReference && content.Contains("image_base64_2=") ? 30 : 95) + ",\"thresholds\":{\"1e-5\":80}}";
+                : MalformedReferenceCompare && reference ? "{\"confidence\":\"95\"}"
+                : "{\"confidence\":" + (RejectReference && reference ? 30 : 95) + ",\"thresholds\":{\"1e-5\":80}}";
             return new((HttpStatusCode)Status) { Content = new StringContent(json) };
         }
     }

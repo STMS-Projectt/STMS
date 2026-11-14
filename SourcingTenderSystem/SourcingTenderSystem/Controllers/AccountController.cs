@@ -126,8 +126,6 @@ public sealed class AccountController(SignInManager<IdentityUser> signIn, UserMa
         var user = await CurrentUser();
         if (user is null) return Forbid();
         if (!lab.Enabled) return FaceUnavailable();
-        if (input.Enroll && lab.HasReference(user.Id))
-            return Conflict(new { message = "Remove your existing reference before enrolling again." });
         if (input.Enroll && !await ConfirmPassword(user, input.Password))
             return BadRequest(new { message = "Enter your current password to enroll a reference." });
         try { return Ok(lab.Start(user.Id, await users.GetSecurityStampAsync(user), input.Enroll)); }
@@ -147,6 +145,65 @@ public sealed class AccountController(SignInManager<IdentityUser> signIn, UserMa
         catch (FaceLabError error) { return StatusCode(error.Status, new { message = error.Message }); }
     }
 
+    [HttpPost, EnableRateLimiting("face-lab"), RequestSizeLimit(4096)]
+    public async Task<IActionResult> FaceLabConfirm([FromBody] FaceLabInput input, [FromServices] FaceLab lab, CancellationToken ct)
+    {
+        var user = await CurrentUser();
+        if (user is null) return Forbid();
+        try { await lab.ConfirmEnrollment(user.Id, await users.GetSecurityStampAsync(user), input.Token, ct); }
+        catch (FaceLabError error) { return StatusCode(error.Status, new { message = error.Message }); }
+        await FaceAudit(user, "FaceEnrolled", "Face reference saved (encrypted).");
+        const string saved = "Face recognition is set up. You can now use it on the sign-in page.";
+        TempData["Message"] = saved;
+        return Ok(new { complete = true, message = saved });
+    }
+
+    // ---------------- Academic demo: webcam face sign-in (Face++ Detect/Compare, no certified liveness) ----------------
+
+    [AllowAnonymous, HttpPost, EnableRateLimiting("biometric-login"), RequestSizeLimit(4096)]
+    public async Task<IActionResult> FaceLoginStart([FromBody] FaceLoginInput input, [FromServices] FaceLab lab)
+    {
+        if (!lab.DemoLoginEnabled) return FaceUnavailable();
+        var email = input.Email?.Trim();
+        var user = string.IsNullOrEmpty(email) || email.Length > 256 ? null : await users.FindByEmailAsync(email);
+        // Ineligible or unknown accounts receive an indistinguishable decoy challenge that always fails.
+        var eligible = user is not null && await CanUseDirectLogin(user);
+        try { return Ok(lab.StartLogin(eligible ? user!.Id : null, eligible ? await users.GetSecurityStampAsync(user!) : null)); }
+        catch (FaceLabError error) { return StatusCode(error.Status, new { message = error.Message }); }
+    }
+
+    [AllowAnonymous, HttpPost, EnableRateLimiting("biometric-login"), RequestSizeLimit(410_000)]
+    public async Task<IActionResult> FaceLoginCapture([FromBody] FaceLoginInput input, [FromServices] FaceLab lab, CancellationToken ct)
+    {
+        FaceLab.LoginStep step;
+        try { step = await lab.CaptureLogin(input.Token, input.Frame, ct); }
+        catch (FaceLabError error) { return StatusCode(error.Status, new { message = error.Message }); }
+        if (step.Next is not null) return Ok(step.Next);
+        var user = step.User is null ? null : await users.FindByIdAsync(step.User);
+        // Re-check everything server side: the comparison result, the unchanged security stamp, and Identity eligibility.
+        if (!step.Rejected && user is not null && step.Stamp == await users.GetSecurityStampAsync(user) && await CanUseDirectLogin(user))
+        {
+            await users.ResetAccessFailedCountAsync(user);
+            await FaceAudit(user, "FaceLoginSucceeded", "Signed in with Face++ demo comparison.");
+            return await DirectComplete(user, input.ReturnUrl);
+        }
+        if (user is not null)
+        {
+            await users.AccessFailedAsync(user); // counts toward the normal Identity lockout
+            await FaceAudit(user, "FaceLoginFailed", "Face++ demo comparison rejected.");
+        }
+        return Unauthorized(new { message = FaceLab.LoginFailedMessage });
+    }
+
+    private async Task FaceAudit(IdentityUser user, string action, string details)
+    {
+        var employee = await db.EmployeeProfiles.Where(e => e.UserId == user.Id).Select(e => (int?)e.Id).FirstOrDefaultAsync();
+        var supplier = employee is null ? await db.SupplierProfiles.Where(x => x.UserId == user.Id).Select(x => (int?)x.Id).FirstOrDefaultAsync() : null;
+        db.AuditLogs.Add(new Models.AuditLog { EmployeeProfileId = employee, SupplierProfileId = supplier, Action = action,
+            EntityName = "FaceRecognition", EntityId = employee ?? supplier ?? 0, Details = details, CreatedAt = DateTime.UtcNow });
+        await db.SaveChangesAsync();
+    }
+
     [HttpPost, EnableRateLimiting("face-lab")]
     public async Task<IActionResult> FaceLabDelete([FromServices] FaceLab lab)
     {
@@ -155,6 +212,8 @@ public sealed class AccountController(SignInManager<IdentityUser> signIn, UserMa
         try { lab.Remove(user.Id); }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         { return StatusCode(503, "Could not remove the face reference. Try again."); }
+        await FaceAudit(user, "FaceRemoved", "Face reference removed.");
+        TempData["Message"] = "Your face reference was removed.";
         return RedirectToAction(nameof(BiometricSetup));
     }
 
@@ -281,3 +340,5 @@ public sealed record BiometricInput(bool Manage, string? Data, string? Password)
 public sealed record FaceLabInput(bool Enroll, string? Password, string? Token, string? Frame);
 
 public sealed record DirectBiometricInput(string? Data, string? ReturnUrl);
+
+public sealed record FaceLoginInput(string? Email, string? Token, string? Frame, string? ReturnUrl);

@@ -17,7 +17,10 @@
     var controller = ViewContext.RouteData.Values["controller"]?.ToString();
     var action = ViewContext.RouteData.Values["action"]?.ToString();
 
-    if (controller == "Account" && (action == "BiometricSetup" || action == "BiometricVerify" || action == "Login"))
+    // Public auth pages and first-time verification onboarding use the portal shell; Sign-in security for an
+    // already verified account renders inside the user's normal role workspace.
+    if (controller == "Account" && (action == "BiometricVerify" || action == "Login" ||
+        action == "BiometricSetup" && ViewData["BiometricOnboarding"] is true))
     {
         admin = false;
         sourcing = false;

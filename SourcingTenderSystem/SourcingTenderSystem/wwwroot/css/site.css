@@ -264,3 +264,43 @@ textarea.form-control {min-height:91px}
 .ai-reasons li+li {margin-top:.25rem}
 .ai-actions {display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:1rem}
 .ai-actions .btn {display:inline-flex;align-items:center;gap:6px}
+
+/* Sign-in methods and face recognition (shared tokens; no separate theme) */
+.notice-muted {border-color:var(--line);background:#f6f8fb;color:var(--muted)}
+.notice-muted .icon {color:#8a550b;flex:none}
+.auth-methods {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;padding:4px;margin:.25rem 0 1.1rem;background:#eef3f8;border:1px solid var(--line);border-radius:12px}
+.auth-methods [role="tab"] {display:flex;align-items:center;justify-content:center;gap:6px;min-height:40px;padding:.45rem .5rem;border:0;border-radius:9px;background:transparent;color:var(--muted);font-weight:650;font-size:.86rem;white-space:nowrap}
+.auth-methods [role="tab"] .icon {width:17px;height:17px;flex:none}
+.auth-methods [role="tab"]:hover {color:var(--ink)}
+.auth-methods [role="tab"][aria-selected="true"] {background:white;color:var(--brand-dark);box-shadow:0 1px 3px #192e4a1a}
+.auth-method-panel .stack {gap:.55rem}
+.face-layout {display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:clamp(16px,2.5vw,28px);align-items:start;margin-top:1rem}
+.face-side h3 {font-weight:750;margin-bottom:.5rem}
+.face-guidance {padding-left:1.15rem;color:var(--muted);margin:0 0 1rem;font-size:.88rem}
+.face-guidance li+li {margin-top:.3rem}
+.face-camera {min-width:0}
+.face-stage {position:relative;aspect-ratio:4/3;width:100%;overflow:hidden;border-radius:var(--radius);background:linear-gradient(140deg,#10263d,#123d4e 70%,#105c58);border:1px solid var(--line)}
+.face-stage video {position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
+.face-oval {position:absolute;left:50%;top:50%;width:46%;height:76%;transform:translate(-50%,-50%);border:3px dashed #ffffffb3;border-radius:50%;box-shadow:0 0 0 999px #0b1a2b52;pointer-events:none;transition:border-color .2s}
+.face-stage[data-state="ready"] .face-oval {border-style:solid;border-color:var(--teal)}
+.face-stage[data-state="captured"] .face-oval,.face-stage[data-state="success"] .face-oval {border-style:solid;border-color:#7be3a6}
+.face-stage[data-state="failed"] .face-oval {border-color:#f3a3b4}
+.face-placeholder,.face-loader {position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:#d4e6ef;font-weight:650;font-size:.88rem;text-align:center;padding:1rem}
+.face-loader {background:#0b1a2b8c;flex-direction:row}
+.face-loader .workspace-spinner {border-color:#ffffff40;border-top-color:white}
+.face-steps {display:flex;gap:6px;list-style:none;padding:0;margin:.75rem 0 0;counter-reset:face}
+.face-steps li {flex:1;min-width:0;display:flex;align-items:center;gap:6px;font-size:.76rem;font-weight:650;color:var(--muted);padding:.4rem .5rem;border-radius:9px;background:#f3f6fa;counter-increment:face}
+.face-steps li::before {content:counter(face);display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:white;border:1px solid var(--line);flex:none;font-size:.7rem}
+.face-steps li.is-current {background:#e5f4f0;color:var(--brand-dark)}
+.face-steps li.is-current::before {border-color:var(--brand);color:var(--brand-dark)}
+.face-steps li.is-done {color:#116348}
+.face-steps li.is-done::before {content:"✓";background:#e5f6eb;border-color:#b6e2c6}
+.face-feedback {margin-top:.75rem;padding:.65rem .85rem;border-radius:12px;font-size:.86rem;font-weight:600;border:1px solid}
+.face-feedback[data-tone="info"] {color:#315fa1;background:#e9f1ff;border-color:#cddcf6}
+.face-feedback[data-tone="success"] {color:#116348;background:#e5f6eb;border-color:#b6e2c6}
+.face-feedback[data-tone="warning"] {color:#804a07;background:#fff1d7;border-color:#f1d29c}
+.face-feedback[data-tone="error"] {color:#a12d46;background:#fcebf0;border-color:#f3c3cf}
+.face-setup .card-heading {margin-bottom:.6rem}
+@media(max-width:1000px) {.face-layout {grid-template-columns:1fr}}
+@media(max-width:400px) {.auth-methods [role="tab"] {font-size:.78rem;gap:4px}.auth-methods [role="tab"] .icon {display:none}.face-steps li {font-size:.7rem;padding:.35rem}}
+@media(prefers-reduced-motion:reduce) {.face-oval {transition:none}}

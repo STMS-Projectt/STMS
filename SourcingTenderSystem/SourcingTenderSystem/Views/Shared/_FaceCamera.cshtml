@@ -1,0 +1,18 @@
+@* Shared camera stage for face enrollment, comparison and demo sign-in. Driven by wwwroot/js/face-lab.js. *@
+<div class="face-camera">
+    <div class="face-stage" data-face-stage data-state="idle">
+        <video data-face-video muted playsinline aria-label="Live camera preview"></video>
+        <div class="face-oval" aria-hidden="true"></div>
+        <div class="face-placeholder" data-face-placeholder>
+            <span class="icon-tile tone-blue"><partial name="_Icon" model='@("camera")' /></span>
+            <span>Camera is off</span>
+        </div>
+        <div class="face-loader" data-face-loader hidden><span class="workspace-spinner" aria-hidden="true"></span><span data-face-loader-label>Starting camera…</span></div>
+    </div>
+    <ol class="face-steps" aria-label="Verification steps">
+        <li data-face-step="1">Look straight</li>
+        <li data-face-step="2">Turn slightly</li>
+        <li data-face-step="3">Look straight</li>
+    </ol>
+    <div class="face-feedback" data-face-status role="status" aria-live="polite" hidden></div>
+</div>
