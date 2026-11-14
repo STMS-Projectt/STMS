@@ -1,3 +1,4 @@
+@using SourcingTenderSystem.Services
 @model ComplianceReviewViewModel
 @{
     var tender = Model.Tender;
@@ -36,7 +37,9 @@
 }
 @if (Model.MixedCurrencies)
 {
-    <div class="alert alert-warning" role="alert">The bids use different currencies. The order by total price does not convert currencies.</div>
+    <div class="alert alert-warning" role="alert">The bids use different currencies. @(Model.UsdOrdered
+        ? "They are ordered by an approximate USD equivalent at one reference date (the tender closing date). This is a reference only and does not select a winner."
+        : "An exchange rate is unavailable for at least one bid, so bids are grouped by currency and not ranked across currencies.")</div>
 }
 
 @if (tender.Status is "Draft" or "Published" or "Open")
@@ -49,7 +52,7 @@ else if (Model.Bids.Count == 0)
 }
 else
 {
-    <p class="text-muted">One column per bid, sorted by total price (lowest first).</p>
+    <p class="text-muted">One column per bid, sorted by total price (lowest first@(Model.MixedCurrencies ? (Model.UsdOrdered ? ", approximate USD" : " within each currency") : "")).</p>
 
     @* Side-by-side table: rows = information, columns = bids *@
     <div class="table-responsive mb-4">
@@ -75,7 +78,8 @@ else
                     <th scope="row">Total price</th>
                     @foreach (var bid in Model.Bids)
                     {
-                        <td><strong>@bid.TotalPrice.ToString("N2") @bid.Currency</strong></td>
+                        var fx = Model.UsdReferences.GetValueOrDefault(bid.Id);
+                        <td>@if (Model.MixedCurrencies) { <partial name="_UsdReference" model="@(new UsdReferenceView(bid.TotalPrice, bid.Currency, fx?.UsdAmount, fx?.Rate, fx?.EffectiveDate, fx?.Source))" /> } else { <strong>@bid.TotalPrice.ToString("N2") @bid.Currency</strong> }</td>
                     }
                 </tr>
                 <tr>
@@ -169,14 +173,18 @@ else
                         @foreach (var bid in Model.Bids)
                         {
                             <td>
-                                @if (bid.Status == "Submitted")
+                                @if (bid.Status == "Pending Clarification" && bid.ComplianceClarification is { } clarification)
+                                {
+                                    <a asp-controller="Clarifications" asp-action="Details" asp-route-id="@clarification.Id">Clarification: @clarification.Status</a>
+                                }
+                                @if (bid.Status == "Submitted" || bid.Status == "Pending Clarification" && bid.ComplianceClarification?.Status == "Resolved")
                                 {
                                     <div class="d-flex flex-wrap gap-1">
                                         <form asp-action="MarkCompliant" asp-route-id="@bid.Id" method="post" asp-antiforgery="true"
-                                              onsubmit="return confirm('Mark this bid as Compliant?');">
+                                              data-workspace-confirm="Mark this bid as Compliant?" onsubmit="return window.stmsWorkspaceReady || confirm(this.dataset.workspaceConfirm);">
                                             <button type="submit" class="btn btn-sm btn-success">Compliant</button>
                                         </form>
-                                        <a class="btn btn-sm btn-outline-danger" asp-action="MarkNonCompliant" asp-route-id="@bid.Id">Non-compliant</a>
+                                        <a data-workspace-dialog class="btn btn-sm btn-outline-danger" asp-action="MarkNonCompliant" asp-route-id="@bid.Id">Non-compliant</a>
                                         @* Placeholder: clarification requests belong to Person 4 (ClarificationsController).
                                            Replace this with the real link when it is ready. *@
                                         <a class="btn btn-sm btn-outline-secondary disabled" aria-disabled="true">Request clarification</a>
@@ -199,7 +207,13 @@ else
 @if (Model.TenderIsClosed)
 {
     <div class="card mb-3">
-        <div class="card-header">Send to evaluation</div>
+        <div class="card-header">Send to evaluation · Round @tender.Counter of @TenderRules.MaxRounds</div>
+        <p class="px-3 pt-3">Eligible suppliers: @ViewBag.EligibleSuppliers · Required: @TenderRules.Minimum(tender).
+        @if (!TenderRules.CanEvaluate(tender, (int)ViewBag.EligibleSuppliers))
+        {
+            <span>The bid minimum has not been met.</span>
+            <a asp-controller="Tenders" asp-action="Details" asp-route-id="@tender.Id">View bidding rounds</a>
+        }</p>
         <ul class="list-group list-group-flush">
             <li class="list-group-item">
                 @if (Model.SubmittedCount == 0)
@@ -228,7 +242,7 @@ else
             @if (Model.CanSendToEvaluation)
             {
                 <form asp-action="SendToEvaluation" asp-route-tenderId="@tender.Id" method="post" asp-antiforgery="true"
-                      onsubmit="return confirm('Send this tender to evaluation? The compliance check will be closed.');">
+                      data-workspace-confirm="Send this tender to evaluation? The compliance check will be closed." onsubmit="return window.stmsWorkspaceReady || confirm(this.dataset.workspaceConfirm);">
                     <button type="submit" class="btn btn-primary">Assign evaluation committee</button>
                 </form>
             }

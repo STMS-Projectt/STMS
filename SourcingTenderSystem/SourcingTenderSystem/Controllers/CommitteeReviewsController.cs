@@ -1,4 +1,3 @@
-using System.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,7 +10,7 @@ using SourcingTenderSystem.ViewModels;
 namespace SourcingTenderSystem.Controllers;
 
 [Authorize(Roles = Roles.Reviewers)]
-public sealed class CommitteeReviewsController(ApplicationDbContext db, BidAiAdvisor advisor) : RequisitionBaseController(db)
+public sealed class CommitteeReviewsController(ApplicationDbContext db, BidAiAdvisor advisor, ExchangeRates rates) : RequisitionBaseController(db)
 {
     private IQueryable<TenderCommitteeMember> Memberships(int employeeId) =>
         Db.TenderCommitteeMembers.Where(m => m.EmployeeProfileId == employeeId && m.CommitteeType == "Evaluation");
@@ -34,7 +33,7 @@ public sealed class CommitteeReviewsController(ApplicationDbContext db, BidAiAdv
     {
         var employee = await CurrentEmployeeAsync();
         if (employee is null) return Forbid();
-        var tender = await Reviewable(employee.Id).AsNoTracking().AsSplitQuery()
+        var tender = await Db.Tenders.Where(t => Memberships(employee.Id).Any(m => m.TenderId == t.Id)).AsNoTracking().AsSplitQuery()
             .Include(t => t.EvaluationCriteria)
             .Include(t => t.Bids.Where(b => b.Status == "Compliant")).ThenInclude(b => b.SupplierProfile)
             .SingleOrDefaultAsync(t => t.Id == id);
@@ -44,7 +43,8 @@ public sealed class CommitteeReviewsController(ApplicationDbContext db, BidAiAdv
         var financial = await Db.FinancialEvaluations.Where(e => e.Bid.TenderId == id && e.EvaluatorEmployeeProfileId == employee.Id)
             .Select(e => new { e.BidId, e.EvaluationCriteriaId }).ToListAsync();
         var progress = technical.Concat(financial).Distinct().GroupBy(e => e.BidId).ToDictionary(g => g.Key, g => g.Count());
-        return View(new CommitteeTender(tender, await CanManageCriteria(id, employee.Id), progress));
+        ViewBag.Submission = await Db.EvaluationSubmissions.AsNoTracking().SingleOrDefaultAsync(s => s.TenderId == id && s.EmployeeProfileId == employee.Id);
+        return View(new CommitteeTender(tender, false, progress));
     }
 
     [HttpGet]
@@ -57,7 +57,7 @@ public sealed class CommitteeReviewsController(ApplicationDbContext db, BidAiAdv
 
     private async Task<IActionResult> ShowBid(int id, int employeeId)
     {
-        var bid = await ReviewableBids(employeeId).AsNoTracking().AsSplitQuery().Include(b => b.SupplierProfile)
+        var bid = await Db.Bids.Where(b => b.Status == "Compliant" && b.SubmittedAt != null && Memberships(employeeId).Any(m => m.TenderId == b.TenderId)).AsNoTracking().AsSplitQuery().Include(b => b.SupplierProfile)
             .Include(b => b.Tender).ThenInclude(t => t.EvaluationCriteria)
             .Include(b => b.BidItems).ThenInclude(i => i.PurchaseRequisitionItem)
             .Include(b => b.BidDocuments)
@@ -72,6 +72,8 @@ public sealed class CommitteeReviewsController(ApplicationDbContext db, BidAiAdv
                 var f = bid.FinancialEvaluations.FirstOrDefault(e => e.EvaluationCriteriaId == c.Id);
                 return new CommitteeScoreRow(c, t?.Score ?? f?.Score, t?.Notes ?? f?.Notes, f?.TaxesAndFees, f?.ExtraCosts);
             }).ToList();
+        ViewBag.ReadOnly = bid.Tender.Status != "Under Evaluation" || await Db.EvaluationSubmissions.AnyAsync(s =>
+            s.TenderId == bid.TenderId && s.EmployeeProfileId == employeeId);
         return View("Bid", new CommitteeBid(bid, scores));
     }
 
@@ -80,13 +82,20 @@ public sealed class CommitteeReviewsController(ApplicationDbContext db, BidAiAdv
     {
         var employee = await CurrentEmployeeAsync();
         if (employee is null) return Forbid();
-        await using var tx = await Db.Database.BeginTransactionAsync(IsolationLevel.Serializable);
+        var tenderId = await Db.Bids.Where(b => b.Id == id).Select(b => (int?)b.TenderId).SingleOrDefaultAsync();
+        if (tenderId is null) return NotFound();
+        await using var tx = await TenderRules.LockAsync(Db, tenderId.Value);
+        if (await Db.EvaluationSubmissions.AnyAsync(s => s.TenderId == tenderId && s.EmployeeProfileId == employee.Id))
+            return Conflict("Submitted evaluations are read-only.");
         var bid = await ReviewableBids(employee.Id).SingleOrDefaultAsync(b => b.Id == id);
         if (bid is null) return NotFound();
         var criterion = await Db.EvaluationCriteria.SingleOrDefaultAsync(c => c.Id == criterionId && c.TenderId == bid.TenderId);
         if (criterion is null || criterion.Type is not ("Technical" or "Financial")) return NotFound();
         if (await Db.EvaluationCriteria.Where(c => c.TenderId == bid.TenderId).SumAsync(c => c.WeightPercent) != 100)
             ModelState.AddModelError("", "Complete the criteria so their weights total 100% before scoring.");
+        if (input.Score is decimal score && score != EvaluationRules.Round(score) ||
+            input.Taxes != EvaluationRules.Round(input.Taxes) || input.Extras != EvaluationRules.Round(input.Extras))
+            ModelState.AddModelError("", "Use at most two decimal places.");
         if (input.Score < 0 || input.Score > criterion.MaxScore)
             ModelState.AddModelError(nameof(input.Score), $"Enter a score between 0 and {criterion.MaxScore}.");
         if (!ModelState.IsValid)
@@ -131,35 +140,28 @@ public sealed class CommitteeReviewsController(ApplicationDbContext db, BidAiAdv
     }
 
     [HttpPost]
-    public async Task<IActionResult> AddCriterion(int id, CommitteeCriterionInput input)
+    public async Task<IActionResult> SubmitEvaluation(int id)
     {
         var employee = await CurrentEmployeeAsync();
         if (employee is null) return Forbid();
-        await using var tx = await Db.Database.BeginTransactionAsync(IsolationLevel.Serializable);
+        await using var tx = await TenderRules.LockAsync(Db, id);
         if (!await Reviewable(employee.Id).AnyAsync(t => t.Id == id)) return NotFound();
-        if (!await CanManageCriteria(id, employee.Id)) return Forbid();
-        var criteria = Db.EvaluationCriteria.Where(c => c.TenderId == id);
-        if (await criteria.AnyAsync(c => c.TechnicalEvaluations.Any() || c.FinancialEvaluations.Any()))
-            ModelState.AddModelError("", "Criteria are locked once a reviewer saves a score.");
-        if (ModelState.IsValid)
+        if (await Db.EvaluationSubmissions.AnyAsync(s => s.TenderId == id && s.EmployeeProfileId == employee.Id))
+            return Conflict("Evaluation already submitted.");
+        var criteria = await Db.EvaluationCriteria.Where(c => c.TenderId == id).ToListAsync();
+        var bids = await Db.Bids.Where(b => b.TenderId == id && b.Status == "Compliant" && b.SubmittedAt != null).Select(b => b.Id).ToListAsync();
+        var scores = (await EvaluationRules.Scores(Db, id)).Where(s => s.EmployeeId == employee.Id);
+        if (!EvaluationRules.CriteriaValid(criteria) || bids.Count == 0 || await EvaluationRules.Unresolved(Db, id).AnyAsync() ||
+            EvaluationRules.CompleteCells(bids, criteria, scores) != bids.Count * criteria.Count)
         {
-            var name = input.Name.Trim();
-            if (await criteria.AnyAsync(c => c.Name == name))
-                ModelState.AddModelError("", "A criterion with that name already exists.");
-            if (await criteria.SumAsync(c => c.WeightPercent) + input.WeightPercent > 100)
-                ModelState.AddModelError("", "Total criterion weights cannot exceed 100%.");
-        }
-        if (!ModelState.IsValid)
-        {
-            TempData["ReviewError"] = string.Join(" ", ModelState.Values.SelectMany(v => v.Errors)
-                .Select(e => string.IsNullOrEmpty(e.ErrorMessage) ? "Enter a valid criterion." : e.ErrorMessage));
+            TempData["ReviewError"] = "Save valid scores for every criterion and every compliant bid before submitting.";
             return RedirectToAction(nameof(Details), new { id });
         }
-        Db.EvaluationCriteria.Add(new EvaluationCriterion { TenderId = id, Name = input.Name.Trim(),
-            Type = input.Type, MaxScore = input.MaxScore, WeightPercent = input.WeightPercent });
+        var now = DateTime.UtcNow;
+        Db.EvaluationSubmissions.Add(new EvaluationSubmission { TenderId = id, EmployeeProfileId = employee.Id, SubmittedAt = now });
+        EvaluationRules.Audit(Db, id, employee.Id, "EvaluationSubmitted", $"Submitted scores for {bids.Count} bids.", now);
         await Db.SaveChangesAsync();
         await tx.CommitAsync();
-        TempData["Message"] = "Criterion added.";
         return RedirectToAction(nameof(Details), new { id });
     }
 
@@ -212,6 +214,12 @@ public sealed class CommitteeReviewsController(ApplicationDbContext db, BidAiAdv
             .Include(t => t.Bids.Where(b => b.Status == "Compliant")).ThenInclude(b => b.BidDocuments)
             .SingleOrDefaultAsync(t => t.Id == tenderId);
         if (tender is null) return null;
+        var usd = new Dictionary<int, decimal?>();
+        if (tender.Bids.Select(b => b.Currency).Distinct().Count() > 1)
+        {
+            var rateDate = ExchangeRates.ReferenceDate(tender.CloseDate, DateTime.UtcNow);
+            foreach (var b in tender.Bids) usd[b.Id] = (await rates.ConvertAsync(b.TotalPrice, b.Currency, rateDate))?.UsdAmount;
+        }
         return new AiTenderSnapshot(tender.Id, tender.Title, tender.Description, tender.Terms,
             tender.PurchaseRequisition.Items.OrderBy(i => i.Id)
                 .Select(i => new AiRequestedItem(i.Id, i.ItemName, i.Quantity, i.Unit, i.Specifications)).ToList(),
@@ -221,20 +229,13 @@ public sealed class CommitteeReviewsController(ApplicationDbContext db, BidAiAdv
                 b.Currency, b.DeliveryDays, b.ValidityDays,
                 b.BidItems.OrderBy(i => i.Id).Select(i => new AiBidLine(i.PurchaseRequisitionItemId,
                     i.PurchaseRequisitionItem.ItemName, i.Quantity, i.UnitPrice, i.Notes)).ToList(),
-                b.BidDocuments.OrderBy(d => d.Id).Select(d => $"{d.DocumentType}: {d.FileName}").ToList())).ToList());
+                b.BidDocuments.OrderBy(d => d.Id).Select(d => $"{d.DocumentType}: {d.FileName}").ToList(),
+                usd.GetValueOrDefault(b.Id))).ToList());
     }
 
     private IQueryable<Tender> Reviewable(int employeeId) => Db.Tenders.Where(t => t.Status == "Under Evaluation" &&
         Memberships(employeeId).Any(m => m.TenderId == t.Id));
-    private IQueryable<Bid> ReviewableBids(int employeeId) => Db.Bids.Where(b => b.Status == "Compliant" &&
+    private IQueryable<Bid> ReviewableBids(int employeeId) => Db.Bids.Where(b => b.Status == "Compliant" && b.SubmittedAt != null &&
         Reviewable(employeeId).Any(t => t.Id == b.TenderId));
 
-    private async Task<bool> CanManageCriteria(int tenderId, int employeeId)
-    {
-        var lead = await Db.TenderCommitteeMembers.Where(m => m.TenderId == tenderId && m.CommitteeType == "Evaluation" &&
-            m.MemberRole != "Department Representative" && m.EmployeeProfile.IsActive)
-            .OrderByDescending(m => m.MemberRole == "Committee Chair" || m.MemberRole == "Sourcing Manager")
-            .ThenBy(m => m.EmployeeProfileId).Select(m => (int?)m.EmployeeProfileId).FirstOrDefaultAsync();
-        return lead == employeeId;
-    }
 }

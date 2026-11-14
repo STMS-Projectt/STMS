@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using SourcingTenderSystem.Services;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -23,7 +25,7 @@ public class InvitationsController : Controller
     public async Task<IActionResult> Index(int? tenderId)
     {
         var invitations = _context.Invitations.AsNoTracking()
-            .Include(i => i.Tender)
+            .Include(i => i.Tender).Include(i => i.Round)
             .Include(i => i.SupplierProfile)
             .AsQueryable();
         if (tenderId.HasValue)
@@ -69,71 +71,52 @@ public class InvitationsController : Controller
         ModelState.Remove(nameof(Invitation.SupplierProfile));
         ModelState.Remove(nameof(Invitation.Status));
 
-        var ids = selectedSuppliers.Distinct().ToList();
+        var employeeId = await _context.EmployeeProfiles.Where(e => e.IsActive && e.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier))
+            .Select(e => (int?)e.Id).SingleOrDefaultAsync();
+        if (employeeId is null) return Forbid();
+        await using var tx = await TenderRules.LockAsync(_context, invitation.TenderId);
+        var ids = (selectedSuppliers ?? []).Distinct().ToList();
         var tender = await _context.Tenders.FindAsync(invitation.TenderId);
-        if (tender is null || tender.Status is not ("Draft" or "Published" or "Open") || tender.CloseDate <= DateTime.UtcNow)
-            ModelState.AddModelError(nameof(Invitation.TenderId), "Select a valid tender.");
+        var now = DateTime.UtcNow;
+        invitation.ExpiresAt = TenderRules.AsUtc(invitation.ExpiresAt);
+        if (tender is null || tender.Status is not ("Draft" or "Published" or "Open") || tender.CloseDate <= now)
+            ModelState.AddModelError(nameof(Invitation.TenderId), "Select a tender with an active or planned bidding round.");
         if (ids.Count == 0 || await EligibleSuppliers().CountAsync(s => ids.Contains(s.Id)) != ids.Count)
             ModelState.AddModelError(string.Empty, "Select at least one approved supplier.");
-        if (invitation.ExpiresAt <= DateTime.UtcNow)
-            ModelState.AddModelError(nameof(Invitation.ExpiresAt), "Choose an expiry date in the future.");
-
-        if (tender?.Counter >= 2 && await _context.Bids.AnyAsync(b => b.TenderId == invitation.TenderId &&
-            b.SubmittedAt != null && b.Status != "Withdrawn" && ids.Contains(b.SupplierProfileId)))
-            ModelState.AddModelError("", "Send second-round invitations only to suppliers without a submitted offer.");
+        if (tender != null && (invitation.ExpiresAt <= now || invitation.ExpiresAt <= tender.OpenDate))
+            ModelState.AddModelError(nameof(Invitation.ExpiresAt), "Choose a UTC expiry after bidding opens and in the future.");
+        if (await TenderRules.PreviouslySubmitted(_context, invitation.TenderId).AnyAsync(id => ids.Contains(id)))
+            ModelState.AddModelError("", "Suppliers who have already submitted a bid cannot be invited again.");
         if (!ModelState.IsValid)
         {
             await LoadInvitationOptionsAsync(invitation.TenderId, ids);
             return View(invitation);
         }
 
-        var prior = await _context.Invitations
-            .Where(i => i.TenderId == invitation.TenderId && ids.Contains(i.SupplierProfileId)).ToListAsync();
-        var alreadyInvited = prior.Select(i => i.SupplierProfileId).ToList();
-        if (tender!.Counter >= 2)
-        {
-            foreach (var existing in prior)
-            {
-                if (existing.Status != "Accepted") existing.Status = "Pending";
-                existing.ExpiresAt = invitation.ExpiresAt;
-                existing.SentAt = DateTime.UtcNow;
-                existing.DeclineReason = null;
-                if (existing.Status == "Pending") existing.RespondedAt = null;
-            }
-        }
-        foreach (var supplierId in tender.Counter >= 2 ? ids : ids.Except(alreadyInvited))
-        {
-            _context.Notifications.Add(new Notification { SupplierProfileId = supplierId,
-                Title = tender.Counter >= 2 ? "Second-round tender invitation" : "New tender invitation",
-                Message = tender.Title, Link = "/SupplierWorkspace/Invitations", CreatedAt = DateTime.UtcNow });
-        }
-        foreach (var supplierId in ids.Except(alreadyInvited))
+        var current = tender!;
+        if (await _context.TenderRounds.FindAsync(current.Id, current.Counter) == null)
+            TenderRules.NewRound(_context, current, employeeId.Value, now);
+        var prior = await TenderRules.CurrentInvitations(_context, current)
+            .Where(i => ids.Contains(i.SupplierProfileId)).Select(i => i.SupplierProfileId).ToListAsync();
+        var added = ids.Except(prior).ToArray();
+        foreach (var supplierId in added)
         {
             _context.Invitations.Add(new Invitation
             {
-                TenderId = invitation.TenderId,
-                SupplierProfileId = supplierId,
-                Status = "Pending",
-                SentAt = DateTime.UtcNow,
-                ExpiresAt = invitation.ExpiresAt
+                TenderId = current.Id, RoundNumber = current.Counter, SupplierProfileId = supplierId,
+                Status = "Pending", SentAt = now, ExpiresAt = invitation.ExpiresAt
             });
+            _context.Notifications.Add(new Notification { SupplierProfileId = supplierId,
+                Title = $"Tender invitation · Round {current.Counter}", Message = current.Title,
+                Link = "/SupplierWorkspace/Invitations", CreatedAt = now });
         }
-
-        if (tender.Counter >= 2)
-        {
-            var withdrawn = await _context.Bids.Where(b => b.TenderId == tender.Id &&
-                ids.Contains(b.SupplierProfileId) && b.Status == "Withdrawn").ToListAsync();
-            foreach (var bid in withdrawn)
-            {
-                bid.Status = "Draft";
-                bid.SubmittedAt = null;
-            }
-        }
+        if (added.Length > 0)
+            TenderRules.Audit(_context, current, employeeId, "InviteSuppliers", now, $"{added.Length} invitation attempts sent.");
         await _context.SaveChangesAsync();
-        TempData["Message"] = tender.Counter < 2 && alreadyInvited.Count == ids.Count
-            ? "The selected suppliers already have invitations."
-            : "Supplier invitations saved.";
-        return RedirectToAction(nameof(Index), new { tenderId = invitation.TenderId });
+        await tx.CommitAsync();
+        TempData["Message"] = added.Length == 0
+            ? "The selected suppliers already have invitations in this round." : "Supplier invitations saved.";
+        return RedirectToAction(nameof(Index), new { tenderId = current.Id });
     }
 
     private IQueryable<SupplierProfile> EligibleSuppliers() =>
@@ -141,102 +124,21 @@ public class InvitationsController : Controller
 
     private async Task LoadInvitationOptionsAsync(int? tenderId, IEnumerable<int>? selected = null)
     {
+        var now = DateTime.UtcNow;
         ViewData["TenderId"] = new SelectList(await _context.Tenders.AsNoTracking()
+            .Where(t => (t.Status == "Draft" || t.Status == "Published" || t.Status == "Open") && t.CloseDate > now)
             .OrderBy(t => t.Title).ToListAsync(), "Id", "Title", tenderId);
-        ViewData["Suppliers"] = await EligibleSuppliers().Where(s => !_context.Bids.Any(b => b.TenderId == tenderId && b.Tender.Counter >= 2 && b.SupplierProfileId == s.Id && b.SubmittedAt != null && b.Status != "Withdrawn")).OrderBy(s => s.CompanyName).ToListAsync();
+        var tender = tenderId.HasValue ? await _context.Tenders.FindAsync(tenderId.Value) : null;
+        var suppliers = EligibleSuppliers();
+        if (tender != null)
+        {
+            var sent = TenderRules.CurrentInvitations(_context, tender).Select(i => i.SupplierProfileId);
+            var submitted = TenderRules.PreviouslySubmitted(_context, tender.Id);
+            suppliers = suppliers.Where(s => !sent.Contains(s.Id) && !submitted.Contains(s.Id));
+            ViewData["RoundNumber"] = tender.Counter;
+        }
+        ViewData["Suppliers"] = await suppliers.OrderBy(s => s.CompanyName).ToListAsync();
         ViewData["SelectedSuppliers"] = selected?.ToHashSet() ?? new HashSet<int>();
     }
-    // GET: INVITATIONS/Edit/5////////////////////////////////////////////////
-    public async Task<IActionResult> Edit(int? id)
-    {
-        if (id == null)
-        {
-            return NotFound();
-        }
-
-        var invitation = await _context.Invitations.FindAsync(id);
-        if (invitation == null)
-        {
-            return NotFound();
-        }
-
-        ViewData["TenderId"] = new SelectList(_context.Tenders, "Id", "Title", invitation.TenderId);
-        ViewData["SupplierProfileId"] = new SelectList(_context.SupplierProfiles, "Id", "CompanyName", invitation.SupplierProfileId);
-        return View(invitation);
-    }
-
-    // POST: INVITATIONS/Edit/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int? id, [Bind("Id,TenderId,SupplierProfileId,Status,SentAt,ExpiresAt,")] Invitation invitation)
-    {
-        if (id != invitation.Id)
-        {
-            return NotFound();
-        }
-
-        if (ModelState.IsValid)
-        {
-            try
-            {
-                _context.Update(invitation);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!InvitationExists(invitation.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-            return RedirectToAction(nameof(Index));
-        }
-        return View(invitation);
-    }
-
-    // GET: INVITATIONS/Delete/5
-    public async Task<IActionResult> Delete(int? id)
-    {
-        if (id == null)
-        {
-            return NotFound();
-        }
-
-        var invitation = await _context.Invitations
-            .FirstOrDefaultAsync(m => m.Id == id);
-        if (invitation == null)
-        {
-            return NotFound();
-        }
-
-        ViewData["TenderId"] = new SelectList(_context.Tenders, "Id", "Title", invitation.TenderId);
-        ViewData["SupplierProfileId"] = new SelectList(_context.SupplierProfiles, "Id", "CompanyName", invitation.SupplierProfileId);
-        return View(invitation);
-    }
-
-    // POST: INVITATIONS/Delete/5
-    [HttpPost, ActionName("Delete")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int? id)
-    {
-        var invitation = await _context.Invitations.FindAsync(id);
-        if (invitation != null)
-        {
-            _context.Invitations.Remove(invitation);
-        }
-
-        await _context.SaveChangesAsync();
-        return RedirectToAction(nameof(Index));
-    }
-
-    private bool InvitationExists(int id)
-    {
-        return _context.Invitations.Any(e => e.Id == id);
-    }
+    // Sent attempts are immutable except for the supplier's response.
 }

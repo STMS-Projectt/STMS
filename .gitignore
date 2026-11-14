@@ -14,3 +14,6 @@ obj/
 
 # Logs
 *.log
+# Biometric reference data must never be committed or served.
+**/wwwroot/uploads/biometrics/
+**/App_Data/Biometrics/

@@ -1,0 +1,10 @@
+@model Tender
+@{ ViewData["Title"] = "Reopen bidding"; }
+<header class="page-heading"><div><p class="eyebrow">BIDDING ROUNDS</p><h1>Open round @(Model.Counter + 1)</h1><p>Existing bids and invitations will stay in the tender history.</p></div></header>
+<form asp-action="Reopen" asp-route-id="@Model.Id" method="post" class="surface form-card">
+    <label class="form-label" for="round-deadline">New closing deadline (UTC)</label>
+    <input id="round-deadline" class="form-control mb-3" name="closeDate" type="datetime-local" required />
+    <label class="form-label" for="round-reason">Why is the tender reopening?</label>
+    <textarea id="round-reason" class="form-control mb-3" name="reason" maxlength="500" required></textarea>
+    <button type="submit" class="btn btn-primary">Open next round</button>
+</form>

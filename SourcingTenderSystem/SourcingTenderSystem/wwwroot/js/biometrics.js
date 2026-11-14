@@ -1,46 +1,12 @@
 (() => {
-    const root = document.querySelector("[data-bio]");
-    if (!root) return;
+function bind(root) {
+    if (!root || root.dataset.bioReady) return;
+    root.dataset.bioReady = "true";
     const status = root.querySelector("[data-bio-status]");
     const token = root.querySelector('input[name="__RequestVerificationToken"]').value;
-    const video = root.querySelector("[data-preview]");
-    const open = root.querySelector("[data-open-camera]");
-    const capture = root.querySelector("[data-capture]");
-    const stop = root.querySelector("[data-stop-camera]");
     const phone = root.querySelector("[data-phone-button]");
     const password = root.querySelector("#bio-password");
-    let stream;
     let busy = false;
-
-    function closeCamera() {
-        stream?.getTracks().forEach(track => track.stop());
-        stream = null;
-        if (video) {
-            video.srcObject = null;
-            video.hidden = true;
-            capture.disabled = true;
-            stop.hidden = true;
-        }
-    }
-    window.addEventListener("pagehide", closeCamera);
-    stop?.addEventListener("click", closeCamera);
-    open?.addEventListener("click", async () => {
-        if (busy || stream) return;
-        try {
-            open.disabled = true;
-            if (!navigator.mediaDevices?.getUserMedia) throw new Error();
-            stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user", width: { ideal: 720 } }, audio: false });
-            video.srcObject = stream;
-            video.hidden = false;
-            stop.hidden = false;
-            await video.play();
-            capture.disabled = false;
-            status.textContent = "Camera ready. Look directly at the camera before continuing.";
-        } catch {
-            closeCamera();
-            status.textContent = "Camera unavailable. Allow camera access and use HTTPS or localhost.";
-        } finally { open.disabled = false; }
-    });
 
     async function post(url, data) {
         const response = await fetch(url, { method: "POST", credentials: "same-origin",
@@ -58,7 +24,6 @@
             return;
         }
         busy = true;
-        if (capture) capture.disabled = true;
         if (phone) phone.disabled = true;
         status.textContent = "Verifying…";
         try { window.location.assign((await operation()).redirectUrl); }
@@ -67,31 +32,10 @@
         } finally {
             if (password) password.value = "";
             busy = false;
-            if (capture) capture.disabled = !stream;
             if (phone) phone.disabled = false;
         }
     }
-    capture?.addEventListener("click", () => {
-        if (!video.videoWidth) return;
-        const email = root.querySelector("[data-bio-email]");
-        if (email && root.dataset.knownFace !== "true" && !email.value.trim()) {
-            status.textContent = "Enter your account email above to use face sign-in on this browser.";
-            email.focus();
-            return;
-        }
-        if (email?.value && !email.reportValidity()) return;
-        run(async () => {
-            const canvas = document.createElement("canvas");
-            canvas.width = Math.min(video.videoWidth, 720);
-            canvas.height = Math.round(video.videoHeight * canvas.width / video.videoWidth);
-            canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
-            const jpeg = canvas.toDataURL("image/jpeg", 0.8);
-            closeCamera();
-            return post(root.dataset.camera, jpeg);
-        });
-    });
     phone?.addEventListener("click", () => run(async () => {
-        closeCamera();
         if (!window.isSecureContext || !window.PublicKeyCredential?.parseCreationOptionsFromJSON ||
             !PublicKeyCredential.parseRequestOptionsFromJSON || !PublicKeyCredential.prototype.toJSON)
             throw new Error("Use HTTPS and a current browser on a phone with screen unlock configured.");
@@ -101,4 +45,39 @@
             : await navigator.credentials.get({ publicKey: PublicKeyCredential.parseRequestOptionsFromJSON(options) });
         return post(root.dataset.phone, JSON.stringify(credential));
     }));
+    tabs(root);
+}
+
+// Sign-in method tabs (WAI-ARIA tabs pattern with arrow-key navigation).
+function tabs(root) {
+    const list = root.querySelector("[data-auth-tabs]");
+    if (!list) return;
+    const all = [...list.querySelectorAll('[role="tab"]')];
+    const select = (tab, focus) => {
+        all.forEach(item => {
+            const on = item === tab;
+            item.setAttribute("aria-selected", on ? "true" : "false");
+            item.tabIndex = on ? 0 : -1;
+            document.getElementById(item.getAttribute("aria-controls")).hidden = !on;
+        });
+        if (focus) tab.focus();
+        const email = root.querySelector("[data-bio-email]"), faceEmail = root.querySelector("[data-face-email]");
+        if (tab.id === "tab-face" && faceEmail && !faceEmail.value && email?.value) faceEmail.value = email.value;
+    };
+    all.forEach((tab, index) => {
+        tab.addEventListener("click", () => select(tab, false));
+        tab.addEventListener("keydown", event => {
+            const move = { ArrowRight: 1, ArrowLeft: -1, Home: -index, End: all.length - 1 - index }[event.key];
+            if (move === undefined) return;
+            event.preventDefault();
+            select(all[(index + move + all.length) % all.length], true);
+        });
+    });
+    root.querySelectorAll("[data-auth-switch]").forEach(button =>
+        button.addEventListener("click", () => select(document.getElementById(button.dataset.authSwitch), true)));
+}
+
+function initialize() { document.querySelectorAll("[data-bio]").forEach(bind); }
+document.addEventListener("workspace:load", initialize);
+initialize();
 })();

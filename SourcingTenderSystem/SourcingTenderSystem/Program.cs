@@ -22,7 +22,7 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
     .AddDefaultTokenProviders();
 builder.Services.ConfigureApplicationCookie(options =>
 {
-    options.Cookie.Name = ".STMS.BiometricAuth";
+    options.Cookie.Name = ".STMS.BiometricAuth.v2";
     options.LoginPath = "/Account/Login";
     options.AccessDeniedPath = "/Account/AccessDenied";
 });
@@ -38,17 +38,18 @@ builder.Services.AddHttpClient(BidAiAdvisor.HttpClientName, client =>
 });
 
 builder.Services.AddSingleton<BidAiAdvisor>();
-
-// Face++ Biometrics
-builder.Services.AddHttpClient("FacePlusPlus");
-
-builder.Services.AddScoped<
-    SourcingTenderSystem.Services.Biometrics.IBiometricService,
-    SourcingTenderSystem.Services.Biometrics.BiometricService>();
+// Free exchange-rate reference (Frankfurter v2) for USD-equivalent bid display only.
+builder.Services.AddMemoryCache();
+builder.Services.AddHttpClient(ExchangeRates.HttpClientName, client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["ExchangeRates:BaseUrl"] is { Length: > 0 } fx ? fx.TrimEnd('/') + "/" : "https://api.frankfurter.dev/");
+    client.Timeout = TimeSpan.FromSeconds(8);
+});
+builder.Services.AddSingleton<ExchangeRates>();
 
 builder.Services.AddAuthentication().AddCookie("BiometricPending", options =>
 {
-    options.Cookie.Name = ".STMS.BiometricPending";
+    options.Cookie.Name = ".STMS.BiometricPending.v2";
     options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
     options.SlidingExpiration = false;
 });
@@ -61,14 +62,26 @@ builder.Services.Configure<IdentityPasskeyOptions>(options =>
 builder.Services.AddRateLimiter(options =>
 {
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.AddPolicy("face-lab", context => RateLimitPartition.GetFixedWindowLimiter(
+        context.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ??
+        context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+        _ => new FixedWindowRateLimiterOptions { PermitLimit = 16, Window = TimeSpan.FromMinutes(5) }));
     options.AddPolicy("biometric-login", context => RateLimitPartition.GetFixedWindowLimiter(
         context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
         _ => new FixedWindowRateLimiterOptions { PermitLimit = 12, Window = TimeSpan.FromMinutes(2) }));
 });
+builder.Services.AddSingleton(TimeProvider.System);
+builder.Services.AddSingleton<SourcingTenderSystem.Services.Biometrics.FaceLab>();
+builder.Services.AddHttpClient("FreeFacePlusPlus", client =>
+{
+    client.Timeout = TimeSpan.FromSeconds(8);
+    client.MaxResponseContentBufferSize = 64 * 1024;
+}).ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { AllowAutoRedirect = false });
 builder.Services.AddScoped<ClarificationRouting>();
 builder.Services.AddScoped<ProtectedPdf>();
 ProtectedPdf.ConfigureFonts(builder.Configuration);
 builder.Services.AddHostedService<TenderClock>();
+builder.Services.AddScoped<BidDocumentAccess>();
 var app = builder.Build();
 
 if (args.Contains("--reset-local-test-data"))
@@ -115,8 +128,8 @@ app.Use(async (context, next) =>
     await next(context);
 });
 app.UseRouting();
-app.UseRateLimiter();
 app.UseAuthentication();
+app.UseRateLimiter();
 app.UseAuthorization();
 app.UseMiddleware<SourcingTenderSystem.Services.Biometrics.BiometricEnforcementMiddleware>();
 
@@ -125,3 +138,5 @@ app.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
 app.Run();
+
+public partial class Program { }

@@ -31,10 +31,11 @@
             }
         });
     }
-    document.querySelectorAll("[data-dismiss-notice]").forEach(button =>
+    const initialize = root => {
+    root.querySelectorAll("[data-dismiss-notice]").forEach(button =>
         button.addEventListener("click", () => { button.closest(".notice").remove(); document.querySelector("main").focus(); }));
 
-    document.querySelectorAll("[data-directory]").forEach(directory => {
+    root.querySelectorAll("[data-directory]").forEach(directory => {
         const search = directory.querySelector("[data-filter-search]");
         if (!search) return;
         const rows = [...directory.querySelectorAll("tbody tr")];
@@ -60,7 +61,7 @@
         apply();
     });
 
-    document.querySelectorAll("[data-password-toggle]").forEach(button => {
+    root.querySelectorAll("[data-password-toggle]").forEach(button => {
         const input = document.getElementById(button.getAttribute("aria-controls"));
         if (!input) return;
         button.hidden = false;
@@ -72,7 +73,7 @@
         });
     });
 
-    document.querySelectorAll("[data-upload-zone]").forEach(zone => {
+    root.querySelectorAll("[data-upload-zone]").forEach(zone => {
         const input = zone.querySelector('input[type="file"]');
         const status = zone.querySelector("[data-file-status]");
         if (!input || !status) return;
@@ -92,4 +93,7 @@
             else { status.textContent = "Drop one PDF at a time."; }
         });
     });
+    };
+    initialize(document);
+    document.addEventListener("workspace:load", event => initialize(event.detail));
 })();

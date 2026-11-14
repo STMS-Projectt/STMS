@@ -15,7 +15,7 @@
             ("MyRequests", "My Requests", "file"), ("Create", "New Request", "plus"), ("Committee", "My Committee", "users") })
         {
             <a class="side-link @(current == route ? "is-current" : "")" aria-current="@(current == route ? "page" : null)"
-               asp-controller="PurchaseRequisitions" asp-action="@route">
+               asp-controller="PurchaseRequisitions" asp-action="@route" data-workspace-dialog="@(route == "Create" ? "" : null)">
                 <partial name="_Icon" model="icon" /> @label
             </a>
         }

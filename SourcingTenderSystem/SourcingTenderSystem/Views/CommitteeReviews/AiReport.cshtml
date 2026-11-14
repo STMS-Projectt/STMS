@@ -87,8 +87,8 @@
                 <tr class="@(f.BidId == best.BidId ? "is-best" : "")">
                     <td>#@assessment.OverallRank</td>
                     <td><strong>@f.Supplier</strong>@if (f.BidId == best.BidId) { <span class="tag">AI pick</span> }</td>
-                    <td class="num @(f.PriceRank == 1 ? "best-cell" : "")">@f.TotalPrice.ToString("N2") @f.Currency</td>
-                    <td class="num">@(f.PriceGapPercent == 0 ? "Lowest" : $"+{f.PriceGapPercent}%")</td>
+                    <td class="num @(f.PriceRank == 1 ? "best-cell" : "")">@f.TotalPrice.ToString("N2") @f.Currency@if (f.UsdEquivalent is decimal usd) { <br /><span class="muted">≈ @usd.ToString("N2") USD</span> }</td>
+                    <td class="num">@(!f.PriceComparable ? "Not comparable (no exchange rate)" : f.PriceGapPercent == 0 ? "Lowest" : $"+{f.PriceGapPercent}%")</td>
                     <td class="num @(f.DeliveryRank == 1 ? "best-cell" : "")">@f.DeliveryDays days</td>
                     <td class="num">@f.ValidityDays days</td>
                     <td>@f.ItemsCovered / @f.ItemsRequested</td>
@@ -114,7 +114,9 @@
                 @foreach (var item in input.RequestedItems)
                 {
                     var prices = input.Bids.Select(b => b.Lines.FirstOrDefault(l => l.RequestedItemId == item.Id)).ToList();
-                    var lowest = prices.Where(p => p is not null).Select(p => p!.UnitPrice).DefaultIfEmpty().Min();
+                    // Highlight the lowest unit price only when every bid uses the same currency (no raw cross-currency comparison).
+                    var lowest = input.Bids.Select(b => b.Currency).Distinct().Count() == 1
+                        ? prices.Where(p => p is not null).Select(p => p!.UnitPrice).DefaultIfEmpty().Min() : (decimal?)null;
                     <tr>
                         <td><strong>@item.Name</strong>@if (!string.IsNullOrWhiteSpace(item.Specifications)) { <br /><span class="muted">@item.Specifications</span> }</td>
                         <td class="num">@item.Quantity @item.Unit</td>

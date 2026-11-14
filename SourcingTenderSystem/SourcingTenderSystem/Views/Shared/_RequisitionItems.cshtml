@@ -25,8 +25,8 @@ else
                     @if (canEdit)
                     {
                         <td>
-                            <a asp-controller="RequisitionItems" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
-                            <a class="ms-2 text-danger" asp-controller="RequisitionItems" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                            <a data-workspace-dialog asp-controller="RequisitionItems" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                            <a data-workspace-dialog class="ms-2 text-danger" asp-controller="RequisitionItems" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
                         </td>
                     }
                 </tr>

@@ -25,7 +25,7 @@
 }
 <section class="surface detail-card request-section">
     <div class="card-heading"><h2>Request overview</h2>
-        @if (canEdit) { <a class="btn btn-outline-secondary" asp-action="Edit" asp-route-id="@Model.Id">Edit request</a> }
+        @if (canEdit) { <a data-workspace-dialog class="btn btn-outline-secondary" asp-action="Edit" asp-route-id="@Model.Id">Edit request</a> }
     </div>
     <dl class="request-meta">
         <div><dt>Priority <span lang="ar" dir="rtl">الأولوية</span></dt><dd>@Model.Priority</dd></div>
@@ -37,7 +37,7 @@
 <section class="surface directory request-section">
     <div class="directory-toolbar">
         <div><h2 class="mb-0">Requested items</h2><span class="result-count">@Model.Items.Count line item(s)</span></div>
-        @if (canEdit) { <a class="btn btn-outline-secondary" asp-controller="RequisitionItems" asp-action="Create" asp-route-requestId="@Model.Id"><partial name="_Icon" model='@("plus")' /> Add item</a> }
+        @if (canEdit) { <a data-workspace-dialog class="btn btn-outline-secondary" asp-controller="RequisitionItems" asp-action="Create" asp-route-requestId="@Model.Id"><partial name="_Icon" model='@("plus")' /> Add item</a> }
     </div>
     @if (Model.Items.Count == 0)
     {
@@ -54,8 +54,8 @@
                     <tr><td><strong>@item.ItemName</strong></td><td>@item.Quantity @item.Unit</td><td class="request-prose">@item.Specifications</td>
                     @if (canEdit)
                     {
-                        <td><a class="table-action" asp-controller="RequisitionItems" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
-                            <a class="table-action text-danger ms-2" asp-controller="RequisitionItems" asp-action="Delete" asp-route-id="@item.Id">Remove</a></td>
+                        <td><a data-workspace-dialog class="table-action" asp-controller="RequisitionItems" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                            <a data-workspace-dialog class="table-action text-danger ms-2" asp-controller="RequisitionItems" asp-action="Delete" asp-route-id="@item.Id">Remove</a></td>
                     }
                     </tr>
                 }

@@ -22,7 +22,7 @@
 
 @* The bid id goes in the URL (/Compliance/MarkNonCompliant/5); the controller checks the bid again on POST *@
 <form asp-action="MarkNonCompliant" asp-route-id="@bid.Id" method="post" asp-antiforgery="true" class="admin-form"
-      onsubmit="return confirm('Mark this bid as Non-Compliant? The supplier will see the reason.');">
+      data-workspace-confirm="Mark this bid as Non-Compliant? The supplier will see the reason." onsubmit="return window.stmsWorkspaceReady || confirm(this.dataset.workspaceConfirm);">
     <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
     <div class="mb-3">
         <label asp-for="Reason" class="form-label"></label>

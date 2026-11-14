@@ -1,7 +1,7 @@
 @model EmployeeProfile
 @{ ViewData["Title"] = "Employee details"; }
 <a class="back-link" asp-action="Index" ><partial name="_Icon" model='@("back")' /> Employees</a>
-<header class="page-heading"><div><p class="eyebrow">ADMINISTRATION</p><h1>@Model.FullName</h1><p>Employee profile and account access.</p></div><div class="button-row"><a class="btn btn-outline-secondary" asp-action="ResetPassword" asp-route-id="@Model.Id">Reset password</a><a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model.Id">Edit employee</a></div></header>
+<header class="page-heading"><div><p class="eyebrow">ADMINISTRATION</p><h1>@Model.FullName</h1><p>Employee profile and account access.</p></div><div class="button-row"><a data-workspace-dialog class="btn btn-outline-secondary" asp-action="ResetPassword" asp-route-id="@Model.Id">Reset password</a><a data-workspace-dialog class="btn btn-primary" asp-action="Edit" asp-route-id="@Model.Id">Edit employee</a></div></header>
 <div class="form-shell">
     <section class="surface detail-card"><h2>Employee information</h2><dl class="detail-grid"><div><dt>Email</dt><dd>@Model.User.Email</dd></div>
 <div><dt>Job title</dt><dd>@(string.IsNullOrWhiteSpace(Model.JobTitle) ? "Not specified" : Model.JobTitle)</dd></div>
@@ -10,6 +10,6 @@
 <div><dt>Account status</dt><dd><partial name="_Status" model='@(Model.IsActive ? "Active" : "Inactive")' /></dd></div></dl></section>
     @if (Model.IsActive && ViewBag.IsSelf == false)
     {
-        <aside class="surface helper-card"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("shield")' /></span><h2>Account access</h2><p>Deactivate this account to revoke access. The employee record will remain in the directory.</p><a class="btn btn-outline-danger" asp-action="Deactivate" asp-route-id="@Model.Id">Deactivate account</a></aside>
+        <aside class="surface helper-card"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("shield")' /></span><h2>Account access</h2><p>Deactivate this account to revoke access. The employee record will remain in the directory.</p><a data-workspace-dialog class="btn btn-outline-danger" asp-action="Deactivate" asp-route-id="@Model.Id">Deactivate account</a></aside>
     }
 </div>

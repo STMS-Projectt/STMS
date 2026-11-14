@@ -1,4 +1,3 @@
-using System.Data;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -39,7 +38,7 @@ public class ComplianceController : Controller
                 rows.Add(new CompliancePendingRow { Tender = tender });
                 continue;
             }
-            int submitted = await CountBidsAsync(tender.Id, "Submitted");
+            int submitted = await EvaluationRules.Unresolved(_context, tender.Id).CountAsync();
             int compliant = await CountBidsAsync(tender.Id, "Compliant");
             int nonCompliant = await CountBidsAsync(tender.Id, "Non-Compliant");
 
@@ -55,7 +54,7 @@ public class ComplianceController : Controller
                 SubmittedCount = submitted,
                 CompliantCount = compliant,
                 NonCompliantCount = nonCompliant,
-                ReadyForEvaluation = tender.Status == "Closed" && submitted == 0 && compliant > 0
+                ReadyForEvaluation = TenderRules.CanEvaluate(tender, await TenderRules.EligibleSuppliers(_context, tender.Id).CountAsync()) && submitted == 0 && compliant > 0
             });
         }
 
@@ -64,7 +63,7 @@ public class ComplianceController : Controller
 
     // GET: /Compliance/Review?tenderId=3   (this is also the "Review & Compare Offers" page)
     [HttpGet]
-    public async Task<IActionResult> Review(int tenderId)
+    public async Task<IActionResult> Review(int tenderId, [FromServices] ExchangeRates rates)
     {
         var tender = await _context.Tenders.FindAsync(tenderId);
         if (tender == null)
@@ -78,6 +77,7 @@ public class ComplianceController : Controller
         // All bids except Draft and Withdrawn, lowest total price first
         var bids = await _context.Bids
             .Include(b => b.SupplierProfile)
+            .Include(b => b.ComplianceClarification)
             .Include(b => b.BidItems)
             .Include(b => b.BidDocuments)
             .Where(b => b.TenderId == tender.Id && b.Status != "Draft" && b.Status != "Withdrawn")
@@ -86,6 +86,18 @@ public class ComplianceController : Controller
 
         var model = new ComplianceReviewViewModel();
         model.Tender = tender;
+        // Never order different currencies by raw amount: use the USD reference when every bid has one,
+        // otherwise group by currency (lowest first inside each currency).
+        if (bids.Select(b => b.Currency).Distinct().Count() > 1)
+        {
+            var rateDate = ExchangeRates.ReferenceDate(tender.CloseDate, DateTime.UtcNow);
+            foreach (var bid in bids)
+                model.UsdReferences[bid.Id] = await rates.ConvertAsync(bid.TotalPrice, bid.Currency, rateDate);
+            model.UsdOrdered = model.UsdReferences.Values.All(c => c != null);
+            bids = model.UsdOrdered
+                ? bids.OrderBy(b => model.UsdReferences[b.Id]!.UsdAmount).ThenBy(b => b.Id).ToList()
+                : bids.OrderBy(b => b.Currency).ThenBy(b => b.TotalPrice).ThenBy(b => b.Id).ToList();
+        }
         model.Bids = bids;
         model.RequestedItems = await _context.PurchaseRequisitionItems
             .Where(p => p.PurchaseRequisitionId == tender.PurchaseRequisitionId)
@@ -96,7 +108,7 @@ public class ComplianceController : Controller
         // Count the statuses and check if all bids use the same currency
         foreach (var bid in bids)
         {
-            if (bid.Status == "Submitted")
+            if (bid.Status is "Submitted" or "Pending Clarification")
             {
                 model.SubmittedCount++;
             }
@@ -110,8 +122,9 @@ public class ComplianceController : Controller
             }
         }
 
+        ViewBag.EligibleSuppliers = await TenderRules.EligibleSuppliers(_context, tenderId).CountAsync();
         model.CanSendToEvaluation = model.TenderIsClosed
-                                    && bids.Count(b => b.SubmittedAt != null && b.Status is ("Submitted" or "Compliant" or "Non-Compliant")) >= TenderRules.Minimum(tender)
+                                    && TenderRules.CanEvaluate(tender, (int)ViewBag.EligibleSuppliers)
                                     && model.SubmittedCount == 0
                                     && model.CompliantCount > 0;
 
@@ -127,19 +140,16 @@ public class ComplianceController : Controller
             .SingleOrDefaultAsync(e => e.UserId == userId && e.IsActive);
         if (employee is null) return Forbid();
 
-        await using var transaction = await _context.Database.BeginTransactionAsync(IsolationLevel.Serializable);
+        await using var transaction = await TenderRules.LockAsync(_context, tenderId);
+        var tender = await _context.Tenders.FindAsync(tenderId);
+        if (tender is null) return NotFound();
         var now = DateTime.UtcNow;
-        var changed = await _context.Tenders.Where(t => t.Id == tenderId && t.Status == "Open" &&
-            t.OpenDate <= now && t.CloseDate > now)
-            .ExecuteUpdateAsync(set => set.SetProperty(t => t.Status, "Closed"));
-        if (changed == 0)
+        if (!TenderRules.IsOpen(tender, now))
         {
             TempData["Error"] = "Only an open tender before its bidding deadline can be closed early.";
             return RedirectToAction(nameof(Review), new { tenderId });
         }
-
-        _context.AuditLogs.Add(new AuditLog { EmployeeProfileId = employee.Id, EntityName = nameof(Tender),
-            EntityId = tenderId, Action = "CloseEarly", Details = "Tender closed early from compliance review.", CreatedAt = now });
+        await TenderRules.CloseRoundAsync(_context, tender, now, employee.Id, true);
         await _context.SaveChangesAsync();
         await transaction.CommitAsync();
         TempData["Msg"] = "Tender closed. You can now review submitted offers.";
@@ -150,13 +160,16 @@ public class ComplianceController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> MarkCompliant(int id)
     {
+        var tenderId = await _context.Bids.Where(b => b.Id == id).Select(b => (int?)b.TenderId).SingleOrDefaultAsync();
+        if (tenderId is null) return NotFound();
+        await using var tx = await TenderRules.LockAsync(_context, tenderId.Value);
         var bid = await GetBidAsync(id);
         if (bid == null)
         {
             return NotFound();
         }
 
-        string? error = CheckCanDecide(bid);
+        string? error = await CheckCanDecide(bid);
         if (error != null)
         {
             TempData["Error"] = error;
@@ -164,7 +177,9 @@ public class ComplianceController : Controller
         }
 
         bid.Status = "Compliant";
+        await AuditDecision(bid);
         await _context.SaveChangesAsync();
+        await tx.CommitAsync();
 
         // TODO: audit log + notification (team mechanism) - bid marked compliant
 
@@ -182,7 +197,7 @@ public class ComplianceController : Controller
             return NotFound();
         }
 
-        string? error = CheckCanDecide(bid);
+        string? error = await CheckCanDecide(bid);
         if (error != null)
         {
             TempData["Error"] = error;
@@ -198,6 +213,9 @@ public class ComplianceController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> MarkNonCompliant(int id, NonCompliantViewModel model)
     {
+        var tenderId = await _context.Bids.Where(b => b.Id == id).Select(b => (int?)b.TenderId).SingleOrDefaultAsync();
+        if (tenderId is null) return NotFound();
+        await using var tx = await TenderRules.LockAsync(_context, tenderId.Value);
         var bid = await GetBidAsync(id);
         if (bid == null)
         {
@@ -205,13 +223,14 @@ public class ComplianceController : Controller
         }
 
         // Check again on POST
-        string? error = CheckCanDecide(bid);
+        string? error = await CheckCanDecide(bid);
         if (error != null)
         {
             TempData["Error"] = error;
             return RedirectToAction(nameof(Review), new { tenderId = bid.TenderId });
         }
 
+        if (string.IsNullOrWhiteSpace(model.Reason)) ModelState.AddModelError(nameof(model.Reason), "A reason is required.");
         if (!ModelState.IsValid)
         {
             ViewBag.Bid = bid;
@@ -220,7 +239,9 @@ public class ComplianceController : Controller
 
         bid.Status = "Non-Compliant";
         bid.ComplianceNotes = model.Reason.Trim();
+        await AuditDecision(bid);
         await _context.SaveChangesAsync();
+        await tx.CommitAsync();
 
         // TODO: audit log + notification (team mechanism) - bid marked non-compliant
 
@@ -232,6 +253,14 @@ public class ComplianceController : Controller
     [HttpPost]
     public IActionResult SendToEvaluation(int tenderId) =>
         RedirectToAction("AssignCommittee", "Tenders", new { id = tenderId });
+    private async Task AuditDecision(Bid bid)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var actor = await _context.EmployeeProfiles.Where(e => e.UserId == userId && e.IsActive).Select(e => (int?)e.Id).SingleOrDefaultAsync();
+        if (actor is int employee)
+            EvaluationRules.Audit(_context, bid.TenderId, employee, "ComplianceDecision", $"Bid #{bid.Id}: {bid.Status}", DateTime.UtcNow);
+    }
+
     private async Task<Bid?> GetBidAsync(int bidId)
     {
         return await _context.Bids
@@ -241,14 +270,18 @@ public class ComplianceController : Controller
     }
 
     // Returns an error message, or null if the officer can mark this bid now
-    private string? CheckCanDecide(Bid bid)
+    private async Task<string?> CheckCanDecide(Bid bid)
     {
         if (bid.Tender.Status != "Closed")
         {
             return "Bids can be checked only while the tender is Closed.";
         }
 
-        if (bid.Status != "Submitted")
+        if (bid.Status == "Pending Clarification")
+            return await _context.ClarificationRequests.AnyAsync(r => r.Id == bid.ComplianceClarificationId &&
+                r.BidId == bid.Id && r.Status == "Resolved")
+                ? null : "Resolve the linked clarification before recording a compliance decision.";
+        if (bid.Status != "Submitted" || bid.SubmittedAt is null)
         {
             return "Only a submitted bid can be checked. This bid is already " + bid.Status + ".";
         }

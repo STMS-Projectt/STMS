@@ -1,9 +1,11 @@
 // Shared voice search for Admin Employees, Suppliers, and Departments.
 (() => {
-    const directory = document.querySelector('[data-directory]');
+    function initialize(root) {
+    const directory = root.querySelector('[data-directory]');
     const search = directory?.querySelector('[data-filter-search]');
     const button = directory?.querySelector('[data-directory-voice-search]');
-    if (!search || !button) return;
+    if (!search || !button || button.dataset.voiceReady) return;
+    button.dataset.voiceReady = "true";
     const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!Recognition) {
         button.disabled = true;
@@ -36,4 +38,7 @@
         try { recognition.start(); }
         catch { button.title = 'Could not start voice search'; }
     });
+    }
+    initialize(document);
+    document.addEventListener("workspace:load", event => initialize(event.detail));
 })();

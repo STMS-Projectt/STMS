@@ -11,7 +11,7 @@
         <p>@(trading ? "Manage tender invitations and follow your bids." : "Track your supplier application and supporting documents.")</p>
         <div class="button-row">
             @if (trading) { <a class="btn btn-light" asp-action="Invitations">Open tender invitations <partial name="_Icon" model='@("arrow")' /></a> }
-            else if (Model.Status == SupplierStatus.Pending) { <a class="btn btn-light" asp-controller="SupplierRegistration" asp-action="UploadDocuments">Upload document</a> }
+            else if (Model.Status == SupplierStatus.Pending) { <a data-workspace-dialog class="btn btn-light" asp-controller="SupplierRegistration" asp-action="UploadDocuments">Upload document</a> }
             <a class="btn btn-on-dark" asp-controller="SupplierRegistration" asp-action="RegistrationStatus">View application</a>
         </div>
     </div>

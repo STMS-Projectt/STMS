@@ -15,10 +15,10 @@
             <span asp-validation-for="TenderId" class="text-danger"></span>
         </div>
         <fieldset class="mb-3">
-            <legend class="form-label">Approved suppliers</legend>
+            <legend class="form-label">Eligible suppliers @if (ViewData["RoundNumber"] is int round) { <span>· Round @round</span> }</legend>
             @if (suppliers.Count == 0)
             {
-                <p class="subtle mb-0">No approved suppliers are available. Ask an administrator to approve a supplier account.</p>
+                <p class="subtle mb-0">No approved suppliers are eligible for a new invitation in this round.</p>
             }
             else
             {

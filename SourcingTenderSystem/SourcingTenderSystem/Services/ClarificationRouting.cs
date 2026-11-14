@@ -76,7 +76,7 @@ public sealed class ClarificationRouting(ApplicationDbContext db)
         {
             var bid = await db.Bids.AsNoTracking().Include(b => b.Tender).Include(b => b.SupplierProfile)
                 .SingleOrDefaultAsync(b => b.Id == id);
-            if (bid is null || bid.SubmittedAt is null || bid.Status is not ("Submitted" or "Compliant" or "Non-Compliant") ||
+            if (bid is null || bid.SubmittedAt is null || bid.Status is not ("Submitted" or "Pending Clarification" or "Compliant" or "Non-Compliant") ||
                 bid.Tender.Status is not ("Open" or "Closed" or "Under Evaluation") ||
                 bid.SupplierProfile.Status != SupplierStatus.Approved) return null;
             var supplier = bid.SupplierProfile;

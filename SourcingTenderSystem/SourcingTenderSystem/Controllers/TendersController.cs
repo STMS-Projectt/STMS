@@ -1,3 +1,4 @@
+using SourcingTenderSystem.ViewModels;
 using System.Data;
 using SourcingTenderSystem.Services;
 using SourcingTenderSystem.Security;
@@ -66,7 +67,16 @@ public class TendersController : Controller
 
         ViewBag.InvitationCount = counts.Invitations;
         ViewBag.BidCount = counts.Bids;
-        ViewBag.OfferCount = await TenderRules.Offers(_context, tender.Id).CountAsync();
+        ViewBag.OfferCount = await TenderRules.EligibleSuppliers(_context, tender.Id).CountAsync();
+        ViewBag.Rounds = await _context.TenderRounds.AsNoTracking().Where(r => r.TenderId == tender.Id)
+            .OrderBy(r => r.Number).ToListAsync();
+        var submitted = TenderRules.PreviouslySubmitted(_context, tender.Id);
+        ViewBag.SubmittedSuppliers = await _context.SupplierProfiles.Where(p => submitted.Contains(p.Id))
+            .Select(p => p.CompanyName).OrderBy(n => n).ToListAsync();
+        var currentInvitations = TenderRules.CurrentInvitations(_context, tender);
+        ViewBag.InvitableSuppliers = await _context.SupplierProfiles.Where(p => p.Status == SupplierStatus.Approved &&
+            !submitted.Contains(p.Id) && !currentInvitations.Any(i => i.SupplierProfileId == p.Id))
+            .Select(p => p.CompanyName).OrderBy(n => n).ToListAsync();
 
         return View(tender);
     }
@@ -133,8 +143,8 @@ public class TendersController : Controller
             Title = model.Title.Trim(),
             Description = model.Description.Trim(),
             Terms = model.Terms.Trim(),
-            OpenDate = model.OpenDate!.Value,
-            CloseDate = model.CloseDate!.Value,
+            OpenDate = TenderRules.AsUtc(model.OpenDate!.Value),
+            CloseDate = TenderRules.AsUtc(model.CloseDate!.Value),
             Status = DraftStatus,
             CreatedByEmployeeProfileId = employee!.Id,
             CreatedAt = DateTime.UtcNow
@@ -152,63 +162,134 @@ public class TendersController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    [HttpPost]
+    [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Publish(int id)
-    {
-        if (await GetCurrentEmployeeAsync() is null) return Forbid();
-        var now = DateTime.UtcNow;
-        var changed = await _context.Tenders.Where(t => t.Id == id && t.Status == DraftStatus &&
-            t.CloseDate > now && t.CloseDate > t.OpenDate)
-            .ExecuteUpdateAsync(set => set.SetProperty(t => t.Status, t => t.OpenDate <= now ? "Open" : "Published"));
-        TempData[changed == 1 ? "Success" : "Error"] = changed == 1
-            ? "Tender submitted for publication." : "Use a draft with a future closing deadline.";
-        return RedirectToAction(nameof(Details), new { id });
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> Reopen(int id, DateTime closeDate)
     {
         var employee = await GetCurrentEmployeeAsync();
         if (employee is null) return Forbid();
-        var now = DateTime.UtcNow;
-        if (closeDate <= now)
-        {
-            TempData["Error"] = "Enter a future closing deadline (UTC).";
-            return RedirectToAction(nameof(Details), new { id });
-        }
-        await using var tx = await _context.Database.BeginTransactionAsync(IsolationLevel.Serializable);
-        var tender = await _context.Tenders.SingleOrDefaultAsync(t => t.Id == id);
+        await using var tx = await TenderRules.LockAsync(_context, id);
+        var tender = await _context.Tenders.FindAsync(id);
         if (tender is null) return NotFound();
-        var offers = await TenderRules.Offers(_context, id).CountAsync();
-        if (tender.Status != "Closed" || tender.Counter >= 2 || offers >= 3)
+        var now = DateTime.UtcNow;
+        if (tender.Status != DraftStatus || tender.CloseDate <= now || tender.CloseDate <= tender.OpenDate)
         {
-            TempData["Error"] = "Only a first-round closed tender with fewer than three offers can be reopened.";
+            TempData["Error"] = "Use a draft with a future closing deadline.";
             return RedirectToAction(nameof(Details), new { id });
         }
-        tender.Counter = 2;
-        tender.Status = "Open";
-        tender.OpenDate = now;
-        tender.CloseDate = closeDate;
-        var submitted = TenderRules.Offers(_context, id).Select(b => b.SupplierProfileId);
-        await _context.Invitations.Where(i => i.TenderId == id && !submitted.Contains(i.SupplierProfileId))
-            .ExecuteUpdateAsync(set => set.SetProperty(i => i.ExpiresAt, closeDate));
-        AddAuditLog(employee.Id, "Reopen", id, "Second bidding round opened.");
+        if (!EvaluationRules.CriteriaValid(await _context.EvaluationCriteria.Where(c => c.TenderId == id).ToListAsync()))
+        {
+            TempData["Error"] = "Configure valid criteria totaling 100% before publishing.";
+            return RedirectToAction(nameof(Criteria), new { id });
+        }
+        var round = await _context.TenderRounds.FindAsync(id, tender.Counter)
+            ?? TenderRules.NewRound(_context, tender, employee.Id, now);
+        round.OpensAt = tender.OpenDate;
+        round.ClosesAt = tender.CloseDate;
+        round.CreatedAt = now;
+        round.OfficerId = employee.Id;
+        tender.Status = tender.OpenDate <= now ? "Open" : "Published";
+        TenderRules.Audit(_context, tender, employee.Id, "Publish", now, "Initial round published.");
         await _context.SaveChangesAsync();
         await tx.CommitAsync();
-        TempData["Success"] = "Second round opened. You can invite suppliers who have not submitted.";
+        TempData["Success"] = "Tender submitted for publication.";
         return RedirectToAction(nameof(Details), new { id });
     }
 
+    [HttpGet]
+    public async Task<IActionResult> Criteria(int id)
+    {
+        var tender = await _context.Tenders.AsNoTracking().Include(t => t.EvaluationCriteria).SingleOrDefaultAsync(t => t.Id == id);
+        return tender == null ? NotFound() : View(tender);
+    }
+
     [HttpPost]
+    public async Task<IActionResult> Criterion(int id, CommitteeCriterionInput input, int? remove)
+    {
+        if (await GetCurrentEmployeeAsync() is not { } employee) return Forbid();
+        await using var tx = await TenderRules.LockAsync(_context, id);
+        var tender = await _context.Tenders.Include(t => t.EvaluationCriteria).SingleOrDefaultAsync(t => t.Id == id);
+        if (tender is null) return NotFound();
+        if (tender.Status != DraftStatus || await _context.Bids.AnyAsync(b => b.TenderId == id))
+            return Conflict("Criteria are frozen once published.");
+        if (remove is int key)
+        {
+            var criterion = tender.EvaluationCriteria.SingleOrDefault(c => c.Id == key);
+            if (criterion is null) return NotFound();
+            _context.Remove(criterion);
+        }
+        else if (ModelState.IsValid && !string.IsNullOrWhiteSpace(input.Name) &&
+            input.WeightPercent == EvaluationRules.Round(input.WeightPercent) &&
+            tender.EvaluationCriteria.Sum(c => c.WeightPercent) + input.WeightPercent <= 100 &&
+            !tender.EvaluationCriteria.Any(c => string.Equals(c.Name, input.Name.Trim(), StringComparison.OrdinalIgnoreCase)))
+            tender.EvaluationCriteria.Add(new EvaluationCriterion { Name = input.Name.Trim(), Type = input.Type,
+                MaxScore = input.MaxScore, WeightPercent = input.WeightPercent });
+        else
+        {
+            TempData["Error"] = "Enter a unique valid criterion. Total weight cannot exceed 100%.";
+            return RedirectToAction(nameof(Criteria), new { id });
+        }
+        EvaluationRules.Audit(_context, id, employee.Id, "DraftCriteriaChanged", remove is null ? input.Name : $"Removed criterion {remove}", DateTime.UtcNow);
+        await _context.SaveChangesAsync();
+        await tx.CommitAsync();
+        return RedirectToAction(nameof(Criteria), new { id });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Reopen(int id)
+    {
+        var tender = await _context.Tenders.FindAsync(id);
+        if (tender is null) return NotFound();
+        return View(tender);
+    }
+
+    [HttpPost, ValidateAntiForgeryToken]
+    public async Task<IActionResult> Reopen(int id, DateTime closeDate, string? reason)
+    {
+        var employee = await GetCurrentEmployeeAsync();
+        if (employee is null) return Forbid();
+        await using var tx = await TenderRules.LockAsync(_context, id);
+        var tender = await _context.Tenders.FindAsync(id);
+        if (tender is null) return NotFound();
+        var now = DateTime.UtcNow;
+        closeDate = TenderRules.AsUtc(closeDate);
+        reason = reason?.Trim();
+        var count = await TenderRules.EligibleSuppliers(_context, id).CountAsync();
+        if (!ModelState.IsValid || closeDate <= now || reason is null || reason.Length is < 1 or > 500)
+            TempData["Error"] = "Enter a future closing deadline (UTC) and a reopening reason (1–500 characters).";
+        else if (!TenderRules.CanReopen(tender, count))
+            TempData["Error"] = "Reopening requires a closed round below Round 3 with fewer than three eligible suppliers.";
+        else
+        {
+            tender.Counter++;
+            tender.Status = "Open";
+            tender.OpenDate = now;
+            tender.CloseDate = closeDate;
+            TenderRules.NewRound(_context, tender, employee.Id, now, reason);
+            TenderRules.Audit(_context, tender, employee.Id, "Reopen", now, reason);
+            await _context.SaveChangesAsync();
+            await tx.CommitAsync();
+            TempData["Success"] = $"Round {tender.Counter} opened. Invite approved suppliers who have never submitted a bid.";
+        }
+        return RedirectToAction(nameof(Details), new { id });
+    }
+
+    [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Close(int id)
     {
-        if (await GetCurrentEmployeeAsync() == null) return Forbid();
+        var employee = await GetCurrentEmployeeAsync();
+        if (employee is null) return Forbid();
+        await using var tx = await TenderRules.LockAsync(_context, id);
+        var tender = await _context.Tenders.FindAsync(id);
+        if (tender is null) return NotFound();
         var now = DateTime.UtcNow;
-        var changed = await _context.Tenders.Where(t => t.Id == id && t.Status == "Open" && t.CloseDate <= now)
-            .ExecuteUpdateAsync(set => set.SetProperty(t => t.Status, "Closed"));
-        TempData[changed == 1 ? "Success" : "Error"] = changed == 1
-            ? "Tender closed and available for compliance review."
-            : "An open tender can be closed after its bidding deadline.";
+        if (tender.Status is ("Open" or "Published") && tender.CloseDate <= now)
+        {
+            await TenderRules.CloseRoundAsync(_context, tender, now, employee.Id, false);
+            await _context.SaveChangesAsync();
+            await tx.CommitAsync();
+            TempData["Success"] = "Tender closed and available for compliance review.";
+        }
+        else TempData["Error"] = "An active tender can be closed here after its bidding deadline.";
         return RedirectToAction(nameof(Index));
     }
     // GET: /Tenders/Edit/5
@@ -250,6 +331,7 @@ public class TendersController : Controller
     {
         if (id != model.Id) return NotFound();
 
+        await using var tx = await TenderRules.LockAsync(_context, id);
         // The purchase request cannot be changed after the tender is created.
         ModelState.Remove(nameof(TenderFormViewModel.PurchaseRequisitionId));
 
@@ -275,13 +357,20 @@ public class TendersController : Controller
         tender.Title = model.Title.Trim();
         tender.Description = model.Description.Trim();
         tender.Terms = model.Terms.Trim();
-        tender.OpenDate = model.OpenDate!.Value;
-        tender.CloseDate = model.CloseDate!.Value;
+        tender.OpenDate = TenderRules.AsUtc(model.OpenDate!.Value);
+        tender.CloseDate = TenderRules.AsUtc(model.CloseDate!.Value);
+        var planned = await _context.TenderRounds.FindAsync(tender.Id, tender.Counter);
+        if (planned != null)
+        {
+            planned.OpensAt = tender.OpenDate;
+            planned.ClosesAt = tender.CloseDate;
+        }
 
         var employee = await GetCurrentEmployeeAsync();
         AddAuditLog(employee?.Id, "Update", tender.Id, "Tender details updated.");
         await _context.SaveChangesAsync();
 
+        await tx.CommitAsync();
         TempData["Success"] = "Tender updated successfully.";
         return RedirectToAction(nameof(Index));
     }
@@ -291,6 +380,7 @@ public class TendersController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)
     {
+        await using var tx = await TenderRules.LockAsync(_context, id);
         var tender = await _context.Tenders
             .Include(t => t.PurchaseRequisition)
             .Include(t => t.EvaluationCriteria)
@@ -320,12 +410,15 @@ public class TendersController : Controller
         _context.RemoveRange(tender.CommitteeMembers);
         tender.PurchaseRequisition.Status = await _context.Tenders.AnyAsync(t => t.PurchaseRequisitionId == tender.PurchaseRequisitionId && t.Id != tender.Id)
             ? "Converted to Tender" : "Approved";
+        var draftRound = await _context.TenderRounds.FindAsync(tender.Id, tender.Counter);
+        if (draftRound != null) _context.TenderRounds.Remove(draftRound);
         _context.Tenders.Remove(tender);
 
         var employee = await GetCurrentEmployeeAsync();
         AddAuditLog(employee?.Id, "Delete", tender.Id, "Draft tender deleted; purchase request history retained.");
         await _context.SaveChangesAsync();
 
+        await tx.CommitAsync();
         TempData["Success"] = "Tender deleted.";
         return RedirectToAction(nameof(Index));
     }
@@ -348,6 +441,10 @@ public class TendersController : Controller
         }
 
         var (slots, problems) = await BuildCommitteeAsync(tender.PurchaseRequisition.CreatedByEmployeeProfile);
+        if (!TenderRules.CanEvaluate(tender, await TenderRules.EligibleSuppliers(_context, tender.Id).CountAsync()))
+            problems.Add($"Round {tender.Counter} requires {TenderRules.Minimum(tender)} eligible supplier bids.");
+        else if (await EvaluationRules.Unresolved(_context, tender.Id).AnyAsync())
+            problems.Add("Complete the compliance checks before assigning the committee.");
 
         return View(new AssignCommitteeViewModel
         {
@@ -369,7 +466,7 @@ public class TendersController : Controller
         var employee = await GetCurrentEmployeeAsync();
         if (employee == null) return Forbid();
 
-        await using var transaction = await _context.Database.BeginTransactionAsync(IsolationLevel.Serializable);
+        await using var transaction = await TenderRules.LockAsync(_context, id);
         var tender = await TendersWithCommitteeData().FirstOrDefaultAsync(t => t.Id == id);
 
         if (tender == null) return NotFound();
@@ -387,8 +484,10 @@ public class TendersController : Controller
             return RedirectToAction(nameof(AssignCommittee), new { id });
         }
 
-        if (await TenderRules.Offers(_context, id).CountAsync() < TenderRules.Minimum(tender) ||
-            await _context.Bids.AnyAsync(b => b.TenderId == id && b.Status == "Submitted") ||
+        if (!await _context.EvaluationCriteria.AnyAsync(c => c.TenderId == id) ||
+            !EvaluationRules.CriteriaValid(await _context.EvaluationCriteria.Where(c => c.TenderId == id).ToListAsync()) ||
+            !TenderRules.CanEvaluate(tender, await TenderRules.EligibleSuppliers(_context, id).CountAsync()) ||
+            await EvaluationRules.Unresolved(_context, id).AnyAsync() ||
             !await _context.Bids.AnyAsync(b => b.TenderId == id && b.Status == "Compliant"))
         {
             TempData["Error"] = "Meet the round's minimum offer count and complete compliance before assigning the committee.";

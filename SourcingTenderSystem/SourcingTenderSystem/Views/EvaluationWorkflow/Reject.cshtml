@@ -1,0 +1,11 @@
+@model Tender
+@{ ViewData["Title"] = "Reject recommendation"; }
+<header class="page-heading"><div><h1>Reject and cancel tender</h1><p>@Model.Title</p></div></header>
+<form asp-action="Approve" asp-route-id="@Model.Id" method="post" class="surface form-card">
+    <input type="hidden" name="expectedStage" value="Pending Top Committee" />
+    <input type="hidden" name="vote" value="reject" />
+    <label class="field">Rejection reason<textarea class="form-control" name="comments" required maxlength="1000"></textarea></label>
+    <label class="field">Current password<input class="form-control" name="password" type="password" autocomplete="current-password" required /></label>
+    <label class="form-check mt-3"><input class="form-check-input" name="confirmDecision" type="checkbox" value="true" required /> I confirm cancellation.</label>
+    <button type="submit" class="btn btn-danger mt-2">Record rejection</button>
+</form>

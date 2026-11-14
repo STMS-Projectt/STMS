@@ -9,7 +9,7 @@
             @foreach (var row in Model)
             {
                 <tr><td><strong>@row.Title</strong></td><td>@row.Seat</td><td>@row.Status</td>
-                <td>@if (row.Status == "Under Evaluation") { <a class="table-action" asp-action="Details" asp-route-id="@row.Id">Review bids</a> } else { <span class="subtle">—</span> }</td></tr>
+                <td><a class="table-action" asp-action="Details" asp-route-id="@row.Id">@(row.Status == "Under Evaluation" ? "Review bids" : "View evaluation history")</a></td></tr>
             }
             </tbody></table>
         </div>

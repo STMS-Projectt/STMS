@@ -1,0 +1,14 @@
+@model UsdReferenceView
+<strong>@Model.Amount.ToString("N2") @Model.Currency</strong>
+@if (Model.Currency != "USD")
+{
+    @if (Model.Usd is decimal usd && Model.Rate is decimal rate)
+    {
+        <br /><small>≈ @usd.ToString("N2") USD (approx.)</small>
+        <br /><small class="subtle">1 @Model.Currency = @rate.ToString("0.######") USD · @Model.RateDate?.ToString("yyyy-MM-dd") · @Model.Source</small>
+    }
+    else
+    {
+        <br /><small class="text-warning">USD equivalent unavailable: no exchange rate recorded. Compare in the original currency only.</small>
+    }
+}

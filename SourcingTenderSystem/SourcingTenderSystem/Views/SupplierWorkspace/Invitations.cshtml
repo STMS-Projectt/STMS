@@ -12,18 +12,19 @@ else
         @foreach (var invitation in Model.Invitations)
         {
             var tender = invitation.Tender;
-            var open = tender.Status == "Open" && tender.OpenDate <= Model.Now && tender.CloseDate > Model.Now;
+            var current = invitation.RoundNumber == tender.Counter || invitation.RoundNumber is null && ((HashSet<int>)ViewBag.CurrentLegacyTenders).Contains(tender.Id);
+            var open = current && tender.Status == "Open" && tender.OpenDate <= Model.Now && tender.CloseDate > Model.Now;
             var expired = invitation.Status == "Pending" && invitation.ExpiresAt <= Model.Now;
             var hasBid = Model.BidTenders.Contains(tender.Id);
             <article class="surface detail-card">
                 <div class="card-heading">
-                    <div><p class="eyebrow">TENDER #@tender.Id · @tender.Status</p><h2>@tender.Title</h2></div>
+                    <div><p class="eyebrow">TENDER #@tender.Id · @tender.Status · @(invitation.RoundNumber is int number ? $"Round {number}" : "Legacy invitation")</p><h2>@tender.Title</h2></div>
                     <span class="status-pill @(invitation.Status == "Accepted" ? "status-positive" : expired || invitation.Status == "Declined" ? "status-neutral" : "status-waiting")"><span aria-hidden="true"></span>@(expired ? "Expired" : invitation.Status)</span>
                 </div>
                 <dl class="detail-grid">
                     <div><dt>Invitation expires (UTC)</dt><dd>@invitation.ExpiresAt.ToString("dd MMM yyyy HH:mm")</dd></div>
-                    <div><dt>Bidding opens (UTC)</dt><dd>@tender.OpenDate.ToString("dd MMM yyyy HH:mm")</dd></div>
-                    <div><dt>Bidding closes (UTC)</dt><dd>@tender.CloseDate.ToString("dd MMM yyyy HH:mm")</dd></div>
+                    <div><dt>Bidding opens (UTC)</dt><dd>@(invitation.Round?.OpensAt?.ToString("dd MMM yyyy HH:mm") ?? "Unknown")</dd></div>
+                    <div><dt>Bidding closes (UTC)</dt><dd>@(invitation.Round?.ClosesAt?.ToString("dd MMM yyyy HH:mm") ?? "Unknown")</dd></div>
                 </dl>
                 @if (tender.Status == "Draft")
                 {
@@ -54,7 +55,7 @@ else
                 }
                 else if (open && invitation.Status == "Accepted")
                 {
-                    <a class="btn btn-primary" asp-controller="Bids" asp-action="Create" asp-route-tenderId="@tender.Id">Create bid</a>
+                    <a data-workspace-dialog class="btn btn-primary" asp-controller="Bids" asp-action="Create" asp-route-tenderId="@tender.Id">Create bid</a>
                 }
             </article>
         }
