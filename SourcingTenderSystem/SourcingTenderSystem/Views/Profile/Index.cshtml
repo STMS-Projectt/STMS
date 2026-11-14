@@ -1,0 +1,144 @@
+@model ProfileViewModel
+@{
+    var info = (ProfileInfo)ViewBag.Info;
+    ViewData["Title"] = "My profile";
+}
+<style>
+    /* Microsoft Edge adds its own "reveal" eye to password boxes. We already have our eye button, so hide Edge's. */
+    .password-control input::-ms-reveal,
+    .password-control input::-ms-clear {
+        display: none;
+    }
+</style>
+
+<header class="page-heading"><div><p class="eyebrow">MY ACCOUNT</p><h1>My profile</h1><p>Your account information. You can change your phone number and your password.</p></div></header>
+
+<div class="form-shell">
+    <div class="stack">
+        @* Read-only information *@
+        <section class="surface detail-card">
+            <div class="d-flex align-items-center gap-3">
+                <span class="avatar" style="width:72px;height:72px;font-size:1.8rem" aria-hidden="true">@info.DisplayName.Substring(0, 1).ToUpper()</span>
+                <div>
+                    <h2 class="mb-1">@info.DisplayName</h2>
+                    <p class="text-muted mb-0">@info.Email</p>
+                </div>
+            </div>
+
+            <dl class="detail-grid">
+                <div><dt>Email (used to sign in)</dt><dd>@info.Email</dd></div>
+
+                @if (info.Employee != null)
+                {
+                    <div><dt>Full name</dt><dd>@info.Employee.FullName</dd></div>
+                    <div><dt>Job title</dt><dd>@(info.Employee.JobTitle ?? "—")</dd></div>
+                    <div><dt>Department</dt><dd>@(info.Employee.Department?.Name ?? "—")</dd></div>
+                }
+
+                @if (info.Supplier != null)
+                {
+                    <div><dt>Company</dt><dd>@info.Supplier.CompanyName</dd></div>
+                    <div><dt>Tax number</dt><dd>@info.Supplier.TaxNumber</dd></div>
+                    <div><dt>Commercial registration</dt><dd>@info.Supplier.CommercialRegNo</dd></div>
+                    <div><dt>Address</dt><dd>@info.Supplier.Address</dd></div>
+                    <div><dt>Account status</dt><dd><partial name="_Status" model="info.Supplier.Status" /></dd></div>
+                }
+            </dl>
+        </section>
+
+        @* Form 1: phone number (posts to ProfileController.Index) *@
+        <form asp-action="Index" method="post" asp-antiforgery="true" class="surface form-card">
+            <section class="form-section">
+                <h2>Phone number</h2>
+                <div class="form-grid mt-3">
+                    <div class="field">
+                        <label asp-for="PhoneNumber" class="form-label"></label>
+                        <input asp-for="PhoneNumber" class="form-control" type="tel" autocomplete="tel" placeholder="e.g. 0791234567" />
+                        <p class="field-hint">Jordanian number, digits only. It is saved as +962…</p>
+                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                    </div>
+                </div>
+            </section>
+            <div class="form-actions">
+                <button class="btn btn-primary" type="submit">Save phone number</button>
+            </div>
+        </form>
+
+        @* Form 2: change password (posts to ProfileController.ChangePassword).
+           asp-fragment: after the POST the browser scrolls back to this form (to show the errors). *@
+        <form asp-action="ChangePassword" asp-fragment="change-password" method="post" asp-antiforgery="true"
+              class="surface form-card" id="change-password">
+            <section class="form-section">
+                <h2>Change password</h2>
+                <p class="field-hint">Other devices that are signed in to your account will be signed out.</p>
+                <div class="form-grid mt-3">
+                    <div class="field">
+                        <label asp-for="NewPassword" class="form-label"></label>
+                        <div class="password-control">
+                            <input asp-for="NewPassword" class="form-control" autocomplete="new-password" />
+                            <button type="button" class="icon-button text-secondary p-0" data-eye-toggle aria-controls="NewPassword" aria-pressed="false" aria-label="Show password" hidden>
+                                <span data-eye-open><svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" /><circle cx="12" cy="12" r="3" /></svg></span>
+                                <span data-eye-closed hidden><svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 19c-6.5 0-10-7-10-7a18.45 18.45 0 0 1 5.06-5.94" /><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c6.5 0 10 7 10 7a18.5 18.5 0 0 1-2.16 3.19" /><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24" /><path d="M1 1l22 22" /></svg></span>
+                            </button>
+                        </div>
+                        <p class="field-hint">At least 6 characters, with an uppercase letter, a lowercase letter, a digit and a symbol.</p>
+                        <span asp-validation-for="NewPassword" class="text-danger"></span>
+                    </div>
+                    <div class="field">
+                        <label asp-for="ConfirmNewPassword" class="form-label"></label>
+                        <div class="password-control">
+                            <input asp-for="ConfirmNewPassword" class="form-control" autocomplete="new-password" />
+                            <button type="button" class="icon-button text-secondary p-0" data-eye-toggle aria-controls="ConfirmNewPassword" aria-pressed="false" aria-label="Show password" hidden>
+                                <span data-eye-open><svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" /><circle cx="12" cy="12" r="3" /></svg></span>
+                                <span data-eye-closed hidden><svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 19c-6.5 0-10-7-10-7a18.45 18.45 0 0 1 5.06-5.94" /><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c6.5 0 10 7 10 7a18.5 18.5 0 0 1-2.16 3.19" /><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24" /><path d="M1 1l22 22" /></svg></span>
+                            </button>
+                        </div>
+                        <span asp-validation-for="ConfirmNewPassword" class="text-danger"></span>
+                    </div>
+                </div>
+            </section>
+            <div class="form-actions">
+                <button class="btn btn-primary" type="submit">Change password</button>
+            </div>
+        </form>
+    </div>
+
+    <aside class="surface helper-card">
+        <span class="icon-tile tone-teal"><partial name="_Icon" model='@("shield")' /></span>
+        <h2>What can I change?</h2>
+        <ul>
+            <li>Your phone number and your password.</li>
+            @if (info.Supplier != null)
+            {
+                <li>Company details were checked when you registered. Contact the administrator to change them.</li>
+            }
+            else
+            {
+                <li>Your name, job title and department are managed by the administrator.</li>
+            }
+            <li>Your email is used to sign in, so it cannot be changed here.</li>
+        </ul>
+    </aside>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Eye buttons on the password boxes: click = show / hide the password
+        document.querySelectorAll("[data-eye-toggle]").forEach(function (button) {
+            var input = document.getElementById(button.getAttribute("aria-controls"));
+            if (!input) {
+                return;
+            }
+            button.hidden = false; // the button appears only when JavaScript works
+            button.addEventListener("click", function () {
+                var show = input.type === "password";
+                input.type = show ? "text" : "password";
+                button.querySelector("[data-eye-open]").hidden = show;     // open eye while hidden
+                button.querySelector("[data-eye-closed]").hidden = !show;  // crossed eye while visible
+                button.setAttribute("aria-pressed", String(show));
+                button.setAttribute("aria-label", show ? "Hide password" : "Show password");
+            });
+        });
+    </script>
+}

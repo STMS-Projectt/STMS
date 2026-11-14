@@ -54,9 +54,58 @@
     {
         <partial name="_SupplierNavigation" model="supplierStatus" />
     }
-    else if (admin)
-    {
-        <partial name="_AdminNavigation" />
+
+else if (admin)
+{
+    <aside class="sidebar" id="workspace-nav" aria-label="Administration">
+        <a class="brand" asp-controller="AdminDashboard" asp-action="Index">
+            <span class="brand-mark">
+                <partial name="_Icon" model='@("brand")' />
+            </span>
+            <span>Sourcing Desk<small>Administration</small></span>
+        </a>
+
+        <div class="side-nav">
+            <span class="nav-caption">WORKSPACE</span>
+
+            @foreach (var item in new[]
+            {
+                ("AdminDashboard", "Overview", "dashboard"),
+                ("Departments", "Departments", "building"),
+                ("Employees", "Employees", "users"),
+                ("Suppliers", "Suppliers", "supplier")
+            })
+            {
+                <a class="side-link @(controller == item.Item1 ? "is-current" : "")"
+                   aria-current="@(controller == item.Item1 ? "page" : null)"
+                   asp-controller="@item.Item1"
+                   asp-action="Index">
+                    <partial name="_Icon" model="item.Item3" />
+                    @item.Item2
+                </a>
+            }
+
+            <partial name="~/Views/Profile/_ProfileNav.cshtml" />
+        </div>
+
+        <div class="side-bottom">
+            <a class="side-link" asp-controller="Home" asp-action="Index">
+                <partial name="_Icon" model='@("arrow")' />
+                Public portal
+            </a>
+
+            <partial name="_LoginPartial" />
+        </div>
+    </aside>
+
+    <button type="button"
+            class="nav-scrim"
+            data-nav-close
+            tabindex="-1"
+            aria-label="Close navigation"
+            hidden>
+    </button>
+}
     }
     <div class="site-body">
         @if (department || sourcing || supplier || committee)

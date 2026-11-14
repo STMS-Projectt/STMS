@@ -1,0 +1,9 @@
+@* "MY ACCOUNT" section of the sidebars.
+   Every sidebar includes it inside its side-nav with:  <partial name="~/Views/Profile/_ProfileNav.cshtml" /> *@
+@{
+    var onProfile = ViewContext.RouteData.Values["controller"]?.ToString() == "Profile";
+}
+<span class="nav-caption mt-3">MY ACCOUNT</span>
+<a class="side-link @(onProfile ? "is-current" : "")" aria-current="@(onProfile ? "page" : null)" asp-controller="Profile" asp-action="Index">
+    <partial name="_Icon" model='@("users")' /> My profile
+</a>
