@@ -159,6 +159,7 @@ else
                 </span>
                 <span>
                     <a class="btn btn-sm btn-outline-secondary" asp-controller="BidDocuments" asp-action="Download" asp-route-id="@document.Id">Download</a>
+                    <a class="btn btn-sm btn-outline-secondary" asp-controller="BidDocuments" asp-action="Download" asp-route-id="@document.Id" asp-route-preview="true" target="_blank" rel="noopener">Preview</a>
                     @if (Model.CanChange)
                     {
                         <form asp-controller="BidDocuments" asp-action="Delete" asp-route-id="@document.Id" method="post"
@@ -227,3 +228,5 @@ else
 
     <a class="btn btn-outline-secondary" asp-action="MyBids">Back to my bids</a>
 </div>
+
+<div class="mb-3"><a class="btn btn-outline-secondary" asp-controller="Clarifications" asp-action="Index" asp-route-kind="bid" asp-route-recordId="@bid.Id">Clarification history</a></div>

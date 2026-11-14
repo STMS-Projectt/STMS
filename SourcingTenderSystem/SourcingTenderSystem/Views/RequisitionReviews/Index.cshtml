@@ -27,7 +27,7 @@ else
                             {
                                 <a asp-action="Details" asp-route-id="@request.Id">@(request.Status is "Submitted" or "Under Review" ? "Review" : "Details")</a>
                             }
-                            @if (request.Status == "Approved" && request.Tender == null)
+                            @if (TenderRules.CanCreate(request))
                             {
                                 <a class="btn btn-sm btn-primary ms-2" asp-controller="Tenders" asp-action="Create" asp-route-purchaseRequisitionId="@request.Id">Create tender</a>
                             }

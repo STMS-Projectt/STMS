@@ -4,11 +4,11 @@
 }
 <h1>Compliance check</h1>
 <partial name="~/Views/Bids/_Alerts.cshtml" />
-<p class="text-muted">Closed tenders with submitted bids. Check every bid, then send the tender to evaluation.</p>
+<p class="text-muted">Open and closed tenders. Close bidding before reviewing offers and sending the tender to evaluation.</p>
 
 @if (Model.Count == 0)
 {
-    <p class="text-muted">There are no closed tenders with submitted bids.</p>
+    <p class="text-muted">There are no tenders in the compliance queue.</p>
 }
 else
 {
@@ -17,7 +17,7 @@ else
             <thead>
                 <tr>
                     <th scope="col">Tender</th>
-                    <th scope="col">Closed (UTC)</th>
+                    <th scope="col">Deadline (UTC)</th>
                     <th scope="col" class="text-center">Not checked</th>
                     <th scope="col" class="text-center">Compliant</th>
                     <th scope="col" class="text-center">Non-Compliant</th>
@@ -31,11 +31,12 @@ else
                     <tr>
                         <td>@row.Tender.Title</td>
                         <td>@row.Tender.CloseDate.ToString("yyyy-MM-dd HH:mm")</td>
-                        <td class="text-center">@row.SubmittedCount</td>
-                        <td class="text-center">@row.CompliantCount</td>
-                        <td class="text-center">@row.NonCompliantCount</td>
+                        <td class="text-center">@(row.Tender.Status == "Open" ? "—" : row.SubmittedCount.ToString())</td>
+                        <td class="text-center">@(row.Tender.Status == "Open" ? "—" : row.CompliantCount.ToString())</td>
+                        <td class="text-center">@(row.Tender.Status == "Open" ? "—" : row.NonCompliantCount.ToString())</td>
                         <td>
-                            @if (row.ReadyForEvaluation)
+                            @if (row.Tender.Status == "Open") { <span class="status-pill status-neutral">Open</span> }
+                            else if (row.ReadyForEvaluation)
                             {
                                 <span class="badge bg-success">Ready for evaluation</span>
                             }

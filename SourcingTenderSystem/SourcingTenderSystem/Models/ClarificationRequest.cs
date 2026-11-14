@@ -21,6 +21,7 @@ public class ClarificationRequest
     public int? BidId { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? AnsweredAt { get; set; }
+    public DateTime? ResolvedAt { get; set; }
 
     public EmployeeProfile? SenderEmployeeProfile { get; set; }
     public SupplierProfile? SenderSupplierProfile { get; set; }

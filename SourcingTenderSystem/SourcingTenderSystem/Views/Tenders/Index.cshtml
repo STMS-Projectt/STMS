@@ -59,7 +59,7 @@
             @foreach (var t in Model)
             {
                 var isDraft = t.Status == "Draft";
-                var canAssign = isDraft || t.Status == "Published" || t.Status == "Open";
+                var canAssign = t.Status == "Closed";
                 <tr>
                     <td>@t.Id</td>
                     <td>@t.Title</td>

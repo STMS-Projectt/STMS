@@ -1,0 +1,2 @@
+@model string
+<span class="status-pill @(Model == "Resolved" ? "status-positive" : Model == "Pending" ? "status-waiting" : "status-neutral")"><span aria-hidden="true"></span>@Model</span>

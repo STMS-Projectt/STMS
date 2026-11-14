@@ -104,7 +104,7 @@ public class PurchaseRequisitionsController : RequisitionBaseController
     {
         var employee = await CurrentEmployeeAsync();
         if (!HasDepartment(employee)) return Forbid();
-        var request = await RequestDetails().AsNoTracking()
+        var request = await RequestDetails().Include(x => x.Tenders).AsNoTracking()
             .SingleOrDefaultAsync(x => x.Id == id && x.DepartmentId == employee!.DepartmentId);
         if (request == null) return NotFound();
         ViewBag.CanEdit = Owns(request, employee!) && CanEdit(request);
@@ -163,8 +163,7 @@ public class PurchaseRequisitionsController : RequisitionBaseController
             TempData["RequestError"] = "Add at least one valid item and use a target date of today or later before submitting.";
             return RedirectToAction(nameof(Details), new { id });
         }
-        request.Status = "Submitted";
-        request.ReviewedByEmployeeProfileId = null;
+        request.Status = "Under Review";
         // نبقي الملاحظات السابقة ظاهرة عند إعادة إرسال الطلب.
         Log(request, employee!, "Submitted");
         await Db.SaveChangesAsync();

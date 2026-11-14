@@ -58,7 +58,7 @@
 
         @if (!Model.IsOpen)
         {
-            <p class="subtle">Confirming the committee changes the tender status to Open. Suppliers can respond during the scheduled bidding window.</p>
+            <p class="subtle">Assigning the committee starts evaluation after the minimum offer count and compliance checks are complete.</p>
         }
         @if (TempData["Error"] is string error)
         {
@@ -67,7 +67,7 @@
         <form asp-action="AssignCommittee" asp-route-id="@Model.TenderId" method="post">
             <div class="d-flex gap-2">
                 <button type="submit" class="btn btn-primary" disabled="@Model.Problems.Any()">
-                    @(Model.IsOpen ? "Update committee" : "Assign committee and open tender")
+                    @(Model.IsOpen ? "Update committee" : "Assign committee and start evaluation")
                 </button>
                 <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
             </div>

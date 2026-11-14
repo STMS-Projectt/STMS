@@ -9,6 +9,7 @@
     <a class="btn btn-outline-secondary" asp-action="RequestDetails" asp-route-id="@tender.PurchaseRequisitionId">View request</a>
     @if (tender.Status == "Under Evaluation" || tender.EvaluationReport != null) { <a class="btn btn-primary" asp-controller="EvaluationWorkflow" asp-action="Details" asp-route-id="@tender.Id">View evaluation</a> }
 </div></header>
+<partial name="_RecordQr" model='@(Url.Action("Tender", new { id = tender.Id })!)' />
 <section class="surface detail-card mb-3"><h2>Tender information</h2>
     <dl class="detail-grid"><div><dt>Opens (UTC)</dt><dd>@tender.OpenDate.ToString("dd MMM yyyy HH:mm")</dd></div><div><dt>Closes (UTC)</dt><dd>@tender.CloseDate.ToString("dd MMM yyyy HH:mm")</dd></div></dl>
     <p style="white-space:pre-wrap">@tender.Description</p>

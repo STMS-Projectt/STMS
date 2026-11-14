@@ -52,7 +52,7 @@
     {
         <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary">Edit</a>
     }
-    @if (Model.Status is "Draft" or "Published" or "Open")
+    @if (Model.Status == "Closed")
     {
         <a asp-action="AssignCommittee" asp-route-id="@Model.Id" class="btn btn-primary">Evaluation committee</a>
     }
@@ -63,3 +63,27 @@
     <a asp-controller="Invitations" asp-action="Index" asp-route-tenderId="@Model.Id"
        class="btn btn-outline-success">Invitation</a>
 </div>
+
+<div class="mb-3"><a class="btn btn-outline-secondary" asp-controller="Clarifications" asp-action="Index" asp-route-kind="tender" asp-route-recordId="@Model.Id">Clarification history</a></div>
+
+<partial name="_RecordQr" model='@(Url.Action("Details", new { id = Model.Id })!)' />
+
+@if (Model.Status == "Draft")
+{
+    <form asp-action="Publish" asp-route-id="@Model.Id" method="post" class="mt-3"><button class="btn btn-primary" type="submit">Submit tender</button></form>
+}
+@if (Model.Status == "Closed")
+{
+    <section class="surface detail-card mt-3">
+        <h2>Bidding round @Model.Counter</h2>
+        <p>@ViewBag.OfferCount submitted offers · Minimum @(Model.Counter >= 2 ? 2 : 3) to proceed.</p>
+        @if (Model.Counter < 2 && (int)ViewBag.OfferCount < 3)
+        {
+            <form asp-action="Reopen" asp-route-id="@Model.Id" method="post">
+                <label class="form-label">New closing deadline (UTC)<input class="form-control" name="closeDate" type="datetime-local" required /></label>
+                <button class="btn btn-primary" type="submit">Reopen for second round</button>
+            </form>
+        }
+        <a class="text-link mt-2" asp-controller="Compliance" asp-action="Review" asp-route-tenderId="@Model.Id">Compliance review</a>
+    </section>
+}

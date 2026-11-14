@@ -294,6 +294,7 @@ public class BidsController : Controller
             return NotApprovedView(supplier);
         }
 
+        await using var transaction = await _context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
         var bid = await _context.Bids
             .Include(b => b.Tender)
             .Include(b => b.BidItems)
@@ -349,6 +350,7 @@ public class BidsController : Controller
         bid.SubmittedAt = DateTime.UtcNow;
         await _context.SaveChangesAsync();
 
+        await transaction.CommitAsync();
         // TODO: audit log + notification (team mechanism) - bid submitted
 
         TempData["Msg"] = "Your bid was submitted successfully.";

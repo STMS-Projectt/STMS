@@ -1,8 +1,11 @@
+using System.Data;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SourcingTenderSystem.Data;
 using SourcingTenderSystem.Models;
+using SourcingTenderSystem.Services;
 using SourcingTenderSystem.ViewModels;
 
 namespace SourcingTenderSystem.Controllers;
@@ -24,18 +27,24 @@ public class ComplianceController : Controller
     public async Task<IActionResult> Pending()
     {
         var closedTenders = await _context.Tenders
+            .Where(t => t.Status == "Open" || t.Status == "Closed")
             .OrderBy(t => t.CloseDate)
             .ToListAsync();
 
         var rows = new List<CompliancePendingRow>();
         foreach (var tender in closedTenders)
         {
+            if (tender.Status == "Open")
+            {
+                rows.Add(new CompliancePendingRow { Tender = tender });
+                continue;
+            }
             int submitted = await CountBidsAsync(tender.Id, "Submitted");
             int compliant = await CountBidsAsync(tender.Id, "Compliant");
             int nonCompliant = await CountBidsAsync(tender.Id, "Non-Compliant");
 
             // Skip tenders that have no submitted bids at all (nothing to check)
-            if (submitted + compliant + nonCompliant == 0)
+            if (tender.Status != "Open" && submitted + compliant + nonCompliant == 0)
             {
                 continue;
             }
@@ -46,7 +55,7 @@ public class ComplianceController : Controller
                 SubmittedCount = submitted,
                 CompliantCount = compliant,
                 NonCompliantCount = nonCompliant,
-                ReadyForEvaluation = submitted == 0 && compliant > 0
+                ReadyForEvaluation = tender.Status == "Closed" && submitted == 0 && compliant > 0
             });
         }
 
@@ -63,8 +72,8 @@ public class ComplianceController : Controller
             return NotFound();
         }
 
-        // Bids are sealed: nobody sees them while the tender is still open
-       
+        if (tender.Status is "Draft" or "Published" or "Open")
+            return View(new ComplianceReviewViewModel { Tender = tender });
 
         // All bids except Draft and Withdrawn, lowest total price first
         var bids = await _context.Bids
@@ -102,12 +111,40 @@ public class ComplianceController : Controller
         }
 
         model.CanSendToEvaluation = model.TenderIsClosed
+                                    && bids.Count(b => b.SubmittedAt != null && b.Status is ("Submitted" or "Compliant" or "Non-Compliant")) >= TenderRules.Minimum(tender)
                                     && model.SubmittedCount == 0
                                     && model.CompliantCount > 0;
 
         return View(model);
     }
 
+    [HttpPost]
+    public async Task<IActionResult> Close(int tenderId, bool confirmClose)
+    {
+        if (!confirmClose) return BadRequest("Confirm the closure before continuing.");
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var employee = await _context.EmployeeProfiles.AsNoTracking()
+            .SingleOrDefaultAsync(e => e.UserId == userId && e.IsActive);
+        if (employee is null) return Forbid();
+
+        await using var transaction = await _context.Database.BeginTransactionAsync(IsolationLevel.Serializable);
+        var now = DateTime.UtcNow;
+        var changed = await _context.Tenders.Where(t => t.Id == tenderId && t.Status == "Open" &&
+            t.OpenDate <= now && t.CloseDate > now)
+            .ExecuteUpdateAsync(set => set.SetProperty(t => t.Status, "Closed"));
+        if (changed == 0)
+        {
+            TempData["Error"] = "Only an open tender before its bidding deadline can be closed early.";
+            return RedirectToAction(nameof(Review), new { tenderId });
+        }
+
+        _context.AuditLogs.Add(new AuditLog { EmployeeProfileId = employee.Id, EntityName = nameof(Tender),
+            EntityId = tenderId, Action = "CloseEarly", Details = "Tender closed early from compliance review.", CreatedAt = now });
+        await _context.SaveChangesAsync();
+        await transaction.CommitAsync();
+        TempData["Msg"] = "Tender closed. You can now review submitted offers.";
+        return RedirectToAction(nameof(Review), new { tenderId });
+    }
     // POST: /Compliance/MarkCompliant/5
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -193,50 +230,8 @@ public class ComplianceController : Controller
 
     // POST: /Compliance/SendToEvaluation?tenderId=3
     [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> SendToEvaluation(int tenderId)
-    {
-        var tender = await _context.Tenders.FindAsync(tenderId);
-        if (tender == null)
-        {
-            return NotFound();
-        }
-
-        // Rule 1: the tender must be Closed
-        if (tender.Status != "Closed")
-        {
-            TempData["Error"] = "Only a closed tender can be sent to evaluation.";
-            return RedirectToAction(nameof(Review), new { tenderId = tender.Id });
-        }
-
-        // Rule 2: every submitted bid must be checked
-        int submitted = await CountBidsAsync(tender.Id, "Submitted");
-        if (submitted > 0)
-        {
-            TempData["Error"] = $"{submitted} bid(s) are not checked yet.";
-            return RedirectToAction(nameof(Review), new { tenderId = tender.Id });
-        }
-
-        // Rule 3: at least one bid must be Compliant
-        int compliant = await CountBidsAsync(tender.Id, "Compliant");
-        if (compliant == 0)
-        {
-            TempData["Error"] = "At least one bid must be Compliant before sending the tender to evaluation.";
-            return RedirectToAction(nameof(Review), new { tenderId = tender.Id });
-        }
-
-        tender.Status = "Under Evaluation";
-        await _context.SaveChangesAsync();
-
-        // TODO: audit log + notification (team mechanism) - tender sent to evaluation
-
-        TempData["Msg"] = $"\"{tender.Title}\" was sent to evaluation with {compliant} compliant bid(s).";
-        return RedirectToAction(nameof(Pending));
-    }
-
-    // ----------------- helper methods -----------------
-
-    // A bid with its tender and supplier, or null
+    public IActionResult SendToEvaluation(int tenderId) =>
+        RedirectToAction("AssignCommittee", "Tenders", new { id = tenderId });
     private async Task<Bid?> GetBidAsync(int bidId)
     {
         return await _context.Bids

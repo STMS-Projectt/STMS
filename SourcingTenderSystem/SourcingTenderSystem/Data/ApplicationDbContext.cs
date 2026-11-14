@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using SourcingTenderSystem.Models;
@@ -86,8 +86,8 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser>
 
         modelBuilder.Entity<Tender>()
             .HasOne(x => x.PurchaseRequisition)
-            .WithOne(x => x.Tender)
-            .HasForeignKey<Tender>(x => x.PurchaseRequisitionId)
+            .WithMany(x => x.Tenders)
+            .HasForeignKey(x => x.PurchaseRequisitionId)
             .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<Tender>()

@@ -19,13 +19,17 @@
         </div>
     </form>
 }
-@if (request.Status == "Approved" && request.Tender == null)
+@if (TenderRules.CanCreate(request))
 {
     <div class="mb-3"><a class="btn btn-primary" asp-controller="Tenders" asp-action="Create" asp-route-purchaseRequisitionId="@request.Id">Create tender</a></div>
 }
-else if (request.Tender != null)
+@if (request.Tenders.Count > 0)
 {
-    <div class="mb-3"><a class="btn btn-outline-secondary" asp-controller="Tenders" asp-action="Details" asp-route-id="@request.Tender.Id">View tender</a></div>
+    <partial name="_TenderHistory" model="request.Tenders" />
 }
 <a asp-action="Pending">Back to pending requests</a>
 @section Scripts { <partial name="_ValidationScriptsPartial" /> }
+
+<div class="mb-3"><a class="btn btn-outline-secondary" asp-controller="Clarifications" asp-action="Index" asp-route-kind="request" asp-route-recordId="@request.Id">Clarification history</a></div>
+
+<partial name="_RecordQr" model='@(Url.Action("Details", new { id = request.Id })!)' />

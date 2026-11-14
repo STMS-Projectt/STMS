@@ -111,7 +111,8 @@ namespace SourcingTenderSystem.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
@@ -186,6 +187,23 @@ namespace SourcingTenderSystem.Data.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("AspNetUserLogins", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserPasskey<string>", b =>
+                {
+                    b.Property<byte[]>("CredentialId")
+                        .HasMaxLength(1024)
+                        .HasColumnType("varbinary(1024)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("CredentialId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserPasskeys", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
@@ -405,6 +423,9 @@ namespace SourcingTenderSystem.Data.Migrations
 
                     b.Property<int?>("ReceiverSupplierProfileId")
                         .HasColumnType("int");
+
+                    b.Property<DateTime?>("ResolvedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Response")
                         .HasColumnType("nvarchar(max)");
@@ -968,8 +989,7 @@ namespace SourcingTenderSystem.Data.Migrations
 
                     b.HasIndex("CreatedByEmployeeProfileId");
 
-                    b.HasIndex("PurchaseRequisitionId")
-                        .IsUnique();
+                    b.HasIndex("PurchaseRequisitionId");
 
                     b.ToTable("Tenders");
                 });
@@ -1067,6 +1087,57 @@ namespace SourcingTenderSystem.Data.Migrations
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserPasskey<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.OwnsOne("Microsoft.AspNetCore.Identity.IdentityPasskeyData", "Data", b1 =>
+                        {
+                            b1.Property<byte[]>("IdentityUserPasskeyCredentialId");
+
+                            b1.Property<byte[]>("AttestationObject")
+                                .IsRequired();
+
+                            b1.Property<byte[]>("ClientDataJson")
+                                .IsRequired();
+
+                            b1.Property<DateTimeOffset>("CreatedAt");
+
+                            b1.Property<bool>("IsBackedUp");
+
+                            b1.Property<bool>("IsBackupEligible");
+
+                            b1.Property<bool>("IsUserVerified");
+
+                            b1.Property<string>("Name");
+
+                            b1.Property<byte[]>("PublicKey")
+                                .IsRequired();
+
+                            b1.Property<long>("SignCount");
+
+                            b1.PrimitiveCollection<string>("Transports");
+
+                            b1.HasKey("IdentityUserPasskeyCredentialId");
+
+                            b1.ToTable("AspNetUserPasskeys");
+
+                            b1
+                                .ToJson("Data")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.WithOwner()
+                                .HasForeignKey("IdentityUserPasskeyCredentialId");
+                        });
+
+                    b.Navigation("Data")
                         .IsRequired();
                 });
 
@@ -1426,8 +1497,8 @@ namespace SourcingTenderSystem.Data.Migrations
                         .IsRequired();
 
                     b.HasOne("SourcingTenderSystem.Models.PurchaseRequisition", "PurchaseRequisition")
-                        .WithOne("Tender")
-                        .HasForeignKey("SourcingTenderSystem.Models.Tender", "PurchaseRequisitionId")
+                        .WithMany("Tenders")
+                        .HasForeignKey("PurchaseRequisitionId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -1550,7 +1621,7 @@ namespace SourcingTenderSystem.Data.Migrations
 
                     b.Navigation("Items");
 
-                    b.Navigation("Tender");
+                    b.Navigation("Tenders");
                 });
 
             modelBuilder.Entity("SourcingTenderSystem.Models.PurchaseRequisitionItem", b =>

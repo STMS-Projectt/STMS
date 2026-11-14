@@ -1,0 +1,20 @@
+@model IReadOnlyList<Notification>
+@{ ViewData["Title"] = "Notifications"; }
+<header class="page-heading"><div><p class="eyebrow">YOUR WORKSPACE</p><h1>Notifications</h1><p>New clarification requests, responses, and workflow updates.</p></div></header>
+@if (Model.Count == 0) { <section class="surface empty-state"><h2>No notifications yet</h2></section> }
+else
+{
+    <div class="stack">
+        @foreach (var item in Model)
+        {
+            <article class="surface detail-card">
+                <div class="card-heading"><div><p class="eyebrow">@item.CreatedAt.ToString("dd MMM yyyy HH:mm") UTC</p><h2>@item.Title</h2></div>
+                    @if (!item.IsRead) { <span class="status-pill status-waiting">Unread</span> }</div>
+                <p>@item.Message</p>
+                <form asp-action="Read" asp-route-id="@item.Id" method="post">
+                    <button class="btn btn-outline-secondary" type="submit">@(item.Link is not null ? "Open notification" : "Mark as read")</button>
+                </form>
+            </article>
+        }
+    </div>
+}

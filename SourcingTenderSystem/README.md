@@ -43,3 +43,58 @@ Abuzaid, and Yousef Qasem) and approved demo suppliers
 or resetting existing passwords. When a sourcing officer creates a tender,
 the three active employees must hold the SourcingManager, TechnicalCommittee, and FinancialCommittee roles respectively (one active employee per role), and the
 request author fills the fourth seat.
+
+### Clarifications and notifications
+
+Apply the AddClarificationResolvedAt migration on an existing database.
+The demo SQL script includes the same schema change.
+
+Start a clarification from the history link on a purchase request, tender,
+or submitted bid. Only the two participants can read the thread. The recipient
+can answer while their communication route remains eligible; the sender can
+then resolve it. Past threads remain available to their participants.
+
+For a purchase request, the requester is matched to the recorded reviewer.
+If a submitted request does not have a reviewer, the route is available only
+when there is exactly one active sourcing officer. Tender and bid routes use
+the tender creator, its assigned committee seats, and the bid owner. Top
+Committee uses the existing shared final-approval queue.
+
+Notifications are sent inside the site to the recipient of a question or
+response. The unread count updates while the workspace is open.
+
+### QR codes, protected PDFs and decision signatures
+
+Open QR code and share link on a record's details page. The QR is generated
+locally and preserves the destination's normal authentication and permissions.
+Use the deployed site URL when sharing with other devices.
+
+Bid attachments and evaluation report PDFs are stamped on each page with
+the viewing account and access time. Set DocumentSecurity__WatermarkLabel to
+customize the heading. Windows uses Arial; on other hosts set
+DocumentSecurity__FontPath to an installed TrueType font.
+
+Set DocumentSecurity__CertificatePath to the organization's PKCS#12 (.pfx)
+certificate with its private key, and DocumentSecurity__CertificatePassword
+via an environment secret or user secrets. Report copies and recorded tender
+decision PDFs use this organization certificate; it does not represent a
+personal certificate issued to the approver. Decision approval requires
+explicit confirmation and the approver's current password. The personalized
+watermark is applied before signing the copy. Source PDFs are unchanged.
+
+### Tender lifecycle
+
+Submit an approved requisition's tender draft to publish it. The background
+scheduler opens and closes published tenders using the stored UTC dates,
+checking every 15 seconds while the app is running. An officer can close an
+open tender early through Compliance.
+
+Round one requires three submitted, non-withdrawn offers. An officer may
+reopen an insufficient first round once, retaining offers and inviting
+suppliers without a submitted offer. The second round requires at least two
+offers. Complete compliance before assigning the four evaluation members.
+
+There must be exactly four active TopCommittee employee accounts when the
+manager forwards a report. These four accounts are recorded on the tender.
+An award requires all four approvals; any rejection cancels the tender.
+The final outcome sends an in-app notification to participating suppliers.

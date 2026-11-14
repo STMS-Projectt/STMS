@@ -1,6 +1,8 @@
 @model ComplianceReviewViewModel
 @{
     var tender = Model.Tender;
+    var now = DateTime.UtcNow;
+    var canClose = tender.Status == "Open" && tender.OpenDate <= now && tender.CloseDate > now;
     ViewData["Title"] = "Review & compare offers";
 }
 <h1>Review &amp; compare offers</h1>
@@ -12,22 +14,36 @@
         <h2 class="h5 card-title">@tender.Title</h2>
         <p class="card-text">@tender.Description</p>
         <p class="card-text mb-0">
-            <small class="text-muted">Closed @tender.CloseDate.ToString("yyyy-MM-dd HH:mm") (UTC) · Tender status: @tender.Status</small>
+            <small class="text-muted">Scheduled deadline: @tender.CloseDate.ToString("yyyy-MM-dd HH:mm") (UTC) · Tender status: @tender.Status</small>
         </p>
     </div>
 </div>
 
+@if (canClose)
+{
+    <details class="surface detail-card mb-3">
+        <summary class="fw-semibold">Close tender early</summary>
+        <p class="mt-3">Closing now stops new submissions immediately. You can then review offers already submitted.</p>
+        <form asp-action="Close" asp-route-tenderId="@tender.Id" method="post">
+            <label class="form-check mb-3"><input class="form-check-input" type="checkbox" name="confirmClose" value="true" required /> I confirm that bidding should end now.</label>
+            <button class="btn btn-danger" type="submit">Close</button>
+        </form>
+    </details>
+}
 @if (!Model.TenderIsClosed)
 {
-    <div class="alert alert-info" role="alert">This tender is "@tender.Status", so this page is read only.</div>
+    <div class="alert alert-info" role="status">Tender status: @tender.Status. Compliance decisions are available after closing.</div>
 }
-
 @if (Model.MixedCurrencies)
 {
     <div class="alert alert-warning" role="alert">The bids use different currencies. The order by total price does not convert currencies.</div>
 }
 
-@if (Model.Bids.Count == 0)
+@if (tender.Status is "Draft" or "Published" or "Open")
+{
+    <p class="subtle">Offers remain sealed until the tender is closed.</p>
+}
+else if (Model.Bids.Count == 0)
 {
     <p class="text-muted">This tender has no submitted bids.</p>
 }
@@ -213,15 +229,26 @@ else
             {
                 <form asp-action="SendToEvaluation" asp-route-tenderId="@tender.Id" method="post" asp-antiforgery="true"
                       onsubmit="return confirm('Send this tender to evaluation? The compliance check will be closed.');">
-                    <button type="submit" class="btn btn-primary">Send to evaluation</button>
+                    <button type="submit" class="btn btn-primary">Assign evaluation committee</button>
                 </form>
             }
             else
             {
-                <button type="button" class="btn btn-primary" disabled>Send to evaluation</button>
+                <button type="button" class="btn btn-primary" disabled>Assign evaluation committee</button>
             }
         </div>
     </div>
 }
 
 <a class="btn btn-outline-secondary" asp-action="Pending">Back to compliance list</a>
+
+<section class="surface detail-card mt-3">
+    <h2>Clarifications</h2>
+    <div class="button-row">
+        <a class="btn btn-outline-secondary" asp-controller="Clarifications" asp-action="Index" asp-route-kind="tender" asp-route-recordId="@tender.Id">Tender history</a>
+        @foreach (var bid in Model.Bids)
+        {
+            <a class="btn btn-outline-secondary" asp-controller="Clarifications" asp-action="Index" asp-route-kind="bid" asp-route-recordId="@bid.Id">Ask about bid #@bid.Id</a>
+        }
+    </div>
+</section>
