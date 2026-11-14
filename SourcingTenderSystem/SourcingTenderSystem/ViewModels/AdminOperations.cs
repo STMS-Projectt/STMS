@@ -19,5 +19,5 @@ public sealed class AdminRecord
     public int? TenderId { get; init; }
 }
 public sealed record AdminRegister(string Title, string Description, string Action, string? Query,
-    IReadOnlyList<AdminRecord> Rows, int Page, bool HasNext);
+    IReadOnlyList<AdminRecord> Rows, int Page, bool HasNext, string? Status, IReadOnlyList<string> Statuses);
 public sealed record AdminTenderView(Models.Tender Tender, IReadOnlyList<AdminRecord> Invitations, IReadOnlyList<AdminRecord> Bids);

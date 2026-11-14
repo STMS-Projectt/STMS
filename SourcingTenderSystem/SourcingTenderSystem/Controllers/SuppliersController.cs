@@ -18,6 +18,8 @@ public sealed class SuppliersController(ApplicationDbContext db, UserManager<Ide
     public async Task<IActionResult> Index(string? status)
     {
         var query = db.SupplierProfiles.AsNoTracking();
+        ViewBag.SupplierCounts = await query.GroupBy(x => x.Status)
+            .Select(g => new { Status = g.Key, Count = g.Count() }).ToDictionaryAsync(x => x.Status, x => x.Count);
         if (SupplierStatus.All.Contains(status)) query = query.Where(x => x.Status == status);
         ViewBag.Status = status;
         return View(await query.OrderByDescending(x => x.CreatedAt).ToListAsync());

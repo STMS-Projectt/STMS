@@ -1,0 +1,7 @@
+@model IEnumerable<(string Label, int Value, string Icon, string Tone)>
+<div class="metrics-grid stms-metrics" aria-label="Current totals">
+    @foreach (var item in Model)
+    {
+        <article class="surface metric"><span class="icon-tile tone-@item.Tone"><partial name="_Icon" model="item.Icon" /></span><span>@item.Label</span><strong>@item.Value.ToString("N0")</strong></article>
+    }
+</div>

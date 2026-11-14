@@ -52,6 +52,8 @@
 }
 else
 {
+    <section class="surface directory dept-directory" data-directory>
+    <partial name="_ListFilters" model='@("Search my bids", Model.MyBids.Select(b => b.Status))' />
     <div class="table-responsive">
         <table class="table table-striped align-middle">
             <thead>
@@ -67,7 +69,7 @@ else
             <tbody>
                 @foreach (var bid in Model.MyBids)
                 {
-                    <tr>
+                    <tr data-status="@bid.Status">
                         <td>@bid.Tender.Title</td>
                         <td class="text-end">@bid.TotalPrice.ToString("N2")</td>
                         <td>@bid.Currency</td>
@@ -79,4 +81,6 @@ else
             </tbody>
         </table>
     </div>
+    <partial name="_ListFilterEmpty" />
+</section>
 }

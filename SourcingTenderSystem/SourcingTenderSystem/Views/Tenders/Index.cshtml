@@ -1,7 +1,11 @@
 @model IEnumerable<SourcingTenderSystem.Models.Tender>
 
 @{
-    ViewData["Title"] = "Tenders";
+    ViewData["Title"] = "Tender Management";
+    var tenders = Model.ToList();
+    var now = DateTime.UtcNow;
+    var upcoming = tenders.Where(t => (t.Status is "Open" or "Published") && t.CloseDate > now).OrderBy(t => t.CloseDate).Take(4).ToList();
+    var metrics = new[] { ("All tenders", tenders.Count, "file", "blue"), ("Open for bidding", tenders.Count(t => t.Status == "Open"), "clock", "teal"), ("In review", tenders.Count(t => t.Status is "Under Evaluation" or "Evaluation Closed" or "Awaiting Manager Review" or "Awaiting Committee Decision"), "users", "violet"), ("Awarded", tenders.Count(t => t.Status == "Awarded"), "check", "amber") };
 }
 
 @functions {
@@ -20,10 +24,11 @@
     };
 }
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h1 class="h3 mb-0">Tenders</h1>
+<header class="page-heading stms-hero">
+    <div><p class="eyebrow">PROCUREMENT WORKSPACE</p><h1>Tender Management</h1><p>Track bidding, evaluation, and award decisions in one place.</p></div>
     <a data-workspace-dialog asp-action="Create" class="btn btn-primary">+ New Tender</a>
-</div>
+</header>
+<partial name="_DesignMetrics" model="metrics" />
 
 @if (TempData["Success"] is string successMessage)
 {
@@ -40,7 +45,8 @@
     </div>
 }
 
-<div class="table-responsive">
+<section class="surface directory dept-directory" data-directory><div class="directory-toolbar"><h2 class="h5 mb-0">All tenders</h2></div><partial name="_ListFilters" model='@("Search tenders", Model.Select(t => t.Status))' />
+    <div class="table-responsive" tabindex="0" role="region" aria-label="All tenders">
     <table class="table table-hover align-middle">
         <thead class="table-light">
             <tr>
@@ -60,7 +66,7 @@
             {
                 var isDraft = t.Status == "Draft";
                 var canAssign = t.Status == "Closed";
-                <tr>
+                <tr data-status="@t.Status">
                     <td>@t.Id</td>
                     <td>@t.Title</td>
                     <td>@t.PurchaseRequisition.Title</td>
@@ -120,4 +126,32 @@
             }
         </tbody>
     </table>
+</div>
+<partial name="_ListFilterEmpty" />
+</section>
+<div class="stms-page-panels">
+<section class="surface dashboard-card">
+    <div class="card-heading"><div><h2>Procurement pipeline</h2><p>Where current tenders stand</p></div></div>
+    @foreach (var group in tenders.GroupBy(t => t.Status).OrderByDescending(g => g.Count()).ThenBy(g => g.Key))
+    {
+        <div class="stms-stat-row"><span>@group.Key</span><meter min="0" max="@tenders.Count" value="@group.Count()" aria-label="@group.Key"></meter><strong>@group.Count()</strong></div>
+    }
+    @if (tenders.Count == 0) { <p class="subtle mb-0">No tenders in the pipeline yet.</p> }
+</section>
+<section class="surface dashboard-card">
+    <div class="card-heading"><div><h2>Upcoming deadlines</h2><p>Closing times in UTC</p></div></div>
+    @if (upcoming.Count == 0) { <p class="subtle mb-0">No upcoming bidding deadlines.</p> }
+    else
+    {
+        <ul class="list-group list-group-flush">
+            @foreach (var tender in upcoming)
+            {
+                <li class="list-group-item d-flex gap-2 flex-wrap justify-content-between">
+                    <a asp-action="Details" asp-route-id="@tender.Id">@tender.Title</a>
+                    <time datetime="@tender.CloseDate.ToString("yyyy-MM-ddTHH:mm:ss")Z">@tender.CloseDate.ToString("dd MMM yyyy · HH:mm")</time>
+                </li>
+            }
+        </ul>
+    }
+</section>
 </div>

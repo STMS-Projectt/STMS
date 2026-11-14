@@ -1,34 +1,63 @@
 @model DashboardCounts
 @{
-    ViewData["Title"] = "Overview";
+    ViewData["Title"] = "Analytics & Statistics";
+    var tenderCounts = (Dictionary<string, int>)ViewBag.TenderCounts;
+    var trend = ((string Month, int Tenders, int Requests)[])ViewBag.TenderTrend;
+    var high = trend.Max(t => Math.Max(t.Tenders, t.Requests));
+    var step = Math.Max(1, (int)Math.Ceiling(high / 4d));
+    var trendMax = 4d * step;
     var total = Model.PendingSuppliers + Model.ApprovedSuppliers + Model.RejectedSuppliers + Model.SuspendedSuppliers;
     var pending = total == 0 ? 0 : 100d * Model.PendingSuppliers / total;
     var approved = pending + (total == 0 ? 0 : 100d * Model.ApprovedSuppliers / total);
     var rejected = approved + (total == 0 ? 0 : 100d * Model.RejectedSuppliers / total);
     var chart = FormattableString.Invariant($"--pending:{pending:F3}%;--approved:{approved:F3}%;--rejected:{rejected:F3}%");
 }
-<header class="page-heading overview-heading">
-    <div><p class="eyebrow">ADMIN WORKSPACE</p><h1>Overview</h1><p>Manage access and follow purchasing activity from request through final approval.</p></div>
-</header>
-<section class="review-banner">
-    <div class="banner-art" aria-hidden="true"><span></span><span></span><span></span></div>
-    <div class="review-copy">
-        <div class="banner-label"><partial name="_Icon" model='@("shield")' /> SUPPLIER VERIFICATION</div>
-        <h2>@(Model.PendingSuppliers == 0 ? "You’re all caught up" : Model.PendingSuppliers == 1 ? "1 application awaiting review" : $"{Model.PendingSuppliers} applications awaiting review")</h2>
-        <p>@(Model.PendingSuppliers == 0 ? "New supplier applications will appear in your review queue." : "Open the review queue to check company details and supporting documents.")</p>
-        <a class="btn btn-light" asp-controller="Suppliers" asp-action="Index" asp-route-status="@SupplierStatus.Pending">@(Model.PendingSuppliers == 0 ? "Open review queue" : "Review applications") <partial name="_Icon" model='@("arrow")' /></a>
+<header class="page-heading stms-hero admin-overview">
+    <div>
+        <p class="eyebrow">ADMIN WORKSPACE</p>
+        <h1>Analytics &amp; Statistics</h1>
+        <p>Track procurement activity, review supplier applications, and manage access.</p>
     </div>
-</section>
+    <div class="admin-review-action">
+        <span><strong>@Model.PendingSuppliers</strong> supplier applications awaiting review</span>
+        <a class="btn btn-primary" asp-controller="Suppliers" asp-action="Index" asp-route-status="@SupplierStatus.Pending">Open review queue <partial name="_Icon" model='@("arrow")' /></a>
+    </div>
+</header>
+<div class="admin-analytics">
 <section aria-labelledby="snapshot-title">
     <div class="section-heading"><h2 id="snapshot-title">Organization snapshot</h2><span>Current totals</span></div>
     <div class="metrics-grid">
-        @foreach (var item in new[] { ("User accounts", Model.Users, "users", "violet"), ("Departments", Model.Departments, "building", "blue"), ("Active employees", Model.ActiveEmployees, "shield", "teal"), ("Supplier applications", total, "supplier", "amber") })
+        @foreach (var item in new[] { ("Purchase requests", Model.Requests, "file", "blue"), ("Tenders", Model.Tenders, "dashboard", "teal"), ("Supplier applications", total, "supplier", "amber"), ("Active employees", Model.ActiveEmployees, "users", "violet") })
         {
             <div class="metric surface"><span class="icon-tile tone-@item.Item4"><partial name="_Icon" model="item.Item3" /></span><strong>@item.Item2</strong><span>@item.Item1</span></div>
         }
     </div>
 </section>
-<div class="dashboard-grid">
+<div class="admin-chart-grid">
+    <section class="surface dashboard-card admin-trend">
+        <div class="card-heading"><div><h2>Procurement activity</h2><p>New requests and tenders · last six months (UTC)</p></div></div>
+        <div class="admin-chart-legend"><span>Purchase requests</span><span>Tenders</span></div>
+        @if (high == 0) { <p class="admin-chart-empty">No requests or tenders were created in this period.</p> }
+        else
+        {
+            <div class="admin-chart">
+                <div class="admin-chart-axis" aria-hidden="true">
+                    @for (var tick = 4; tick >= 0; tick--) { <span>@(tick * step)</span> }
+                </div>
+                <div class="admin-chart-plot" role="group" aria-label="Monthly request and tender counts">
+                    @foreach (var point in trend)
+                    {
+                        var heights = FormattableString.Invariant($"--requests:{100 * point.Requests / trendMax:F3}%;--tenders:{100 * point.Tenders / trendMax:F3}%");
+                        <div class="admin-chart-month" style="@heights" tabindex="0" aria-label="@point.Month: @point.Requests requests, @point.Tenders tenders">
+                            <div class="admin-chart-bars" aria-hidden="true"><i></i><i></i></div>
+                            <span class="admin-chart-label" aria-hidden="true">@point.Month</span>
+                            <span class="admin-chart-popup" aria-hidden="true">@point.Month · @point.Requests requests · @point.Tenders tenders</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </section>
     <section class="surface dashboard-card">
         <div class="card-heading"><div><h2>Supplier status</h2><p>Application breakdown</p></div><a class="text-link" asp-controller="Suppliers" asp-action="Index">View suppliers <partial name="_Icon" model='@("arrow")' /></a></div>
         <div class="status-overview">
@@ -41,6 +70,8 @@
             </div>
         </div>
     </section>
+</div>
+<div class="dashboard-grid admin-secondary">
     <section class="surface dashboard-card">
         <div class="card-heading"><div><h2>Quick actions</h2><p>Common administration tasks</p></div></div>
         <div class="quick-actions">
@@ -49,8 +80,35 @@
             <a asp-controller="Suppliers" asp-action="Index"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("supplier")' /></span><span><strong>Manage suppliers</strong><small>Review applications and documents</small></span><partial name="_Icon" model='@("arrow")' /></a>
         </div>
     </section>
-</div>
-<section class="surface system-summary" aria-label="Sourcing totals">
-    <span><a asp-controller="AdminOperations" asp-action="Requests">Purchase requests</a> <strong>@Model.Requests</strong></span>
-    <span><a asp-controller="AdminOperations" asp-action="Tenders">Tenders</a> <strong>@Model.Tenders</strong></span>
+<section class="surface dashboard-card">
+    <div class="card-heading"><div><h2>Tenders by status</h2><p>Share of all recorded tenders</p></div><a class="text-link" asp-controller="AdminOperations" asp-action="Tenders">View tenders</a></div>
+    @if (Model.Tenders == 0) { <p class="subtle mb-0">Tender statistics will appear once a tender is created.</p> }
+    @foreach (var row in tenderCounts)
+    {
+        <div class="stms-stat-row"><span>@row.Key</span><meter min="0" max="@Model.Tenders" value="@row.Value" aria-label="@row.Key"></meter><strong>@row.Value</strong></div>
+    }
 </section>
+</div>
+<section aria-labelledby="admin-totals">
+    <div class="section-heading"><h2 id="admin-totals">Workspace at a glance</h2><span>Current totals</span></div>
+    <div class="admin-total-grid">
+        @foreach (var (label, count, icon, tone, controller, action) in new[] {
+            ("Departments", Model.Departments, "building", "blue", "Departments", "Index"),
+            ("User accounts", Model.Users, "users", "violet", "", ""),
+            ("Purchase requests", Model.Requests, "file", "amber", "AdminOperations", "Requests"),
+            ("Tenders", Model.Tenders, "dashboard", "teal", "AdminOperations", "Tenders") })
+        {
+            if (string.IsNullOrEmpty(controller))
+            {
+                <div class="surface admin-total-card"><span class="icon-tile tone-@tone"><partial name="_Icon" model="icon" /></span><span><strong>@count.ToString("N0")</strong><small>@label</small></span></div>
+                continue;
+            }
+            <a class="surface admin-total-card" asp-controller="@controller" asp-action="@action">
+                <span class="icon-tile tone-@tone"><partial name="_Icon" model="icon" /></span>
+                <span><strong>@count.ToString("N0")</strong><small>@label</small></span>
+                <partial name="_Icon" model='@("arrow")' />
+            </a>
+        }
+    </div>
+</section>
+</div>

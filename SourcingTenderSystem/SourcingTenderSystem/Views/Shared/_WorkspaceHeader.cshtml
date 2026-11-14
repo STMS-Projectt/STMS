@@ -1,0 +1,45 @@
+@model string
+@using System.Security.Claims
+@using Microsoft.EntityFrameworkCore
+@inject SourcingTenderSystem.Data.ApplicationDbContext HeaderDb
+@{
+    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    var displayName = Model == "Supplier"
+        ? await HeaderDb.SupplierProfiles.Where(s => s.UserId == userId).Select(s => s.CompanyName).FirstOrDefaultAsync()
+        : await HeaderDb.EmployeeProfiles.Where(e => e.UserId == userId).Select(e => e.FullName).FirstOrDefaultAsync();
+    var home = Model switch {
+        "Administrator" => ("AdminDashboard", "Index"),
+        "Sourcing officer" => ("SourcingDashboard", "Index"),
+        "Supplier" => ("SupplierWorkspace", "Index"),
+        "Committee reviewer" => (User.IsInRole("TopCommittee") ? "EvaluationWorkflow" : "CommitteeReviews", "Index"),
+        _ => ("PurchaseRequisitions", "Dashboard")
+    };
+}
+<header class="workspace-bar stms-topbar">
+    <button class="btn btn-outline-secondary menu-toggle" type="button" data-nav-toggle aria-controls="workspace-nav" aria-expanded="false" aria-label="Open navigation" title="Open navigation"><partial name="_Icon" model='@("menu")' /></button>
+    <a class="stms-top-brand" asp-controller="@home.Item1" asp-action="@home.Item2" aria-label="STMS dashboard">
+        <img src="~/images/stms-cube.svg" alt="" /><strong>STMS</strong>
+        <span>Sourcing &amp; Tender<br />Management System</span>
+    </a>
+    <div class="stms-search" role="search">
+        <label class="visually-hidden" for="stms-workspace-search">Search workspace pages</label>
+        <partial name="_Icon" model='@("search")' />
+        <input id="stms-workspace-search" type="search" placeholder="Search workspace pages…" autocomplete="off" aria-controls="stms-search-results" />
+        <button type="button" class="stms-voice-button" data-workspace-voice aria-label="Search by voice" title="Search by voice" aria-pressed="false" hidden>
+            <partial name="_Icon" model='@("microphone")' />
+        </button>
+        <kbd aria-hidden="true">Ctrl K</kbd>
+        <span class="visually-hidden" data-workspace-voice-status role="status"></span>
+        <p class="stms-voice-message" data-workspace-voice-message aria-hidden="true" hidden></p>
+        <div id="stms-search-results" class="stms-search-results" hidden></div>
+    </div>
+    <a class="workspace-bell" asp-controller="Notifications" asp-action="Index" aria-label="Notifications" title="Notifications">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4" /></svg>
+        <span class="workspace-bell-count" data-notification-count="@Url.Action("Unread", "Notifications")" hidden></span>
+    </a>
+    <div class="bar-profile">
+        <partial name="_ProfileAvatar" />
+        <span><strong title="@displayName">@(displayName ?? User.Identity?.Name)</strong><span class="stms-profile-role">@Model</span><small class="visually-hidden">@User.Identity?.Name</small></span>
+        <a asp-controller="Profile" asp-action="Index" class="stms-profile-link" aria-label="Open account settings" title="Account settings">⌄</a>
+    </div>
+</header>

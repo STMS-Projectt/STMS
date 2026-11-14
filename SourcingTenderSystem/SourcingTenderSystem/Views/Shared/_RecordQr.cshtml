@@ -6,7 +6,7 @@
     using var qr = new PngByteQRCode(data);
     var image = Convert.ToBase64String(qr.GetGraphic(5));
 }
-<details class="surface detail-card mb-3 record-qr">
+<details open="@(ViewData["RecordQrOpen"] is true)" class="surface detail-card mb-3 record-qr">
     <summary class="fw-semibold">QR code and share link</summary>
     <div class="d-flex gap-3 align-items-center flex-wrap mt-3">
         <img width="144" height="144" src="data:image/png;base64,@image" alt="QR code for this record" />

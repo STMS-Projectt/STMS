@@ -83,7 +83,7 @@ try {
     await wait('document.readyState==="complete" && performance.getEntriesByType("resource").some(e=>e.name.includes("biometrics.js"))','passkey script');
     await sleep(250);
     await click('[data-phone-button]');
-    await wait('location.pathname.includes("BiometricSetup") && document.body.innerText.includes("Continue to workspace")','registered passkey');
+    await wait('location.pathname.startsWith("/Profile") && new URLSearchParams(location.search).get("tab")==="security" && document.body.innerText.includes("Continue to workspace")','registered passkey');
     await go('/PurchaseRequisitions/Dashboard');
     await wait('location.pathname.includes("Dashboard") && !!document.querySelector("[data-workspace-frame]")','department workspace');
     await logout();
@@ -136,7 +136,7 @@ try {
       await click('a[href*="/PurchaseRequisitions/MyRequests"]');
       await wait('!!document.querySelector(".request-filters [data-request-voice-search]")','voice control');
       await click('[data-request-voice-search]');
-      await click('#workspace-nav a.brand');
+      await click('.stms-top-brand');
       await wait('location.pathname.endsWith("/Dashboard") && !document.querySelector(".request-filters")','AJAX dashboard');
     }
     assert.equal(await ev('window.speechStarts'),2);
@@ -165,6 +165,71 @@ try {
       if(await ev('!!document.querySelector("form[action*=Logout]")'))await logout();
       await login(role);
       await wait('location.pathname.startsWith('+JSON.stringify(path)+') && document.readyState==="complete" && !!document.querySelector("form[action*=Logout]")',role+' landing');
+      if(role==='Admin'){
+        await go('/Profile');
+        await wait('!!document.querySelector("#Personal_PreferredName")','personal fields');
+        await ev('window.accountTabMarker=1');
+        await set('[name="Personal.PreferredName"]','Browser account');
+        await set('[name="Personal.Location"]','Amman');
+        await click('form[action*="SavePersonal"] button[type=submit]');
+        await wait('document.querySelector(".account-hero h1")?.textContent==="Browser account"','personal details saved');
+        await click('.account-tabs a[href*="security"]');
+        await wait('!!document.querySelector(".account-tabs a[href*=security][aria-current=page]") && !!document.querySelector("[data-bio][data-bio-ready]")','security tab initialized');
+        assert.equal(await ev('window.accountTabMarker'),1);
+        await click('.account-tabs a[href*="personal"]');
+        await wait('document.querySelector("#Personal_Location")?.value==="Amman"','personal tab retained');
+        const links=await ev('Array.from(document.querySelectorAll("#workspace-nav a.side-link"),a=>a.pathname)');
+        assert.equal(new Set(links).size,links.length);
+        for(const path of ['/AdminOperations/Requests','/AdminOperations/Tenders','/AdminOperations/Invitations','/AdminOperations/Bids','/EvaluationWorkflow','/AdminOperations/Activity']){
+          assert(links.some(link=>link===path || link===path+'/Index'),path);
+        }
+        assert.equal(await ev('document.querySelector("#workspace-nav").textContent.includes("Public portal")'),false);
+        for(const width of [1440,390]){
+          await call('Emulation.setDeviceMetricsOverride',{width,height:900,deviceScaleFactor:1,mobile:false});
+          for(const directory of ['/Departments','/Employees','/Suppliers']){
+            await go(directory);
+            await wait('!!document.querySelector("article.record-card")','directory cards');
+            assert.equal(await ev('getComputedStyle(document.querySelector(".record-card")).display'),width===1440?'grid':'flex');
+            assert.equal(await ev('!!document.querySelector(".record-icon-action[aria-label][data-tooltip]")'),true);
+            if(directory!=='/Suppliers'){
+              await click('[data-status-choice="inactive"]');
+              assert.equal(await ev('document.querySelector("[data-status-choice=inactive]").getAttribute("aria-pressed")'),"true");
+              await wait('!document.querySelector("[data-record][data-status=active]:not([hidden])")','inactive filter');
+              await click('[data-status-choice=""]');
+            }
+            const directoryUrl=await ev('location.href');
+            await click('[data-workspace-dialog="details"]');
+            await wait('document.querySelector("#workspace-dialog").open && !!document.querySelector("#workspace-dialog .detail-card")','details dialog');
+            assert.equal(await ev('location.href'),directoryUrl);
+            if(directory==='/Departments'){
+              await click('#workspace-dialog a[data-workspace-dialog][href*="/Edit"]');
+              await wait('!!document.querySelector("#workspace-dialog form input[name=Name]")','nested edit form');
+              const beforeToggle=await ev('document.querySelector("#workspace-dialog #IsActive").checked');
+              const switchColor=await ev('getComputedStyle(document.querySelector("#workspace-dialog #IsActive")).backgroundColor');
+              await click('#workspace-dialog label[for="IsActive"]');
+              assert.equal(await ev('document.querySelector("#workspace-dialog #IsActive").checked'),!beforeToggle);
+              assert.notEqual(await ev('getComputedStyle(document.querySelector("#workspace-dialog #IsActive")).backgroundColor'),switchColor);
+              await click('#workspace-dialog [data-dialog-back]');
+              await wait('!!document.querySelector("#workspace-dialog .detail-card") && !document.querySelector("#workspace-dialog form input[name=Name]")','back to details');
+            }
+            await click('#workspace-dialog [data-dialog-close]');
+            await wait('!document.querySelector("#workspace-dialog").open','details closed');
+            if(directory!=='/Suppliers'){
+              await click('.page-heading a[data-workspace-dialog][href*="/Create"]');
+              await wait('document.querySelector("#workspace-dialog").open && !!document.querySelector("#workspace-dialog form")','create dialog');
+              assert.equal(await ev('location.href'),directoryUrl);
+              await click('#workspace-dialog [data-dialog-close]');
+            }
+            assert.equal(await ev('!!document.querySelector("[data-directory] table")'),false);
+            assert.equal(await ev('document.documentElement.scrollWidth <= innerWidth'),true,directory+' overflow at '+width);
+            await ev('(()=>{const q=document.querySelector("[data-filter-search]");q.value="definitely-not-a-record";q.dispatchEvent(new Event("input",{bubbles:true}));})()');
+            await wait('document.querySelector("[data-result-count]").textContent==="0 records" && !document.querySelector("[data-filter-empty]").hidden','empty search');
+            await click('[data-filter-empty] button');
+            await wait('Array.from(document.querySelectorAll("[data-record]")).some(el=>!el.hidden)','clear restores records');
+          }
+        }
+        await call('Emulation.setDeviceMetricsOverride',{width:1440,height:900,deviceScaleFactor:1,mobile:false});
+      }
       if(role==='Supplier'){
         await go('/Tenders/Index');
         await wait('location.pathname.includes("AccessDenied") || document.body.innerText.includes("Access denied")','supplier direct URL denied');
@@ -182,6 +247,33 @@ try {
     await until(async()=>!(await call('Network.getAllCookies')).cookies.some(c=>c.name.startsWith('.STMS.')),'session cookies cleared');
     await go('/Account/Login');
   }});
+  await test('BR-admin-operations-record-modals',async()=>{
+    if(await ev('!!document.querySelector("form[action*=Logout]")'))await logout();
+    await login('Admin');
+    await wait('location.pathname.startsWith("/AdminDashboard")','admin landing');
+    await go('/AdminOperations/Tenders');
+    await wait('!!document.querySelector(".directory-status-options a[href*=status]")','tender status filters');
+    const filter=await ev('document.querySelector(".directory-status-options a[href*=status]").href');
+    await click('.directory-status-options a[href*=status]');
+    await wait('location.href==='+JSON.stringify(filter)+' && !!document.querySelector(".directory-status-options a[aria-current=page][href*=status]")','filtered tender register');
+    assert(await ev('document.querySelectorAll(".record-card").length>0'));
+    for(const [register,action,marker] of [
+      ['Requests','RequestQr','.record-qr[open] img'],
+      ['Invitations','InvitationDetails','h2'],
+      ['Bids','BidDetails','.detail-card'],
+    ]){
+      const path='/AdminOperations/'+register;
+      await go(path);
+      const selector='a[href*="/AdminOperations/'+action+'/"]';
+      await wait('!!document.querySelector('+JSON.stringify(selector)+')',action+' link');
+      await click(selector);
+      await wait('!!document.querySelector('+JSON.stringify('#workspace-dialog[open] '+marker)+')',action+' modal');
+      const text=await ev('document.querySelector("#workspace-dialog").innerText');
+      assert(text.includes({RequestQr:'Record QR code',InvitationDetails:'Invitation information',BidDetails:'Offer summary'}[action]));
+      assert.equal(await ev('location.pathname'),path);
+      await click('#workspace-dialog [data-dialog-close]');
+    }
+  });
   await writeFile(join(evidence,'results.json'),JSON.stringify({results,errors,http},null,2));
   process.stdout.write(JSON.stringify({results,errors})+'\n');
   if(results.some(r=>r.status==='FAIL')) process.exitCode=1;

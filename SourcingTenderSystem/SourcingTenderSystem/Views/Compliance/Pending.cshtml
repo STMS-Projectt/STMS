@@ -12,6 +12,8 @@
 }
 else
 {
+    <section class="surface directory dept-directory" data-directory>
+    <partial name="_ListFilters" model='@("Search compliance queue", Model.Select(r => r.Tender.Status))' />
     <div class="table-responsive">
         <table class="table table-striped align-middle">
             <thead>
@@ -28,7 +30,7 @@ else
             <tbody>
                 @foreach (var row in Model)
                 {
-                    <tr>
+                    <tr data-status="@row.Tender.Status">
                         <td>@row.Tender.Title</td>
                         <td>@row.Tender.CloseDate.ToString("yyyy-MM-dd HH:mm")</td>
                         <td class="text-center">@(row.Tender.Status == "Open" ? "—" : row.SubmittedCount.ToString())</td>
@@ -57,4 +59,6 @@ else
             </tbody>
         </table>
     </div>
+    <partial name="_ListFilterEmpty" />
+    </section>
 }

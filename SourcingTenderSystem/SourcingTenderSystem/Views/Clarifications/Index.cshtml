@@ -32,22 +32,24 @@
         </table></div>
     </section>
 }
-<section class="surface directory">
+<section class="surface directory dept-directory" data-directory>
 @if (Model.Rows.Count == 0)
 {
     <div class="empty-state"><span class="icon-tile tone-blue"><partial name="_Icon" model='@("file")' /></span><h2>No clarifications yet</h2><p>Questions and responses will appear here after a clarification is sent.</p></div>
 }
 else
 {
+    <partial name="_ListFilters" model='@("Search clarifications", Model.Rows.Select(r => r.Status))' />
     <div class="table-responsive" role="region" aria-label="Clarifications" tabindex="0"><table class="directory-table">
         <thead><tr><th scope="col">Subject</th><th scope="col">Transaction</th><th scope="col">Participants</th><th scope="col">Status</th><th scope="col"><span class="visually-hidden">Action</span></th></tr></thead>
         <tbody>@foreach (var row in Model.Rows)
         {
-            <tr><td><strong>@row.Subject</strong><br /><small class="subtle">@row.CreatedAt.ToString("dd MMM yyyy HH:mm") UTC</small></td>
+            <tr data-status="@row.Status"><td><strong>@row.Subject</strong><br /><small class="subtle">@row.CreatedAt.ToString("dd MMM yyyy HH:mm") UTC</small></td>
             <td>@(row.PurchaseRequisition?.Title ?? row.Tender?.Title ?? row.Bid?.Tender.Title ?? "—")</td>
             <td>@(row.SenderEmployeeProfile?.FullName ?? row.SenderSupplierProfile?.CompanyName) → @(row.ReceiverEmployeeProfile?.FullName ?? row.ReceiverSupplierProfile?.CompanyName)</td>
             <td><partial name="_ClarificationStatus" model="row.Status" /></td><td><a class="table-action" asp-action="Details" asp-route-id="@row.Id">Open</a></td></tr>
         }</tbody>
     </table></div>
 }
+<partial name="_ListFilterEmpty" />
 </section>

@@ -7,13 +7,15 @@
 }
 else
 {
+    <section class="surface directory dept-directory" data-directory>
+    <partial name="_ListFilters" model='@("Search requests awaiting review", Model.Select(r => r.Status))' />
     <div class="table-responsive">
         <table class="table table-striped align-middle">
             <thead><tr><th>Title</th><th>Department</th><th>Employee</th><th>Priority</th><th>Target date</th><th>Status</th><th></th></tr></thead>
             <tbody>
             @foreach (var request in Model)
             {
-                <tr>
+                <tr data-status="@request.Status">
                     <td>@request.Title</td><td>@request.Department.Name</td>
                     <td>@request.CreatedByEmployeeProfile.FullName</td><td>@request.Priority</td>
                     <td>@request.TargetDate.ToString("yyyy-MM-dd")</td><td>@request.Status</td>
@@ -23,4 +25,6 @@ else
             </tbody>
         </table>
     </div>
+    <partial name="_ListFilterEmpty" />
+    </section>
 }

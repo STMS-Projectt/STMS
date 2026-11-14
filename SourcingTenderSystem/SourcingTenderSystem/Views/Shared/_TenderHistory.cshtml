@@ -7,7 +7,7 @@
     {
         <li class="list-group-item d-flex justify-content-between gap-2 flex-wrap">
             <span><strong>#@tender.Id · @tender.Title</strong> · @tender.Status</span>
-            @if (User.IsInRole(Roles.Admin)) { <a asp-controller="AdminOperations" asp-action="Tender" asp-route-id="@tender.Id">View tender</a> }
+            @if (User.IsInRole(Roles.Admin)) { <a data-workspace-dialog="details" asp-controller="AdminOperations" asp-action="Tender" asp-route-id="@tender.Id">View tender</a> }
             else if (User.IsInRole(Roles.SourcingOfficer)) { <a asp-controller="Tenders" asp-action="Details" asp-route-id="@tender.Id">View tender</a> }
         </li>
     }

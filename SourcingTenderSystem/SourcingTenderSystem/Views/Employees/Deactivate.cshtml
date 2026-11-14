@@ -1,8 +1,8 @@
 @model EmployeeProfile
 @{ ViewData["Title"] = "Deactivate employee"; }
 <a class="back-link" asp-action="Details" asp-route-id="@Model.Id"><partial name="_Icon" model='@("back")' /> Employee details</a>
-<header class="page-heading"><div><p class="eyebrow">ADMINISTRATION</p><h1>Deactivate employee</h1><p>Confirm the change before revoking account access.</p></div></header>
-<section class="surface form-card confirmation">
+<header class="page-heading admin-action-heading"><span class="icon-tile tone-amber"><partial name="_Icon" model='@("shield")' /></span><div><p class="eyebrow">ADMINISTRATION</p><h1>Deactivate employee</h1><p>Confirm the change before revoking account access.</p></div></header>
+<section class="surface form-card admin-action-card confirmation">
     <div class="callout callout-warning"><strong>@Model.FullName</strong><p>The employee will be signed out and won’t be able to sign in. You can reactivate the account from Edit employee.</p></div>
     <form asp-action="Deactivate" asp-route-id="@Model.Id" method="post"><div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
         <div class="form-actions"><button class="btn btn-danger" type="submit">Deactivate account</button><a class="btn btn-outline-secondary" asp-action="Details" asp-route-id="@Model.Id">Cancel</a></div>

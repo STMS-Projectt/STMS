@@ -4,10 +4,11 @@
     var tender = Model.Tender;
 }
 <a class="back-link" asp-action="Tenders"><partial name="_Icon" model='@("back")' /> Tenders</a>
-<header class="page-heading"><div><p class="eyebrow">TENDER #@tender.Id</p><h1>@tender.Title</h1><p>@tender.Status · @tender.PurchaseRequisition.Department.Name</p></div>
-<div class="button-row">
-    <a class="btn btn-outline-secondary" asp-action="RequestDetails" asp-route-id="@tender.PurchaseRequisitionId">View request</a>
-    @if (tender.Status == "Under Evaluation" || tender.EvaluationReport != null) { <a class="btn btn-primary" asp-controller="EvaluationWorkflow" asp-action="Details" asp-route-id="@tender.Id">View evaluation</a> }
+<header class="page-heading stms-hero admin-record-hero"><div><p class="eyebrow">TENDER #@tender.Id</p><h1>@tender.Title</h1><p>@tender.Status · @tender.PurchaseRequisition.Department.Name</p></div>
+<div class="record-action">
+    <a data-workspace-dialog="details" class="record-icon-action" asp-action="RequestDetails" asp-route-id="@tender.PurchaseRequisitionId" aria-label="View purchase request" data-tooltip="View purchase request" title="View purchase request"><partial name="_Icon" model='@("file")' /></a>
+    <a data-workspace-dialog="details" class="record-icon-action" asp-action="TenderQr" asp-route-id="@tender.Id" aria-label="Show tender QR code" data-tooltip="Show tender QR code" title="Show tender QR code"><partial name="_Icon" model='@("qr")' /></a>
+    @if (tender.Status == "Under Evaluation" || tender.EvaluationReport != null) { <a data-workspace-dialog="details" class="record-icon-action" asp-controller="EvaluationWorkflow" asp-action="Details" asp-route-id="@tender.Id" aria-label="View evaluation" data-tooltip="View evaluation" title="View evaluation"><partial name="_Icon" model='@("check")' /></a> }
 </div></header>
 <partial name="_RecordQr" model='@(Url.Action("Tender", new { id = tender.Id })!)' />
 <section class="surface detail-card mb-3"><h2>Tender information</h2>
@@ -24,8 +25,20 @@ else { <ul class="mb-0">@foreach (var member in tender.CommitteeMembers.OrderBy(
 {
     <section class="surface directory"><div class="directory-toolbar"><h2 class="mb-0">@title</h2></div>
     @if (records.Count == 0) { <div class="empty-state">No records yet.</div> }
-    else { <div class="table-responsive"><table class="directory-table"><thead><tr><th scope="col">Supplier</th><th scope="col">Status</th></tr></thead><tbody>
-        @foreach (var row in records) { <tr><td>@row.Name</td><td>@row.Status</td></tr> }
-    </tbody></table></div> }</section>
+    else
+    {
+        <div class="record-list">
+        @foreach (var row in records)
+        {
+            <article class="record-card"><div class="record-name"><span class="avatar"><partial name="_Icon" model='@("supplier")' /></span><span>@row.Name</span></div>
+                <dl class="record-facts"><div><dt>Status</dt><dd><partial name="_Status" model="row.Status" /></dd></div></dl>
+                <div class="record-action">
+                    @if (title == "Invitations") { <a data-workspace-dialog="details" class="record-icon-action" asp-action="InvitationDetails" asp-route-id="@row.Id" aria-label="View invitation details" data-tooltip="View invitation details" title="View invitation details"><partial name="_Icon" model='@("eye")' /></a> }
+                    else { <a data-workspace-dialog="details" class="record-icon-action" asp-action="BidDetails" asp-route-id="@row.Id" aria-label="View bid details" data-tooltip="View bid details" title="View bid details"><partial name="_Icon" model='@("eye")' /></a> }
+                </div>
+            </article>
+        }
+        </div>
+    }</section>
 }
 </div>

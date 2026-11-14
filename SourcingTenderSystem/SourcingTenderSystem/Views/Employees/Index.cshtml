@@ -1,39 +1,48 @@
 @model IReadOnlyList<EmployeeProfile>
 @{ ViewData["Title"] = "Employees"; }
-<header class="page-heading"><div><p class="eyebrow">ADMINISTRATION</p><h1>Employees</h1><p>Manage employee accounts, department assignments and access.</p></div><a data-workspace-dialog class="btn btn-primary" asp-action="Create" ><partial name="_Icon" model='@("plus")' /> Add employee</a></header>
-<section class="surface directory" aria-label="Employees directory" data-directory>
-    <div class="directory-toolbar">
-    @* Voice search trial on the Admin Employees page. *@
-    <div class="d-flex align-items-center gap-2" hidden="@(Model.Count == 0)">
+<header class="page-heading stms-hero"><div><p class="eyebrow">ADMINISTRATION</p><h1>Employees</h1><p>Manage employee accounts, department assignments and access.</p></div><a data-workspace-dialog class="btn btn-primary" asp-action="Create" ><partial name="_Icon" model='@("plus")' /> Add employee</a></header>
+<partial name="_DesignMetrics" model='@(new[] { ("Employee accounts", Model.Count, "users", "blue"), ("Active", Model.Count(e => e.IsActive), "check", "teal"), ("Inactive", Model.Count(e => !e.IsActive), "shield", "amber"), ("Unassigned", Model.Count(e => e.DepartmentId == null), "building", "violet") })' />
+<section class="surface directory dept-directory" aria-label="Employees directory" data-directory>
+    <div class="dept-directory-heading"><h2>Employee directory</h2><p>Find employees by name, department or account status.</p></div>
+    <div class="directory-filter-panel">
+    @if (Model.Count > 0) { <partial name="_DirectoryStatusButtons" /> }
+    <div class="directory-toolbar dept-filters">
+    <div class="directory-search" hidden="@(Model.Count == 0)">
         <label class="search-box"><partial name="_Icon" model='@("search")' /><span class="visually-hidden">Search employees</span><input class="form-control" type="search" data-filter-search placeholder="Search employees"></label>
-        <button type="button" class="btn btn-outline-secondary" data-directory-voice-search aria-label="Search employees by voice" title="Search by voice">🎤</button>
+        <partial name="_DirectoryVoice" />
     </div>
+    @if (Model.Count > 0)
+    {
+        <label>Department<select class="form-select" data-filter-department><option value="">All departments</option><option value="unassigned">Unassigned</option>
+        @foreach (var department in Model.Where(e => e.Department != null).Select(e => e.Department!).DistinctBy(d => d.Id).OrderBy(d => d.Name))
+        { <option value="@department.Id">@department.Name</option> }
+        </select></label>
+        <label>Sort by<select class="form-select" data-filter-sort><option value="">Default order</option><option value="name">Name (A–Z)</option></select></label>
+        <button type="button" class="btn btn-outline-secondary" data-filter-reset>Reset</button>
+    }
     <span class="result-count" data-result-count aria-live="polite">@Model.Count records</span>
 </div>
+    </div>
     @if (Model.Count == 0)
     {
         <div class="empty-state"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("users")' /></span><h2>No employees yet</h2><p>Create an account to give an employee access.</p><a data-workspace-dialog class="btn btn-primary" asp-action="Create" >Add employee</a></div>
     }
     else
     {
-        <table class="directory-table" role="table">
-            <thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Employee</th><th scope="col" role="columnheader">Department</th><th scope="col" role="columnheader">Status</th><th scope="col" role="columnheader">Actions</th></tr></thead>
-            <tbody role="rowgroup">
+        <div class="record-list" data-record-list>
             @foreach (var item in Model)
             {
-                <tr role="row">
-                    <td role="cell"><div class="record-name"><span class="avatar"><partial name="_Icon" model='@("users")' /></span><span>@item.FullName<small>@item.User.Email</small></span></div></td>
-                    <td role="cell" data-label="Department">@(item.Department?.Name ?? "Unassigned")</td>
-                    <td role="cell" data-label="Status"><partial name="_Status" model='@(item.IsActive ? "Active" : "Inactive")' /></td>
-                    <td role="cell" data-label="Actions"><a class="table-action" asp-action="Details" asp-route-id="@item.Id">View details <partial name="_Icon" model='@("arrow")' /><span class="visually-hidden"> for @item.FullName</span></a></td>
-                </tr>
+                <article class="record-card" data-record data-sort-name="@item.FullName" data-status="@(item.IsActive ? "active" : "inactive")" data-department="@(item.DepartmentId?.ToString() ?? "unassigned")">
+                    <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("users")' /></span><span>@item.FullName<small>@item.User.Email</small></span></div><dl class="record-facts">
+                    <div><dt class="record-field-icon" title="Department"><partial name="_Icon" model='@("building")' /><span class="visually-hidden">Department</span></dt><dd>@(item.Department?.Name ?? "Unassigned")</dd></div>
+                    <div><dt class="visually-hidden">Status</dt><dd><partial name="_Status" model='@(item.IsActive ? "Active" : "Inactive")' /></dd></div>
+                    </dl><div class="record-action"><a data-workspace-dialog="details" class="record-icon-action" asp-action="Details" asp-route-id="@item.Id" aria-label="View details for @item.FullName" data-tooltip="View details"><partial name="_Icon" model='@("eye")' /></a>
+                        <a data-workspace-dialog="details" class="record-icon-action" asp-action="Edit" asp-route-id="@item.Id" aria-label="Edit employee" data-tooltip="Edit employee" title="Edit employee"><partial name="_Icon" model='@("edit")' /></a>
+                        @if (item.IsActive) { <a data-workspace-dialog="details" class="record-icon-action record-icon-danger" asp-action="Deactivate" asp-route-id="@item.Id" aria-label="Deactivate employee" data-tooltip="Deactivate employee" title="Deactivate employee"><partial name="_Icon" model='@("pause")' /></a> }
+                    </div>
+                </article>
             }
-            </tbody>
-        </table>
-        <div data-filter-empty hidden><div class="empty-state"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("search")' /></span><h2>No matching records</h2><p>Try a different name or clear your search.</p><button type="button" class="btn btn-outline-secondary">Clear search</button></div></div>
+            </div>
+        <div data-filter-empty hidden><div class="empty-state"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("search")' /></span><h2>No matching records</h2><p>Try a different name or reset the filters.</p><button type="button" class="btn btn-outline-secondary">Reset filters</button></div></div>
     }
 </section>
-
-@section Scripts {
-    <script src="~/js/admin-directory-voice-search.js" asp-append-version="true"></script>
-}
