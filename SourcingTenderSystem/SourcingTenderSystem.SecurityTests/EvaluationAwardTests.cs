@@ -223,6 +223,11 @@ public sealed partial class BiddingRoundTests
                 Assert.Equal($"/Tenders/Create?purchaseRequisitionId={request.Id}",officerNotice.Link);
                 Assert.Contains("Review concerns",officerNotice.Message);
                 Assert.Equal(1,await db.Tenders.CountAsync(t=>t.PurchaseRequisitionId==request.Id));
+                var details=await officer.GetStringAsync($"/EvaluationWorkflow/Details/{tenderId}");
+                Assert.Contains("Reason: Review concerns",details);
+                Assert.Contains("Create a new tender",details);
+                var createPage=await officer.GetStringAsync(officerNotice.Link);
+                Assert.Matches($"<option[^>]*selected=\"selected\"[^>]*value=\"{request.Id}\"",createPage);
                 var next = DateTime.UtcNow.AddDays(1);
                 Assert.Equal(HttpStatusCode.Redirect,await Send(officer,officerToken,"/Tenders/Create",new(){
                     ["PurchaseRequisitionId"]=request.Id.ToString(),["Title"]="Replacement",["Description"]="Replacement",["Terms"]="Terms",
@@ -235,6 +240,7 @@ public sealed partial class BiddingRoundTests
                 Assert.True(await db.TenderRounds.AnyAsync(r=>r.TenderId==tenderId && r.Number==3));
                 Assert.Equal(4,await db.EvaluationSubmissions.CountAsync(s=>s.TenderId==tenderId));
                 Assert.True(await db.TenderApprovals.AnyAsync(a=>a.EvaluationReportId==report.Id && a.Comments=="Review concerns"));
+                Assert.Equal("Cancelled",await State());
                 Assert.Equal("Cancelled",await State());
             }
             else

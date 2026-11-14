@@ -114,7 +114,9 @@
                 @foreach (var item in input.RequestedItems)
                 {
                     var prices = input.Bids.Select(b => b.Lines.FirstOrDefault(l => l.RequestedItemId == item.Id)).ToList();
-                    var lowest = prices.Where(p => p is not null).Select(p => p!.UnitPrice).DefaultIfEmpty().Min();
+                    // Highlight the lowest unit price only when every bid uses the same currency (no raw cross-currency comparison).
+                    var lowest = input.Bids.Select(b => b.Currency).Distinct().Count() == 1
+                        ? prices.Where(p => p is not null).Select(p => p!.UnitPrice).DefaultIfEmpty().Min() : (decimal?)null;
                     <tr>
                         <td><strong>@item.Name</strong>@if (!string.IsNullOrWhiteSpace(item.Specifications)) { <br /><span class="muted">@item.Specifications</span> }</td>
                         <td class="num">@item.Quantity @item.Unit</td>

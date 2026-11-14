@@ -27,6 +27,16 @@ public sealed class CurrencyComparisonTests
     }
 
     [Fact]
+    public async Task Weekend_request_keeps_the_provider_effective_date()
+    {
+        // A provider may answer a Sunday request with the last published business day.
+        var api = new FakeRates("""{"date":"2026-11-06","base":"EUR","quote":"USD","rate":1.1}""");
+        var result = await Service(api).ConvertAsync(13_000m, "EUR", new DateOnly(2026, 11, 8));
+        Assert.Equal(14_300.00m, result!.UsdAmount);
+        Assert.Equal(new DateOnly(2026, 11, 6), result.EffectiveDate);
+    }
+
+    [Fact]
     public async Task Usd_needs_no_lookup()
     {
         var api = new FakeRates("{}");
