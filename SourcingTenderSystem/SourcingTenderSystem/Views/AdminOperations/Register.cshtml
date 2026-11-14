@@ -1,0 +1,29 @@
+@model AdminRegister
+@{ ViewData["Title"] = Model.Title; }
+<header class="page-heading"><div><p class="eyebrow">ADMINISTRATION</p><h1>@Model.Title</h1><p>@Model.Description</p></div></header>
+<section class="surface directory">
+    <form class="directory-toolbar" asp-action="@Model.Action" method="get" role="search">
+        <label class="search-box"><span class="visually-hidden">Search records</span><partial name="_Icon" model='@("search")' /><input class="form-control" name="q" value="@Model.Query" placeholder="Search records" /></label>
+        <div class="button-row"><button class="btn btn-primary" type="submit">Search</button>@if (!string.IsNullOrWhiteSpace(Model.Query)) { <a class="btn btn-outline-secondary" asp-action="@Model.Action">Clear</a> }</div>
+    </form>
+    @if (Model.Rows.Count == 0) { <div class="empty-state"><h2>No matching records</h2><p>Try changing the search or returning to the first page.</p></div> }
+    else
+    {
+        <div class="table-responsive" role="region" aria-label="@Model.Title" tabindex="0">
+            <table class="directory-table"><thead><tr><th scope="col">Record</th><th scope="col">Context</th><th scope="col">@(Model.Action == "Activity" ? "Details" : "Status")</th><th scope="col">Date (UTC)</th><th scope="col"><span class="visually-hidden">Action</span></th></tr></thead>
+            <tbody>@foreach (var row in Model.Rows)
+            {
+                <tr><td><strong>@row.Name</strong><br /><small class="subtle">#@row.Id</small></td><td>@row.Context</td><td>@row.Status</td><td>@row.Date?.ToString("dd MMM yyyy HH:mm")</td>
+                    <td>@if (Model.Action == "Requests") { <a class="table-action" asp-action="RequestDetails" asp-route-id="@row.Id">View request</a> }
+                    else if (row.TenderId.HasValue) { <a class="table-action" asp-action="Tender" asp-route-id="@row.TenderId">View tender</a> }</td></tr>
+            }</tbody></table>
+        </div>
+    }
+    @if (Model.Page > 1 || Model.HasNext)
+    {
+        <nav class="directory-toolbar" aria-label="Record pages"><span>Page @Model.Page</span><div class="button-row">
+            @if (Model.Page > 1) { <a class="btn btn-outline-secondary" asp-action="@Model.Action" asp-route-q="@Model.Query" asp-route-page="@(Model.Page - 1)">Previous</a> }
+            @if (Model.HasNext) { <a class="btn btn-outline-secondary" asp-action="@Model.Action" asp-route-q="@Model.Query" asp-route-page="@(Model.Page + 1)">Next</a> }
+        </div></nav>
+    }
+</section>

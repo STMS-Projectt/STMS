@@ -1,25 +1,47 @@
 @model LoginInput
-@{ ViewData["Title"] = "Sign in"; }
+@{
+    ViewData["Title"] = "Sign in";
+    var knownFace = ViewData["KnownFaceAccount"] is true;
+}
 <div class="auth-shell">
     <aside class="auth-aside">
-        <div class="banner-art" aria-hidden="true"><span></span><span></span><span></span></div>
-        <span class="brand-mark"><partial name="_Icon" model='@("brand")' /></span>
-        <p class="eyebrow">SOURCING DESK</p><h2>Your sourcing workspace.</h2>
-        <p>Sign in to manage records or follow your supplier application.</p>
+        <span class="brand-mark"><partial name="_Icon" model='@("shield")' /></span>
+        <p class="eyebrow">SOURCING DESK</p><h2>Choose how to sign in</h2>
+        <p>Use a registered face or phone for quick access. Use your password when setting up a new account or switching accounts.</p>
     </aside>
-    <section class="surface auth-panel">
-        <h1>Sign in</h1><p class="subtle">Enter your email and password to continue.</p>
-        <form method="post" asp-antiforgery="true">
-            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div><input asp-for="ReturnUrl" type="hidden">
-            <div class="stack"><div class="field "><label asp-for="Email" class="form-label"></label>
-    <input asp-for="Email" class="form-control" autocomplete="username" placeholder="name@example.com">
-    <span asp-validation-for="Email" class="text-danger"></span></div><div class="field "><label asp-for="Password" class="form-label"></label>
-    <div class="password-control"><input asp-for="Password" class="form-control" autocomplete="current-password"><button type="button" class="btn btn-outline-secondary" data-password-toggle aria-controls="Password" aria-pressed="false" hidden>Show</button></div>
-    <span asp-validation-for="Password" class="text-danger"></span></div>
-            <div class="form-check"><input class="form-check-input" asp-for="RememberMe"><label class="form-check-label" asp-for="RememberMe"></label></div>
-            <button class="btn btn-primary" type="submit">Sign in <partial name="_Icon" model='@("arrow")' /></button></div>
-        </form>
-        <p class="mt-3 mb-0 subtle">New supplier? <a asp-controller="SupplierRegistration" asp-action="Register">Create an account</a></p>
+    <section class="surface auth-panel" data-bio data-return-url="@Model.ReturnUrl" data-known-face="@(knownFace ? "true" : "false")"
+        data-camera="@Url.Action("DirectCamera")" data-phone-options="@Url.Action("DirectPhoneOptions")" data-phone="@Url.Action("DirectPhone")">
+        <p class="eyebrow">WELCOME</p><h1>Sign in</h1>
+        <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+        <label class="field mt-2" for="Email">Email <span class="subtle">· when needed</span></label>
+        <input asp-for="Email" form="password-sign-in" type="email" class="form-control" autocomplete="username" data-bio-email aria-describedby="sign-in-email-hint" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+        <p id="sign-in-email-hint" class="field-hint mb-3">@(knownFace ? "This browser remembers your face account. Enter an email to use a different account." : "Phone sign-in needs no email. For face sign-in, identify your account once on this browser.")</p>
+
+        <div class="stack" aria-label="Sign-in methods">
+            <button class="btn btn-primary justify-content-start w-100" type="button" data-phone-button><partial name="_Icon" model='@("check")' /> Use registered phone</button>
+            <details class="border rounded p-3">
+                <summary class="fw-semibold">Use face recognition</summary>
+                <p class="field-hint mb-2">Look directly at the camera in a well-lit space.</p>
+                <video data-preview hidden autoplay muted playsinline class="w-100 rounded mb-2" aria-label="Camera preview"></video>
+                <div class="button-row">
+                    <button class="btn btn-outline-secondary" type="button" data-open-camera>Start camera</button>
+                    <button class="btn btn-primary" type="button" data-capture disabled>Verify face</button>
+                    <button class="btn btn-outline-secondary" type="button" data-stop-camera hidden>Stop camera</button>
+                </div>
+            </details>
+            <details class="border rounded p-3" open="@(!ViewData.ModelState.IsValid)">
+                <summary class="fw-semibold">Use password</summary>
+                <form id="password-sign-in" asp-action="Login" method="post" class="stack mt-2">
+                    <input asp-for="ReturnUrl" type="hidden" />
+                    <label class="field">Password<input asp-for="Password" class="form-control" autocomplete="current-password" /></label>
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                    <label class="form-check"><input asp-for="RememberMe" class="form-check-input" /> Remember me</label>
+                    <button class="btn btn-outline-secondary" type="submit">Sign in with password</button>
+                </form>
+            </details>
+        </div>
+        <p class="subtle mt-3 mb-0" data-bio-status role="status" aria-live="polite"></p>
     </section>
 </div>
-@section Scripts { <partial name="_ValidationScriptsPartial" /> }
+@section Scripts { <partial name="_ValidationScriptsPartial" /><script src="~/js/biometrics.js" asp-append-version="true" defer></script> }

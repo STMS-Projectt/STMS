@@ -1,0 +1,30 @@
+@{
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+    var action = ViewContext.RouteData.Values["action"]?.ToString();
+    var activeAction = action switch { "RequestDetails" => "Requests", "Tender" => "Tenders", _ => action };
+    var groups = new[] {
+        ("WORKSPACE", new[] { ("AdminDashboard", "Index", "Overview", "dashboard") }),
+        ("ACCESS & ORGANIZATION", new[] { ("Departments", "Index", "Departments", "building"),
+            ("Employees", "Index", "Employees", "users"), ("Suppliers", "Index", "Suppliers", "supplier") }),
+        ("PROCUREMENT", new[] { ("AdminOperations", "Requests", "Purchase requests", "file"),
+            ("AdminOperations", "Tenders", "Tenders", "supplier"), ("AdminOperations", "Invitations", "Invitations", "arrow"),
+            ("AdminOperations", "Bids", "Supplier bids", "file"), ("EvaluationWorkflow", "Index", "Evaluations & approvals", "check") }),
+        ("SYSTEM", new[] { ("AdminOperations", "Activity", "Activity log", "shield") })
+    };
+}
+<aside class="sidebar" id="workspace-nav" aria-label="Administration">
+    <a class="brand" asp-controller="AdminDashboard" asp-action="Index"><span class="brand-mark"><partial name="_Icon" model='@("brand")' /></span><span>Sourcing Desk<small>Administration</small></span></a>
+    <nav class="side-nav" aria-label="Administration pages">
+        @foreach (var (group, entries) in groups)
+        {
+            <span class="nav-caption">@group</span>
+            @foreach (var (target, route, label, icon) in entries)
+            {
+                var current = target == controller && (target != "AdminOperations" || route == activeAction);
+                <a class="side-link @(current ? "is-current" : "")" aria-current="@(current ? "page" : null)" asp-controller="@target" asp-action="@route" asp-route-id=""><partial name="_Icon" model="icon" /> @label</a>
+            }
+        }
+    </nav>
+    <div class="side-bottom"><a class="side-link" asp-controller="Home" asp-action="Index"><partial name="_Icon" model='@("arrow")' /> Public portal</a><partial name="_LoginPartial" /></div>
+</aside>
+<button type="button" class="nav-scrim" data-nav-close tabindex="-1" aria-label="Close navigation" hidden></button>

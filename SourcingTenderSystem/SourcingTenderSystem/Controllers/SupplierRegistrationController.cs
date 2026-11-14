@@ -12,7 +12,7 @@ namespace SourcingTenderSystem.Controllers;
 
 [Authorize]
 public sealed class SupplierRegistrationController(ApplicationDbContext db, UserManager<IdentityUser> users,
-    SignInManager<IdentityUser> signIn, SupplierFileStore files) : Controller
+    SupplierFileStore files) : Controller
 {
     [AllowAnonymous, HttpGet]
     public IActionResult Register() => User.Identity?.IsAuthenticated == true
@@ -48,8 +48,8 @@ public sealed class SupplierRegistrationController(ApplicationDbContext db, User
         }
 
         await transaction.CommitAsync();
-        await signIn.SignInAsync(user, isPersistent: false);
-        return RedirectToAction("Index", "SupplierWorkspace");
+
+        return RedirectToAction("Login", "Account");
     }
 
     [HttpGet]
