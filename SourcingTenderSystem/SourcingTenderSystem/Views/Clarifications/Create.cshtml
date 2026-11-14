@@ -1,0 +1,23 @@
+@model ClarificationInput
+@{
+    ViewData["Title"] = "New clarification";
+    var route = (ClarificationRoute)ViewData["ClarificationRoute"]!;
+}
+<a class="back-link" asp-action="Index" asp-route-kind="@Model.Kind" asp-route-recordId="@Model.RecordId"><partial name="_Icon" model='@("back")' /> Clarification history</a>
+<header class="page-heading"><div><p class="eyebrow">TRANSACTION COMMUNICATION</p><h1>New clarification</h1><p>@route.Title</p></div></header>
+<div class="form-shell">
+    <form class="surface form-card" asp-action="Create" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+        <input asp-for="Kind" type="hidden" /><input asp-for="RecordId" type="hidden" />
+        <div class="stack">
+            <label asp-for="Recipient" class="form-label">Send to</label>
+            <select asp-for="Recipient" class="form-select" required><option value="">Select participant</option>
+                @foreach (var person in route.Recipients) { <option value="@person.Key">@person.Name</option> }
+            </select><span asp-validation-for="Recipient" class="text-danger"></span>
+            <label asp-for="Subject" class="form-label"></label><input asp-for="Subject" class="form-control" maxlength="150" required /><span asp-validation-for="Subject" class="text-danger"></span>
+            <label asp-for="Description" class="form-label">Question or request</label><textarea asp-for="Description" class="form-control" rows="5" maxlength="2000" required></textarea><span asp-validation-for="Description" class="text-danger"></span>
+            <div><button class="btn btn-primary" type="submit">Send clarification</button></div>
+        </div>
+    </form>
+    <aside class="surface helper-card"><h2>Who can see this?</h2><p class="mb-0">Only you and the selected participant can read the question and response. The recipient receives an in-app notification.</p></aside>
+</div>

@@ -1,0 +1,32 @@
+@model ClarificationThread
+@{
+    var row = Model.Record;
+    ViewData["Title"] = "Clarification details";
+    var kind = row.PurchaseRequisitionId.HasValue ? "request" : row.BidId.HasValue ? "bid" : "tender";
+    var record = row.PurchaseRequisitionId ?? row.BidId ?? row.TenderId;
+}
+<a class="back-link" asp-action="Index" asp-route-kind="@kind" asp-route-recordId="@record"><partial name="_Icon" model='@("back")' /> Transaction history</a>
+<header class="page-heading"><div><p class="eyebrow">CLARIFICATION #@row.Id</p><h1>@row.Subject</h1>
+<p>@(row.PurchaseRequisition?.Title ?? row.Tender?.Title ?? row.Bid?.Tender.Title) · @kind #@record</p></div><partial name="_ClarificationStatus" model="row.Status" /></header>
+@if (TempData["ClarificationError"] is string error) { <div class="alert alert-warning" role="alert">@error</div> }
+<div class="stack">
+    <section class="surface detail-card"><h2>Question</h2>
+        <p class="subtle">@(row.SenderEmployeeProfile?.FullName ?? row.SenderSupplierProfile?.CompanyName) → @(row.ReceiverEmployeeProfile?.FullName ?? row.ReceiverSupplierProfile?.CompanyName) · @row.CreatedAt.ToString("dd MMM yyyy HH:mm") UTC</p>
+        <p class="mb-0" style="white-space:pre-wrap;overflow-wrap:anywhere">@row.Description</p>
+    </section>
+    @if (row.Response is not null)
+    {
+        <section class="surface detail-card"><h2>Response</h2><p class="subtle">@row.AnsweredAt?.ToString("dd MMM yyyy HH:mm") UTC</p><p class="mb-0" style="white-space:pre-wrap;overflow-wrap:anywhere">@row.Response</p></section>
+    }
+    @if (Model.CanAnswer)
+    {
+        <form class="surface form-card" asp-action="Answer" asp-route-id="@row.Id" method="post">
+            <label for="response" class="form-label">Your response</label>
+            <textarea class="form-control mb-3" id="response" name="response" maxlength="2000" rows="4" required></textarea>
+            <button class="btn btn-primary" type="submit">Send response</button>
+        </form>
+    }
+    @if (Model.CanResolve)
+    { <form asp-action="Resolve" asp-route-id="@row.Id" method="post"><button class="btn btn-outline-secondary" type="submit">Mark as resolved</button></form> }
+    @if (row.ResolvedAt.HasValue) { <p class="subtle">Resolved @row.ResolvedAt.Value.ToString("dd MMM yyyy HH:mm") UTC</p> }
+</div>

@@ -9,6 +9,7 @@
     <div><p class="eyebrow">PURCHASE REQUEST · PR-@Model.Id</p><h1>@Model.Title</h1><p>@Model.Department.Name · Requested by @Model.CreatedByEmployeeProfile.FullName</p></div>
     <partial name="_RequestStatus" model="Model.Status" />
 </header>
+<partial name="_RecordQr" model='@(Url.Action("Details", new { id = Model.Id })!)' />
 @if (TempData["RequestError"] is string error)
 {
     <div class="alert alert-danger" role="alert">@error</div>
@@ -70,3 +71,7 @@
         <button type="submit" class="btn btn-primary">@(returned ? "Resubmit for review" : "Submit for review") <partial name="_Icon" model='@("arrow")' /></button>
     </form>
 }
+
+<div class="mb-3"><a class="btn btn-outline-secondary" asp-controller="Clarifications" asp-action="Index" asp-route-kind="request" asp-route-recordId="@Model.Id">Clarification history</a></div>
+
+<partial name="_TenderHistory" model="Model.Tenders" />

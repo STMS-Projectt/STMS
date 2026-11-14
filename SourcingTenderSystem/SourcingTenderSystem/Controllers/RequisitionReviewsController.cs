@@ -18,7 +18,7 @@ public class RequisitionReviewsController : RequisitionBaseController
     {
         if (await CurrentEmployeeAsync() == null) return Forbid();
         var requests = await Db.PurchaseRequisitions.AsNoTracking().Include(x => x.Department)
-            .Include(x => x.CreatedByEmployeeProfile).Include(x => x.Tender)
+            .Include(x => x.CreatedByEmployeeProfile).Include(x => x.Tenders).ThenInclude(t => t.EvaluationReport)
             .OrderBy(x => x.CreatedAt).ToListAsync();
         return View(requests);
     }
@@ -75,6 +75,7 @@ public class RequisitionReviewsController : RequisitionBaseController
         await using var transaction = await Db.Database.BeginTransactionAsync(IsolationLevel.Serializable);
         var request = await ReviewableRequests().SingleOrDefaultAsync(x => x.Id == id);
         if (request == null) return NotFound();
+        if (request.ReviewedByEmployeeProfileId is int reviewer && reviewer != employee.Id) return Forbid();
         if (request.CreatedByEmployeeProfileId == employee.Id) return Forbid();
         if (request.Status != "Submitted" && request.Status != "Under Review")
             return Conflict("This request has already been decided. Refresh the pending list.");
@@ -112,7 +113,7 @@ public class RequisitionReviewsController : RequisitionBaseController
 
     private IQueryable<PurchaseRequisition> ReviewableRequests()
     {
-        return RequestDetails().Include(x => x.Tender).Where(x => x.Status == "Submitted" || x.Status == "Under Review" ||
+        return RequestDetails().Include(x => x.Tenders).ThenInclude(t => t.EvaluationReport).Where(x => x.Status == "Submitted" || x.Status == "Under Review" ||
             x.Status == "Approved" || x.Status == "Returned" || x.Status == "Rejected" ||
             x.Status == "Converted to Tender");
     }

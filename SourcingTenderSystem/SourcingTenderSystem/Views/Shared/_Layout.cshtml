@@ -136,7 +136,7 @@
                 </div>
 
                 <div class="bar-profile">
-                    <span class="avatar" aria-hidden="true">@((User.Identity?.Name ?? "D").FirstOrDefault().ToString().ToUpperInvariant())</span>
+                    <partial name="_ProfileAvatar" />
                     <span>
                         <strong>@(sourcing ? "Sourcing officer" : supplier ? "Supplier" : committee ? "Committee reviewer" : "Department employee")</strong>
                         <small title="@User.Identity?.Name">@User.Identity?.Name</small>
@@ -163,7 +163,7 @@
                 </div>
 
                 <div class="bar-profile">
-                    <span class="avatar" aria-hidden="true">@((User.Identity?.Name ?? "A").FirstOrDefault().ToString().ToUpperInvariant())</span>
+                    <partial name="_ProfileAvatar" />
                     <span>
                         <strong>Administrator</strong>
                         <small title="@User.Identity?.Name">@User.Identity?.Name</small>
@@ -235,6 +235,7 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
 
+    @if (signedIn) { <script src="~/js/notifications.js" asp-append-version="true" defer></script> }
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

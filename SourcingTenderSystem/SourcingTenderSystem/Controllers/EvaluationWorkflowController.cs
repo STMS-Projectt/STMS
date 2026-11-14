@@ -16,7 +16,9 @@ public sealed class EvaluationWorkflowController(ApplicationDbContext db, Suppli
     private const string Officer = "Pending Officer Approval";
     private const string Manager = "Pending Manager Approval";
     private const string Top = "Pending Top Committee";
-    private const string Approved = "Committee Approved";
+    private const string Approved = "Awarded";
+    private const string Cancelled = "Cancelled";
+    private const string Vote = "Top Committee Approved";
 
     private IQueryable<Tender> Visible(int employeeId)
     {
@@ -24,7 +26,8 @@ public sealed class EvaluationWorkflowController(ApplicationDbContext db, Suppli
         if (User.IsInRole(Roles.Admin) || User.IsInRole(Roles.SourcingOfficer)) return query;
         if (User.IsInRole(Roles.TopCommittee))
             return query.Where(t => t.EvaluationReport != null &&
-                (t.EvaluationReport.Status == Top || t.EvaluationReport.Status == Approved));
+                (t.EvaluationReport.Status == Top || t.EvaluationReport.Status == Approved || t.EvaluationReport.Status == Cancelled || t.EvaluationReport.Status == TenderRules.AwaitingReturn || t.EvaluationReport.Status == TenderRules.ReadyToRetender) &&
+                t.CommitteeMembers.Any(m => m.CommitteeType == "Top" && m.EmployeeProfileId == employeeId));
         return query.Where(t => t.CommitteeMembers.Any(m => m.EmployeeProfileId == employeeId &&
             m.CommitteeType == "Evaluation" && m.MemberRole == "Sourcing Manager"));
     }
@@ -45,6 +48,9 @@ public sealed class EvaluationWorkflowController(ApplicationDbContext db, Suppli
         if (employee is null) return Forbid();
         var tender = await Load(id, employee.Id);
         if (tender is null) return NotFound();
+        ViewData["CanRetender"] = tender.EvaluationReport?.Status == TenderRules.ReadyToRetender &&
+            !await Db.Tenders.AnyAsync(t => t.PurchaseRequisitionId == tender.PurchaseRequisitionId &&
+                (t.Id > tender.Id || t.Status != Cancelled));
         var scores = await ReadScores(tender);
         var progress = Progress(tender, scores);
         return View(new EvaluationWorkflowDetails(tender, progress, CanUpload(tender, employee.Id, progress),
@@ -94,21 +100,59 @@ public sealed class EvaluationWorkflowController(ApplicationDbContext db, Suppli
     }
 
     [HttpGet]
-    public async Task<IActionResult> Download(int id)
+    public Task<IActionResult> Download(int id, [FromServices] ProtectedPdf pdf, bool preview = false) =>
+        ReportCopy(id, pdf, preview);
+
+    [HttpPost]
+    public Task<IActionResult> SignDocument(int id, string? password, [FromServices] ProtectedPdf pdf)
+    {
+        if (!User.IsInRole(Roles.SourcingManager) && !User.IsInRole(Roles.SourcingOfficer)) return Task.FromResult<IActionResult>(Forbid());
+        return ReportCopy(id, pdf, false, true, password);
+    }
+
+    private async Task<IActionResult> ReportCopy(int id, ProtectedPdf pdf, bool preview, bool sign = false, string? password = null)
     {
         var employee = await CurrentEmployeeAsync();
         if (employee is null) return Forbid();
         var key = await Visible(employee.Id).Where(t => t.Id == id)
             .Select(t => t.EvaluationReport == null ? null : t.EvaluationReport.FileKey).SingleOrDefaultAsync();
         return key is not null && files.Open(key) is { } stream
-            ? File(stream, "application/pdf", $"evaluation-report-{id}.pdf") : NotFound();
+            ? await pdf.Serve(this, stream, $"evaluation-report-{id}.pdf", preview, sign, password) : NotFound();
     }
 
-    [HttpPost]
-    public async Task<IActionResult> Approve(int id, string? comments, string expectedStage)
+    [HttpGet]
+    public async Task<IActionResult> DecisionPdf(int id, [FromServices] ProtectedPdf pdf)
     {
         var employee = await CurrentEmployeeAsync();
         if (employee is null) return Forbid();
+        var decision = await Db.TenderApprovals.AsNoTracking().Include(a => a.ApproverEmployeeProfile)
+            .Include(a => a.EvaluationReport).ThenInclude(r => r.Tender)
+            .Include(a => a.SelectedBid).ThenInclude(b => b!.SupplierProfile)
+            .Where(a => Visible(employee.Id).Any(t => t.Id == a.EvaluationReport.TenderId))
+            .SingleOrDefaultAsync(a => a.Id == id);
+        if (decision is null) return NotFound();
+        if (!pdf.SigningEnabled) return StatusCode(503, "The organization signing certificate has not been configured.");
+        var lines = new[] {
+            ("Tender", $"#{decision.EvaluationReport.TenderId} | {decision.EvaluationReport.Tender.Title}"),
+            ("Decision", decision.Decision),
+            ("Approved by", decision.ApproverEmployeeProfile.FullName),
+            ("Recorded at", $"{decision.DecidedAt:yyyy-MM-dd HH:mm:ss} UTC"),
+            ("Selected supplier", decision.SelectedBid?.SupplierProfile.CompanyName ?? "-"),
+            ("Approval notes", decision.Comments ?? "-")
+        };
+        return await pdf.Decision(this, id, lines);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Approve(int id, string? comments, string expectedStage, string? vote, string? password, bool confirmDecision, [FromServices] ProtectedPdf pdf)
+    {
+        var employee = await CurrentEmployeeAsync();
+        if (employee is null) return Forbid();
+        if (!confirmDecision || !await pdf.Confirm(User, password))
+        {
+            TempData["WorkflowError"] = "Confirm your decision and enter your current password.";
+            return RedirectToAction(nameof(Details), new { id });
+        }
         await using var tx = await Db.Database.BeginTransactionAsync(IsolationLevel.Serializable);
         var tender = await Load(id, employee.Id);
         if (tender?.EvaluationReport is not { } report) return NotFound();
@@ -121,19 +165,91 @@ public sealed class EvaluationWorkflowController(ApplicationDbContext db, Suppli
             return RedirectToAction(nameof(Details), new { id });
         }
 
+        if (!tender.Bids.Any(b => b.Id == report.RecommendedBidId))
+            return Conflict("The recommended bid is no longer eligible.");
+        var decision = next;
+        if (report.Status == Top)
+        {
+            if (vote is not ("approve" or "reject")) return BadRequest("Select approve or reject.");
+            var roster = tender.CommitteeMembers.Where(m => m.CommitteeType == "Top").Select(m => m.EmployeeProfileId).Distinct().ToList();
+            if (roster.Count != 4 || !roster.Contains(employee.Id)) return Forbid();
+            if (report.TenderApprovals.Any(a => a.ApproverEmployeeProfileId == employee.Id && a.Decision == Vote))
+                return Conflict("You already voted on this recommendation.");
+            decision = vote == "reject" ? "Top Committee Rejected" : Vote;
+            var previous = report.TenderApprovals.Where(a => a.Decision == Vote && roster.Contains(a.ApproverEmployeeProfileId))
+                .Select(a => a.ApproverEmployeeProfileId).Distinct().Count();
+            next = vote == "reject" ? Cancelled : previous == 3 ? Approved : Top;
+        }
+        else if (next == Top)
+        {
+            var roster = await TopVoters();
+            if (roster.Count != 4)
+            {
+                TempData["WorkflowError"] = "Set up exactly four active TopCommittee accounts before forwarding.";
+                return RedirectToAction(nameof(Details), new { id });
+            }
+            foreach (var member in roster)
+                tender.CommitteeMembers.Add(new TenderCommitteeMember { EmployeeProfileId = member,
+                    CommitteeType = "Top", MemberRole = "Top Committee Member" });
+        }
         Db.TenderApprovals.Add(new TenderApproval { EvaluationReportId = report.Id,
-            ApproverEmployeeProfileId = employee.Id, Decision = next, Comments = comments?.Trim(),
-            SelectedBidId = report.RecommendedBidId, DecidedAt = DateTime.UtcNow });
-        report.Status = next;
-        if (next == Approved) tender.Status = "Committee Approved";
+            ApproverEmployeeProfileId = employee.Id, Decision = decision, Comments = comments?.Trim(),
+            SelectedBidId = next == Cancelled ? null : report.RecommendedBidId, DecidedAt = DateTime.UtcNow });
+        report.Status = next == Cancelled ? TenderRules.AwaitingReturn : next;
+        if (next == Manager) tender.Status = "Awaiting Manager Review";
+        if (next == Top) tender.Status = "Awaiting Committee Decision";
+        if (next is Approved or Cancelled)
+        {
+            tender.Status = next;
+            if (next == Cancelled)
+            {
+                var manager = tender.CommitteeMembers.Single(m => m.CommitteeType == "Evaluation" && m.MemberRole == "Sourcing Manager");
+                NotifyHandoff(manager.EmployeeProfileId, tender, "Cancelled tender awaiting handoff");
+            }
+            var offers = await Db.Bids.Where(b => b.TenderId == id && b.SubmittedAt != null && b.Status != "Withdrawn").ToListAsync();
+            foreach (var bid in offers)
+            {
+                var won = next == Approved && bid.Id == report.RecommendedBidId;
+                Db.Notifications.Add(new Notification
+                {
+                    SupplierProfileId = bid.SupplierProfileId,
+                    Title = won ? "Tender awarded to you" : next == Cancelled ? "Tender cancelled" : "Bid not selected",
+                    Message = tender.Title, Link = "/Bids/Details/" + bid.Id, CreatedAt = DateTime.UtcNow
+                });
+            }
+        }
         await Db.SaveChangesAsync();
         await tx.CommitAsync();
-        TempData["Message"] = next == Approved ? "The top committee approved the report." : "Report approved and forwarded.";
+        TempData["Message"] = next == Approved ? "Tender awarded." : next == Cancelled ? "Tender cancelled." : report.Status == Top && decision == Vote ? "Vote recorded." : "Report approved and forwarded.";
         return RedirectToAction(nameof(Details), new { id });
     }
 
+    [HttpPost, Authorize(Roles = Roles.SourcingManager)]
+    public async Task<IActionResult> ReturnToOfficer(int id)
+    {
+        var employee = await CurrentEmployeeAsync();
+        if (employee is null) return Forbid();
+        await using var tx = await Db.Database.BeginTransactionAsync(IsolationLevel.Serializable);
+        var tender = await Load(id, employee.Id);
+        if (tender?.EvaluationReport is not { } report || !IsAssignedManager(tender, employee.Id)) return NotFound();
+        if (tender.Status != Cancelled || report.Status != TenderRules.AwaitingReturn)
+            return Conflict("This tender is not awaiting a cancellation handoff.");
+        report.Status = TenderRules.ReadyToRetender;
+        Db.TenderApprovals.Add(new TenderApproval { EvaluationReportId = report.Id,
+            ApproverEmployeeProfileId = employee.Id, Decision = "Returned to sourcing officer for retender",
+            DecidedAt = DateTime.UtcNow });
+        NotifyHandoff(tender.CreatedByEmployeeProfileId, tender, "Cancelled tender ready to retender");
+        await Db.SaveChangesAsync();
+        await tx.CommitAsync();
+        TempData["Message"] = "Returned to the sourcing officer for a new tender.";
+        return RedirectToAction(nameof(Details), new { id });
+    }
+
+    private void NotifyHandoff(int employeeId, Tender tender, string title) =>
+        Db.Notifications.Add(new Notification { EmployeeProfileId = employeeId, Title = title,
+            Message = tender.Title, Link = Url.Action(nameof(Details), new { id = tender.Id }), CreatedAt = DateTime.UtcNow });
     private Task<Tender?> Load(int id, int employeeId) => Visible(employeeId).AsSplitQuery()
-        .Include(t => t.CommitteeMembers.Where(m => m.CommitteeType == "Evaluation")).ThenInclude(m => m.EmployeeProfile)
+        .Include(t => t.CommitteeMembers.Where(m => m.CommitteeType == "Evaluation" || m.CommitteeType == "Top")).ThenInclude(m => m.EmployeeProfile)
         .Include(t => t.EvaluationCriteria)
         .Include(t => t.Bids.Where(b => b.Status == "Compliant")).ThenInclude(b => b.SupplierProfile)
         .Include(t => t.EvaluationReport).ThenInclude(r => r!.TenderApprovals).ThenInclude(a => a.ApproverEmployeeProfile)
@@ -153,7 +269,7 @@ public sealed class EvaluationWorkflowController(ApplicationDbContext db, Suppli
     private static List<EvaluationProgress> Progress(Tender tender, List<EvaluationScore> scores)
     {
         var required = tender.Bids.Count * tender.EvaluationCriteria.Count(c => c.Type is "Technical" or "Financial");
-        return tender.CommitteeMembers.Select(m => new EvaluationProgress(m.EmployeeProfile.FullName, m.MemberRole,
+        return tender.CommitteeMembers.Where(m => m.CommitteeType == "Evaluation").Select(m => new EvaluationProgress(m.EmployeeProfile.FullName, m.MemberRole,
             scores.Where(s => s.EmployeeId == m.EmployeeProfileId).Select(s => (s.BidId, s.CriterionId)).Distinct().Count(),
             required)).ToList();
     }
@@ -167,11 +283,14 @@ public sealed class EvaluationWorkflowController(ApplicationDbContext db, Suppli
     private static bool IsAssignedManager(Tender tender, int employeeId) =>
         tender.CommitteeMembers.Any(m => m.EmployeeProfileId == employeeId && m.MemberRole == "Sourcing Manager");
 
+    private Task<List<int>> TopVoters() => Db.EmployeeProfiles.Where(e => e.IsActive &&
+        Db.UserRoles.Any(ur => ur.UserId == e.UserId && Db.Roles.Any(r => r.Id == ur.RoleId && r.Name == Roles.TopCommittee)))
+        .Select(e => e.Id).ToListAsync();
     private string? NextStage(Tender tender, int employeeId) => tender.EvaluationReport?.Status switch
     {
         Officer when User.IsInRole(Roles.SourcingOfficer) => Manager,
         Manager when User.IsInRole(Roles.SourcingManager) && IsAssignedManager(tender, employeeId) => Top,
-        Top when User.IsInRole(Roles.TopCommittee) => Approved,
+        Top when User.IsInRole(Roles.TopCommittee) && tender.CommitteeMembers.Any(m => m.CommitteeType == "Top" && m.EmployeeProfileId == employeeId) && tender.EvaluationReport.TenderApprovals.All(a => a.ApproverEmployeeProfileId != employeeId || a.Decision != Vote) => Approved,
         _ => null
     };
 }

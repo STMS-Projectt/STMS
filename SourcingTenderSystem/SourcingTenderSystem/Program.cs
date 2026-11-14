@@ -65,6 +65,10 @@ builder.Services.AddRateLimiter(options =>
         context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
         _ => new FixedWindowRateLimiterOptions { PermitLimit = 12, Window = TimeSpan.FromMinutes(2) }));
 });
+builder.Services.AddScoped<ClarificationRouting>();
+builder.Services.AddScoped<ProtectedPdf>();
+ProtectedPdf.ConfigureFonts(builder.Configuration);
+builder.Services.AddHostedService<TenderClock>();
 var app = builder.Build();
 
 if (args.Contains("--reset-local-test-data"))

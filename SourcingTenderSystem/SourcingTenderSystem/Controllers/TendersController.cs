@@ -1,4 +1,5 @@
 using System.Data;
+using SourcingTenderSystem.Services;
 using SourcingTenderSystem.Security;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
@@ -21,7 +22,7 @@ public class TendersController : Controller
     private const string DepartmentRepresentativeRole = "Department Representative";
 
     // The committee can be changed until the evaluation starts.
-    private static readonly string[] CommitteeEditableStatuses = { "Draft", "Published", "Open" };
+    private static readonly string[] CommitteeEditableStatuses = { "Closed" };
 
     private readonly ApplicationDbContext _context;
     private readonly UserManager<IdentityUser> _userManager;
@@ -65,6 +66,7 @@ public class TendersController : Controller
 
         ViewBag.InvitationCount = counts.Invitations;
         ViewBag.BidCount = counts.Bids;
+        ViewBag.OfferCount = await TenderRules.Offers(_context, tender.Id).CountAsync();
 
         return View(tender);
     }
@@ -102,11 +104,11 @@ public class TendersController : Controller
         if (model.PurchaseRequisitionId != null)
         {
             requisition = await _context.PurchaseRequisitions
-                .Include(r => r.Tender)
+                .Include(r => r.Tenders).ThenInclude(t => t.EvaluationReport)
                 .Include(r => r.CreatedByEmployeeProfile).ThenInclude(e => e.Department)
                 .FirstOrDefaultAsync(r => r.Id == model.PurchaseRequisitionId);
 
-            if (requisition == null || requisition.Status != "Approved" || requisition.Tender != null)
+            if (requisition == null || !TenderRules.CanCreate(requisition))
             {
                 ModelState.AddModelError(nameof(model.PurchaseRequisitionId),
                     "This purchase request is not available for a new tender.");
@@ -125,13 +127,6 @@ public class TendersController : Controller
             return View(model);
         }
 
-        var (slots, problems) = await BuildCommitteeAsync(requisition!.CreatedByEmployeeProfile);
-        if (problems.Count > 0)
-        {
-            foreach (var problem in problems) ModelState.AddModelError(string.Empty, problem);
-            model.PurchaseRequests = await GetApprovedRequestsAsync();
-            return View(model);
-        }
         var tender = new Tender
         {
             PurchaseRequisitionId = requisition!.Id,
@@ -145,15 +140,6 @@ public class TendersController : Controller
             CreatedAt = DateTime.UtcNow
         };
 
-        foreach (var slot in slots)
-        {
-            tender.CommitteeMembers.Add(new TenderCommitteeMember
-            {
-                EmployeeProfileId = slot.EmployeeProfileId,
-                CommitteeType = EvaluationCommitteeType,
-                MemberRole = slot.Role
-            });
-        }
         requisition.Status = "Converted to Tender";
         _context.Tenders.Add(tender);
         await _context.SaveChangesAsync();
@@ -162,8 +148,55 @@ public class TendersController : Controller
         await _context.SaveChangesAsync();
 
         await transaction.CommitAsync();
-        TempData["Success"] = "Tender created and evaluation committee assigned.";
+        TempData["Success"] = "Tender draft created. Submit it when ready to publish.";
         return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Publish(int id)
+    {
+        if (await GetCurrentEmployeeAsync() is null) return Forbid();
+        var now = DateTime.UtcNow;
+        var changed = await _context.Tenders.Where(t => t.Id == id && t.Status == DraftStatus &&
+            t.CloseDate > now && t.CloseDate > t.OpenDate)
+            .ExecuteUpdateAsync(set => set.SetProperty(t => t.Status, t => t.OpenDate <= now ? "Open" : "Published"));
+        TempData[changed == 1 ? "Success" : "Error"] = changed == 1
+            ? "Tender submitted for publication." : "Use a draft with a future closing deadline.";
+        return RedirectToAction(nameof(Details), new { id });
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Reopen(int id, DateTime closeDate)
+    {
+        var employee = await GetCurrentEmployeeAsync();
+        if (employee is null) return Forbid();
+        var now = DateTime.UtcNow;
+        if (closeDate <= now)
+        {
+            TempData["Error"] = "Enter a future closing deadline (UTC).";
+            return RedirectToAction(nameof(Details), new { id });
+        }
+        await using var tx = await _context.Database.BeginTransactionAsync(IsolationLevel.Serializable);
+        var tender = await _context.Tenders.SingleOrDefaultAsync(t => t.Id == id);
+        if (tender is null) return NotFound();
+        var offers = await TenderRules.Offers(_context, id).CountAsync();
+        if (tender.Status != "Closed" || tender.Counter >= 2 || offers >= 3)
+        {
+            TempData["Error"] = "Only a first-round closed tender with fewer than three offers can be reopened.";
+            return RedirectToAction(nameof(Details), new { id });
+        }
+        tender.Counter = 2;
+        tender.Status = "Open";
+        tender.OpenDate = now;
+        tender.CloseDate = closeDate;
+        var submitted = TenderRules.Offers(_context, id).Select(b => b.SupplierProfileId);
+        await _context.Invitations.Where(i => i.TenderId == id && !submitted.Contains(i.SupplierProfileId))
+            .ExecuteUpdateAsync(set => set.SetProperty(i => i.ExpiresAt, closeDate));
+        AddAuditLog(employee.Id, "Reopen", id, "Second bidding round opened.");
+        await _context.SaveChangesAsync();
+        await tx.CommitAsync();
+        TempData["Success"] = "Second round opened. You can invite suppliers who have not submitted.";
+        return RedirectToAction(nameof(Details), new { id });
     }
 
     [HttpPost]
@@ -285,11 +318,12 @@ public class TendersController : Controller
         // Remove the tender's own setup data, then give the purchase request back to the Sourcing Officer.
         _context.RemoveRange(tender.EvaluationCriteria);
         _context.RemoveRange(tender.CommitteeMembers);
-        tender.PurchaseRequisition.Status = "Approved";
+        tender.PurchaseRequisition.Status = await _context.Tenders.AnyAsync(t => t.PurchaseRequisitionId == tender.PurchaseRequisitionId && t.Id != tender.Id)
+            ? "Converted to Tender" : "Approved";
         _context.Tenders.Remove(tender);
 
         var employee = await GetCurrentEmployeeAsync();
-        AddAuditLog(employee?.Id, "Delete", tender.Id, "Draft tender deleted. The purchase request returned to Approved.");
+        AddAuditLog(employee?.Id, "Delete", tender.Id, "Draft tender deleted; purchase request history retained.");
         await _context.SaveChangesAsync();
 
         TempData["Success"] = "Tender deleted.";
@@ -309,7 +343,7 @@ public class TendersController : Controller
 
         if (!CommitteeEditableStatuses.Contains(tender.Status))
         {
-            TempData["Error"] = "The committee can only be assigned while a tender is draft, published, or open.";
+            TempData["Error"] = "The committee is assigned after the tender closes.";
             return RedirectToAction(nameof(Index));
         }
 
@@ -342,7 +376,7 @@ public class TendersController : Controller
 
         if (!CommitteeEditableStatuses.Contains(tender.Status))
         {
-            TempData["Error"] = "The committee can only be assigned while a tender is draft, published, or open.";
+            TempData["Error"] = "The committee is assigned after the tender closes.";
             return RedirectToAction(nameof(Index));
         }
 
@@ -353,9 +387,11 @@ public class TendersController : Controller
             return RedirectToAction(nameof(AssignCommittee), new { id });
         }
 
-        if (tender.Status != "Open" && tender.CloseDate <= DateTime.UtcNow)
+        if (await TenderRules.Offers(_context, id).CountAsync() < TenderRules.Minimum(tender) ||
+            await _context.Bids.AnyAsync(b => b.TenderId == id && b.Status == "Submitted") ||
+            !await _context.Bids.AnyAsync(b => b.TenderId == id && b.Status == "Compliant"))
         {
-            TempData["Error"] = "Update the tender's closing date before opening it.";
+            TempData["Error"] = "Meet the round's minimum offer count and complete compliance before assigning the committee.";
             return RedirectToAction(nameof(AssignCommittee), new { id });
         }
         // Update the Evaluation committee only (Top Committee rows are not touched).
@@ -386,15 +422,12 @@ public class TendersController : Controller
             }
         }
 
-        var opening = tender.Status != "Open";
-        tender.Status = "Open";
-        AddAuditLog(employee.Id, "AssignCommittee", tender.Id, opening
-            ? "Evaluation committee assigned (4 members) and tender opened."
-            : "Evaluation committee confirmed (4 members).");
+        tender.Status = "Under Evaluation";
+        AddAuditLog(employee.Id, "AssignCommittee", tender.Id, "Four evaluation committee members assigned.");
         await _context.SaveChangesAsync();
         await transaction.CommitAsync();
 
-        TempData["Success"] = opening ? "Evaluation committee assigned and tender opened." : "Evaluation committee updated.";
+        TempData["Success"] = "Committee assigned. Tender is under evaluation.";
         return RedirectToAction(nameof(Index));
     }
 
@@ -467,7 +500,9 @@ public class TendersController : Controller
     {
         var requests = await _context.PurchaseRequisitions
             .AsNoTracking()
-            .Where(r => r.Status == "Approved" && r.Tender == null)
+            .Where(r => !r.Tenders.Any(t => t.Status != "Cancelled") &&
+                (r.Status == "Approved" || r.Status == "Converted to Tender" &&
+                    r.Tenders.OrderByDescending(t => t.Id).Select(t => t.EvaluationReport!.Status).FirstOrDefault() == TenderRules.ReadyToRetender))
             .OrderBy(r => r.Title)
             .Select(r => new { r.Id, r.Title, Department = r.Department.Name })
             .ToListAsync();
@@ -539,12 +574,12 @@ public class TenderFormViewModel : IValidatableObject
 
     [Required(ErrorMessage = "Open date is required.")]
     [DataType(DataType.DateTime)]
-    [Display(Name = "Open Date")]
+    [Display(Name = "Open date (UTC)")]
     public DateTime? OpenDate { get; set; }
 
     [Required(ErrorMessage = "Close date is required.")]
     [DataType(DataType.DateTime)]
-    [Display(Name = "Close Date")]
+    [Display(Name = "Close date (UTC)")]
     public DateTime? CloseDate { get; set; }
 
     [ValidateNever]

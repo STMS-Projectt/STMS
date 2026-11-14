@@ -1,6 +1,8 @@
 @using SourcingTenderSystem.Security
 @if (User.Identity?.IsAuthenticated == true)
 {
+    <partial name="_CommunicationNav" />
+    <a class="side-link" asp-controller="Profile" asp-action="Index"><partial name="_Icon" model='@("users")' /> My profile</a>
     <a class="side-link" asp-controller="Account" asp-action="BiometricSetup"><partial name="_Icon" model='@("shield")' /> Sign-in security</a>
     <form asp-controller="Account" asp-action="Logout" method="post">
         <button type="submit" class="@(User.IsInRole(Roles.Admin) ? "side-link sign-out" : "btn btn-outline-secondary")"><partial name="_Icon" model='@("logout")' /> Sign out</button>

@@ -143,7 +143,7 @@ public class BidDocumentsController : Controller
     // GET: /BidDocuments/Download/3
     [HttpGet]
     [Authorize(Roles = DownloadRoles)]
-    public async Task<IActionResult> Download(int id)
+    public async Task<IActionResult> Download(int id, [FromServices] SourcingTenderSystem.Services.ProtectedPdf pdf, bool preview = false)
     {
         var document = await _context.BidDocuments
             .Include(d => d.Bid)
@@ -189,7 +189,7 @@ public class BidDocumentsController : Controller
             return NotFound();
         }
 
-        return PhysicalFile(fullPath, "application/pdf", document.FileName);
+        return await pdf.Serve(this, System.IO.File.OpenRead(fullPath), document.FileName, preview);
     }
 
     // POST: /BidDocuments/Delete/3

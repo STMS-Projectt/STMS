@@ -1006,3 +1006,29 @@ BEGIN
     CREATE INDEX IX_AspNetUserPasskeys_UserId ON dbo.AspNetUserPasskeys(UserId);
 END;
 GO
+
+IF NOT EXISTS (SELECT 1 FROM dbo.__EFMigrationsHistory WHERE MigrationId = N'20261114183000_AddClarificationResolvedAt')
+BEGIN
+    BEGIN TRANSACTION;
+    IF COL_LENGTH('dbo.ClarificationRequests', 'ResolvedAt') IS NULL
+        ALTER TABLE dbo.ClarificationRequests ADD ResolvedAt datetime2 NULL;
+    INSERT dbo.__EFMigrationsHistory (MigrationId, ProductVersion)
+    VALUES (N'20261114183000_AddClarificationResolvedAt', N'10.0.14');
+    COMMIT;
+END;
+GO
+
+IF NOT EXISTS (SELECT 1 FROM dbo.__EFMigrationsHistory WHERE MigrationId = N'20261114200000_AllowTenderHistory')
+BEGIN
+    BEGIN TRANSACTION;
+    IF EXISTS (SELECT 1 FROM sys.indexes WHERE object_id = OBJECT_ID(N'dbo.Tenders')
+        AND name = N'IX_Tenders_PurchaseRequisitionId' AND is_unique = 1)
+        DROP INDEX IX_Tenders_PurchaseRequisitionId ON dbo.Tenders;
+    IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE object_id = OBJECT_ID(N'dbo.Tenders')
+        AND name = N'IX_Tenders_PurchaseRequisitionId')
+        CREATE INDEX IX_Tenders_PurchaseRequisitionId ON dbo.Tenders(PurchaseRequisitionId);
+    INSERT dbo.__EFMigrationsHistory (MigrationId, ProductVersion)
+    VALUES (N'20261114200000_AllowTenderHistory', N'10.0.14');
+    COMMIT;
+END;
+GO

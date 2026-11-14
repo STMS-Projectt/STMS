@@ -1,236 +1,84 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using SourcingTenderSystem.Data;
-using SourcingTenderSystem.Models;
-using SourcingTenderSystem.ViewModels;
 
 namespace SourcingTenderSystem.Controllers;
 
-// "My profile" for every signed-in user (employees and suppliers).
-// One page (Views/Profile/Index.cshtml) with two forms: change the phone number, and change the password.
-[Authorize]
-public class ProfileController : Controller
+[Authorize, ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
+public sealed class ProfileController(UserManager<IdentityUser> users) : Controller
 {
-    private readonly ApplicationDbContext _context;
-    private readonly UserManager<IdentityUser> _userManager;
-    private readonly SignInManager<IdentityUser> _signInManager;
+    private const string Provider = "Profile";
+    private const string PhotoKey = "Photo";
+    private const int MaxBytes = 1024 * 1024;
 
-    public ProfileController(ApplicationDbContext context, UserManager<IdentityUser> userManager,
-        SignInManager<IdentityUser> signInManager)
-    {
-        _context = context;
-        _userManager = userManager;
-        _signInManager = signInManager;
-    }
-
-    // GET: /Profile
     [HttpGet]
     public async Task<IActionResult> Index()
     {
-        var user = await _userManager.GetUserAsync(User);
-        if (user == null)
-        {
-            return NotFound();
-        }
-
-        var supplier = await GetSupplierAsync(user.Id);
-
-        var model = new ProfileViewModel();
-        model.PhoneNumber = GetSavedPhone(user, supplier);
-
-        return await ShowProfilePageAsync(user, supplier, model);
+        var user = await users.GetUserAsync(User);
+        if (user is null) return Forbid();
+        ViewData["HasPhoto"] = await users.GetAuthenticationTokenAsync(user, Provider, PhotoKey) is not null;
+        return View(model: user.Email ?? user.UserName ?? "My account");
     }
 
-    // POST: /Profile   (form 1: phone number)
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Index(ProfileViewModel model)
+    [HttpPost, RequestSizeLimit(MaxBytes + 65536)]
+    public async Task<IActionResult> Upload(IFormFile? photo)
     {
-        // The user always comes from the sign-in cookie, never from the form
-        var user = await _userManager.GetUserAsync(User);
-        if (user == null)
-        {
-            return NotFound();
-        }
-
-        // This form posts only the phone number: the password fields belong to form 2
-        ModelState.Remove(nameof(model.NewPassword));
-        ModelState.Remove(nameof(model.ConfirmNewPassword));
-
-        var supplier = await GetSupplierAsync(user.Id);
-        string phone = (model.PhoneNumber ?? string.Empty).Trim();
-
-        // A supplier must keep a contact phone (it was required at registration)
-        if (supplier != null && phone == "")
-        {
-            ModelState.AddModelError(nameof(model.PhoneNumber), "Suppliers must keep a contact phone number.");
-        }
-
-        if (!ModelState.IsValid)
-        {
-            return await ShowProfilePageAsync(user, supplier, model);
-        }
-
-        // Save every number in the same format: +962791234567
-        if (phone != "")
-        {
-            phone = ToInternationalFormat(phone);
-        }
-
-        if (supplier != null)
-        {
-            supplier.ContactPhone = phone; // the phone the admin sees for a supplier
-            await _context.SaveChangesAsync();
-        }
-
-        if (phone == "")
-        {
-            user.PhoneNumber = null;
-        }
-        else
-        {
-            user.PhoneNumber = phone;
-        }
-
-        // UpdateAsync saves the user WITHOUT changing the security stamp, so the user stays signed in
-        var result = await _userManager.UpdateAsync(user);
-        if (!result.Succeeded)
-        {
-            foreach (var error in result.Errors)
-            {
-                ModelState.AddModelError(nameof(model.PhoneNumber), error.Description);
-            }
-            return await ShowProfilePageAsync(user, supplier, model);
-        }
-
-        TempData["Message"] = "Your phone number was saved.";
+        var user = await users.GetUserAsync(User);
+        if (user is null) return Forbid();
+        if (photo is null || photo.Length < 12 || photo.Length > MaxBytes)
+            return Fail("Choose a JPEG or PNG image up to 1 MB.");
+        using var buffer = new MemoryStream((int)photo.Length);
+        await photo.CopyToAsync(buffer, HttpContext.RequestAborted);
+        var bytes = buffer.ToArray();
+        var type = ImageType(bytes);
+        if (type is null) return Fail("Choose a valid JPEG or PNG image. SVG and other file types are not supported.");
+        var result = await users.SetAuthenticationTokenAsync(user, Provider, PhotoKey, Convert.ToBase64String(bytes));
+        if (!result.Succeeded) return Fail("Could not save your photo. Try again.");
+        TempData["Message"] = "Profile photo updated.";
         return RedirectToAction(nameof(Index));
     }
 
-    // POST: /Profile/ChangePassword   (form 2: password, on the same page)
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> ChangePassword(ProfileViewModel model)
+    [HttpGet]
+    public async Task<IActionResult> Photo()
     {
-        var user = await _userManager.GetUserAsync(User);
-        if (user == null)
-        {
-            return NotFound();
-        }
+        var user = await users.GetUserAsync(User);
+        if (user is null) return Forbid();
+        var saved = await users.GetAuthenticationTokenAsync(user, Provider, PhotoKey);
+        if (string.IsNullOrEmpty(saved)) return NotFound();
+        byte[] bytes;
+        try { bytes = Convert.FromBase64String(saved); }
+        catch (FormatException) { return NotFound(); }
+        var mime = ImageType(bytes);
+        if (mime is null) return NotFound();
+        Response.Headers["X-Content-Type-Options"] = "nosniff";
+        return File(bytes, mime);
+    }
 
-        // This form posts only the passwords. If we show the page again, show the saved phone number in form 1.
-        var supplier = await GetSupplierAsync(user.Id);
-        ModelState.Remove(nameof(model.PhoneNumber));
-        model.PhoneNumber = GetSavedPhone(user, supplier);
-
-        if (!ModelState.IsValid)
-        {
-            return await ShowProfilePageAsync(user, supplier, model);
-        }
-
-        // The new password must be different: CheckPasswordAsync is true if it is the same as the saved one
-        if (await _userManager.CheckPasswordAsync(user, model.NewPassword))
-        {
-            ModelState.AddModelError(nameof(model.NewPassword), "The new password must be different from the current one.");
-            return await ShowProfilePageAsync(user, supplier, model);
-        }
-
-        // Set the new password without the old one: make a reset token here on the server and use it at once
-        // (the token is never sent anywhere). ResetPasswordAsync checks the password rules, then saves the new hash.
-        string resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
-        var result = await _userManager.ResetPasswordAsync(user, resetToken, model.NewPassword);
-        if (!result.Succeeded)
-        {
-            foreach (var error in result.Errors)
-            {
-                ModelState.AddModelError(nameof(model.NewPassword), error.Description);
-            }
-            return await ShowProfilePageAsync(user, supplier, model);
-        }
-
-        // ResetPasswordAsync changes the security stamp. Refresh the sign-in cookie so THIS browser
-        // stays signed in (other devices that are signed in with the old password are signed out).
-        await _signInManager.RefreshSignInAsync(user);
-
-        // TODO: audit log + notification (team mechanism) - password changed
-
-        TempData["Message"] = "Your password was changed.";
+    [HttpPost]
+    public async Task<IActionResult> Remove()
+    {
+        var user = await users.GetUserAsync(User);
+        if (user is null) return Forbid();
+        if (!(await users.RemoveAuthenticationTokenAsync(user, Provider, PhotoKey)).Succeeded)
+            return Fail("Could not remove your photo. Try again.");
+        TempData["Message"] = "Profile photo removed.";
         return RedirectToAction(nameof(Index));
     }
 
-    // ----------------- helper methods -----------------
-
-    // Shows the profile page (Views/Profile/Index.cshtml)
-    private async Task<IActionResult> ShowProfilePageAsync(IdentityUser user, SupplierProfile? supplier, ProfileViewModel model)
+    private IActionResult Fail(string message)
     {
-        ViewBag.Info = await BuildInfoAsync(user, supplier);
-        return View("Index", model);
+        TempData["ProfileError"] = message;
+        return RedirectToAction(nameof(Index));
     }
 
-    // The supplier profile of this user, or null if the user is an employee
-    private async Task<SupplierProfile?> GetSupplierAsync(string userId)
+    private static string? ImageType(byte[] bytes)
     {
-        return await _context.SupplierProfiles.FirstOrDefaultAsync(s => s.UserId == userId);
-    }
-
-    // The saved phone number: suppliers -> SupplierProfiles.ContactPhone, others -> AspNetUsers.PhoneNumber
-    private string? GetSavedPhone(IdentityUser user, SupplierProfile? supplier)
-    {
-        if (supplier != null)
-        {
-            return supplier.ContactPhone;
-        }
-
-        return user.PhoneNumber;
-    }
-
-    // Everything the page shows as read only
-    private async Task<ProfileInfo> BuildInfoAsync(IdentityUser user, SupplierProfile? supplier)
-    {
-        var info = new ProfileInfo();
-        info.Email = user.Email ?? string.Empty;
-        info.Supplier = supplier;
-        info.Employee = await _context.EmployeeProfiles
-            .Include(e => e.Department)
-            .FirstOrDefaultAsync(e => e.UserId == user.Id);
-
-        // The name at the top of the page
-        if (supplier != null)
-        {
-            info.DisplayName = supplier.CompanyName;
-        }
-        else if (info.Employee != null)
-        {
-            info.DisplayName = info.Employee.FullName;
-        }
-        if (info.DisplayName == "")
-        {
-            info.DisplayName = info.Email;
-        }
-        if (info.DisplayName == "")
-        {
-            info.DisplayName = "User";
-        }
-
-        return info;
-    }
-
-    // 0791234567 / 00962791234567 / +962791234567  ->  +962791234567
-    // (the number was already checked by the RegularExpression in ProfileViewModel)
-    private string ToInternationalFormat(string phone)
-    {
-        if (phone.StartsWith("+962"))
-        {
-            return phone;
-        }
-
-        if (phone.StartsWith("00962"))
-        {
-            return "+962" + phone.Substring(5); // remove "00962"
-        }
-
-        return "+962" + phone.Substring(1); // remove the first "0"
+        if (bytes.Length < 12) return null;
+        if (bytes.AsSpan().StartsWith(new byte[] { 137, 80, 78, 71, 13, 10, 26, 10 }) &&
+            bytes.AsSpan(12).StartsWith("IHDR"u8) && bytes.AsSpan().EndsWith(new byte[] { 73, 69, 78, 68, 174, 66, 96, 130 }))
+            return "image/png";
+        if (bytes.AsSpan().StartsWith(new byte[] { 255, 216, 255 }) && bytes.AsSpan().EndsWith(new byte[] { 255, 217 }))
+            return "image/jpeg";
+        return null;
     }
 }

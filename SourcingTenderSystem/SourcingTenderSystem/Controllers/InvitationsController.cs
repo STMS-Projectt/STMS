@@ -70,22 +70,43 @@ public class InvitationsController : Controller
         ModelState.Remove(nameof(Invitation.Status));
 
         var ids = selectedSuppliers.Distinct().ToList();
-        if (!await _context.Tenders.AnyAsync(t => t.Id == invitation.TenderId))
+        var tender = await _context.Tenders.FindAsync(invitation.TenderId);
+        if (tender is null || tender.Status is not ("Draft" or "Published" or "Open") || tender.CloseDate <= DateTime.UtcNow)
             ModelState.AddModelError(nameof(Invitation.TenderId), "Select a valid tender.");
         if (ids.Count == 0 || await EligibleSuppliers().CountAsync(s => ids.Contains(s.Id)) != ids.Count)
             ModelState.AddModelError(string.Empty, "Select at least one approved supplier.");
         if (invitation.ExpiresAt <= DateTime.UtcNow)
             ModelState.AddModelError(nameof(Invitation.ExpiresAt), "Choose an expiry date in the future.");
 
+        if (tender?.Counter >= 2 && await _context.Bids.AnyAsync(b => b.TenderId == invitation.TenderId &&
+            b.SubmittedAt != null && b.Status != "Withdrawn" && ids.Contains(b.SupplierProfileId)))
+            ModelState.AddModelError("", "Send second-round invitations only to suppliers without a submitted offer.");
         if (!ModelState.IsValid)
         {
             await LoadInvitationOptionsAsync(invitation.TenderId, ids);
             return View(invitation);
         }
 
-        var alreadyInvited = await _context.Invitations
-            .Where(i => i.TenderId == invitation.TenderId && ids.Contains(i.SupplierProfileId))
-            .Select(i => i.SupplierProfileId).ToListAsync();
+        var prior = await _context.Invitations
+            .Where(i => i.TenderId == invitation.TenderId && ids.Contains(i.SupplierProfileId)).ToListAsync();
+        var alreadyInvited = prior.Select(i => i.SupplierProfileId).ToList();
+        if (tender!.Counter >= 2)
+        {
+            foreach (var existing in prior)
+            {
+                if (existing.Status != "Accepted") existing.Status = "Pending";
+                existing.ExpiresAt = invitation.ExpiresAt;
+                existing.SentAt = DateTime.UtcNow;
+                existing.DeclineReason = null;
+                if (existing.Status == "Pending") existing.RespondedAt = null;
+            }
+        }
+        foreach (var supplierId in tender.Counter >= 2 ? ids : ids.Except(alreadyInvited))
+        {
+            _context.Notifications.Add(new Notification { SupplierProfileId = supplierId,
+                Title = tender.Counter >= 2 ? "Second-round tender invitation" : "New tender invitation",
+                Message = tender.Title, Link = "/SupplierWorkspace/Invitations", CreatedAt = DateTime.UtcNow });
+        }
         foreach (var supplierId in ids.Except(alreadyInvited))
         {
             _context.Invitations.Add(new Invitation
@@ -98,8 +119,18 @@ public class InvitationsController : Controller
             });
         }
 
+        if (tender.Counter >= 2)
+        {
+            var withdrawn = await _context.Bids.Where(b => b.TenderId == tender.Id &&
+                ids.Contains(b.SupplierProfileId) && b.Status == "Withdrawn").ToListAsync();
+            foreach (var bid in withdrawn)
+            {
+                bid.Status = "Draft";
+                bid.SubmittedAt = null;
+            }
+        }
         await _context.SaveChangesAsync();
-        TempData["Message"] = alreadyInvited.Count == ids.Count
+        TempData["Message"] = tender.Counter < 2 && alreadyInvited.Count == ids.Count
             ? "The selected suppliers already have invitations."
             : "Supplier invitations saved.";
         return RedirectToAction(nameof(Index), new { tenderId = invitation.TenderId });
@@ -112,7 +143,7 @@ public class InvitationsController : Controller
     {
         ViewData["TenderId"] = new SelectList(await _context.Tenders.AsNoTracking()
             .OrderBy(t => t.Title).ToListAsync(), "Id", "Title", tenderId);
-        ViewData["Suppliers"] = await EligibleSuppliers().OrderBy(s => s.CompanyName).ToListAsync();
+        ViewData["Suppliers"] = await EligibleSuppliers().Where(s => !_context.Bids.Any(b => b.TenderId == tenderId && b.Tender.Counter >= 2 && b.SupplierProfileId == s.Id && b.SubmittedAt != null && b.Status != "Withdrawn")).OrderBy(s => s.CompanyName).ToListAsync();
         ViewData["SelectedSuppliers"] = selected?.ToHashSet() ?? new HashSet<int>();
     }
     // GET: INVITATIONS/Edit/5////////////////////////////////////////////////

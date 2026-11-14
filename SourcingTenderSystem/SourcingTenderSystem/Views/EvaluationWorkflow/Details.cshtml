@@ -1,3 +1,4 @@
+@inject ProtectedPdf PdfSecurity
 @model EvaluationWorkflowDetails
 @{
     ViewData["Title"] = "Evaluation progress";
@@ -6,6 +7,7 @@
 }
 <a class="back-link" asp-action="Index"><partial name="_Icon" model='@("back")' /> Evaluations</a>
 <header class="page-heading"><div><p class="eyebrow">TENDER #@tender.Id</p><h1>@tender.Title</h1><p>@(report?.Status ?? tender.Status)</p></div></header>
+<partial name="_RecordQr" model='@(Url.Action("Details", new { id = tender.Id })!)' />
 @if (TempData["WorkflowError"] is string error) { <div class="alert alert-warning" role="alert">@error</div> }
 <section class="surface directory mb-3">
     <div class="directory-toolbar"><h2 class="mb-0">Committee progress</h2></div>
@@ -60,21 +62,60 @@ else if (report == null && User.IsInRole("SourcingManager"))
         <h2>Final report</h2>
         <p>Recommended supplier: <strong>@(tender.Bids.FirstOrDefault(b => b.Id == report.RecommendedBidId)?.SupplierProfile.CompanyName ?? "—")</strong></p>
         <p style="white-space:pre-wrap">@report.Summary</p>
-        @if (report.FileKey != null) { <a class="btn btn-outline-secondary mb-3" asp-action="Download" asp-route-id="@tender.Id">Download report PDF</a> }
+        @if (report.FileKey != null)
+        {
+            <div class="button-row mb-3">
+                <a class="btn btn-outline-secondary" asp-action="Download" asp-route-id="@tender.Id" asp-route-preview="true" target="_blank" rel="noopener">Preview PDF</a>
+                <a class="btn btn-outline-secondary" asp-action="Download" asp-route-id="@tender.Id">Download PDF</a>
+            </div>
+            @if (PdfSecurity.SigningEnabled && (User.IsInRole("SourcingManager") || User.IsInRole("SourcingOfficer")))
+            {
+                <details class="border rounded p-3 mb-3"><summary>Download a digitally signed copy</summary>
+                    <form asp-action="SignDocument" asp-route-id="@tender.Id" method="post" class="mt-3">
+                        <p class="subtle">Your password confirms the request. The organization certificate signs this watermarked copy.</p>
+                        <label class="form-label">Current password<input name="password" type="password" required autocomplete="current-password" class="form-control" /></label>
+                        <button class="btn btn-primary" type="submit">Sign and download</button>
+                    </form>
+                </details>
+            }
+        }
         @if (Model.NextStage != null)
         {
             <form asp-action="Approve" asp-route-id="@tender.Id" method="post">
                 <input type="hidden" name="expectedStage" value="@report.Status" />
                 <label class="field mb-3 d-block">Approval notes<textarea class="form-control" name="comments" maxlength="1000" rows="2"></textarea></label>
+                <label class="field mb-2 d-block">Current password<input class="form-control" type="password" name="password" autocomplete="current-password" required /></label>
+                <label class="form-check mb-3"><input class="form-check-input" type="checkbox" name="confirmDecision" value="true" required /> I confirm this official decision.</label>
+                @if (report.Status == "Pending Top Committee")
+                {
+                    <p class="subtle">Approvals: @report.TenderApprovals.Count(a => a.Decision == "Top Committee Approved") / 4</p>
+                    <div class="button-row"><button class="btn btn-primary" type="submit" name="vote" value="approve">Approve award</button><button class="btn btn-outline-danger" type="submit" name="vote" value="reject">Reject and cancel</button></div>
+                }
+                else
+                {
                 <button class="btn btn-primary" type="submit">@(Model.NextStage == "Pending Manager Approval" ? "Approve and send to sourcing manager" : Model.NextStage == "Pending Top Committee" ? "Approve and send to top committee" : "Approve final report")</button>
+                }
             </form>
         }
         @if (report.TenderApprovals.Count > 0)
         {
             <h3 class="mt-3">Approval history</h3><ul class="mb-0">
             @foreach (var entry in report.TenderApprovals.OrderBy(a => a.DecidedAt))
-            { <li>@entry.ApproverEmployeeProfile.FullName · @entry.Decision · @entry.DecidedAt.ToString("dd MMM yyyy HH:mm") UTC @if (!string.IsNullOrWhiteSpace(entry.Comments)) { <p>@entry.Comments</p> }</li> }
+            { <li>@entry.ApproverEmployeeProfile.FullName · @entry.Decision · @entry.DecidedAt.ToString("dd MMM yyyy HH:mm") UTC @if (PdfSecurity.SigningEnabled) { <a class="ms-2" asp-action="DecisionPdf" asp-route-id="@entry.Id">Signed decision PDF</a> } @if (!string.IsNullOrWhiteSpace(entry.Comments)) { <p>@entry.Comments</p> }</li> }
             </ul>
         }
     </section>
+}
+
+<div class="mb-3"><a class="btn btn-outline-secondary" asp-controller="Clarifications" asp-action="Index" asp-route-kind="tender" asp-route-recordId="@tender.Id">Clarification history</a></div>
+
+@if (report?.Status == TenderRules.AwaitingReturn && User.IsInRole("SourcingManager"))
+{
+    <section class="surface detail-card mt-3"><h2>Return the cancelled tender</h2><p>The sourcing officer can prepare a new tender for the same request after you return this one.</p>
+        <form asp-action="ReturnToOfficer" asp-route-id="@tender.Id" method="post"><button class="btn btn-primary" type="submit">Return to sourcing officer</button></form>
+    </section>
+}
+@if (ViewData["CanRetender"] is true && User.IsInRole("SourcingOfficer"))
+{
+    <a class="btn btn-primary mt-3" asp-controller="Tenders" asp-action="Create" asp-route-purchaseRequisitionId="@tender.PurchaseRequisitionId">Create replacement tender</a>
 }

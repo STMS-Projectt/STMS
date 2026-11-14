@@ -43,7 +43,7 @@ public sealed class AdminOperationsController(ApplicationDbContext db) : Control
     {
         var request = await db.PurchaseRequisitions.AsNoTracking().AsSplitQuery().Include(r => r.Department)
             .Include(r => r.CreatedByEmployeeProfile).Include(r => r.ReviewedByEmployeeProfile)
-            .Include(r => r.Items).Include(r => r.Tender).SingleOrDefaultAsync(r => r.Id == id);
+            .Include(r => r.Items).Include(r => r.Tenders).SingleOrDefaultAsync(r => r.Id == id);
         return request is null ? NotFound() : View("Request", request);
     }
 

@@ -1,0 +1,19 @@
+@using QRCoder
+@model string
+@{
+    var link = $"{Context.Request.Scheme}://{Context.Request.Host}{Model}";
+    using var data = QRCodeGenerator.GenerateQrCode(link, QRCodeGenerator.ECCLevel.M);
+    using var qr = new PngByteQRCode(data);
+    var image = Convert.ToBase64String(qr.GetGraphic(5));
+}
+<details class="surface detail-card mb-3 record-qr">
+    <summary class="fw-semibold">QR code and share link</summary>
+    <div class="d-flex gap-3 align-items-center flex-wrap mt-3">
+        <img width="144" height="144" src="data:image/png;base64,@image" alt="QR code for this record" />
+        <div style="min-width:0">
+            <p class="subtle">Scan with your phone to open this record. Sign-in and access permissions still apply.</p>
+            <a class="btn btn-outline-secondary mb-2" href="data:image/png;base64,@image" download="sourcing-record-qr.png">Save QR code</a>
+            <a class="d-block text-break small" href="@Model">@link</a>
+        </div>
+    </div>
+</details>

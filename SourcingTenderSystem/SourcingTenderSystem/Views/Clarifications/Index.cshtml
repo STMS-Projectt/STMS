@@ -1,0 +1,53 @@
+@model ClarificationInbox
+@{ ViewData["Title"] = Model.RecordId.HasValue ? "Clarification history" : "Clarifications"; }
+<header class="page-heading">
+    <div><p class="eyebrow">TRANSACTION COMMUNICATION</p><h1>@ViewData["Title"]</h1>
+    <p>@(Model.Route?.Title ?? "Questions and responses involving your account.")</p></div>
+    <div class="button-row">
+        @if (Model.RecordId.HasValue) { <a class="btn btn-outline-secondary" asp-action="Index">All clarifications</a> }
+        @if (Model.Route is not null) { <a class="btn btn-primary" asp-action="Create" asp-route-kind="@Model.Kind" asp-route-recordId="@Model.RecordId"><partial name="_Icon" model='@("plus")' /> New clarification</a> }
+    </div>
+</header>
+@if (Model.RecordId.HasValue && Model.Route == null)
+{ <p class="subtle">@(Model.Kind == "request" ? "Only the request author and the responsible sourcing officer can start a clarification. Submit drafts for review first; an officer may need to take review." : "There are no eligible recipients for a new clarification at this stage.")</p> }
+@if (TempData["ClarificationError"] is string error)
+{ <div class="alert alert-warning" role="alert">@error</div> }
+@if (Model.Requests.Count > 0)
+{
+    <section class="surface directory mb-3">
+        <div class="directory-toolbar"><div><h2 class="mb-0">Start a clarification</h2><p class="subtle mb-0">Recent submitted requests and requests under review or returned for changes.</p></div></div>
+        <div class="table-responsive"><table class="directory-table">
+            <thead><tr><th scope="col">Purchase request</th><th scope="col">Stage</th><th scope="col">Action</th></tr></thead>
+            <tbody>@foreach (var request in Model.Requests)
+            {
+                <tr><td><strong>@request.Title</strong><br /><small class="subtle">PR-@request.Id</small></td>
+                    <td>@request.Status</td><td><div class="button-row justify-content-end">
+                    <a class="btn btn-outline-secondary" asp-action="Index" asp-route-kind="request" asp-route-recordId="@request.Id">Open communication</a>
+                    @if (request.CanClaim)
+                    {
+                        <form asp-action="ClaimRequest" asp-route-id="@request.Id" method="post"><button class="btn btn-primary" type="submit">Take review</button></form>
+                    }
+                    </div></td></tr>
+            }</tbody>
+        </table></div>
+    </section>
+}
+<section class="surface directory">
+@if (Model.Rows.Count == 0)
+{
+    <div class="empty-state"><span class="icon-tile tone-blue"><partial name="_Icon" model='@("file")' /></span><h2>No clarifications yet</h2><p>Questions and responses will appear here after a clarification is sent.</p></div>
+}
+else
+{
+    <div class="table-responsive" role="region" aria-label="Clarifications" tabindex="0"><table class="directory-table">
+        <thead><tr><th scope="col">Subject</th><th scope="col">Transaction</th><th scope="col">Participants</th><th scope="col">Status</th><th scope="col"><span class="visually-hidden">Action</span></th></tr></thead>
+        <tbody>@foreach (var row in Model.Rows)
+        {
+            <tr><td><strong>@row.Subject</strong><br /><small class="subtle">@row.CreatedAt.ToString("dd MMM yyyy HH:mm") UTC</small></td>
+            <td>@(row.PurchaseRequisition?.Title ?? row.Tender?.Title ?? row.Bid?.Tender.Title ?? "—")</td>
+            <td>@(row.SenderEmployeeProfile?.FullName ?? row.SenderSupplierProfile?.CompanyName) → @(row.ReceiverEmployeeProfile?.FullName ?? row.ReceiverSupplierProfile?.CompanyName)</td>
+            <td><partial name="_ClarificationStatus" model="row.Status" /></td><td><a class="table-action" asp-action="Details" asp-route-id="@row.Id">Open</a></td></tr>
+        }</tbody>
+    </table></div>
+}
+</section>
