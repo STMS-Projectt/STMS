@@ -23,6 +23,7 @@
         }
         @if (User.IsInRole("RequestingDepartment"))
         { <a class="side-link" asp-controller="PurchaseRequisitions" asp-action="Committee"><partial name="_Icon" model='@("back")' /> Department workspace</a> }
+        <partial name="~/Views/Profile/_ProfileNav.cshtml" />
     </nav>
     <div class="side-bottom"><partial name="_LoginPartial" /></div>
 </aside>
