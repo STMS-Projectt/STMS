@@ -27,6 +27,8 @@ builder.Services.ConfigureApplicationCookie(options =>
 builder.Services.Configure<SecurityStampValidatorOptions>(options => options.ValidationInterval = TimeSpan.Zero);
 builder.Services.AddControllersWithViews(options => options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
 builder.Services.AddSingleton<SupplierFileStore>();
+builder.Services.AddHttpClient("FacePlusPlus");
+builder.Services.AddScoped<SourcingTenderSystem.Services.Biometrics.IBiometricService, SourcingTenderSystem.Services.Biometrics.BiometricService>();
 
 var app = builder.Build();
 
@@ -67,6 +69,7 @@ app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseMiddleware<SourcingTenderSystem.Services.Biometrics.BiometricEnforcementMiddleware>();
 
 app.MapStaticAssets();
 app.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}")
