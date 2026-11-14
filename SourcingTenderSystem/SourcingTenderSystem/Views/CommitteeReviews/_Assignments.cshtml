@@ -1,17 +1,19 @@
 @model IReadOnlyList<CommitteeAssignment>
-<section class="surface directory">
+<section class="surface directory dept-directory" data-directory>
     @if (Model.Count == 0)
     { <div class="empty-state"><h2>No tenders to review here</h2><p>Review starts once sourcing completes its compliance checks.</p></div> }
     else
     {
-        <div class="table-responsive" role="region" aria-label="Assigned tenders" tabindex="0">
+        <partial name="_ListFilters" model='@("Search assigned tenders", Model.Select(r => r.Status))' />
+    <div class="table-responsive" role="region" aria-label="Assigned tenders" tabindex="0">
             <table class="directory-table"><thead><tr><th scope="col">Tender</th><th scope="col">Your seat</th><th scope="col">Status</th><th scope="col">Action</th></tr></thead><tbody>
             @foreach (var row in Model)
             {
-                <tr><td><strong>@row.Title</strong></td><td>@row.Seat</td><td>@row.Status</td>
+                <tr data-status="@row.Status"><td><strong>@row.Title</strong></td><td>@row.Seat</td><td>@row.Status</td>
                 <td><a class="table-action" asp-action="Details" asp-route-id="@row.Id">@(row.Status == "Under Evaluation" ? "Review bids" : "View evaluation history")</a></td></tr>
             }
             </tbody></table>
         </div>
     }
+<partial name="_ListFilterEmpty" />
 </section>

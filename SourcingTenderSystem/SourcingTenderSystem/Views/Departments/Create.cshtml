@@ -1,12 +1,15 @@
 @model DepartmentInput
 @{ ViewData["Title"] = "Add department"; }
 <a class="back-link" asp-action="Index" ><partial name="_Icon" model='@("back")' /> Departments</a>
-<header class="page-heading"><div><p class="eyebrow">ADMINISTRATION</p><h1>Add department</h1><p>Create a department for organizing employee accounts.</p></div></header>
+<header class="page-heading dept-create-heading">
+    <span class="icon-tile tone-teal"><partial name="_Icon" model='@("building")' /></span>
+    <div><p class="eyebrow">ORGANIZATION</p><h1>Add department</h1><p>Set up a team so you can assign employees to it.</p></div>
+</header>
 <div class="form-shell">
-    <form method="post" asp-antiforgery="true" class="surface form-card" >
+    <form method="post" asp-antiforgery="true" class="surface form-card dept-create-card" >
         <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
         <partial name="_Fields" model="Model" />
-        <div class="form-actions"><button class="btn btn-primary" type="submit">Create department <partial name="_Icon" model='@("arrow")' /></button><a class="btn btn-outline-secondary" asp-action="Index" >Cancel</a></div>
+        <div class="form-actions"><button class="btn btn-primary" type="submit">Create department <partial name="_Icon" model='@("arrow")' /></button><a class="btn btn-outline-secondary" asp-action="Index" data-dialog-cancel>Cancel</a></div>
     </form>
     <aside class="surface helper-card"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("building")' /></span><h2>Department setup</h2><p>Use a short, distinct name that employees recognize.</p><p>Active departments appear when assigning employees.</p></aside>
 </div>

@@ -19,7 +19,8 @@
 
     // Public auth pages and first-time verification onboarding use the portal shell; Sign-in security for an
     // already verified account renders inside the user's normal role workspace.
-    if (controller == "Account" && (action == "BiometricVerify" || action == "Login" ||
+    if (controller == "SupplierRegistration" && ViewData["ApplicationWorkspace"] is not true ||
+        controller == "Account" && (action == "BiometricVerify" || action == "Login" ||
         action == "BiometricSetup" && ViewData["BiometricOnboarding"] is true))
     {
         admin = false;
@@ -53,12 +54,14 @@
         <link rel="stylesheet" href="~/css/department.css" asp-append-version="true">
     }
     <link rel="stylesheet" href="~/css/workspace.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/stms-design.css" asp-append-version="true">
 </head>
 }
 
 @if (!fragment)
 {
-    var classes = (workspace ? "workspace" : "portal") + (department ? " department-workspace" : "");
+    var classes = (workspace ? "workspace" : "portal") + (department ? " department-workspace" : "") +
+        (!workspace && (controller is "Account" or "SupplierRegistration") ? " stms-auth-portal" : "");
     @Html.Raw("<body class='" + classes + "'>")
 }
 <div data-workspace-frame="@workspaceKey" data-page-title="@title · Sourcing Desk" hidden></div>
@@ -82,124 +85,26 @@
     }
     else if (admin)
     {
-        <aside class="sidebar" id="workspace-nav" aria-label="Administration">
-            <a class="brand" asp-controller="AdminDashboard" asp-action="Index">
-                <span class="brand-mark">
-                    <partial name="_Icon" model='@("brand")' />
-                </span>
-                <span>Sourcing Desk<small>Administration</small></span>
-            </a>
-
-            <div class="side-nav">
-                <span class="nav-caption">WORKSPACE</span>
-
-                @foreach (var item in new[]
-                {
-                    ("AdminDashboard", "Overview", "dashboard"),
-                    ("Departments", "Departments", "building"),
-                    ("Employees", "Employees", "users"),
-                    ("Suppliers", "Suppliers", "supplier")
-                })
-                {
-                    <a class="side-link @(controller == item.Item1 ? "is-current" : "")"
-                       aria-current="@(controller == item.Item1 ? "page" : null)"
-                       asp-controller="@item.Item1"
-                       asp-action="Index">
-                        <partial name="_Icon" model="item.Item3" />
-                        @item.Item2
-                    </a>
-                }
-
-                <partial name="~/Views/Profile/_ProfileNav.cshtml" />
-            </div>
-
-            <div class="side-bottom">
-                <a class="side-link" asp-controller="Home" asp-action="Index">
-                    <partial name="_Icon" model='@("arrow")' />
-                    Public portal
-                </a>
-
-                <partial name="_LoginPartial" />
-            </div>
-        </aside>
-
-        <button type="button"
-                class="nav-scrim"
-                data-nav-close
-                tabindex="-1"
-                aria-label="Close navigation"
-                hidden>
-        </button>
+        <partial name="_AdminNavigation" />
     }
 
     <div class="site-body">
-        @if (department || sourcing || supplier || committee)
+        @if (workspace)
         {
-            <header class="workspace-bar">
-                <div class="bar-context">
-                    <button class="btn btn-outline-secondary menu-toggle"
-                            type="button"
-                            data-nav-toggle
-                            aria-controls="workspace-nav"
-                            aria-expanded="false"
-                            aria-label="Open navigation">
-                        <partial name="_Icon" model='@("menu")' />
-                    </button>
-
-                    <span class="context-root">@(sourcing ? "Sourcing" : supplier ? "Supplier" : committee ? "Evaluation" : "Department")</span>
-                    <span class="context-separator" aria-hidden="true">/</span>
-                    <strong>@title</strong>
-                </div>
-
-                <div class="bar-profile">
-                    <partial name="_ProfileAvatar" />
-                    <span>
-                        <strong>@(sourcing ? "Sourcing officer" : supplier ? "Supplier" : committee ? "Committee reviewer" : "Department employee")</strong>
-                        <small title="@User.Identity?.Name">@User.Identity?.Name</small>
-                    </span>
-                </div>
-            </header>
-        }
-        else if (admin)
-        {
-            <header class="workspace-bar">
-                <div class="bar-context">
-                    <button class="btn btn-outline-secondary menu-toggle"
-                            type="button"
-                            data-nav-toggle
-                            aria-controls="workspace-nav"
-                            aria-expanded="false"
-                            aria-label="Open navigation">
-                        <partial name="_Icon" model='@("menu")' />
-                    </button>
-
-                    <span class="context-root">Administration</span>
-                    <span class="context-separator" aria-hidden="true">/</span>
-                    <strong>@(controller == "AdminDashboard" ? "Overview" : title ?? controller)</strong>
-                </div>
-
-                <div class="bar-profile">
-                    <partial name="_ProfileAvatar" />
-                    <span>
-                        <strong>Administrator</strong>
-                        <small title="@User.Identity?.Name">@User.Identity?.Name</small>
-                    </span>
-                </div>
-            </header>
+            <partial name="_WorkspaceHeader" model='@(admin ? "Administrator" : sourcing ? "Sourcing officer" : supplier ? "Supplier" : committee ? "Committee reviewer" : "Department employee")' />
         }
         else
         {
-            <header class="portal-bar">
+            <header class="portal-bar stms-public-header">
                 <div class="portal-bar-inner">
                     <a class="brand" asp-controller="Home" asp-action="Index">
-                        <span class="brand-mark">
-                            <partial name="_Icon" model='@("brand")' />
-                        </span>
-                        <span>Sourcing Desk<small>Supplier portal</small></span>
+                        <img src="~/images/stms-cube.svg" alt="" />
+                        <strong>STMS</strong>
+                        <span>Sourcing &amp; Tender<br />Management System</span>
                     </a>
 
                     <nav class="portal-nav" aria-label="Account">
-                        @if (signedIn && !Roles.EmployeeRoles.Any(User.IsInRole))
+                        @if (controller != "SupplierRegistration" && signedIn && !Roles.EmployeeRoles.Any(User.IsInRole))
                         {
                             <a class="portal-link"
                                asp-controller="SupplierRegistration"
@@ -210,14 +115,14 @@
                         {
                             <a class="portal-link"
                                asp-controller="Account"
-                               asp-action="Login">Sign in</a>
+                               asp-action="Login" aria-current="@(controller == "Account" && action == "Login" ? "page" : null)">Sign in</a>
 
                             <a class="btn btn-primary portal-register"
                                asp-controller="SupplierRegistration"
-                               asp-action="Register">Supplier registration</a>
+                               asp-action="Register" aria-current="@(controller == "SupplierRegistration" && action == "Register" ? "page" : null)">Supplier registration</a>
                         }
 
-                        <partial name="_LoginPartial" />
+                        @if (controller != "SupplierRegistration") { <partial name="_LoginPartial" /> }
                     </nav>
                 </div>
             </header>
@@ -241,8 +146,8 @@
             @RenderBody()
         </main>
 
-        <footer class="site-footer">
-            <span>Sourcing Desk</span>
+        <footer class="site-footer stms-footer">
+            <span><img src="~/images/stms-cube.svg" alt="" /> STMS <small>Sourcing &amp; Tender Management System</small></span>
             <a asp-controller="Home" asp-action="Privacy">Privacy</a>
         </footer>
     </div>
@@ -252,11 +157,18 @@
         <script src="~/lib/jquery/dist/jquery.min.js"></script>
         <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
         <script src="~/js/site.js" asp-append-version="true"></script>
+        <script src="~/js/admin-directory-voice-search.js" asp-append-version="true" defer></script>
         @if (signedIn) { <script src="~/js/notifications.js" asp-append-version="true" defer></script> }
         @if (workspace)
         {
             <dialog class="workspace-dialog" id="workspace-dialog" aria-labelledby="workspace-dialog-title">
-                <div class="workspace-dialog-bar"><strong id="workspace-dialog-title">Edit record</strong><button type="button" class="icon-button" data-dialog-close aria-label="Close dialog"><partial name="_Icon" model='@("close")' /></button></div>
+                <div class="workspace-dialog-bar">
+                    <div class="workspace-dialog-heading">
+                        <button type="button" class="icon-button" data-dialog-back aria-label="Back to previous record" title="Back" hidden><partial name="_Icon" model='@("back")' /></button>
+                        <strong id="workspace-dialog-title" tabindex="-1">Record</strong>
+                    </div>
+                    <button type="button" class="icon-button" data-dialog-close aria-label="Close dialog" title="Close"><partial name="_Icon" model='@("close")' /></button>
+                </div>
                 <div class="workspace-dialog-loader" data-dialog-loader hidden role="status"><span class="workspace-spinner" aria-hidden="true"></span><span data-dialog-loader-label>Loading…</span></div>
                 <div data-dialog-content></div>
             </dialog>
@@ -272,6 +184,7 @@
             </dialog>
             <div class="workspace-progress" hidden role="status" aria-label="Loading"></div>
             <div class="visually-hidden" aria-live="polite" data-workspace-status></div>
+            <script src="~/js/stms-shell.js" asp-append-version="true" defer></script>
             <script src="~/js/workspace.js" asp-append-version="true" defer></script>
         }
     }

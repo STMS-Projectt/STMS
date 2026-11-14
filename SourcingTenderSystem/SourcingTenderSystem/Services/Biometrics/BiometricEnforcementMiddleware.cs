@@ -8,7 +8,9 @@ public sealed class BiometricEnforcementMiddleware(RequestDelegate next)
     public async Task InvokeAsync(HttpContext context, UserManager<IdentityUser> users)
     {
         var endpoint = context.GetEndpoint()?.Metadata.GetMetadata<ControllerActionDescriptor>();
-        if (endpoint is not null && endpoint.ControllerName != "Account" && context.User.Identity?.IsAuthenticated == true)
+        // Supplier onboarding must finish before requiring sign-in security setup.
+        if (endpoint is not null && endpoint.ControllerName != "Account" &&
+            endpoint.ControllerName != "SupplierRegistration" && context.User.Identity?.IsAuthenticated == true)
         {
             var user = await users.GetUserAsync(context.User);
             if (user is not null && (await users.GetPasskeysAsync(user)).Count == 0)

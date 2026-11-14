@@ -1,9 +1,9 @@
 @model CreateEmployeeInput
 @{ ViewData["Title"] = "Add employee"; }
 <a class="back-link" asp-action="Index" ><partial name="_Icon" model='@("back")' /> Employees</a>
-<header class="page-heading"><div><p class="eyebrow">ADMINISTRATION</p><h1>Add employee</h1><p>Create an employee account and assign access.</p></div></header>
+<header class="page-heading admin-action-heading"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("users")' /></span><div><p class="eyebrow">ADMINISTRATION</p><h1>Add employee</h1><p>Create an employee account and assign access.</p></div></header>
 <div class="form-shell">
-    <form method="post" asp-antiforgery="true" class="surface form-card" >
+    <form method="post" asp-antiforgery="true" class="surface form-card admin-action-card" >
         <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
         <partial name="_Fields" model="Model" /><section class="form-section"><h2>Sign-in credentials</h2><div class="form-grid mt-3"><div class="field "><label asp-for="Email" class="form-label"></label>
     <input asp-for="Email" class="form-control" autocomplete="off" placeholder="name@example.com">

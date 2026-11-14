@@ -71,6 +71,10 @@
     {
       "id": "P6-C-cancellation",
       "status": "PASS"
+    },
+    {
+      "id": "BR-admin-operations-record-modals",
+      "status": "PASS"
     }
   ],
   "errors": [],
@@ -100,11 +104,19 @@
       "status": 200
     },
     {
-      "path": "/Account/BiometricSetup",
+      "path": "/Profile",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
       "path": "/PurchaseRequisitions/Dashboard",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -124,7 +136,15 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/PurchaseRequisitions/MyRequests",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -140,7 +160,15 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/PurchaseRequisitions/Dashboard",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -161,6 +189,10 @@
     },
     {
       "path": "/PurchaseRequisitions/MyRequests",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -196,11 +228,143 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Profile",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Profile",
+      "status": 200
+    },
+    {
+      "path": "/Profile",
+      "status": 200
+    },
+    {
+      "path": "/Profile",
+      "status": 200
+    },
+    {
+      "path": "/Departments",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Departments/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Departments/Edit/1",
+      "status": 200
+    },
+    {
+      "path": "/Departments/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Departments/Create",
+      "status": 200
+    },
+    {
+      "path": "/Employees",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Employees/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Employees/Create",
+      "status": 200
+    },
+    {
+      "path": "/Suppliers",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Suppliers/Details/3",
+      "status": 200
+    },
+    {
+      "path": "/Departments",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Departments/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Departments/Edit/1",
+      "status": 200
+    },
+    {
+      "path": "/Departments/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Departments/Create",
+      "status": 200
+    },
+    {
+      "path": "/Employees",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Employees/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Employees/Create",
+      "status": 200
+    },
+    {
+      "path": "/Suppliers",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Suppliers/Details/3",
+      "status": 200
+    },
+    {
       "path": "/Account/Login",
       "status": 200
     },
     {
       "path": "/SourcingDashboard",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -212,15 +376,15 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/Account/AccessDenied",
       "status": 403
     },
     {
-      "path": "/Account/Login",
-      "status": 200
-    },
-    {
-      "path": "/CommitteeReviews",
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -232,11 +396,31 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/Account/Login",
       "status": 200
     },
     {
       "path": "/CommitteeReviews",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -245,6 +429,10 @@
     },
     {
       "path": "/EvaluationWorkflow",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -260,7 +448,15 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/PurchaseRequisitions/MyRequests",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -300,7 +496,15 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/RequisitionReviews/Details/2",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -320,6 +524,10 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/Tenders/Criteria/1",
       "status": 200
     },
@@ -329,6 +537,10 @@
     },
     {
       "path": "/Tenders/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -344,6 +556,10 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/Tenders/Details/1",
       "status": 200
     },
@@ -356,7 +572,15 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/SupplierWorkspace/Invitations",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -408,7 +632,15 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/SupplierWorkspace/Invitations",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -460,7 +692,15 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/SupplierWorkspace/Invitations",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -512,7 +752,15 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/Compliance/Review",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -536,6 +784,14 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Tenders",
+      "status": 200
+    },
+    {
       "path": "/Account/Login",
       "status": 200
     },
@@ -544,7 +800,15 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/CommitteeReviews/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -556,6 +820,10 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/CommitteeReviews/Bid/1",
       "status": 200
     },
@@ -564,6 +832,10 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/CommitteeReviews/Bid/2",
       "status": 200
     },
@@ -572,11 +844,19 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/CommitteeReviews/Bid/3",
       "status": 200
     },
     {
       "path": "/CommitteeReviews/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -600,7 +880,15 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/CommitteeReviews/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -612,6 +900,10 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/CommitteeReviews/Bid/1",
       "status": 200
     },
@@ -620,6 +912,10 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/CommitteeReviews/Bid/2",
       "status": 200
     },
@@ -628,11 +924,19 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/CommitteeReviews/Bid/3",
       "status": 200
     },
     {
       "path": "/CommitteeReviews/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -656,7 +960,15 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/CommitteeReviews/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -668,6 +980,10 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/CommitteeReviews/Bid/1",
       "status": 200
     },
@@ -676,6 +992,10 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/CommitteeReviews/Bid/2",
       "status": 200
     },
@@ -684,11 +1004,19 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/CommitteeReviews/Bid/3",
       "status": 200
     },
     {
       "path": "/CommitteeReviews/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -712,7 +1040,15 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/CommitteeReviews/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -724,6 +1060,10 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/CommitteeReviews/Bid/1",
       "status": 200
     },
@@ -732,6 +1072,10 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/CommitteeReviews/Bid/2",
       "status": 200
     },
@@ -740,11 +1084,19 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/CommitteeReviews/Bid/3",
       "status": 200
     },
     {
       "path": "/CommitteeReviews/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -761,6 +1113,10 @@
     },
     {
       "path": "/EvaluationWorkflow/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -776,7 +1132,15 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/EvaluationWorkflow/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -792,7 +1156,7 @@
       "status": 200
     },
     {
-      "path": "/EvaluationWorkflow/Details/1",
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -800,15 +1164,7 @@
       "status": 200
     },
     {
-      "path": "/Account/Login",
-      "status": 200
-    },
-    {
-      "path": "/EvaluationWorkflow",
-      "status": 200
-    },
-    {
-      "path": "/EvaluationWorkflow/Details/1",
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -824,7 +1180,7 @@
       "status": 200
     },
     {
-      "path": "/EvaluationWorkflow/Details/1",
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -832,15 +1188,7 @@
       "status": 200
     },
     {
-      "path": "/Account/Login",
-      "status": 200
-    },
-    {
-      "path": "/EvaluationWorkflow",
-      "status": 200
-    },
-    {
-      "path": "/EvaluationWorkflow/Details/1",
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -856,7 +1204,63 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/EvaluationWorkflow/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/EvaluationWorkflow/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/EvaluationWorkflow",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/EvaluationWorkflow/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/EvaluationWorkflow/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/EvaluationWorkflow",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/EvaluationWorkflow/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -872,7 +1276,15 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/Bids/MyBids",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -888,7 +1300,15 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/Bids/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -900,7 +1320,15 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/Bids/MyBids",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -916,7 +1344,15 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/AdminDashboard",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -925,6 +1361,10 @@
     },
     {
       "path": "/SupplierWorkspace",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -932,11 +1372,19 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/Account/Login",
       "status": 200
     },
     {
       "path": "/SupplierWorkspace",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -944,6 +1392,10 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/Account/Login",
       "status": 200
     },
@@ -952,7 +1404,15 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/Bids/Details/3",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -964,7 +1424,15 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/PurchaseRequisitions/MyRequests",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -1004,7 +1472,15 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/RequisitionReviews/Details/3",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -1024,6 +1500,10 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/Tenders/Criteria/2",
       "status": 200
     },
@@ -1033,6 +1513,10 @@
     },
     {
       "path": "/Tenders/Details/2",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -1048,6 +1532,10 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/Tenders/Details/2",
       "status": 200
     },
@@ -1060,7 +1548,15 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/SupplierWorkspace/Invitations",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -1112,7 +1608,15 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/SupplierWorkspace/Invitations",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -1164,7 +1668,15 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/Compliance/Review",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -1173,6 +1685,10 @@
     },
     {
       "path": "/Tenders/Details/2",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -1200,7 +1716,15 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/Compliance/Review",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -1209,6 +1733,10 @@
     },
     {
       "path": "/Tenders/Details/2",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -1236,7 +1764,15 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/Compliance/Review",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -1248,7 +1784,7 @@
       "status": 200
     },
     {
-      "path": "/Tenders/Details/2",
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -1256,7 +1792,19 @@
       "status": 200
     },
     {
+      "path": "/Tenders/Details/2",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/Compliance/Review",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -1265,6 +1813,10 @@
     },
     {
       "path": "/Compliance/Review",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -1276,11 +1828,19 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/Tenders",
       "status": 200
     },
     {
       "path": "/Tenders/Details/2",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -1292,7 +1852,15 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/PurchaseRequisitions/MyRequests",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -1332,7 +1900,15 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/RequisitionReviews/Details/4",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -1352,6 +1928,10 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/Tenders/Criteria/3",
       "status": 200
     },
@@ -1361,6 +1941,10 @@
     },
     {
       "path": "/Tenders/Details/3",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -1376,6 +1960,10 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/Tenders/Details/3",
       "status": 200
     },
@@ -1388,7 +1976,15 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/SupplierWorkspace/Invitations",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -1440,7 +2036,15 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/Compliance/Review",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -1449,6 +2053,10 @@
     },
     {
       "path": "/Tenders/Details/3",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -1476,7 +2084,15 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/Compliance/Review",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -1485,6 +2101,10 @@
     },
     {
       "path": "/Tenders/Details/3",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -1512,7 +2132,15 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/Compliance/Review",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -1524,15 +2152,27 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/Tenders/Details/3",
       "status": 200
     },
     {
       "path": "/Tenders/Details/3",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
       "path": "/Compliance/Review",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -1544,11 +2184,19 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/Tenders",
       "status": 200
     },
     {
       "path": "/Tenders/Details/3",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -1560,7 +2208,15 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/PurchaseRequisitions/MyRequests",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -1600,7 +2256,15 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/RequisitionReviews/Details/5",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -1620,6 +2284,10 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/Tenders/Criteria/4",
       "status": 200
     },
@@ -1629,6 +2297,10 @@
     },
     {
       "path": "/Tenders/Details/4",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -1644,6 +2316,10 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/Tenders/Details/4",
       "status": 200
     },
@@ -1656,7 +2332,15 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/Compliance/Review",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -1665,6 +2349,10 @@
     },
     {
       "path": "/Tenders/Details/4",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -1692,7 +2380,15 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/Compliance/Review",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -1701,6 +2397,10 @@
     },
     {
       "path": "/Tenders/Details/4",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -1728,7 +2428,7 @@
       "status": 200
     },
     {
-      "path": "/Compliance/Review",
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -1736,7 +2436,19 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Compliance/Review",
+      "status": 200
+    },
+    {
       "path": "/Tenders/Details/4",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -1745,6 +2457,10 @@
     },
     {
       "path": "/Tenders/Details/4",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -1760,7 +2476,15 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/PurchaseRequisitions/MyRequests",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -1800,7 +2524,15 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/RequisitionReviews/Details/6",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -1820,6 +2552,10 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/Tenders/Criteria/5",
       "status": 200
     },
@@ -1829,6 +2565,10 @@
     },
     {
       "path": "/Tenders/Details/5",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -1844,6 +2584,10 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/Tenders/Details/5",
       "status": 200
     },
@@ -1856,7 +2600,15 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/SupplierWorkspace/Invitations",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -1908,7 +2660,15 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/SupplierWorkspace/Invitations",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -1960,7 +2720,15 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/SupplierWorkspace/Invitations",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -2012,7 +2780,15 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/Compliance/Review",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -2036,6 +2812,14 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Tenders",
+      "status": 200
+    },
+    {
       "path": "/Account/Login",
       "status": 200
     },
@@ -2044,11 +2828,27 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/CommitteeReviews/Details/5",
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews/AiRecommendation/5",
+      "status": 200
+    },
+    {
       "path": "/CommitteeReviews/Bid/7",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -2060,6 +2860,10 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/CommitteeReviews/Bid/8",
       "status": 200
     },
@@ -2068,6 +2872,10 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/CommitteeReviews/Bid/9",
       "status": 200
     },
@@ -2076,7 +2884,19 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews/AiRecommendation/5",
+      "status": 200
+    },
+    {
       "path": "/CommitteeReviews/Details/5",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews/AiRecommendation/5",
       "status": 200
     },
     {
@@ -2088,11 +2908,27 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/CommitteeReviews/Details/5",
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews/AiRecommendation/5",
+      "status": 200
+    },
+    {
       "path": "/CommitteeReviews/Bid/7",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -2104,6 +2940,10 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/CommitteeReviews/Bid/8",
       "status": 200
     },
@@ -2112,6 +2952,10 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/CommitteeReviews/Bid/9",
       "status": 200
     },
@@ -2120,7 +2964,19 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews/AiRecommendation/5",
+      "status": 200
+    },
+    {
       "path": "/CommitteeReviews/Details/5",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews/AiRecommendation/5",
       "status": 200
     },
     {
@@ -2132,11 +2988,27 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/CommitteeReviews/Details/5",
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews/AiRecommendation/5",
+      "status": 200
+    },
+    {
       "path": "/CommitteeReviews/Bid/7",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -2148,6 +3020,10 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/CommitteeReviews/Bid/8",
       "status": 200
     },
@@ -2156,6 +3032,10 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/CommitteeReviews/Bid/9",
       "status": 200
     },
@@ -2164,7 +3044,19 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews/AiRecommendation/5",
+      "status": 200
+    },
+    {
       "path": "/CommitteeReviews/Details/5",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews/AiRecommendation/5",
       "status": 200
     },
     {
@@ -2176,11 +3068,27 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/CommitteeReviews/Details/5",
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews/AiRecommendation/5",
+      "status": 200
+    },
+    {
       "path": "/CommitteeReviews/Bid/7",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -2192,6 +3100,10 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/CommitteeReviews/Bid/8",
       "status": 200
     },
@@ -2200,6 +3112,10 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/CommitteeReviews/Bid/9",
       "status": 200
     },
@@ -2208,11 +3124,27 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews/AiRecommendation/5",
+      "status": 200
+    },
+    {
       "path": "/CommitteeReviews/Details/5",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews/AiRecommendation/5",
       "status": 200
     },
     {
       "path": "/EvaluationWorkflow/Details/5",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -2228,7 +3160,15 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/EvaluationWorkflow/Details/5",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -2244,7 +3184,15 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/EvaluationWorkflow/Details/5",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -2260,7 +3208,15 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/EvaluationWorkflow/Details/5",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -2280,7 +3236,15 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/EvaluationWorkflow/Details/5",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -2292,7 +3256,15 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/EvaluationWorkflow/Details/5",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -2308,7 +3280,15 @@
       "status": 200
     },
     {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/EvaluationWorkflow/Details/5",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -2321,6 +3301,70 @@
     },
     {
       "path": "/Tenders/Details/6",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/AdminDashboard",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/AdminOperations/Tenders",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/AdminOperations/Tenders",
+      "status": 200
+    },
+    {
+      "path": "/AdminOperations/Requests",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/AdminOperations/RequestQr/6",
+      "status": 200
+    },
+    {
+      "path": "/AdminOperations/Invitations",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/AdminOperations/InvitationDetails/21",
+      "status": 200
+    },
+    {
+      "path": "/AdminOperations/Bids",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/AdminOperations/BidDetails/9",
       "status": 200
     }
   ]

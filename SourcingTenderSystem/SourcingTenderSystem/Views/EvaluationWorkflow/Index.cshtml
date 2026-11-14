@@ -1,16 +1,29 @@
 @model IReadOnlyList<Tender>
 @{ ViewData["Title"] = "Evaluation progress"; }
-<header class="page-heading"><div><p class="eyebrow">EVALUATION WORKFLOW</p><h1>Evaluation progress</h1><p>Track committee reviews and approval of final reports.</p></div></header>
-<section class="surface directory">
+<header class="page-heading stms-hero admin-record-hero"><div><p class="eyebrow">EVALUATION WORKFLOW</p><h1>Evaluation progress</h1><p>Track committee reviews and approval of final reports.</p></div></header>
+<section class="surface directory dept-directory" data-directory>
     @if (Model.Count == 0)
     { <div class="empty-state"><h2>No evaluations to review</h2><p>Tenders appear here when they reach your workflow.</p></div> }
     else
     {
-        <div class="table-responsive" role="region" aria-label="Evaluation progress" tabindex="0"><table class="directory-table">
-            <thead><tr><th scope="col">Tender</th><th scope="col">Stage</th><th scope="col">Action</th></tr></thead>
-            <tbody>@foreach (var tender in Model)
-            { <tr><td>@tender.Title</td><td>@(tender.EvaluationReport?.Status ?? tender.Status)</td><td><a class="table-action" asp-action="Details" asp-route-id="@tender.Id">View evaluation</a></td></tr> }
-            </tbody>
-        </table></div>
+        <div class="dept-directory-heading"><h2>Evaluation register</h2><p>Find a tender by name or stage.</p></div>
+        <partial name="_ListFilters" model='@("Search evaluations", Model.Select(t => t.EvaluationReport?.Status ?? t.Status))' />
+        <div class="record-list" data-record-list>
+        @foreach (var tender in Model)
+        {
+            <article class="record-card" data-record data-status="@(tender.EvaluationReport?.Status ?? tender.Status)">
+                <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("check")' /></span><span>@tender.Title<small>#@tender.Id</small></span></div>
+                <dl class="record-facts"><div><dt class="visually-hidden">Stage</dt><dd><partial name="_Status" model="@(tender.EvaluationReport?.Status ?? tender.Status)" /></dd></div></dl>
+                <div class="record-action"><a data-workspace-dialog="details" class="record-icon-action" asp-action="Details" asp-route-id="@tender.Id" aria-label="View evaluation" data-tooltip="View evaluation"><partial name="_Icon" model='@("eye")' /></a>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <a data-workspace-dialog="details" class="record-icon-action" asp-controller="AdminOperations" asp-action="Tender" asp-route-id="@tender.Id" aria-label="View related tender" data-tooltip="View related tender" title="View related tender"><partial name="_Icon" model='@("briefcase")' /></a>
+                        <a data-workspace-dialog="details" class="record-icon-action" asp-controller="AdminOperations" asp-action="TenderQr" asp-route-id="@tender.Id" aria-label="Show tender QR code" data-tooltip="Show tender QR code" title="Show tender QR code"><partial name="_Icon" model='@("qr")' /></a>
+                    }
+                </div>
+            </article>
+        }
+        </div>
+        <div data-filter-empty hidden><div class="empty-state"><h2>No matching evaluations</h2><p>Try a different tender or stage.</p><button type="button" class="btn btn-outline-secondary">Clear search</button></div></div>
     }
 </section>

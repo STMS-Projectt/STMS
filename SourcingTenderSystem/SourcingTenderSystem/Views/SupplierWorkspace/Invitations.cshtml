@@ -8,7 +8,9 @@
 }
 else
 {
-    <div class="stack">
+    <section class="surface directory dept-directory" data-directory>
+    <partial name="_ListFilters" model='@("Search tender invitations", Model.Invitations.Select(i => i.Status == "Pending" && i.ExpiresAt <= Model.Now ? "Expired" : i.Status))' />
+    <div class="record-list" data-record-list>
         @foreach (var invitation in Model.Invitations)
         {
             var tender = invitation.Tender;
@@ -16,7 +18,7 @@ else
             var open = current && tender.Status == "Open" && tender.OpenDate <= Model.Now && tender.CloseDate > Model.Now;
             var expired = invitation.Status == "Pending" && invitation.ExpiresAt <= Model.Now;
             var hasBid = Model.BidTenders.Contains(tender.Id);
-            <article class="surface detail-card">
+            <article class="surface detail-card" data-record data-status="@(expired ? "Expired" : invitation.Status)">
                 <div class="card-heading">
                     <div><p class="eyebrow">TENDER #@tender.Id · @tender.Status · @(invitation.RoundNumber is int number ? $"Round {number}" : "Legacy invitation")</p><h2>@tender.Title</h2></div>
                     <span class="status-pill @(invitation.Status == "Accepted" ? "status-positive" : expired || invitation.Status == "Declined" ? "status-neutral" : "status-waiting")"><span aria-hidden="true"></span>@(expired ? "Expired" : invitation.Status)</span>
@@ -60,4 +62,6 @@ else
             </article>
         }
     </div>
+    <partial name="_ListFilterEmpty" />
+</section>
 }

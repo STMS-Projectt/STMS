@@ -1,17 +1,78 @@
-@model string
-@{ ViewData["Title"] = "My profile"; }
-<header class="page-heading"><div><p class="eyebrow">YOUR ACCOUNT</p><h1>My profile</h1><p>@Model</p></div></header>
+@model AccountSettings
+@{
+    ViewData["Title"] = "Account settings";
+    var security = Model.Security != null;
+}
+<header class="surface account-hero">
+    <partial name="_ProfileAvatar" />
+    <div><p class="eyebrow">YOUR ACCOUNT</p><h1>@(string.IsNullOrWhiteSpace(Model.Personal.PreferredName) ? Model.DisplayName : Model.Personal.PreferredName)</h1><p>@Model.Email</p></div>
+    <span class="account-hero-badge"><partial name="_Icon" model='@("shield")' /> Account settings</span>
+</header>
+<nav class="account-tabs" aria-label="Account settings tabs">
+    <a asp-action="Index" asp-route-tab="personal" aria-current="@(!security ? "page" : null)"><partial name="_Icon" model='@("users")' /> Personal</a>
+    <a asp-action="Index" asp-route-tab="security" aria-current="@(security ? "page" : null)"><partial name="_Icon" model='@("shield")' /> Security</a>
+</nav>
 @if (TempData["ProfileError"] is string error) { <div class="alert alert-warning" role="alert">@error</div> }
-<div class="form-shell">
-    <section class="surface form-card">
-        <div class="d-flex gap-3 align-items-center mb-3"><partial name="_ProfileAvatar" /><div><h2>Profile photo</h2><p class="subtle mb-0">This photo appears in your workspace header.</p></div></div>
-        <form asp-action="Upload" method="post" enctype="multipart/form-data">
-            <label class="form-label" for="photo">Choose an image</label>
-            <input class="form-control mb-2" type="file" id="photo" name="photo" accept="image/png,image/jpeg" required aria-describedby="photo-hint" />
-            <p id="photo-hint" class="field-hint mb-3">JPEG or PNG, up to 1 MB. A square image works best.</p>
-            <button class="btn btn-primary" type="submit"><partial name="_Icon" model='@("upload")' /> Save photo</button>
-        </form>
-        @if (ViewData["HasPhoto"] is true) { <form asp-action="Remove" method="post" class="mt-3"><button class="btn btn-outline-danger" type="submit">Remove photo</button></form> }
-    </section>
-    <aside class="surface helper-card"><h2>Sign-in security</h2><p>Your profile photo is separate from face recognition and does not change your sign-in settings.</p><a class="text-link" asp-controller="Account" asp-action="BiometricSetup">Manage sign-in methods</a></aside>
-</div>
+@if (Model.Security is { } methods)
+{
+    <div class="account-panel">
+        <div class="account-section-heading"><h2>Sign-in methods</h2><p>Manage your passkey and face recognition. Your profile photo is separate from face recognition.</p></div>
+        <partial name="_SignInMethods" model="methods" />
+    </div>
+}
+else
+{
+    <div class="account-grid account-panel">
+        <section class="surface detail-card account-fields">
+            <div class="account-section-heading"><h2>Personal details</h2><p>Add contact information and choose how your name appears on this page.</p></div>
+            <form asp-action="SavePersonal" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+                <div class="account-field-grid">
+                    <div><label class="form-label" asp-for="Personal.PreferredName"></label><input class="form-control" asp-for="Personal.PreferredName" maxlength="80" /><span asp-validation-for="Personal.PreferredName" class="text-danger"></span></div>
+                    <div><label class="form-label" asp-for="Personal.WorkPhone"></label><input class="form-control" asp-for="Personal.WorkPhone" autocomplete="tel" maxlength="40" /><span asp-validation-for="Personal.WorkPhone" class="text-danger"></span></div>
+                    <div class="account-field-wide"><label class="form-label" asp-for="Personal.Location"></label><input class="form-control" asp-for="Personal.Location" placeholder="City or office" maxlength="100" /><span asp-validation-for="Personal.Location" class="text-danger"></span></div>
+                    <div class="account-field-wide"><label class="form-label" asp-for="Personal.Bio"></label><textarea class="form-control" asp-for="Personal.Bio" rows="4" maxlength="400"></textarea><span asp-validation-for="Personal.Bio" class="text-danger"></span></div>
+                </div>
+                <div class="form-actions"><button class="btn btn-primary" type="submit"><partial name="_Icon" model='@("check")' /> Save changes</button></div>
+            </form>
+        </section>
+        <div class="stack">
+            <section class="surface detail-card account-fields">
+                <div class="account-section-heading"><h2>Account information</h2><p>Details managed by your organization.</p></div>
+                <dl class="detail-grid">
+                    <div><dt>@(Model.Supplier is null ? "Account name" : "Company")</dt><dd>@Model.DisplayName</dd></div>
+                    <div><dt>Sign-in email</dt><dd>@Model.Email</dd></div>
+                    @if (Model.Roles.Count > 0) { <div><dt>Access roles</dt><dd>@string.Join(", ", Model.Roles)</dd></div> }
+                    @if (Model.Employee is { } employee)
+                    {
+                        <div><dt>Department</dt><dd>@(employee.Department?.Name ?? "Unassigned")</dd></div>
+                        <div><dt>Job title</dt><dd>@(employee.JobTitle ?? "Not set")</dd></div>
+                    }
+                    @if (Model.Supplier is { } supplier)
+                    {
+                        <div><dt>Company phone</dt><dd>@supplier.ContactPhone</dd></div>
+                        <div><dt>Company address</dt><dd>@supplier.Address</dd></div>
+                    }
+                </dl>
+            </section>
+            <section class="surface detail-card account-fields">
+                <div class="account-section-heading"><h2>Profile photo</h2><p>This photo appears in your workspace header.</p></div>
+                <form asp-action="Upload" method="post" enctype="multipart/form-data">
+                    <label class="form-label" for="photo">Choose an image</label>
+                    <input class="form-control" type="file" id="photo" name="photo" accept="image/png,image/jpeg" required aria-describedby="photo-hint" />
+                    <p id="photo-hint" class="field-hint">JPEG or PNG, up to 1 MB.</p>
+                    <button class="btn btn-primary" type="submit"><partial name="_Icon" model='@("upload")' /> Save photo</button>
+                </form>
+                @if (Model.HasPhoto) { <form asp-action="Remove" method="post" class="mt-3"><button class="btn btn-outline-danger" type="submit">Remove photo</button></form> }
+            </section>
+        </div>
+    </div>
+}
+@section Scripts {
+    @if (security)
+    {
+        <script src="~/js/biometrics.js" asp-append-version="true" defer></script>
+        <script src="~/js/face-lab.js" asp-append-version="true" defer></script>
+    }
+    else { <partial name="_ValidationScriptsPartial" /> }
+}

@@ -6,8 +6,8 @@
     ViewData["Title"] = $"{action} supplier";
 }
 <a class="back-link" asp-action="Details" asp-route-id="@supplier.Id"><partial name="_Icon" model='@("back")' /> Back to application</a>
-<header class="page-heading"><div><p class="eyebrow">SUPPLIER APPLICATION</p><h1>@action supplier</h1><p>Confirm your decision for @supplier.CompanyName.</p></div></header>
-<form method="post" asp-antiforgery="true" class="surface form-card confirmation">
+<header class="page-heading admin-action-heading"><span class="icon-tile tone-amber"><partial name="_Icon" model='@("shield")' /></span><div><p class="eyebrow">SUPPLIER APPLICATION</p><h1>@action supplier</h1><p>Confirm your decision for @supplier.CompanyName.</p></div></header>
+<form method="post" asp-antiforgery="true" class="surface form-card admin-action-card confirmation">
     <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
     <div class="callout @(decision == SupplierStatus.Approved ? "" : "callout-warning")">
         <strong>@supplier.CompanyName</strong><p>Status will change from @supplier.Status to @decision. The supplier will be able to read the reason below.</p>

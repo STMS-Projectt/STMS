@@ -12,16 +12,16 @@ namespace SourcingTenderSystem.Controllers;
 
 [Authorize]
 public sealed class SupplierRegistrationController(ApplicationDbContext db, UserManager<IdentityUser> users,
-    SupplierFileStore files) : Controller
+    SupplierFileStore files, SignInManager<IdentityUser> signIn) : Controller
 {
     [AllowAnonymous, HttpGet]
-    public IActionResult Register() => User.Identity?.IsAuthenticated == true
-        ? RedirectToAction(nameof(RegistrationStatus)) : View(new RegistrationInput());
+    public async Task<IActionResult> Register() => User.Identity?.IsAuthenticated == true
+        ? await ResumeApplication() : View(new RegistrationInput());
 
     [AllowAnonymous, HttpPost]
     public async Task<IActionResult> Register(RegistrationInput input)
     {
-        if (User.Identity?.IsAuthenticated == true) return RedirectToAction(nameof(RegistrationStatus));
+        if (User.Identity?.IsAuthenticated == true) return await ResumeApplication();
         if (!ModelState.IsValid) return View(input);
 
         await using var transaction = await db.Database.BeginTransactionAsync();
@@ -49,12 +49,14 @@ public sealed class SupplierRegistrationController(ApplicationDbContext db, User
 
         await transaction.CommitAsync();
 
-        return RedirectToAction("Login", "Account");
+        await signIn.SignInAsync(user, isPersistent: false);
+        return RedirectToAction(nameof(UploadDocuments));
     }
 
     [HttpGet]
-    public async Task<IActionResult> RegistrationStatus()
+    public async Task<IActionResult> RegistrationStatus(bool workspace = false)
     {
+        ViewData["ApplicationWorkspace"] = workspace;
         var supplier = await OwnProfile().Include(x => x.SupplierDocuments).AsNoTracking().SingleOrDefaultAsync();
         return supplier is null ? Forbid() : View(supplier);
     }
@@ -65,18 +67,26 @@ public sealed class SupplierRegistrationController(ApplicationDbContext db, User
         var supplier = await OwnProfile().AsNoTracking().SingleOrDefaultAsync();
         if (supplier is null) return Forbid();
         return supplier.Status == SupplierStatus.Pending
-            ? View(new UploadInput()) : RedirectToAction(nameof(RegistrationStatus));
+            ? await UploadView(new UploadInput()) : RedirectToAction(nameof(RegistrationStatus));
     }
 
-    [HttpPost, RequestSizeLimit(SupplierFileStore.MaxBytes + 65536)]
-    public async Task<IActionResult> UploadDocuments(UploadInput input, CancellationToken cancellationToken)
+    [HttpPost, RequestSizeLimit(5L * SupplierFileStore.MaxBytes + 65536)]
+    public async Task<IActionResult> UploadDocuments(UploadInput input, CancellationToken cancellationToken, bool continueToStatus = false)
     {
         var supplier = await OwnProfile().AsNoTracking().SingleOrDefaultAsync(cancellationToken);
         if (supplier is null) return Forbid();
         if (supplier.Status != SupplierStatus.Pending) return RedirectToAction(nameof(RegistrationStatus));
+        if (continueToStatus && input.Files.Count == 0)
+        {
+            if (await OwnProfile().SelectMany(x => x.SupplierDocuments).AnyAsync(cancellationToken))
+                return RedirectToAction(nameof(RegistrationStatus));
+            ModelState.AddModelError(nameof(input.Files), "Choose and upload at least one PDF before continuing.");
+        }
         if (!SupplierFileStore.DocumentTypes.Contains(input.DocumentType))
             ModelState.AddModelError(nameof(input.DocumentType), "Select a valid document type.");
-        if (!ModelState.IsValid) return View(input);
+        if (input.Files.Count is < 1 or > 5)
+            ModelState.AddModelError(nameof(input.Files), "Select between 1 and 5 PDF files.");
+        if (!ModelState.IsValid) return await UploadView(input);
 
         await using var transaction = await db.Database.BeginTransactionAsync(cancellationToken);
         // Lock the application row so a decision and an upload cannot pass the pending check concurrently.
@@ -84,28 +94,36 @@ public sealed class SupplierRegistrationController(ApplicationDbContext db, User
             .ExecuteUpdateAsync(update => update.SetProperty(x => x.Status, SupplierStatus.Pending), cancellationToken);
         if (matched == 0) return RedirectToAction(nameof(RegistrationStatus));
 
-        var key = await files.SaveAsync(input.File, cancellationToken);
-        if (key is null)
+        var saved = new List<string>();
+        try
         {
-            ModelState.AddModelError(nameof(input.File), "Choose a PDF file no larger than 10 MB.");
-            return View(input);
+            foreach (var file in input.Files)
+            {
+                var key = await files.SaveAsync(file, cancellationToken);
+                if (key is null)
+                {
+                    foreach (var previous in saved) files.Delete(previous);
+                    ModelState.AddModelError(nameof(input.Files), "Each file must be a PDF no larger than 10 MB.");
+                    return await UploadView(input);
+                }
+                saved.Add(key);
+                db.SupplierDocuments.Add(new SupplierDocument
+                {
+                    SupplierProfileId = supplier.Id, DocumentType = input.DocumentType, FilePath = key,
+                    ExpiryDate = input.ExpiryDate?.Date, UploadedAt = DateTime.UtcNow
+                });
+            }
+            await db.SaveChangesAsync(cancellationToken);
         }
-
-        db.SupplierDocuments.Add(new SupplierDocument
-        {
-            SupplierProfileId = supplier.Id, DocumentType = input.DocumentType, FilePath = key,
-            ExpiryDate = input.ExpiryDate?.Date, UploadedAt = DateTime.UtcNow
-        });
-        try { await db.SaveChangesAsync(cancellationToken); }
         catch
         {
-            files.Delete(key);
+            foreach (var key in saved) files.Delete(key);
             throw;
         }
         await transaction.CommitAsync(cancellationToken);
 
-        TempData["Message"] = "Document uploaded.";
-        return RedirectToAction(nameof(RegistrationStatus));
+        TempData["Message"] = $"{saved.Count} document(s) uploaded and saved.";
+        return RedirectToAction(continueToStatus ? nameof(RegistrationStatus) : nameof(UploadDocuments));
     }
 
     [HttpGet]
@@ -117,5 +135,30 @@ public sealed class SupplierRegistrationController(ApplicationDbContext db, User
         return File(stream, "application/pdf", $"supplier-document-{id}.pdf");
     }
 
+    [HttpPost, ValidateAntiForgeryToken]
+    public async Task<IActionResult> FinishRegistration()
+    {
+        if (!await OwnProfile().AnyAsync()) return Forbid();
+        await signIn.SignOutAsync();
+        TempData["Message"] = "Your supplier account has been saved. Sign in to continue your application.";
+        return RedirectToAction("Index", "Home");
+    }
+    private async Task<IActionResult> UploadView(UploadInput input)
+    {
+        ViewData["UploadedCounts"] = await OwnProfile().SelectMany(x => x.SupplierDocuments)
+            .GroupBy(x => x.DocumentType).ToDictionaryAsync(x => x.Key, x => x.Count());
+        return View("UploadDocuments", input);
+    }
+
     private IQueryable<SupplierProfile> OwnProfile() => db.SupplierProfiles.Where(x => x.UserId == users.GetUserId(User));
+
+    private async Task<IActionResult> ResumeApplication()
+    {
+        var needsDocuments = await OwnProfile().AnyAsync(x => x.Status == SupplierStatus.Pending && !x.SupplierDocuments.Any());
+        return RedirectToAction(needsDocuments ? nameof(UploadDocuments) : nameof(RegistrationStatus));
+    }
 }
+
+
+
+

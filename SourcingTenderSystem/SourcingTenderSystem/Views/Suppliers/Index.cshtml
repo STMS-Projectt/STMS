@@ -1,46 +1,62 @@
 @model IReadOnlyList<SupplierProfile>
-@{ ViewData["Title"] = "Suppliers"; }
-<header class="page-heading"><div><p class="eyebrow">ADMINISTRATION</p><h1>Suppliers</h1><p>Review company registrations and supporting documents.</p></div></header>
-<section class="surface directory" aria-label="Suppliers directory" data-directory>
-    <div class="directory-toolbar">
-    @* Voice search trial on the Admin Suppliers page. *@
-    <div class="d-flex align-items-center gap-2" hidden="@(Model.Count == 0)">
-        <label class="search-box"><partial name="_Icon" model='@("search")' /><span class="visually-hidden">Search companies or tax numbers</span><input class="form-control" type="search" data-filter-search placeholder="Search companies or tax numbers"></label>
-        <button type="button" class="btn btn-outline-secondary" data-directory-voice-search aria-label="Search by voice" title="Search by voice">🎤</button>
-    </div>
-    <span class="result-count" data-result-count aria-live="polite">@Model.Count records</span>
-</div><nav class="filter-tabs" aria-label="Filter suppliers by status">
+@{
+    ViewData["Title"] = "Supplier Directory";
+    var counts = (Dictionary<string, int>)ViewBag.SupplierCounts;
+    var metrics = new[] { ("Registered suppliers", counts.Values.Sum(), "supplier", "blue"), ("Approved", counts.GetValueOrDefault(SupplierStatus.Approved), "check", "teal"), ("Pending review", counts.GetValueOrDefault(SupplierStatus.Pending), "clock", "amber"), ("Suspended", counts.GetValueOrDefault(SupplierStatus.Suspended), "shield", "violet") };
+}
+<header class="page-heading stms-hero"><div><p class="eyebrow">ADMINISTRATION</p><h1>Supplier Directory</h1><p>Track supplier applications and review supporting documents.</p></div></header>
+<partial name="_DesignMetrics" model="metrics" />
+<details class="surface dashboard-card supplier-health mb-3">
+    <summary><span class="icon-tile tone-teal"><partial name="_Icon" model='@("shield")' /></span><span><strong>Supplier health</strong><small>Registration status across all suppliers</small></span></summary>
+    <p class="subtle mt-2">All registered suppliers, regardless of the directory filter.</p>
+    @foreach (var status in SupplierStatus.All)
+    {
+        <div class="stms-stat-row"><a asp-action="Index" asp-route-status="@status">@status</a><meter min="0" max="@Math.Max(1, counts.Values.Sum())" value="@counts.GetValueOrDefault(status)" aria-label="@status"></meter><strong>@counts.GetValueOrDefault(status)</strong></div>
+    }
+</details>
+<section class="surface directory dept-directory" aria-label="Suppliers directory" data-directory>
+    <div class="dept-directory-heading"><h2>Registered suppliers</h2><p>Search the directory or filter applications by status.</p></div>
+    <div class="directory-filter-panel">
+    <nav class="directory-status-options" aria-label="Filter suppliers by status">
     <a asp-action="Index" aria-current="@(string.IsNullOrEmpty((string?)ViewBag.Status) ? "page" : null)">All statuses</a>
     @foreach (var status in SupplierStatus.All)
     {
         <a asp-action="Index" asp-route-status="@status" aria-current="@(ViewBag.Status == status ? "page" : null)">@status</a>
     }
 </nav>
+    <div class="directory-toolbar dept-filters">
+    <div class="directory-search" hidden="@(Model.Count == 0)">
+        <label class="search-box"><partial name="_Icon" model='@("search")' /><span class="visually-hidden">Search companies or tax numbers</span><input class="form-control" type="search" data-filter-search placeholder="Search companies or tax numbers"></label>
+        <partial name="_DirectoryVoice" />
+    </div>
+    @if (Model.Count > 0)
+    {
+        <label>Sort by<select class="form-select" data-filter-sort><option value="">Default order</option><option value="name">Company (A–Z)</option><option value="recent">Newest first</option></select></label>
+        <button type="button" class="btn btn-outline-secondary" data-filter-reset>Reset</button>
+    }
+    <span class="result-count" data-result-count aria-live="polite">@Model.Count records</span>
+</div>
+    </div>
     @if (Model.Count == 0)
     {
         <div class="empty-state"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("supplier")' /></span><h2>No supplier applications</h2><p>Applications matching this status will appear here.</p></div>
     }
     else
     {
-        <table class="directory-table" role="table">
-            <thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Company</th><th scope="col" role="columnheader">Tax number</th><th scope="col" role="columnheader">Status</th><th scope="col" role="columnheader">Registered (UTC)</th><th scope="col" role="columnheader">Actions</th></tr></thead>
-            <tbody role="rowgroup">
+        <div class="record-list" data-record-list>
             @foreach (var item in Model)
             {
-                <tr role="row">
-                    <td role="cell"><div class="record-name"><span class="avatar"><partial name="_Icon" model='@("supplier")' /></span><span>@item.CompanyName</span></div></td>
-                    <td role="cell" data-label="Tax number">@item.TaxNumber</td>
-                    <td role="cell" data-label="Status"><partial name="_Status" model='@(item.Status)' /></td>
-                    <td role="cell" data-label="Registered (UTC)">@item.CreatedAt.ToString("dd MMM yyyy")</td>
-                    <td role="cell" data-label="Actions"><a class="table-action" asp-action="Details" asp-route-id="@item.Id">Open application <partial name="_Icon" model='@("arrow")' /><span class="visually-hidden"> for @item.CompanyName</span></a></td>
-                </tr>
+                <article class="record-card" data-record data-sort-name="@item.CompanyName" data-sort-date="@item.CreatedAt.Ticks">
+                    <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("supplier")' /></span><span>@item.CompanyName</span></div><dl class="record-facts">
+                    <div><dt class="record-field-icon" title="Tax number"><partial name="_Icon" model='@("file")' /><span class="visually-hidden">Tax number</span></dt><dd>@item.TaxNumber</dd></div>
+                    <div><dt class="visually-hidden">Status</dt><dd><partial name="_Status" model='@(item.Status)' /></dd></div>
+                    <div><dt class="record-field-icon" title="Registered (UTC)"><partial name="_Icon" model='@("calendar")' /><span class="visually-hidden">Registered (UTC)</span></dt><dd>@item.CreatedAt.ToString("dd MMM yyyy")</dd></div>
+                    </dl><div class="record-action"><a data-workspace-dialog="details" class="record-icon-action" asp-action="Details" asp-route-id="@item.Id" aria-label="Open application for @item.CompanyName" data-tooltip="Open application"><partial name="_Icon" model='@("eye")' /></a>
+                        @if (item.Status == SupplierStatus.Approved) { <a data-workspace-dialog="details" class="record-icon-action record-icon-danger" asp-action="Suspend" asp-route-id="@item.Id" aria-label="Suspend supplier" data-tooltip="Suspend supplier" title="Suspend supplier"><partial name="_Icon" model='@("pause")' /></a> }
+                    </div>
+                </article>
             }
-            </tbody>
-        </table>
+            </div>
         <div data-filter-empty hidden><div class="empty-state"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("search")' /></span><h2>No matching records</h2><p>Try a different name or clear your search.</p><button type="button" class="btn btn-outline-secondary">Clear search</button></div></div>
     }
 </section>
-
-@section Scripts {
-    <script src="~/js/admin-directory-voice-search.js" asp-append-version="true"></script>
-}

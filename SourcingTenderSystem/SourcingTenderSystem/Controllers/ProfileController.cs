@@ -1,23 +1,72 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
+using SourcingTenderSystem.Data;
+using SourcingTenderSystem.ViewModels;
+using SourcingTenderSystem.ViewModels.Biometrics;
 
 namespace SourcingTenderSystem.Controllers;
 
 [Authorize, ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
-public sealed class ProfileController(UserManager<IdentityUser> users) : Controller
+public sealed class ProfileController(UserManager<IdentityUser> users, ApplicationDbContext db) : Controller
 {
     private const string Provider = "Profile";
+    private const string PersonalKey = "Personal";
     private const string PhotoKey = "Photo";
     private const int MaxBytes = 1024 * 1024;
 
     [HttpGet]
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(string? tab, string? returnUrl)
     {
         var user = await users.GetUserAsync(User);
         if (user is null) return Forbid();
-        ViewData["HasPhoto"] = await users.GetAuthenticationTokenAsync(user, Provider, PhotoKey) is not null;
-        return View(model: user.Email ?? user.UserName ?? "My account");
+        var security = string.Equals(tab, "security", StringComparison.OrdinalIgnoreCase);
+        if (security && (await users.IsLockedOutAsync(user) ||
+            await db.EmployeeProfiles.AnyAsync(e => e.UserId == user.Id && !e.IsActive)))
+            return Forbid();
+        var saved = await users.GetAuthenticationTokenAsync(user, Provider, PersonalKey);
+        var personal = saved is null ? new PersonalPreferences() :
+            JsonSerializer.Deserialize<PersonalPreferences>(saved) ?? new PersonalPreferences();
+        return View(await Settings(user, personal, security, returnUrl));
+    }
+
+    [HttpPost, ValidateAntiForgeryToken, RequestSizeLimit(16384)]
+    public async Task<IActionResult> SavePersonal([Bind(Prefix = "Personal")] PersonalPreferences personal)
+    {
+        var user = await users.GetUserAsync(User);
+        if (user is null) return Forbid();
+        if (ModelState.IsValid)
+        {
+            personal.Trim();
+            var result = await users.SetAuthenticationTokenAsync(user, Provider, PersonalKey, JsonSerializer.Serialize(personal));
+            if (result.Succeeded)
+            {
+                TempData["Message"] = "Personal details saved.";
+                return RedirectToAction(nameof(Index));
+            }
+            ModelState.AddModelError("", "Could not save your personal details. Try again.");
+        }
+        return View(nameof(Index), await Settings(user, personal, false, null));
+    }
+
+    private async Task<AccountSettings> Settings(IdentityUser user, PersonalPreferences personal, bool security, string? returnUrl)
+    {
+        var employee = await db.EmployeeProfiles.AsNoTracking().Include(e => e.Department)
+            .SingleOrDefaultAsync(e => e.UserId == user.Id);
+        var supplier = employee is null ? await db.SupplierProfiles.AsNoTracking()
+            .SingleOrDefaultAsync(s => s.UserId == user.Id) : null;
+        var email = user.Email ?? user.UserName ?? "My account";
+        var displayName = employee?.FullName ?? supplier?.CompanyName ?? user.UserName ?? email;
+        return new AccountSettings(displayName, email, (await users.GetRolesAsync(user)).ToArray(),
+            employee, supplier, await users.GetAuthenticationTokenAsync(user, Provider, PhotoKey) != null, personal,
+            security ? new BiometricVerifyViewModel
+            {
+                Manage = true,
+                HasFingerprint = (await users.GetPasskeysAsync(user)).Count > 0,
+                ReturnUrl = Url.IsLocalUrl(returnUrl) ? returnUrl : null
+            } : null);
     }
 
     [HttpPost, RequestSizeLimit(MaxBytes + 65536)]

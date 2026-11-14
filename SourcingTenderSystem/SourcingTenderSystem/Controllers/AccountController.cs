@@ -117,7 +117,10 @@ public sealed class AccountController(SignInManager<IdentityUser> signIn, UserMa
     {
         var user = await CurrentUser();
         if (user is null) return Forbid();
-        return View(await Settings(user, manage: true, returnUrl));
+        var settings = await Settings(user, manage: true, returnUrl);
+        if (settings.HasFingerprint || settings.HasFace)
+            return RedirectToAction("Index", "Profile", new { tab = "security", returnUrl = Local(returnUrl) });
+        return View(settings);
     }
 
     [HttpPost, EnableRateLimiting("face-lab"), RequestSizeLimit(4096)]
@@ -214,7 +217,7 @@ public sealed class AccountController(SignInManager<IdentityUser> signIn, UserMa
         { return StatusCode(503, "Could not remove the face reference. Try again."); }
         await FaceAudit(user, "FaceRemoved", "Face reference removed.");
         TempData["Message"] = "Your face reference was removed.";
-        return RedirectToAction(nameof(BiometricSetup));
+        return RedirectToAction("Index", "Profile", new { tab = "security" });
     }
 
     [AllowAnonymous, HttpPost, RequestSizeLimit(1_500_000)]
@@ -331,6 +334,9 @@ public sealed class AccountController(SignInManager<IdentityUser> signIn, UserMa
             await users.IsInRoleAsync(user, Roles.SourcingManager)) return "/CommitteeReviews";
         if (await users.IsInRoleAsync(user, Roles.TopCommittee)) return "/EvaluationWorkflow";
         if (await users.IsInRoleAsync(user, "RequestingDepartment")) return "/PurchaseRequisitions/Dashboard";
+        if (await db.SupplierProfiles.AnyAsync(x => x.UserId == user.Id &&
+            x.Status == Models.SupplierStatus.Pending && !x.SupplierDocuments.Any()))
+            return "/SupplierRegistration/UploadDocuments";
         return await db.SupplierProfiles.AnyAsync(x => x.UserId == user.Id) ? "/SupplierWorkspace" : "/";
     }
 }

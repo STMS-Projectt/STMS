@@ -4,7 +4,7 @@
     <div><p class="eyebrow">SUPPLIER APPLICATION</p><h1>My application</h1><p>Track the application for @Model.CompanyName.</p></div>
     <partial name="_Status" model="Model.Status" />
 </header>
-<partial name="_ApplicationSteps" model="3" />
+@if (ViewData["ApplicationWorkspace"] is not true) { <partial name="_ApplicationSteps" model="3" /> }
 <div class="form-shell">
     <div class="stack">
         <section class="surface detail-card">
@@ -32,3 +32,9 @@
         }
     </aside>
 </div>
+@if (ViewData["ApplicationWorkspace"] is not true) {
+<form asp-action="FinishRegistration" method="post" asp-antiforgery="true" class="form-actions mt-4">
+    <button type="submit" class="btn btn-primary">Go to home</button>
+</form>
+
+}

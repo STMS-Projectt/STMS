@@ -1,12 +1,16 @@
+@model bool
 @inject ClarificationRouting Routing
 @inject SourcingTenderSystem.Data.ApplicationDbContext Database
 @using Microsoft.EntityFrameworkCore
 @{
     var actor = await Routing.Current(User);
-    var unread = actor == null ? 0 : await SourcingTenderSystem.Controllers.NotificationsController.For(Database, actor).CountAsync(n => !n.IsRead);
+    var unread = actor == null || Model ? 0 : await SourcingTenderSystem.Controllers.NotificationsController.For(Database, actor).CountAsync(n => !n.IsRead);
 }
 @if (actor != null)
 {
-    <a class="side-link" asp-controller="Clarifications" asp-action="Index"><partial name="_Icon" model='@("file")' /> Clarifications</a>
-    <a class="side-link" asp-controller="Notifications" asp-action="Index"><partial name="_Icon" model='@("clock")' /> Notifications <span class="badge bg-light text-dark" data-notification-count="@Url.Action("Unread", "Notifications")" aria-label="@unread unread" hidden="@(unread == 0)">@(unread > 99 ? "99+" : unread.ToString())</span></a>
+    <a class="side-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Clarifications" ? "is-current" : "")" aria-current="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Clarifications" ? "page" : null)" asp-controller="Clarifications" asp-action="Index"><partial name="_Icon" model='@("file")' /> Clarifications</a>
+    @if (!Model)
+    {
+        <a class="side-link" asp-controller="Notifications" asp-action="Index"><partial name="_Icon" model='@("clock")' /> Notifications <span class="badge bg-light text-dark" data-notification-count="@Url.Action("Unread", "Notifications")" aria-label="@unread unread" hidden="@(unread == 0)">@(unread > 99 ? "99+" : unread.ToString())</span></a>
+    }
 }

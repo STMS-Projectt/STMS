@@ -1,0 +1,4 @@
+@model string
+@{ ViewData["Title"] = "Record QR code"; }
+<header class="page-heading admin-action-heading"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("qr")' /></span><div><p class="eyebrow">QUICK ACCESS</p><h1>Record QR code</h1><p>@ViewData["RecordTitle"]</p></div></header>
+<partial name="_RecordQr" model="Model" />

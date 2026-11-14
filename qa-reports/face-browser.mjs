@@ -83,18 +83,18 @@ await check('F02-face-tab-opens-keyboard', async () => {
 await check('F03-login-responsive', () => overflow('/Account/Login', 'Login', () => page.click('#tab-face')));
 await check('F04-password-login-to-role-dashboard', async () => { await passwordLogin(); assert(page.url().endsWith('/AdminDashboard'), page.url()); });
 await check('F05-setup-uses-role-workspace-layout', async () => {
-  await page.goto(base + '/Account/BiometricSetup');
+  await page.goto(base + '/Profile?tab=security');
   assert(await page.locator('aside.sidebar').count() === 1, 'role sidebar missing');
   assert(await page.locator('.workspace-bar .bar-profile').count() === 1, 'workspace header missing');
   assert(await page.locator('.portal-bar').count() === 0, 'public portal header still rendered');
-  assert(await page.locator('header.page-heading h1').innerText() === 'Sign-in security', 'heading');
+  assert(await page.locator('.account-tabs a[aria-current=page]').innerText() === 'Security', 'heading');
   assert((await page.locator('#face-setup-title').innerText()) === 'Face Recognition Setup', 'face heading');
   assert((await page.locator('[data-face-badge]').innerText()).includes('Not enrolled'), 'state badge');
   await shot('setup-not-enrolled-1440');
 });
-await check('F06-setup-responsive', () => overflow('/Account/BiometricSetup', 'Setup'));
+await check('F06-setup-responsive', () => overflow('/Profile?tab=security', 'Setup'));
 await check('F07-enroll-requires-password', async () => {
-  await page.goto(base + '/Account/BiometricSetup');
+  await page.goto(base + '/Profile?tab=security');
   await page.click('[data-face-start]');
   assert((await page.locator('[data-face-status]').innerText()).includes('current password'), 'no password prompt');
   assert(await page.evaluate(() => window.__tracks.length) === 0, 'camera opened without password');
@@ -121,7 +121,7 @@ await check('F08-enroll-camera-capture-save', async () => {
 });
 await check('F09-ajax-navigation-initializes-and-releases-camera', async () => {
   await page.goto(base + '/Profile');
-  await page.click('a[href*="BiometricSetup"]');
+  await page.click('.account-tabs a[href*="security"]');
   await page.locator('[data-face-lab][data-ready]').waitFor();
   const same = await page.evaluate(() => performance.getEntriesByType('navigation').length);
   await page.fill('[data-face-password]', admin.password);
@@ -141,7 +141,7 @@ await check('F10-face-login-success-creates-session', async () => {
   await page.screenshot({ path: `${evidence}/login-face-camera-1440.png` });
   await captureSteps('#panel-face');
   await page.waitForURL(/AdminDashboard/, { timeout: 10000 });
-  assert(await page.locator('.workspace-bar .bar-profile').innerText().then(t => t.includes(admin.email)), 'not signed in as admin');
+  assert(await page.locator('.workspace-bar .bar-profile small').textContent().then(t => t.includes(admin.email)), 'not signed in as admin');
   const cookies = await context.cookies();
   assert(cookies.some(c => c.name === '.STMS.BiometricAuth.v2'), 'no Identity cookie');
 });

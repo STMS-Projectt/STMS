@@ -1,7 +1,7 @@
 @model PurchaseRequisition
 @{ ViewData["Title"] = "Purchase request"; }
 <a class="back-link" asp-action="Requests"><partial name="_Icon" model='@("back")' /> Purchase requests</a>
-<header class="page-heading"><div><p class="eyebrow">REQUEST #@Model.Id</p><h1>@Model.Title</h1><p>@Model.Department.Name · @Model.Status</p></div>
+<header class="page-heading stms-hero admin-record-hero"><div><p class="eyebrow">REQUEST #@Model.Id</p><h1>@Model.Title</h1><p>@Model.Department.Name · @Model.Status</p></div>
 </header>
 <partial name="_RecordQr" model='@(Url.Action("RequestDetails", new { id = Model.Id })!)' />
 <section class="surface detail-card mb-3"><partial name="_RequisitionSummary" model="Model" /></section>

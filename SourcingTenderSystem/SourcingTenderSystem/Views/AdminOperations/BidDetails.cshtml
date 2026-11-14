@@ -1,0 +1,29 @@
+@model Bid
+@{ ViewData["Title"] = "Submitted bid details"; }
+<a class="back-link" asp-action="Bids">Back to bids</a>
+<header class="page-heading stms-hero admin-record-hero"><div><p class="eyebrow">SUBMITTED BID #@Model.Id</p><h1>@Model.SupplierProfile.CompanyName</h1><p>@Model.Tender.Title</p></div><div class="record-action"><a data-workspace-dialog="details" class="record-icon-action" asp-action="Tender" asp-route-id="@Model.TenderId" aria-label="View related tender" data-tooltip="View related tender" title="View related tender"><partial name="_Icon" model='@("briefcase")' /></a></div></header>
+<section class="surface detail-card mb-3"><h2>Offer summary</h2>
+    <dl class="detail-grid">
+        <div><dt>Status</dt><dd><partial name="_Status" model="Model.Status" /></dd></div>
+        <div><dt>Total price</dt><dd>@Model.TotalPrice.ToString("N2") @Model.Currency</dd></div>
+        <div><dt>Submitted (UTC)</dt><dd>@Model.SubmittedAt?.ToString("dd MMM yyyy HH:mm")</dd></div>
+        <div><dt>Submission round</dt><dd>@(Model.SubmittedRoundNumber?.ToString() ?? "—")</dd></div>
+        <div><dt>Delivery</dt><dd>@Model.DeliveryDays days</dd></div>
+        <div><dt>Validity</dt><dd>@Model.ValidityDays days</dd></div>
+        @if (!string.IsNullOrWhiteSpace(Model.ComplianceNotes)) { <div><dt>Compliance notes</dt><dd>@Model.ComplianceNotes</dd></div> }
+        @if (!string.IsNullOrWhiteSpace(Model.AwardOutcome)) { <div><dt>Award outcome</dt><dd>@Model.AwardOutcome</dd></div> }
+    </dl>
+</section>
+<section class="surface detail-card"><h2>Quoted items</h2>
+    @if (Model.BidItems.Count == 0) { <p class="subtle">No item breakdown was recorded.</p> }
+    <div class="record-list record-list-inset">
+    @foreach (var item in Model.BidItems.OrderBy(i => i.Id))
+    {
+        <article class="record-card"><div class="record-name">@item.PurchaseRequisitionItem.ItemName</div>
+            <dl class="record-facts"><div><dt>Quantity</dt><dd>@item.Quantity</dd></div><div><dt>Unit price</dt><dd>@item.UnitPrice.ToString("N2") @Model.Currency</dd></div>
+                @if (!string.IsNullOrWhiteSpace(item.Notes)) { <div><dt>Notes</dt><dd>@item.Notes</dd></div> }
+            </dl>
+        </article>
+    }
+    </div>
+</section>

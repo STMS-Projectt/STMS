@@ -6,17 +6,23 @@
     var report = tender.EvaluationReport;
 }
 <a class="back-link" asp-action="Index"><partial name="_Icon" model='@("back")' /> Evaluations</a>
-<header class="page-heading"><div><p class="eyebrow">TENDER #@tender.Id</p><h1>@tender.Title</h1><p>@(report?.Status ?? tender.Status)</p></div></header>
+<header class="page-heading stms-hero admin-record-hero"><div><p class="eyebrow">TENDER #@tender.Id</p><h1>@tender.Title</h1><p>@(report?.Status ?? tender.Status)</p></div></header>
 <partial name="_RecordQr" model='@(Url.Action("Details", new { id = tender.Id })!)' />
 @if (TempData["WorkflowError"] is string error) { <div class="alert alert-warning" role="alert">@error</div> }
 <section class="surface directory mb-3">
     <div class="directory-toolbar"><h2 class="mb-0">Committee progress · @Model.Progress.Count(p => p.Complete) / 4 submitted</h2></div>
-    <div class="table-responsive" role="region" aria-label="Committee progress" tabindex="0"><table class="directory-table">
-        <thead><tr><th scope="col">Reviewer</th><th scope="col">Seat</th><th scope="col">Scores saved</th><th scope="col">Status</th></tr></thead>
-        <tbody>@foreach (var member in Model.Progress)
-        { <tr><td>@member.Employee</td><td>@member.Seat</td><td>@member.Scored / @member.Required</td><td><span class="status-pill @(member.Complete ? "status-positive" : "status-waiting")">@(member.Complete ? "Submitted" : member.Scored > 0 ? "In progress" : "Pending")</span> @if (member.SubmittedAt is DateTime submitted) { <small>@submitted.ToString("yyyy-MM-dd HH:mm") UTC</small> }</td></tr> }
-        </tbody>
-    </table></div>
+    <div class="record-list">
+        @foreach (var member in Model.Progress)
+        {
+            <article class="record-card">
+                <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("users")' /></span><span>@member.Employee<small>@member.Seat</small></span></div>
+                <dl class="record-facts">
+                    <div><dt>Scores saved</dt><dd>@member.Scored / @member.Required</dd></div>
+                    <div><dt>Status</dt><dd><span class="status-pill @(member.Complete ? "status-positive" : "status-waiting")">@(member.Complete ? "Submitted" : member.Scored > 0 ? "In progress" : "Pending")</span> @if (member.SubmittedAt is DateTime submitted) { <small>@submitted.ToString("yyyy-MM-dd HH:mm") UTC</small> }</dd></div>
+                </dl>
+            </article>
+        }
+    </div>
 </section>
 <section class="surface detail-card mb-3">
     <h2>Saved evaluations</h2>
@@ -24,16 +30,15 @@
     else
     {
         <details><summary>View scores and reviewer notes</summary>
-            <div class="table-responsive" role="region" aria-label="Saved evaluations" tabindex="0"><table class="directory-table mt-2">
-                <thead><tr><th scope="col">Reviewer</th><th scope="col">Supplier</th><th scope="col">Criterion</th><th scope="col">Score</th><th scope="col">Notes</th></tr></thead>
-                <tbody>@foreach (var score in Model.Scores)
+            <div class="record-list record-list-inset">@foreach (var score in Model.Scores)
                 {
                     var member = tender.CommitteeMembers.FirstOrDefault(m => m.EmployeeProfileId == score.EmployeeId);
                     var bid = tender.Bids.First(b => b.Id == score.BidId);
                     var criterion = tender.EvaluationCriteria.First(c => c.Id == score.CriterionId);
-                    <tr><td>@member?.EmployeeProfile.FullName</td><td>@bid.SupplierProfile.CompanyName</td><td>@criterion.Name</td><td>@score.Score / @criterion.MaxScore</td><td>@score.Notes</td></tr>
-                }</tbody>
-            </table></div>
+                    <article class="record-card"><div class="record-name"><span>@criterion.Name<small>@bid.SupplierProfile.CompanyName</small></span></div>
+                        <dl class="record-facts"><div><dt>Reviewer</dt><dd>@member?.EmployeeProfile.FullName</dd></div><div><dt>Score</dt><dd>@score.Score / @criterion.MaxScore</dd></div><div><dt>Notes</dt><dd>@score.Notes</dd></div></dl></article>
+                }
+            </div>
         </details>
     }
 </section>
@@ -47,17 +52,16 @@
             <p class="alert alert-info">Bids use different currencies. USD equivalents are approximate references at one rate date (the tender closing date) and are not used to rank suppliers or pick a winner.</p>
         }
         <ul>@foreach (var c in tender.EvaluationCriteria) { <li>@c.Name · @c.Type · @c.WeightPercent%</li> }</ul>
-        <div class="table-responsive"><table class="table"><thead><tr><th>Supplier</th><th>Compliance</th><th>Price</th><th>Technical</th><th>Financial</th><th>Total / 100</th><th>Evidence</th></tr></thead>
-        <tbody>@foreach (var row in comparison)
+        <div class="record-list record-list-inset">@foreach (var row in comparison)
         {
-            <tr><td>@row.Supplier</td><td>@row.Compliance @if (!string.IsNullOrWhiteSpace(row.ComplianceNotes)) { <small>@row.ComplianceNotes</small> }</td><td><partial name="_UsdReference" model="@(new UsdReferenceView(row.Price, row.Currency, row.UsdEquivalent, row.UsdRate, row.RateDate, row.RateSource))" /></td>
-                <td>@row.Technical</td><td>@row.Financial</td><td>@row.Total</td><td>@if (row.Compliance == "Compliant" || User.IsInRole("SourcingOfficer"))
+            <article class="record-card"><div class="record-name">@row.Supplier</div><dl class="record-facts"><div><dt>Compliance</dt><dd>@row.Compliance @if (!string.IsNullOrWhiteSpace(row.ComplianceNotes)) { <small>@row.ComplianceNotes</small> }</dd></div><div><dt>Price</dt><dd><partial name="_UsdReference" model="@(new UsdReferenceView(row.Price, row.Currency, row.UsdEquivalent, row.UsdRate, row.RateDate, row.RateSource))" /></dd></div>
+                <div><dt>Technical</dt><dd>@row.Technical</dd></div><div><dt>Financial</dt><dd>@row.Financial</dd></div><div><dt>Total / 100</dt><dd>@row.Total</dd></div><div><dt>Evidence</dt><dd>@if (row.Compliance == "Compliant" || User.IsInRole("SourcingOfficer"))
                 {
                     @foreach (var documentId in row.EvidenceIds)
                     { <a class="me-2" asp-controller="BidDocuments" asp-action="Download" asp-route-id="@documentId">Document #@documentId</a> }
                 }
-                else { <span>@row.EvidenceIds.Count documents</span> }</td></tr>
-        }</tbody></table></div>
+                else { <span>@row.EvidenceIds.Count documents</span> }</dd></div></dl></article>
+        }</div>
     </section>
 }
 @if (Model.CanUpload)

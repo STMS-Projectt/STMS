@@ -1,0 +1,14 @@
+@model Invitation
+@{ ViewData["Title"] = "Invitation details"; }
+<a class="back-link" asp-action="Invitations">Back to invitations</a>
+<header class="page-heading stms-hero admin-record-hero"><div><p class="eyebrow">INVITATION #@Model.Id</p><h1>@Model.SupplierProfile.CompanyName</h1><p>@Model.Tender.Title</p></div><div class="record-action"><a data-workspace-dialog="details" class="record-icon-action" asp-action="Tender" asp-route-id="@Model.TenderId" aria-label="View related tender" data-tooltip="View related tender" title="View related tender"><partial name="_Icon" model='@("briefcase")' /></a></div></header>
+<section class="surface detail-card"><h2>Invitation information</h2>
+    <dl class="detail-grid">
+        <div><dt>Status</dt><dd><partial name="_Status" model="Model.Status" /></dd></div>
+        <div><dt>Invitation round</dt><dd>@(Model.RoundNumber?.ToString() ?? "—")</dd></div>
+        <div><dt>Sent (UTC)</dt><dd>@Model.SentAt.ToString("dd MMM yyyy HH:mm")</dd></div>
+        <div><dt>Expires (UTC)</dt><dd>@Model.ExpiresAt.ToString("dd MMM yyyy HH:mm")</dd></div>
+        <div><dt>Responded (UTC)</dt><dd>@(Model.RespondedAt?.ToString("dd MMM yyyy HH:mm") ?? "—")</dd></div>
+        @if (!string.IsNullOrWhiteSpace(Model.DeclineReason)) { <div><dt>Decline reason</dt><dd>@Model.DeclineReason</dd></div> }
+    </dl>
+</section>

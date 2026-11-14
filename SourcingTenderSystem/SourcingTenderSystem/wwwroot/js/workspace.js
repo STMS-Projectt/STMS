@@ -20,6 +20,16 @@
     let sending = false;
     let dialogUrl;
     let dialogTrigger;
+    const admin = frame.dataset.workspaceFrame === "admin";
+    const back = dialog.querySelector("[data-dialog-back]");
+    const dialogTitle = dialog.querySelector("#workspace-dialog-title");
+    const previousDialogs = [];
+    let refreshOnClose = false;
+    const showPrevious = () => {
+        if (sending || !previousDialogs.length) return;
+        navigate(previousDialogs.pop(), "dialog");
+    };
+    back.addEventListener("click", showPrevious);
 
     function supported(url) {
         return url.origin === location.origin && !/\/(Account|Home|Error)(\/|$)/i.test(url.pathname) &&
@@ -66,17 +76,24 @@
             loadingDialog = false;
             setDialogLoading(false);
             dialogUrl = new URL(result.res.url);
-            dialog.querySelector("#workspace-dialog-title").textContent = result.main.querySelector("h1")?.textContent || "Edit record";
+            const heading = result.main.querySelector("h1");
+            const details = !!result.main.querySelector(".admin-record-hero");
+            dialog.classList.toggle("is-detail", details);
+            dialogTitle.textContent = heading?.textContent || "Record";
+            back.hidden = previousDialogs.length === 0;
+            dialog.scrollTop = 0;
             content.replaceChildren(...result.main.childNodes);
             if (!dialog.open) dialog.showModal();
             await scripts(result.page, content);
-            content.querySelector("input:not([type=hidden]), select, textarea")?.focus();
+            const focusTarget = details ? dialogTitle : content.querySelector("input:not([type=hidden]), select, textarea") || dialogTitle;
+            focusTarget.focus({ preventScroll: true });
             return;
         }
+        refreshOnClose = false;
         if (dialog.open) dialog.close();
         const oldMain = document.querySelector("#main");
         oldMain.replaceWith(result.main);
-        for (const selector of ["#workspace-nav .side-nav", "#workspace-nav .side-bottom", ".bar-context strong", ".bar-profile"]) {
+        for (const selector of ["#workspace-nav .side-nav", "#workspace-nav .side-bottom", ".bar-profile"]) {
             const current = document.querySelector(selector);
             const next = result.page.querySelector(selector);
             if (current && next) current.replaceWith(next);
@@ -95,7 +112,7 @@
         status.textContent = "Loading…";
         if (mode === "dialog") {
             loadingDialog = true;
-            dialog.querySelector("#workspace-dialog-title").textContent = "One moment";
+            dialogTitle.textContent = "Loading…";
             content.replaceChildren();
             setDialogLoading(true);
             if (!dialog.open) dialog.showModal();
@@ -115,25 +132,41 @@
     dialog.querySelector("[data-dialog-close]").addEventListener("click", () => { if (!sending) dialog.close(); });
     dialog.addEventListener("cancel", event => { if (sending) event.preventDefault(); });
     dialog.addEventListener("close", () => {
+        if (dialog.open) return;
+        if (loadingDialog) { controller?.abort(); progress.hidden = true; loadingDialog = false; }
+        setDialogLoading(false);
         content.replaceChildren();
         dialogUrl = null;
+        previousDialogs.length = 0;
+        back.hidden = true;
+        dialog.classList.remove("is-detail");
         if (dialogTrigger?.isConnected) dialogTrigger.focus();
         dialogTrigger = null;
+        if (refreshOnClose) {
+            refreshOnClose = false;
+            navigate(location.href, "page", false);
+        }
     });
     document.addEventListener("click", event => {
         const link = event.target.closest("a[href]");
         if (!link || event.defaultPrevented || event.button || event.ctrlKey || event.metaKey ||
             event.shiftKey || event.altKey || link.target || link.hasAttribute("download") ||
-            link.hasAttribute("data-full-page") || !link.closest("#main, #workspace-nav, #workspace-dialog")) return;
+            link.hasAttribute("data-full-page") || !link.closest("#main, #workspace-nav, #workspace-dialog, .stms-topbar")) return;
         if (link.closest("#workspace-dialog") && (link.hasAttribute("data-dialog-cancel") || /^(cancel|back(?: to .+)?)$/i.test(link.textContent.trim()))) {
-            event.preventDefault(); if (!sending) dialog.close(); return;
+            event.preventDefault();
+            if (!sending) previousDialogs.length ? showPrevious() : dialog.close();
+            return;
         }
         const url = new URL(link.href);
         if (sending) { event.preventDefault(); return; }
         if (!supported(url) || url.hash) return;
         event.preventDefault();
         const mode = link.hasAttribute("data-workspace-dialog") ? "dialog" : "page";
-        if (mode === "dialog") dialogTrigger = link;
+        if (mode === "dialog") {
+            if (!dialog.open) { previousDialogs.length = 0; dialogUrl = null; }
+            if (admin && dialog.open && dialogUrl) previousDialogs.push(dialogUrl);
+            else if (!dialog.open) dialogTrigger = link;
+        }
         if (document.body.classList.contains("nav-open")) document.querySelector("[data-nav-close]")?.click();
         navigate(url, mode);
     });
@@ -209,6 +242,10 @@
                 const origin = await load(location.href, request.signal);
                 if (sameWorkspace(origin)) await install(origin, "page", false);
                 await install(nextForm, "dialog");
+            } else if (admin && inDialog && result.res.redirected && result.main.querySelector(".admin-record-hero")) {
+                refreshOnClose = true;
+                if (previousDialogs.at(-1)?.href === result.res.url) previousDialogs.pop();
+                await install(result, "dialog");
             } else {
                 await install(result, inDialog && !result.res.redirected ? "dialog" : "page");
             }

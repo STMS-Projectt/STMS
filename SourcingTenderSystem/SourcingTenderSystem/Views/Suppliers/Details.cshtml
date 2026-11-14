@@ -1,7 +1,7 @@
 @model SupplierProfile
 @{ ViewData["Title"] = "Supplier details"; }
 <a class="back-link" asp-action="Index"><partial name="_Icon" model='@("back")' /> Suppliers</a>
-<header class="page-heading"><div><p class="eyebrow">SUPPLIER APPLICATION</p><h1>@Model.CompanyName</h1><p>Registered @Model.CreatedAt.ToString("dd MMM yyyy") (UTC)</p></div><partial name="_Status" model="Model.Status" /></header>
+<header class="page-heading stms-hero admin-record-hero"><div><p class="eyebrow">SUPPLIER APPLICATION</p><h1>@Model.CompanyName</h1><p>Registered @Model.CreatedAt.ToString("dd MMM yyyy") (UTC)</p></div><partial name="_Status" model="Model.Status" /></header>
 <div class="form-shell">
     <div class="stack">
         <section class="surface detail-card"><h2>Company information</h2>

@@ -5,9 +5,11 @@
 }
 <div class="auth-shell">
     <aside class="auth-aside">
-        <span class="brand-mark"><partial name="_Icon" model='@("shield")' /></span>
+        <div class="login-brand"><img src="~/images/stms-cube.svg" alt="" /><strong>STMS</strong><span>Sourcing &amp; Tender<br />Management System</span></div>
         <p class="eyebrow">SOURCING DESK</p><h2>Choose how to sign in</h2>
         <p>Use your password, a registered passkey, or face recognition if you enrolled it in Sign-in security.</p>
+        <div class="login-art" aria-hidden="true"><div></div><div></div><div><span></span><b>✓</b></div></div>
+        <div class="login-benefits"><span><partial name="_Icon" model='@("shield")' />Secure access</span><span><partial name="_Icon" model='@("check")' />Simple sign-in</span><span><partial name="_Icon" model='@("brand")' />Role-based access</span></div>
     </aside>
     <section class="surface auth-panel" data-bio data-return-url="@Model.ReturnUrl"
         data-phone-options="@Url.Action("DirectPhoneOptions")" data-phone="@Url.Action("DirectPhone")">
@@ -24,14 +26,42 @@
             <form id="password-sign-in" asp-action="Login" method="post" class="stack">
                 <input asp-for="ReturnUrl" type="hidden" />
                 <label class="field" for="Email">Email</label>
-                <input asp-for="Email" type="email" class="form-control" autocomplete="username" data-bio-email />
+                <div class="login-input">
+                    <svg class="login-field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2" /><path d="m4 7 8 6 8-6" /></svg>
+                    <input asp-for="Email" type="email" class="form-control" autocomplete="username" data-bio-email />
+                </div>
                 <span asp-validation-for="Email" class="text-danger"></span>
                 <label class="field" for="Password">Password</label>
-                <input asp-for="Password" class="form-control" autocomplete="current-password" />
+                <div class="login-input login-password">
+                    <svg class="login-field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3m-4 4v3" /></svg>
+                    <input asp-for="Password" class="form-control" autocomplete="current-password" placeholder="Enter your password" />
+                    <button type="button" class="btn btn-link" data-password-toggle aria-controls="Password" aria-pressed="false" hidden>Show</button>
+                </div>
                 <span asp-validation-for="Password" class="text-danger"></span>
                 <label class="form-check"><input asp-for="RememberMe" class="form-check-input" /> Remember me</label>
-                <button class="btn btn-primary" type="submit">Sign in with password</button>
+                <button class="btn btn-primary" type="submit">Sign in with password <partial name="_Icon" model='@("arrow")' /></button>
             </form>
+            <div class="login-providers" aria-describedby="login-provider-note">
+                <p class="login-provider-divider">or continue with</p>
+                <div class="login-provider-grid">
+                    <button class="login-provider" type="button" disabled>
+                        <svg viewBox="0 0 48 48" aria-hidden="true">
+                            <path fill="#4285F4" d="M43.6 24.5c0-1.4-.1-2.8-.4-4.1H24v7.8h11a9.4 9.4 0 0 1-4.1 6.2v5.1h6.6c3.9-3.6 6.1-8.8 6.1-15z"/>
+                            <path fill="#34A853" d="M24 44c5.5 0 10.1-1.8 13.5-4.9l-6.6-5.1c-1.8 1.2-4.1 1.9-6.9 1.9-5.3 0-9.8-3.6-11.4-8.4H5.8v5.3A20 20 0 0 0 24 44z"/>
+                            <path fill="#FBBC05" d="M12.6 27.5a12 12 0 0 1 0-7V15H5.8a20 20 0 0 0 0 18z"/>
+                            <path fill="#EA4335" d="M24 12c3 0 5.6 1 7.7 3l5.8-5.8A19.2 19.2 0 0 0 24 4 20 20 0 0 0 5.8 15l6.8 5.5A12 12 0 0 1 24 12z"/>
+                        </svg>
+                        Google
+                    </button>
+                    <button class="login-provider" type="button" disabled>
+                        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                            <path d="M12 .75a11.25 11.25 0 0 0-3.56 21.92c.56.1.77-.24.77-.54v-2.1c-3.13.68-3.79-1.33-3.79-1.33-.51-1.3-1.25-1.65-1.25-1.65-1.03-.7.08-.69.08-.69 1.13.08 1.73 1.16 1.73 1.16 1.01 1.73 2.65 1.23 3.3.94.1-.73.4-1.23.72-1.51-2.5-.28-5.13-1.25-5.13-5.56 0-1.23.44-2.23 1.16-3.02-.12-.28-.5-1.43.11-2.98 0 0 .95-.3 3.1 1.15a10.8 10.8 0 0 1 5.64 0c2.15-1.45 3.1-1.15 3.1-1.15.61 1.55.23 2.7.11 2.98.72.79 1.16 1.79 1.16 3.02 0 4.32-2.63 5.27-5.14 5.55.41.35.77 1.03.77 2.08v3.11c0 .3.2.65.78.54A11.25 11.25 0 0 0 12 .75z"/>
+                        </svg>
+                        GitHub
+                    </button>
+                </div>
+                <p id="login-provider-note" class="login-provider-note">Google and GitHub sign-in are not available yet.</p>
+            </div>
         </div>
 
         <div role="tabpanel" id="panel-face" aria-labelledby="tab-face" class="auth-method-panel" hidden>

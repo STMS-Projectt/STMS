@@ -1,0 +1,19 @@
+@model (string Label, IEnumerable<string> Statuses)
+<div class="directory-filter-panel">
+    @{ var statuses = Model.Statuses.Where(s => !string.IsNullOrWhiteSpace(s)).Distinct().OrderBy(s => s).ToList(); }
+    @if (statuses.Count > 1)
+    {
+        <div class="directory-status-options" role="group" aria-label="Filter by status">
+            <button type="button" data-status-choice="" aria-pressed="true">All statuses</button>
+            @foreach (var status in statuses) { <button type="button" data-status-choice="@status" aria-pressed="false">@status</button> }
+        </div>
+    }
+    <div class="directory-toolbar dept-filters">
+        <div class="directory-search">
+            <label class="search-box"><partial name="_Icon" model='@("search")' /><span class="visually-hidden">@Model.Label</span><input class="form-control" type="search" data-filter-search placeholder="@Model.Label" /></label>
+            <partial name="_DirectoryVoice" />
+        </div>
+        <button type="button" class="btn btn-outline-secondary" data-filter-reset>Reset</button>
+        <span class="result-count" data-result-count aria-live="polite"></span>
+    </div>
+</div>

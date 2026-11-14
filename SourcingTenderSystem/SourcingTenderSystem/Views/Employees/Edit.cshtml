@@ -1,9 +1,9 @@
 @model EmployeeInput
 @{ ViewData["Title"] = "Edit employee"; }
 <a class="back-link" asp-action="Index" ><partial name="_Icon" model='@("back")' /> Employees</a>
-<header class="page-heading"><div><p class="eyebrow">ADMINISTRATION</p><h1>Edit employee</h1><p>Update profile information, access and department assignment.</p></div></header>
+<header class="page-heading admin-action-heading"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("users")' /></span><div><p class="eyebrow">ADMINISTRATION</p><h1>Edit employee</h1><p>Update profile information, access and department assignment.</p></div></header>
 <div class="form-shell">
-    <form method="post" asp-antiforgery="true" class="surface form-card" >
+    <form method="post" asp-antiforgery="true" class="surface form-card admin-action-card" >
         <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
         <partial name="_Fields" model="Model" />
         <div class="form-actions"><button class="btn btn-primary" type="submit">Save changes <partial name="_Icon" model='@("arrow")' /></button><a class="btn btn-outline-secondary" asp-action="Index" >Cancel</a></div>

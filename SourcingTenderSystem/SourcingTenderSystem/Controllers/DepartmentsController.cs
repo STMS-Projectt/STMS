@@ -13,7 +13,8 @@ namespace SourcingTenderSystem.Controllers;
 public sealed class DepartmentsController(ApplicationDbContext db) : Controller
 {
     [HttpGet]
-    public async Task<IActionResult> Index() => View(await db.Departments.AsNoTracking().OrderBy(x => x.Name).ToListAsync());
+    public async Task<IActionResult> Index() => View(await db.Departments.AsNoTracking().OrderBy(x => x.Name)
+        .Select(x => new DepartmentDirectoryRow(x.Id, x.Name, x.Description, x.IsActive, x.EmployeeProfiles.Count)).ToListAsync());
 
     [HttpGet]
     public async Task<IActionResult> Details(int id)
