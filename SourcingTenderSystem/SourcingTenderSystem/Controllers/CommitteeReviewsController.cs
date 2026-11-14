@@ -5,12 +5,13 @@ using Microsoft.EntityFrameworkCore;
 using SourcingTenderSystem.Data;
 using SourcingTenderSystem.Models;
 using SourcingTenderSystem.Security;
+using SourcingTenderSystem.Services;
 using SourcingTenderSystem.ViewModels;
 
 namespace SourcingTenderSystem.Controllers;
 
 [Authorize(Roles = Roles.Reviewers)]
-public sealed class CommitteeReviewsController(ApplicationDbContext db) : RequisitionBaseController(db)
+public sealed class CommitteeReviewsController(ApplicationDbContext db, BidAiAdvisor advisor) : RequisitionBaseController(db)
 {
     private IQueryable<TenderCommitteeMember> Memberships(int employeeId) =>
         Db.TenderCommitteeMembers.Where(m => m.EmployeeProfileId == employeeId && m.CommitteeType == "Evaluation");
@@ -160,6 +161,67 @@ public sealed class CommitteeReviewsController(ApplicationDbContext db) : Requis
         await tx.CommitAsync();
         TempData["Message"] = "Criterion added.";
         return RedirectToAction(nameof(Details), new { id });
+    }
+
+    // ------------------------------------------------------------ AI assistant (advisory only)
+
+    /// <summary>The recommendation box on the tender page. Loaded in the background because the model can be slow.</summary>
+    [HttpGet]
+    public async Task<IActionResult> AiRecommendation(int id)
+    {
+        var employee = await CurrentEmployeeAsync();
+        if (employee is null) return Forbid();
+        var snapshot = await AiSnapshotAsync(id, employee.Id);
+        if (snapshot is null) return NotFound();
+        try
+        {
+            return PartialView("_AiRecommendation", new AiRecommendationView(id, await advisor.GetOrCreateAsync(snapshot), null));
+        }
+        catch (AiAdvisorUnavailableException ex)
+        {
+            return PartialView("_AiRecommendation", new AiRecommendationView(id, null, ex.Message));
+        }
+    }
+
+    /// <summary>The full AI report as a standalone HTML file (opens in any browser and prints to PDF).</summary>
+    [HttpGet]
+    public async Task<IActionResult> AiReport(int id)
+    {
+        var employee = await CurrentEmployeeAsync();
+        if (employee is null) return Forbid();
+        var snapshot = await AiSnapshotAsync(id, employee.Id);
+        if (snapshot is null) return NotFound();
+        AiBidAnalysis analysis;
+        try { analysis = await advisor.GetOrCreateAsync(snapshot); }
+        catch (AiAdvisorUnavailableException ex)
+        {
+            TempData["ReviewError"] = ex.Message;
+            return RedirectToAction(nameof(Details), new { id });
+        }
+        Response.Headers.ContentDisposition = $"attachment; filename=\"ai-bid-analysis-tender-{id}.html\"";
+        return View("AiReport", analysis);
+    }
+
+    private async Task<AiTenderSnapshot?> AiSnapshotAsync(int tenderId, int employeeId)
+    {
+        var tender = await Reviewable(employeeId).AsNoTracking().AsSplitQuery()
+            .Include(t => t.PurchaseRequisition).ThenInclude(r => r.Items)
+            .Include(t => t.EvaluationCriteria)
+            .Include(t => t.Bids.Where(b => b.Status == "Compliant")).ThenInclude(b => b.SupplierProfile)
+            .Include(t => t.Bids.Where(b => b.Status == "Compliant")).ThenInclude(b => b.BidItems).ThenInclude(i => i.PurchaseRequisitionItem)
+            .Include(t => t.Bids.Where(b => b.Status == "Compliant")).ThenInclude(b => b.BidDocuments)
+            .SingleOrDefaultAsync(t => t.Id == tenderId);
+        if (tender is null) return null;
+        return new AiTenderSnapshot(tender.Id, tender.Title, tender.Description, tender.Terms,
+            tender.PurchaseRequisition.Items.OrderBy(i => i.Id)
+                .Select(i => new AiRequestedItem(i.Id, i.ItemName, i.Quantity, i.Unit, i.Specifications)).ToList(),
+            tender.EvaluationCriteria.OrderBy(c => c.Type).ThenBy(c => c.Id)
+                .Select(c => new AiCriterion(c.Name, c.Type, c.WeightPercent, c.MaxScore)).ToList(),
+            tender.Bids.OrderBy(b => b.Id).Select(b => new AiBidSnapshot(b.Id, b.SupplierProfile.CompanyName, b.TotalPrice,
+                b.Currency, b.DeliveryDays, b.ValidityDays,
+                b.BidItems.OrderBy(i => i.Id).Select(i => new AiBidLine(i.PurchaseRequisitionItemId,
+                    i.PurchaseRequisitionItem.ItemName, i.Quantity, i.UnitPrice, i.Notes)).ToList(),
+                b.BidDocuments.OrderBy(d => d.Id).Select(d => $"{d.DocumentType}: {d.FileName}").ToList())).ToList());
     }
 
     private IQueryable<Tender> Reviewable(int employeeId) => Db.Tenders.Where(t => t.Status == "Under Evaluation" &&

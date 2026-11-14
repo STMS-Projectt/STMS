@@ -30,8 +30,21 @@ builder.Services.ConfigureApplicationCookie(options =>
 builder.Services.Configure<SecurityStampValidatorOptions>(options => options.ValidationInterval = TimeSpan.Zero);
 builder.Services.AddControllersWithViews(options => options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
 builder.Services.AddSingleton<SupplierFileStore>();
+// AI Advisor - Ollama
+builder.Services.AddHttpClient(BidAiAdvisor.HttpClientName, client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["Ollama:BaseUrl"] is { Length: > 0 } url ? url.TrimEnd('/') + "/" : "http://localhost:11434/");
+    client.Timeout = TimeSpan.FromSeconds(builder.Configuration.GetValue("Ollama:TimeoutSeconds", 300));
+});
+
+builder.Services.AddSingleton<BidAiAdvisor>();
+
+// Face++ Biometrics
 builder.Services.AddHttpClient("FacePlusPlus");
-builder.Services.AddScoped<SourcingTenderSystem.Services.Biometrics.IBiometricService, SourcingTenderSystem.Services.Biometrics.BiometricService>();
+
+builder.Services.AddScoped<
+    SourcingTenderSystem.Services.Biometrics.IBiometricService,
+    SourcingTenderSystem.Services.Biometrics.BiometricService>();
 
 builder.Services.AddAuthentication().AddCookie("BiometricPending", options =>
 {

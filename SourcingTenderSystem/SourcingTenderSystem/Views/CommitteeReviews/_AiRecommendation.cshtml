@@ -1,0 +1,34 @@
+@model AiRecommendationView
+@if (Model.Analysis is null)
+{
+    <div class="ai-box-state" role="status">
+        <partial name="_Icon" model='@("warning")' />
+        <div>
+            <strong>The AI recommendation is not available right now.</strong>
+            <p class="subtle mb-2">@Model.Error</p>
+            <button type="button" class="btn btn-outline-secondary btn-sm" data-ai-retry>Try again</button>
+        </div>
+    </div>
+}
+else
+{
+    var analysis = Model.Analysis;
+    var best = analysis.RecommendedBid;
+    var bestFacts = analysis.Facts.Single(f => f.BidId == best.BidId);
+    <div class="ai-pick">
+        <p class="ai-label">Best offer according to the AI</p>
+        <h3>@best.Supplier</h3>
+        <p class="ai-pick-meta">@best.TotalPrice.ToString("N2") @best.Currency · Delivery in @best.DeliveryDays days · @bestFacts.ItemsCovered of @bestFacts.ItemsRequested items covered</p>
+        <p class="ai-headline">@analysis.Output.Headline</p>
+    </div>
+    @if (analysis.Output.WhyChosen.Count > 0)
+    {
+        <ul class="ai-reasons">
+            @foreach (var reason in analysis.Output.WhyChosen.Take(3)) { <li>@reason</li> }
+        </ul>
+    }
+    <div class="ai-actions">
+        <a class="btn btn-primary" asp-action="AiReport" asp-route-id="@Model.TenderId"><partial name="_Icon" model='@("download")' /> Download full AI report</a>
+        <span class="subtle small">Generated @analysis.GeneratedAtUtc.ToLocalTime().ToString("g") · @analysis.Model · @analysis.Input.Bids.Count bids compared</span>
+    </div>
+}
