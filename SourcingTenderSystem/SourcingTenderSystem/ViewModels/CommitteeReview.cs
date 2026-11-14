@@ -1,10 +1,12 @@
 using System.ComponentModel.DataAnnotations;
 using SourcingTenderSystem.Models;
+using SourcingTenderSystem.Services;
 
 namespace SourcingTenderSystem.ViewModels;
 
 public sealed record CommitteeAssignment(int Id, string Title, string Status, string Seat);
 public sealed record CommitteeTender(Tender Tender, bool CanManageCriteria, IReadOnlyDictionary<int, int> ReviewedCriteria);
+public sealed record AiRecommendationView(int TenderId, AiBidAnalysis? Analysis, string? Error);
 public sealed record CommitteeBid(Bid Bid, IReadOnlyList<CommitteeScoreRow> Scores);
 public sealed record CommitteeScoreRow(EvaluationCriterion Criterion, decimal? Score, string? Notes,
     decimal? Taxes, decimal? Extras);
