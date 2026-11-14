@@ -1,0 +1,7 @@
+@model PurchaseRequisition
+@{ ViewData["Title"] = "Purchase request"; }
+<a class="back-link" asp-action="Requests"><partial name="_Icon" model='@("back")' /> Purchase requests</a>
+<header class="page-heading"><div><p class="eyebrow">REQUEST #@Model.Id</p><h1>@Model.Title</h1><p>@Model.Department.Name · @Model.Status</p></div>
+@if (Model.Tender != null) { <a class="btn btn-primary" asp-action="Tender" asp-route-id="@Model.Tender.Id">View linked tender</a> }</header>
+<section class="surface detail-card mb-3"><partial name="_RequisitionSummary" model="Model" /></section>
+<section class="surface detail-card"><partial name="_RequisitionItems" model="Model.Items" /></section>

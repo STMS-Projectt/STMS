@@ -7,6 +7,19 @@
 {
     <p><a class="btn btn-outline-secondary" asp-controller="EvaluationWorkflow" asp-action="Details" asp-route-id="@Model.Tender.Id">Evaluation progress and final report</a></p>
 }
+@if (Model.Tender.Bids.Count > 0)
+{
+    <section class="surface ai-box mb-3" aria-labelledby="ai-box-title" data-ai-box data-ai-url="@Url.Action("AiRecommendation", new { id = Model.Tender.Id })">
+        <div class="ai-box-head">
+            <h2 id="ai-box-title" class="mb-0">AI recommendation</h2>
+            <span class="ai-badge">Advisory only</span>
+        </div>
+        <p class="ai-note">The AI compared the compliant bids before you start scoring. It does not score or decide. Your own evaluation and the committee's decision always come first.</p>
+        <div data-ai-body aria-live="polite">
+            <div class="ai-box-state" role="status"><span class="spinner-border spinner-border-sm" aria-hidden="true"></span> Analysing the bids. This can take up to a minute the first time.</div>
+        </div>
+    </section>
+}
 <section class="surface directory mb-3">
     <div class="directory-toolbar"><h2 class="mb-0">Compliant bids</h2></div>
     @if (Model.Tender.Bids.Count == 0) { <div class="empty-state">No compliant bids to review.</div> }
@@ -50,3 +63,25 @@
         </details>
     }
 </section>
+@section Scripts {
+<script>
+(() => {
+    const box = document.querySelector("[data-ai-box]");
+    if (!box) return;
+    const body = box.querySelector("[data-ai-body]");
+    const loading = body.innerHTML;
+    const load = async () => {
+        body.innerHTML = loading;
+        try {
+            const response = await fetch(box.dataset.aiUrl, { headers: { "X-Requested-With": "fetch" } });
+            if (!response.ok) throw new Error(response.status);
+            body.innerHTML = await response.text();
+        } catch {
+            body.innerHTML = '<div class="ai-box-state" role="status"><div><strong>The AI recommendation could not be loaded.</strong> <button type="button" class="btn btn-outline-secondary btn-sm ms-2" data-ai-retry>Try again</button></div></div>';
+        }
+    };
+    body.addEventListener("click", event => { if (event.target.closest("[data-ai-retry]")) load(); });
+    load();
+})();
+</script>
+}

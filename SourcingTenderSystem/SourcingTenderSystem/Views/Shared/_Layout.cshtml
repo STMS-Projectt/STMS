@@ -14,6 +14,15 @@
         : null;
     var supplier = supplierStatus != null;
     var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+    var action = ViewContext.RouteData.Values["action"]?.ToString();
+    if (controller == "Account" && (action == "BiometricSetup" || action == "BiometricVerify" || action == "Login"))
+    {
+        admin = false;
+        sourcing = false;
+        committee = false;
+        department = false;
+        supplier = false;
+    }
     var title = ViewData["Title"]?.ToString();
 }
 <!DOCTYPE html>
@@ -45,29 +54,58 @@
     {
         <partial name="_SupplierNavigation" model="supplierStatus" />
     }
-    else if (admin)
-    {
-        <aside class="sidebar" id="workspace-nav" aria-label="Administration">
-            <a class="brand" asp-controller="AdminDashboard" asp-action="Index">
-                <span class="brand-mark"><partial name="_Icon" model='@("brand")' /></span>
-                <span>Sourcing Desk<small>Administration</small></span>
+
+else if (admin)
+{
+    <aside class="sidebar" id="workspace-nav" aria-label="Administration">
+        <a class="brand" asp-controller="AdminDashboard" asp-action="Index">
+            <span class="brand-mark">
+                <partial name="_Icon" model='@("brand")' />
+            </span>
+            <span>Sourcing Desk<small>Administration</small></span>
+        </a>
+
+        <div class="side-nav">
+            <span class="nav-caption">WORKSPACE</span>
+
+            @foreach (var item in new[]
+            {
+                ("AdminDashboard", "Overview", "dashboard"),
+                ("Departments", "Departments", "building"),
+                ("Employees", "Employees", "users"),
+                ("Suppliers", "Suppliers", "supplier")
+            })
+            {
+                <a class="side-link @(controller == item.Item1 ? "is-current" : "")"
+                   aria-current="@(controller == item.Item1 ? "page" : null)"
+                   asp-controller="@item.Item1"
+                   asp-action="Index">
+                    <partial name="_Icon" model="item.Item3" />
+                    @item.Item2
+                </a>
+            }
+
+            <partial name="~/Views/Profile/_ProfileNav.cshtml" />
+        </div>
+
+        <div class="side-bottom">
+            <a class="side-link" asp-controller="Home" asp-action="Index">
+                <partial name="_Icon" model='@("arrow")' />
+                Public portal
             </a>
-            <div class="side-nav">
-                <span class="nav-caption">WORKSPACE</span>
-                @foreach (var item in new[] { ("AdminDashboard", "Overview", "dashboard"), ("Departments", "Departments", "building"), ("Employees", "Employees", "users"), ("Suppliers", "Suppliers", "supplier") })
-                {
-                    <a class="side-link @(controller == item.Item1 ? "is-current" : "")" aria-current="@(controller == item.Item1 ? "page" : null)" asp-controller="@item.Item1" asp-action="Index">
-                        <partial name="_Icon" model="item.Item3" /> @item.Item2
-                    </a>
-                }
-                <partial name="~/Views/Profile/_ProfileNav.cshtml" />
-            </div>
-            <div class="side-bottom">
-                <a class="side-link" asp-controller="Home" asp-action="Index"><partial name="_Icon" model='@("arrow")' /> Public portal</a>
-                <partial name="_LoginPartial" />
-            </div>
-        </aside>
-        <button type="button" class="nav-scrim" data-nav-close tabindex="-1" aria-label="Close navigation" hidden></button>
+
+            <partial name="_LoginPartial" />
+        </div>
+    </aside>
+
+    <button type="button"
+            class="nav-scrim"
+            data-nav-close
+            tabindex="-1"
+            aria-label="Close navigation"
+            hidden>
+    </button>
+}
     }
     <div class="site-body">
         @if (department || sourcing || supplier || committee)
@@ -85,7 +123,7 @@
             <header class="workspace-bar">
                 <div class="bar-context">
                     <button class="btn btn-outline-secondary menu-toggle" type="button" data-nav-toggle aria-controls="workspace-nav" aria-expanded="false" aria-label="Open navigation"><partial name="_Icon" model='@("menu")' /></button>
-                    <span class="context-root">Administration</span><span class="context-separator" aria-hidden="true">/</span><strong>@(controller == "AdminDashboard" ? "Overview" : controller == "Home" ? title : controller)</strong>
+                    <span class="context-root">Administration</span><span class="context-separator" aria-hidden="true">/</span><strong>@(controller == "AdminDashboard" ? "Overview" : title ?? controller)</strong>
                 </div>
                 <div class="bar-profile"><span class="avatar" aria-hidden="true">@((User.Identity?.Name ?? "A").FirstOrDefault().ToString().ToUpperInvariant())</span><span><strong>Administrator</strong><small title="@User.Identity?.Name">@User.Identity?.Name</small></span></div>
             </header>
@@ -121,6 +159,7 @@
         <footer class="site-footer"><span>Sourcing Desk</span><a asp-controller="Home" asp-action="Privacy">Privacy</a></footer>
     </div>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
