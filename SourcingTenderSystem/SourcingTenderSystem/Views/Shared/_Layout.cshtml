@@ -14,6 +14,15 @@
         : null;
     var supplier = supplierStatus != null;
     var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+    var action = ViewContext.RouteData.Values["action"]?.ToString();
+    if (controller == "Account" && (action == "BiometricSetup" || action == "BiometricVerify" || action == "Login"))
+    {
+        admin = false;
+        sourcing = false;
+        committee = false;
+        department = false;
+        supplier = false;
+    }
     var title = ViewData["Title"]?.ToString();
 }
 <!DOCTYPE html>
@@ -101,6 +110,7 @@
         <footer class="site-footer"><span>Sourcing Desk</span><a asp-controller="Home" asp-action="Privacy">Privacy</a></footer>
     </div>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>

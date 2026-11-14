@@ -1,25 +1,279 @@
 @model LoginInput
 @{ ViewData["Title"] = "Sign in"; }
+
+<style>
+    .auth-tab-group {
+        display: flex;
+        background: #f1f5f9;
+        padding: 4px;
+        border-radius: 12px;
+        gap: 6px;
+        margin-bottom: 24px;
+        border: 1px solid #e2e8f0;
+    }
+    .auth-tab-btn {
+        flex: 1;
+        border: none;
+        outline: none;
+        background: transparent;
+        padding: 10px 14px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #475569;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        user-select: none;
+    }
+    .auth-tab-btn:hover { color: #0f172a; background: rgba(255,255,255,0.6); }
+    .auth-tab-btn.active {
+        background: #0284c7 !important;
+        color: #fff !important;
+        box-shadow: 0 2px 6px rgba(2,132,199,0.35);
+    }
+    .face-oval-login {
+        position: absolute;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        width: 110px; height: 140px;
+        border: 2px solid #0ea5e9;
+        border-radius: 50%;
+        pointer-events: none;
+        display: none;
+        box-shadow: 0 0 0 3px rgba(14,165,233,0.15);
+    }
+    .face-oval-login.visible { display: block; }
+</style>
+
 <div class="auth-shell">
     <aside class="auth-aside">
         <div class="banner-art" aria-hidden="true"><span></span><span></span><span></span></div>
         <span class="brand-mark"><partial name="_Icon" model='@("brand")' /></span>
-        <p class="eyebrow">SOURCING DESK</p><h2>Your sourcing workspace.</h2>
+        <p class="eyebrow">SOURCING DESK</p>
+        <h2>Your sourcing workspace.</h2>
         <p>Sign in to manage records or follow your supplier application.</p>
     </aside>
+
     <section class="surface auth-panel">
-        <h1>Sign in</h1><p class="subtle">Enter your email and password to continue.</p>
-        <form method="post" asp-antiforgery="true">
-            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div><input asp-for="ReturnUrl" type="hidden">
-            <div class="stack"><div class="field "><label asp-for="Email" class="form-label"></label>
-    <input asp-for="Email" class="form-control" autocomplete="username" placeholder="name@example.com">
-    <span asp-validation-for="Email" class="text-danger"></span></div><div class="field "><label asp-for="Password" class="form-label"></label>
-    <div class="password-control"><input asp-for="Password" class="form-control" autocomplete="current-password"><button type="button" class="btn btn-outline-secondary" data-password-toggle aria-controls="Password" aria-pressed="false" hidden>Show</button></div>
-    <span asp-validation-for="Password" class="text-danger"></span></div>
-            <div class="form-check"><input class="form-check-input" asp-for="RememberMe"><label class="form-check-label" asp-for="RememberMe"></label></div>
-            <button class="btn btn-primary" type="submit">Sign in <partial name="_Icon" model='@("arrow")' /></button></div>
-        </form>
-        <p class="mt-3 mb-0 subtle">New supplier? <a asp-controller="SupplierRegistration" asp-action="Register">Create an account</a></p>
+        <h1>Sign in</h1>
+        <p class="subtle">Select your preferred authentication method.</p>
+
+        <!-- Tab Switcher -->
+        <div class="auth-tab-group" role="tablist">
+            <button type="button" class="auth-tab-btn active" id="tab-password" onclick="switchAuthTab('password')">
+                🔑 Password
+            </button>
+            <button type="button" class="auth-tab-btn" id="tab-face" onclick="switchAuthTab('face')">
+                📷 Face ID
+            </button>
+            <button type="button" class="auth-tab-btn" id="tab-fingerprint" onclick="switchAuthTab('fingerprint')">
+                👆 Fingerprint
+            </button>
+        </div>
+
+        <div id="biometricAlert" class="alert d-none mb-3" role="alert"></div>
+
+        <div id="authPanels">
+            <!-- Password -->
+            <div id="pane-password" style="display:block;">
+                <form method="post" asp-antiforgery="true">
+                    <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+                    <input asp-for="ReturnUrl" type="hidden">
+                    <div class="stack">
+                        <div class="field">
+                            <label asp-for="Email" class="form-label"></label>
+                            <input asp-for="Email" id="txtPasswordEmail" class="form-control"
+                                   autocomplete="username" placeholder="name@example.com"
+                                   oninput="syncEmail(this.value)">
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+                        <div class="field">
+                            <label asp-for="Password" class="form-label"></label>
+                            <div class="password-control">
+                                <input asp-for="Password" class="form-control" autocomplete="current-password">
+                                <button type="button" class="btn btn-outline-secondary"
+                                        data-password-toggle aria-controls="Password" aria-pressed="false" hidden>Show</button>
+                            </div>
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" asp-for="RememberMe">
+                            <label class="form-check-label" asp-for="RememberMe"></label>
+                        </div>
+                        <button class="btn btn-primary" type="submit">Sign in <partial name="_Icon" model='@("arrow")' /></button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Face ID -->
+            <div id="pane-face" style="display:none;">
+                <div class="stack">
+                    <div class="field">
+                        <label for="txtFaceEmail" class="form-label">Registered Account Email</label>
+                        <input type="email" id="txtFaceEmail" class="form-control"
+                               placeholder="name@example.com" oninput="syncEmail(this.value)" />
+                    </div>
+                    <div class="text-center my-2">
+                        <div style="position:relative;display:inline-block;width:260px;height:195px;" class="bg-dark rounded overflow-hidden shadow-sm">
+                            <video id="loginFaceVideo" width="260" height="195" autoplay playsinline
+                                   style="width:100%;height:100%;object-fit:cover;display:block;"></video>
+                            <div class="face-oval-login" id="loginFaceOval"></div>
+                        </div>
+                        <small class="text-muted d-block mt-1">
+                            📡 Live camera only — Face++ AI verifies a real face is present
+                        </small>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="button" id="btnStartLoginCam" class="btn btn-outline-primary w-50 py-2">
+                            📷 Open Camera
+                        </button>
+                        <button type="button" id="btnVerifyFace" class="btn btn-primary w-50 py-2" disabled>
+                            🛡️ Scan & Verify
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fingerprint -->
+            <div id="pane-fingerprint" style="display:none;">
+                <div class="stack">
+                    <div class="field">
+                        <label for="txtFpEmail" class="form-label">Registered Account Email</label>
+                        <input type="email" id="txtFpEmail" class="form-control"
+                               placeholder="name@example.com" oninput="syncEmail(this.value)" />
+                    </div>
+                    <div class="text-center py-4 bg-light rounded border my-2">
+                        <div style="font-size:3rem;">👆</div>
+                        <h6 class="fw-bold text-dark mt-2">Hardware Biometric Sensor</h6>
+                        <small class="text-muted">Touch your fingerprint scanner or Windows Hello to sign in.</small>
+                    </div>
+                    <button type="button" id="btnVerifyFingerprint" class="btn btn-primary py-2 fw-semibold">
+                        👆 Touch to Authenticate
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <p class="mt-4 mb-0 subtle">New supplier? <a asp-controller="SupplierRegistration" asp-action="Register">Create an account</a></p>
     </section>
 </div>
-@section Scripts { <partial name="_ValidationScriptsPartial" /> }
+
+<script>
+    function switchAuthTab(tab) {
+        ['password','face','fingerprint'].forEach(function(t) {
+            document.getElementById('pane-' + t).style.display = t === tab ? 'block' : 'none';
+            document.getElementById('tab-' + t).classList.toggle('active', t === tab);
+        });
+        if (tab !== 'face' && window.biometrics) window.biometrics.stopCamera();
+    }
+    function syncEmail(val) {
+        ['txtPasswordEmail','txtFaceEmail','txtFpEmail'].forEach(function(id) {
+            var el = document.getElementById(id);
+            if (el && el.value !== val) el.value = val;
+        });
+    }
+</script>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/biometrics.js"></script>
+    <script>
+        const bioAlert = document.getElementById("biometricAlert");
+        const returnUrl = "@(Model?.ReturnUrl ?? "")";
+
+        function showBioAlert(msg, isSuccess) {
+            bioAlert.className = "alert " + (isSuccess ? "alert-success" : "alert-danger");
+            bioAlert.textContent = (isSuccess ? "✅ " : "⚠️ ") + msg;
+            bioAlert.classList.remove("d-none");
+        }
+
+        // Open Camera
+        document.getElementById("btnStartLoginCam").addEventListener("click", async () => {
+            try {
+                await window.biometrics.startCamera("loginFaceVideo");
+                document.getElementById("btnVerifyFace").disabled = false;
+                document.getElementById("loginFaceOval").classList.add("visible");
+            } catch (err) {
+                showBioAlert(err.message, false);
+            }
+        });
+
+        // Face Login — sends base64 snapshot to Face++ via server
+        const faceBtn = document.getElementById("btnVerifyFace");
+        faceBtn.addEventListener("click", async () => {
+            const email = document.getElementById("txtFaceEmail").value.trim();
+            if (!email) { showBioAlert("Please enter your registered email first.", false); return; }
+
+            let snapshot;
+            try {
+                snapshot = window.biometrics.captureSnapshot("loginFaceVideo");
+            } catch (err) {
+                showBioAlert(err.message, false);
+                return;
+            }
+
+            faceBtn.disabled = true;
+            faceBtn.textContent = "⏳ Verifying with Face++...";
+            showBioAlert("Sending to Face++ AI...", true);
+
+            try {
+                const res = await fetch('/Account/FaceLogin', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, imageBase64: snapshot, returnUrl })
+                });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    showBioAlert(data.message, true);
+                    window.biometrics.stopCamera();
+                    setTimeout(() => window.location.href = data.redirectUrl || "/", 800);
+                } else {
+                    showBioAlert(data.message || "Face verification failed.", false);
+                    faceBtn.disabled = false;
+                    faceBtn.textContent = "🛡️ Scan & Verify";
+                }
+            } catch {
+                showBioAlert("Network error — please try again.", false);
+                faceBtn.disabled = false;
+                faceBtn.textContent = "🛡️ Scan & Verify";
+            }
+        });
+
+        // Fingerprint Login
+        const fpBtn = document.getElementById("btnVerifyFingerprint");
+        fpBtn.addEventListener("click", async () => {
+            const email = document.getElementById("txtFpEmail").value.trim();
+            if (!email) { showBioAlert("Please enter your registered email first.", false); return; }
+
+            fpBtn.disabled = true;
+            fpBtn.textContent = "⏳ Waiting for sensor...";
+            showBioAlert("Waiting for fingerprint sensor touch...", true);
+
+            try {
+                const cred = await window.biometrics.verifyFingerprint();
+                const res = await fetch('/Account/FingerprintLogin', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, credentialId: cred.credentialId, returnUrl })
+                });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    showBioAlert(data.message, true);
+                    setTimeout(() => window.location.href = data.redirectUrl || "/", 800);
+                } else {
+                    showBioAlert(data.message || "Fingerprint verification failed.", false);
+                    fpBtn.disabled = false;
+                    fpBtn.textContent = "👆 Touch to Authenticate";
+                }
+            } catch (err) {
+                showBioAlert(err.message, false);
+                fpBtn.disabled = false;
+                fpBtn.textContent = "👆 Touch to Authenticate";
+            }
+        });
+    </script>
+}
