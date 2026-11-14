@@ -21,4 +21,9 @@ public sealed class FinalReportInput
 }
 
 public sealed record SupplierEvaluationResult(int BidId, string Supplier, string Compliance, string? ComplianceNotes, decimal Price, string Currency,
-    decimal? Technical, decimal? Financial, decimal? Total, IReadOnlyList<int> EvidenceIds);
+    decimal? Technical, decimal? Financial, decimal? Total, IReadOnlyList<int> EvidenceIds,
+    // USD reference only (display). Null on legacy reports or when no free rate was available.
+    decimal? UsdRate = null, decimal? UsdEquivalent = null, DateOnly? RateDate = null, string? RateSource = null);
+
+// Original amount plus an approximate USD reference for display.
+public sealed record UsdReferenceView(decimal Amount, string Currency, decimal? Usd, decimal? Rate, DateOnly? RateDate, string? Source);

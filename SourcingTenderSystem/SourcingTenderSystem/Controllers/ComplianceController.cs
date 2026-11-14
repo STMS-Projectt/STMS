@@ -63,7 +63,7 @@ public class ComplianceController : Controller
 
     // GET: /Compliance/Review?tenderId=3   (this is also the "Review & Compare Offers" page)
     [HttpGet]
-    public async Task<IActionResult> Review(int tenderId)
+    public async Task<IActionResult> Review(int tenderId, [FromServices] ExchangeRates rates)
     {
         var tender = await _context.Tenders.FindAsync(tenderId);
         if (tender == null)
@@ -86,6 +86,18 @@ public class ComplianceController : Controller
 
         var model = new ComplianceReviewViewModel();
         model.Tender = tender;
+        // Never order different currencies by raw amount: use the USD reference when every bid has one,
+        // otherwise group by currency (lowest first inside each currency).
+        if (bids.Select(b => b.Currency).Distinct().Count() > 1)
+        {
+            var rateDate = ExchangeRates.ReferenceDate(tender.CloseDate, DateTime.UtcNow);
+            foreach (var bid in bids)
+                model.UsdReferences[bid.Id] = await rates.ConvertAsync(bid.TotalPrice, bid.Currency, rateDate);
+            model.UsdOrdered = model.UsdReferences.Values.All(c => c != null);
+            bids = model.UsdOrdered
+                ? bids.OrderBy(b => model.UsdReferences[b.Id]!.UsdAmount).ThenBy(b => b.Id).ToList()
+                : bids.OrderBy(b => b.Currency).ThenBy(b => b.TotalPrice).ThenBy(b => b.Id).ToList();
+        }
         model.Bids = bids;
         model.RequestedItems = await _context.PurchaseRequisitionItems
             .Where(p => p.PurchaseRequisitionId == tender.PurchaseRequisitionId)

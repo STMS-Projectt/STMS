@@ -37,7 +37,9 @@
 }
 @if (Model.MixedCurrencies)
 {
-    <div class="alert alert-warning" role="alert">The bids use different currencies. The order by total price does not convert currencies.</div>
+    <div class="alert alert-warning" role="alert">The bids use different currencies. @(Model.UsdOrdered
+        ? "They are ordered by an approximate USD equivalent at one reference date (the tender closing date). This is a reference only and does not select a winner."
+        : "An exchange rate is unavailable for at least one bid, so bids are grouped by currency and not ranked across currencies.")</div>
 }
 
 @if (tender.Status is "Draft" or "Published" or "Open")
@@ -50,7 +52,7 @@ else if (Model.Bids.Count == 0)
 }
 else
 {
-    <p class="text-muted">One column per bid, sorted by total price (lowest first).</p>
+    <p class="text-muted">One column per bid, sorted by total price (lowest first@(Model.MixedCurrencies ? (Model.UsdOrdered ? ", approximate USD" : " within each currency") : "")).</p>
 
     @* Side-by-side table: rows = information, columns = bids *@
     <div class="table-responsive mb-4">
@@ -76,7 +78,8 @@ else
                     <th scope="row">Total price</th>
                     @foreach (var bid in Model.Bids)
                     {
-                        <td><strong>@bid.TotalPrice.ToString("N2") @bid.Currency</strong></td>
+                        var fx = Model.UsdReferences.GetValueOrDefault(bid.Id);
+                        <td>@if (Model.MixedCurrencies) { <partial name="_UsdReference" model="@(new UsdReferenceView(bid.TotalPrice, bid.Currency, fx?.UsdAmount, fx?.Rate, fx?.EffectiveDate, fx?.Source))" /> } else { <strong>@bid.TotalPrice.ToString("N2") @bid.Currency</strong> }</td>
                     }
                 </tr>
                 <tr>

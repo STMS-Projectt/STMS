@@ -10,7 +10,7 @@ using SourcingTenderSystem.ViewModels;
 namespace SourcingTenderSystem.Controllers;
 
 [Authorize(Roles = Roles.Admin + "," + Roles.SourcingOfficer + "," + Roles.SourcingManager + "," + Roles.TopCommittee)]
-public sealed class EvaluationWorkflowController(ApplicationDbContext db, SupplierFileStore files) : RequisitionBaseController(db)
+public sealed class EvaluationWorkflowController(ApplicationDbContext db, SupplierFileStore files, ExchangeRates rates) : RequisitionBaseController(db)
 {
     private const string Officer = "Pending Officer Approval";
     private const string Manager = "Pending Manager Approval";
@@ -240,7 +240,10 @@ public sealed class EvaluationWorkflowController(ApplicationDbContext db, Suppli
             if (next == Cancelled)
             {
                 var manager = tender.CommitteeMembers.Single(m => m.CommitteeType == "Evaluation" && m.MemberRole == "Sourcing Manager");
-                NotifyHandoff(manager.EmployeeProfileId, tender, "Cancelled tender awaiting handoff");
+                NotifyHandoff(manager.EmployeeProfileId, tender, "Tender cancelled: handoff required",
+                    $"Tender #{tender.Id} \"{tender.Title}\" was cancelled by the Top Committee. Reason: {comments!.Trim()} " +
+                    "Return it to the sourcing officer so a new tender can be created for the same purchase requisition.",
+                    Url.Action(nameof(Details), new { id = tender.Id }));
             }
             var offers = await Db.Bids.Where(b => b.TenderId == id && b.SubmittedAt != null && b.Status != "Withdrawn").ToListAsync();
             foreach (var bid in offers)
@@ -276,16 +279,21 @@ public sealed class EvaluationWorkflowController(ApplicationDbContext db, Suppli
         Db.TenderApprovals.Add(new TenderApproval { EvaluationReportId = report.Id,
             ApproverEmployeeProfileId = employee.Id, Decision = "Returned to sourcing officer for retender",
             DecidedAt = DateTime.UtcNow });
-        NotifyHandoff(tender.CreatedByEmployeeProfileId, tender, "Cancelled tender ready to retender");
+        var reason = report.TenderApprovals.Where(a => a.Decision == "Top Committee Rejected")
+            .OrderByDescending(a => a.DecidedAt).Select(a => a.Comments).FirstOrDefault();
+        NotifyHandoff(tender.CreatedByEmployeeProfileId, tender, "Tender cancelled: create a new tender",
+            $"Tender #{tender.Id} \"{tender.Title}\" was cancelled by the Top Committee. Reason: {reason ?? "not recorded"} " +
+            $"Create a NEW tender for the same purchase requisition #{tender.PurchaseRequisitionId}. The cancelled tender and its history are preserved.",
+            Url.Action("Create", "Tenders", new { purchaseRequisitionId = tender.PurchaseRequisitionId }));
         await Db.SaveChangesAsync();
         await tx.CommitAsync();
         TempData["Message"] = "Returned to the sourcing officer for a new tender.";
         return RedirectToAction(nameof(Details), new { id });
     }
 
-    private void NotifyHandoff(int employeeId, Tender tender, string title) =>
+    private void NotifyHandoff(int employeeId, Tender tender, string title, string message, string? link) =>
         Db.Notifications.Add(new Notification { EmployeeProfileId = employeeId, Title = title,
-            Message = tender.Title, Link = Url.Action(nameof(Details), new { id = tender.Id }), CreatedAt = DateTime.UtcNow });
+            Message = message, Link = link, CreatedAt = DateTime.UtcNow });
     private Task<Tender?> Load(int id, int employeeId) => Visible(employeeId).AsSplitQuery()
         .Include(t => t.CommitteeMembers.Where(m => m.CommitteeType == "Evaluation" || m.CommitteeType == "Top")).ThenInclude(m => m.EmployeeProfile)
         .Include(t => t.EvaluationCriteria)
@@ -309,8 +317,12 @@ public sealed class EvaluationWorkflowController(ApplicationDbContext db, Suppli
     {
         var bidders = await Db.Bids.AsNoTracking().Where(b => b.TenderId == tender.Id && b.SubmittedAt != null)
             .Include(b => b.SupplierProfile).Include(b => b.BidDocuments).AsSplitQuery().ToListAsync();
+        var rateDate = ExchangeRates.ReferenceDate(tender.CloseDate, DateTime.UtcNow);
+        var usd = new Dictionary<int, UsdConversion?>();
+        foreach (var b in bidders) usd[b.Id] = await rates.ConvertAsync(b.TotalPrice, b.Currency, rateDate);
         return bidders.Select(b =>
         {
+            var fx = usd[b.Id];
             var rows = scores.Where(s => s.BidId == b.Id).ToList();
             var eligible = b.Status == "Compliant";
             var technical = eligible ? EvaluationRules.Weighted(tender.EvaluationCriteria.Where(c => c.Type == "Technical"), rows) : (decimal?)null;
@@ -319,7 +331,7 @@ public sealed class EvaluationWorkflowController(ApplicationDbContext db, Suppli
                 technical is decimal t ? EvaluationRules.Round(t) : null,
                 financial is decimal f ? EvaluationRules.Round(f) : null,
                 technical + financial is decimal total ? EvaluationRules.Round(total) : null,
-                b.BidDocuments.Select(d => d.Id).ToList());
+                b.BidDocuments.Select(d => d.Id).ToList(), fx?.Rate, fx?.UsdAmount, fx?.EffectiveDate, fx?.Source);
         }).OrderByDescending(r => r.Total).ThenBy(r => r.BidId).ToList();
     }
 

@@ -10,7 +10,7 @@ using SourcingTenderSystem.ViewModels;
 namespace SourcingTenderSystem.Controllers;
 
 [Authorize(Roles = Roles.Reviewers)]
-public sealed class CommitteeReviewsController(ApplicationDbContext db, BidAiAdvisor advisor) : RequisitionBaseController(db)
+public sealed class CommitteeReviewsController(ApplicationDbContext db, BidAiAdvisor advisor, ExchangeRates rates) : RequisitionBaseController(db)
 {
     private IQueryable<TenderCommitteeMember> Memberships(int employeeId) =>
         Db.TenderCommitteeMembers.Where(m => m.EmployeeProfileId == employeeId && m.CommitteeType == "Evaluation");
@@ -214,6 +214,12 @@ public sealed class CommitteeReviewsController(ApplicationDbContext db, BidAiAdv
             .Include(t => t.Bids.Where(b => b.Status == "Compliant")).ThenInclude(b => b.BidDocuments)
             .SingleOrDefaultAsync(t => t.Id == tenderId);
         if (tender is null) return null;
+        var usd = new Dictionary<int, decimal?>();
+        if (tender.Bids.Select(b => b.Currency).Distinct().Count() > 1)
+        {
+            var rateDate = ExchangeRates.ReferenceDate(tender.CloseDate, DateTime.UtcNow);
+            foreach (var b in tender.Bids) usd[b.Id] = (await rates.ConvertAsync(b.TotalPrice, b.Currency, rateDate))?.UsdAmount;
+        }
         return new AiTenderSnapshot(tender.Id, tender.Title, tender.Description, tender.Terms,
             tender.PurchaseRequisition.Items.OrderBy(i => i.Id)
                 .Select(i => new AiRequestedItem(i.Id, i.ItemName, i.Quantity, i.Unit, i.Specifications)).ToList(),
@@ -223,7 +229,8 @@ public sealed class CommitteeReviewsController(ApplicationDbContext db, BidAiAdv
                 b.Currency, b.DeliveryDays, b.ValidityDays,
                 b.BidItems.OrderBy(i => i.Id).Select(i => new AiBidLine(i.PurchaseRequisitionItemId,
                     i.PurchaseRequisitionItem.ItemName, i.Quantity, i.UnitPrice, i.Notes)).ToList(),
-                b.BidDocuments.OrderBy(d => d.Id).Select(d => $"{d.DocumentType}: {d.FileName}").ToList())).ToList());
+                b.BidDocuments.OrderBy(d => d.Id).Select(d => $"{d.DocumentType}: {d.FileName}").ToList(),
+                usd.GetValueOrDefault(b.Id))).ToList());
     }
 
     private IQueryable<Tender> Reviewable(int employeeId) => Db.Tenders.Where(t => t.Status == "Under Evaluation" &&

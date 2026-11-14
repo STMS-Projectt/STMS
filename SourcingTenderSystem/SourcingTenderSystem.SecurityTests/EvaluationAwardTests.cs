@@ -217,7 +217,12 @@ public sealed partial class BiddingRoundTests
                 Assert.Equal(HttpStatusCode.Redirect,await VoteOn(fourth,"reject","Review concerns"));
                 Assert.Equal("Cancelled",await State());
                 Assert.Equal(HttpStatusCode.Conflict,await VoteOn(fourth));
+                Assert.True(await db.Notifications.AnyAsync(n=>n.Title=="Tender cancelled: handoff required" && n.Message.Contains("Review concerns")));
                 Assert.Equal(HttpStatusCode.Redirect,await Send(manager,managerToken,$"/EvaluationWorkflow/ReturnToOfficer/{tenderId}"));
+                var officerNotice=await db.Notifications.AsNoTracking().SingleAsync(n=>n.Title=="Tender cancelled: create a new tender");
+                Assert.Equal($"/Tenders/Create?purchaseRequisitionId={request.Id}",officerNotice.Link);
+                Assert.Contains("Review concerns",officerNotice.Message);
+                Assert.Equal(1,await db.Tenders.CountAsync(t=>t.PurchaseRequisitionId==request.Id));
                 var next = DateTime.UtcNow.AddDays(1);
                 Assert.Equal(HttpStatusCode.Redirect,await Send(officer,officerToken,"/Tenders/Create",new(){
                     ["PurchaseRequisitionId"]=request.Id.ToString(),["Title"]="Replacement",["Description"]="Replacement",["Terms"]="Terms",

@@ -243,7 +243,9 @@ public sealed partial class BiddingRoundTests
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
             builder.ConfigureAppConfiguration((_, c) => c.AddInMemoryCollection(new Dictionary<string,string?> {
-                ["ConnectionStrings:DefaultConnection"] = connection }));
+                ["ConnectionStrings:DefaultConnection"] = connection,
+                // Keep integration tests offline: exchange rates become "unavailable" instead of calling the internet.
+                ["ExchangeRates:BaseUrl"] = "http://127.0.0.1:9/" }));
             builder.ConfigureLogging(l => l.ClearProviders());
             builder.ConfigureServices(services =>
             {

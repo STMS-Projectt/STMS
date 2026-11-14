@@ -38,6 +38,14 @@ builder.Services.AddHttpClient(BidAiAdvisor.HttpClientName, client =>
 });
 
 builder.Services.AddSingleton<BidAiAdvisor>();
+// Free exchange-rate reference (Frankfurter v2) for USD-equivalent bid display only.
+builder.Services.AddMemoryCache();
+builder.Services.AddHttpClient(ExchangeRates.HttpClientName, client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["ExchangeRates:BaseUrl"] is { Length: > 0 } fx ? fx.TrimEnd('/') + "/" : "https://api.frankfurter.dev/");
+    client.Timeout = TimeSpan.FromSeconds(8);
+});
+builder.Services.AddSingleton<ExchangeRates>();
 
 builder.Services.AddAuthentication().AddCookie("BiometricPending", options =>
 {
