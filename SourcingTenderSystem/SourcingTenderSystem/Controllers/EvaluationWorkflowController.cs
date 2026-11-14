@@ -10,7 +10,7 @@ using SourcingTenderSystem.ViewModels;
 
 namespace SourcingTenderSystem.Controllers;
 
-[Authorize(Roles = Roles.SourcingOfficer + "," + Roles.SourcingManager + "," + Roles.TopCommittee)]
+[Authorize(Roles = Roles.Admin + "," + Roles.SourcingOfficer + "," + Roles.SourcingManager + "," + Roles.TopCommittee)]
 public sealed class EvaluationWorkflowController(ApplicationDbContext db, SupplierFileStore files) : RequisitionBaseController(db)
 {
     private const string Officer = "Pending Officer Approval";
@@ -21,7 +21,7 @@ public sealed class EvaluationWorkflowController(ApplicationDbContext db, Suppli
     private IQueryable<Tender> Visible(int employeeId)
     {
         var query = Db.Tenders.Where(t => t.Status == "Under Evaluation" || t.EvaluationReport != null);
-        if (User.IsInRole(Roles.SourcingOfficer)) return query;
+        if (User.IsInRole(Roles.Admin) || User.IsInRole(Roles.SourcingOfficer)) return query;
         if (User.IsInRole(Roles.TopCommittee))
             return query.Where(t => t.EvaluationReport != null &&
                 (t.EvaluationReport.Status == Top || t.EvaluationReport.Status == Approved));

@@ -8,7 +8,7 @@
     var chart = FormattableString.Invariant($"--pending:{pending:F3}%;--approved:{approved:F3}%;--rejected:{rejected:F3}%");
 }
 <header class="page-heading overview-heading">
-    <div><p class="eyebrow">ADMIN WORKSPACE</p><h1>Overview</h1><p>Monitor your organization and manage supplier applications.</p></div>
+    <div><p class="eyebrow">ADMIN WORKSPACE</p><h1>Overview</h1><p>Manage access and follow purchasing activity from request through final approval.</p></div>
 </header>
 <section class="review-banner">
     <div class="banner-art" aria-hidden="true"><span></span><span></span><span></span></div>
@@ -51,6 +51,6 @@
     </section>
 </div>
 <section class="surface system-summary" aria-label="Sourcing totals">
-    <span><partial name="_Icon" model='@("file")' /> Purchase requests <strong>@Model.Requests</strong></span>
-    <span><partial name="_Icon" model='@("file")' /> Tenders <strong>@Model.Tenders</strong></span>
+    <span><a asp-controller="AdminOperations" asp-action="Requests">Purchase requests</a> <strong>@Model.Requests</strong></span>
+    <span><a asp-controller="AdminOperations" asp-action="Tenders">Tenders</a> <strong>@Model.Tenders</strong></span>
 </section>
