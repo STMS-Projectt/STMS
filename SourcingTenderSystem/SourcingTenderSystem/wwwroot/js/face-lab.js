@@ -90,10 +90,10 @@ function bind(root) {
         prompt = value;
         if (value.readyToSave) {
             release();
-            setState("captured", "Your face was detected and verified across all three frames. Save it to finish enrollment.", "success");
+            setState("captured", "Your frontal face photo was captured. Save it to finish enrollment.", "success");
             return;
         }
-        setState("ready", "Step " + value.step + " of 3: " + value.instruction, "info");
+        setState("ready", value.instruction, "info");
         capture.disabled = false;
         capture.focus({ preventScroll: true });
     }
@@ -175,3 +175,4 @@ function initialize(root = document) { root.querySelectorAll?.("[data-face-lab]"
 document.addEventListener("workspace:load", event => initialize(event.detail instanceof Element ? event.detail : document));
 initialize();
 })();
+

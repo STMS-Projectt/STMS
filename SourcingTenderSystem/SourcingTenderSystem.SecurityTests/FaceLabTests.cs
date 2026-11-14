@@ -18,10 +18,10 @@ public sealed class FaceLabTests
         Assert.Equal(409, (await Assert.ThrowsAsync<FaceLabError>(() =>
             fixture.Lab.Capture("owner", "different", start.Token, Frame(1), default))).Status);
         var next = await fixture.Lab.Capture("owner", "stamp", start.Token, Frame(1), default);
-        Assert.Equal(2, next!.Step);
+        Assert.True(next!.ReadyToSave);
         Assert.Equal(409, (await Assert.ThrowsAsync<FaceLabError>(() =>
             fixture.Lab.Capture("owner", "stamp", start.Token, Frame(2), default))).Status);
-        Assert.Equal(422, (await Assert.ThrowsAsync<FaceLabError>(() =>
+        Assert.Equal(409, (await Assert.ThrowsAsync<FaceLabError>(() =>
             fixture.Lab.Capture("owner", "stamp", next.Token, Frame(1), default))).Status);
         Assert.Equal(1, fixture.Provider.Calls);
         Assert.False(fixture.Lab.HasReference("owner"));
@@ -79,11 +79,7 @@ public sealed class FaceLabTests
     {
         var start = fixture.Lab.Start("owner", "stamp", enroll);
         fixture.Provider.Yaw = 0;
-        var turn = (await fixture.Lab.Capture("owner", "stamp", start.Token, Frame(1), default))!;
-        fixture.Provider.Yaw = turn.Instruction.EndsWith("left.") ? -25 : 25;
-        var center = (await fixture.Lab.Capture("owner", "stamp", turn.Token, Frame(2), default))!;
-        fixture.Provider.Yaw = 0;
-        var last = await fixture.Lab.Capture("owner", "stamp", center.Token, Frame(3), default);
+        var last = await fixture.Lab.Capture("owner", "stamp", start.Token, Frame(1), default);
         if (!enroll) { Assert.Null(last); return; }
         Assert.True(last!.ReadyToSave);
         await fixture.Lab.ConfirmEnrollment("owner", "stamp", last.Token, default);
@@ -95,11 +91,7 @@ public sealed class FaceLabTests
     {
         var start = fixture.Lab.StartLogin(user, stamp);
         fixture.Provider.Yaw = 0;
-        var first = await fixture.Lab.CaptureLogin(start.Token, Frame(11), default);
-        fixture.Provider.Yaw = turnYaw;
-        var second = await fixture.Lab.CaptureLogin(first.Next!.Token, Frame(12), default);
-        fixture.Provider.Yaw = 0;
-        return await fixture.Lab.CaptureLogin(second.Next!.Token, Frame(13), default);
+        return await fixture.Lab.CaptureLogin(start.Token, Frame(11), default);
     }
 
     [Fact]
@@ -150,9 +142,7 @@ public sealed class FaceLabTests
         fixture.Provider.Yaw = 0;
         var first = await fixture.Lab.CaptureLogin(start.Token, Frame(21), default);
         Assert.Equal(409, (await Assert.ThrowsAsync<FaceLabError>(() => fixture.Lab.CaptureLogin(start.Token, Frame(22), default))).Status);
-        fixture.Provider.Yaw = 25;
-        Assert.Equal(422, (await Assert.ThrowsAsync<FaceLabError>(() => fixture.Lab.CaptureLogin(first.Next!.Token, Frame(21), default))).Status);
-        Assert.Equal(409, (await Assert.ThrowsAsync<FaceLabError>(() => fixture.Lab.CaptureLogin(first.Next!.Token, Frame(23), default))).Status);
+        Assert.Null(first.Next);
         // Enrollment tokens are not valid for login and vice versa.
         var enroll = fixture.Lab.Start("owner", "stamp", true);
         Assert.Equal(409, (await Assert.ThrowsAsync<FaceLabError>(() => fixture.Lab.CaptureLogin(enroll.Token, Frame(24), default))).Status);
@@ -177,11 +167,7 @@ public sealed class FaceLabTests
         using var fixture = new Fixture();
         var start = fixture.Lab.Start("owner", "stamp", true);
         fixture.Provider.Yaw = 0;
-        var turn = (await fixture.Lab.Capture("owner", "stamp", start.Token, Frame(41), default))!;
-        fixture.Provider.Yaw = 25;
-        var center = (await fixture.Lab.Capture("owner", "stamp", turn.Token, Frame(42), default))!;
-        fixture.Provider.Yaw = 0;
-        var ready = (await fixture.Lab.Capture("owner", "stamp", center.Token, Frame(43), default))!;
+        var ready = (await fixture.Lab.Capture("owner", "stamp", start.Token, Frame(41), default))!;
         Assert.True(ready.ReadyToSave);
         Assert.False(fixture.Lab.HasReference("owner"));
         Assert.Equal(409, (await Assert.ThrowsAsync<FaceLabError>(() => fixture.Lab.ConfirmEnrollment("intruder", "stamp", ready.Token, default))).Status);
@@ -269,3 +255,4 @@ public sealed class FaceLabTests
         public IFileProvider ContentRootFileProvider { get; set; } = new NullFileProvider();
     }
 }
+

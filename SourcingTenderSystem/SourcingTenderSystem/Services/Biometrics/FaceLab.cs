@@ -106,7 +106,7 @@ public sealed class FaceLab(IHttpClientFactory http, IConfiguration config, IWeb
         var (next, face) = await Advance(attempt, image, ct);
         if (next is not null) return next;
         if (attempt.Mode == Mode.Enroll)
-            return Issue(attempt with { Stage = 3, Expires = clock.GetUtcNow().AddMinutes(2) });
+            return Issue(attempt with { Stage = 3, Center = ReadJpeg(image), Expires = clock.GetUtcNow().AddMinutes(2) });
         if (!await Match(face, null, await ReadReference(user, ct), ct))
             throw new FaceLabError("The face did not match the enrolled reference.");
         if (attempt.Expires <= clock.GetUtcNow())
@@ -154,30 +154,17 @@ public sealed class FaceLab(IHttpClientFactory http, IConfiguration config, IWeb
         { throw new FaceLabError("Face reference unavailable. Enroll again.", 409); }
     }
 
-    // Runs one challenge frame. Returns the next prompt, or (null, face token) after the third frame.
+    // A single frontal capture completes verification or prepares enrollment for confirmation.
     private async Task<(Prompt? Next, string Face)> Advance(Attempt attempt, string? image, CancellationToken ct)
     {
         var bytes = ReadJpeg(image);
-        var hash = SHA256.HashData(bytes);
-        if (attempt.Center is not null && (hash.SequenceEqual(SHA256.HashData(attempt.Center)) ||
-            (attempt.TurnHash is not null && hash.SequenceEqual(attempt.TurnHash))))
-            throw new FaceLabError("The same frame was reused. Start a new challenge.");
         var (face, yaw) = await Detect(bytes, ct);
-        if (attempt.Stage == 1 ? !ValidTurn(yaw, attempt.Direction, StrictTurn) : Math.Abs(yaw) > 12)
-            throw new FaceLabError(attempt.Stage == 1
-                ? "Turn your head a little further (about 20 to 45 degrees), then capture again from the start."
-                : "Look straight at the camera. Start a new challenge.");
-        if (attempt.Stage == 0)
-            return (Issue(attempt with { Stage = 1, Center = bytes, CenterToken = face }), face);
-        if (attempt.Stage == 1)
-            return (Issue(attempt with { Stage = 2, TurnToken = face, TurnHash = hash }), face);
-        if (!await Match(face, attempt.CenterToken!, null, ct) || !await Match(face, attempt.TurnToken!, null, ct))
-            throw new FaceLabError("The challenge frames did not show the same face. Start again.");
+        if (Math.Abs(yaw) > 12)
+            throw new FaceLabError("Look straight at the camera. Start a new capture.");
         if (attempt.Expires <= clock.GetUtcNow())
             throw new FaceLabError("Challenge expired. Start again.", 409);
         return (null, face);
     }
-
     private bool StrictTurn => config.GetValue<bool>("FacePlusPlus:StrictTurnDirection");
 
     // Face++ yaw sign for "left" depends on camera mirroring and is not verified on real devices, so by default either
@@ -314,3 +301,4 @@ public sealed class FaceLab(IHttpClientFactory http, IConfiguration config, IWeb
     private static FaceLabError Quota() => new("Free Face++ quota or request limit reached. Use your password or passkey.", 429);
     private static FaceLabError ProviderUnavailable() => new("Face++ is temporarily unavailable. Use your password or passkey.", 503);
 }
+
