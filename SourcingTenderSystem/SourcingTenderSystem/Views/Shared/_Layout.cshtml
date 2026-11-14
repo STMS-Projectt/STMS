@@ -19,7 +19,8 @@
 
     // Public auth pages and first-time verification onboarding use the portal shell; Sign-in security for an
     // already verified account renders inside the user's normal role workspace.
-    if (controller == "Account" && (action == "BiometricVerify" || action == "Login" ||
+    if (controller == "SupplierRegistration" && ViewData["ApplicationWorkspace"] is not true ||
+        controller == "Account" && (action == "BiometricVerify" || action == "Login" ||
         action == "BiometricSetup" && ViewData["BiometricOnboarding"] is true))
     {
         admin = false;
@@ -199,7 +200,7 @@
                     </a>
 
                     <nav class="portal-nav" aria-label="Account">
-                        @if (signedIn && !Roles.EmployeeRoles.Any(User.IsInRole))
+                        @if (controller != "SupplierRegistration" && signedIn && !Roles.EmployeeRoles.Any(User.IsInRole))
                         {
                             <a class="portal-link"
                                asp-controller="SupplierRegistration"
@@ -217,7 +218,7 @@
                                asp-action="Register">Supplier registration</a>
                         }
 
-                        <partial name="_LoginPartial" />
+                        @if (controller != "SupplierRegistration") { <partial name="_LoginPartial" /> }
                     </nav>
                 </div>
             </header>
@@ -277,3 +278,5 @@
     }
     <div data-page-scripts hidden>@await RenderSectionAsync("Scripts", required: false)</div>
 @if (!fragment) { @Html.Raw("</body></html>") }
+
+

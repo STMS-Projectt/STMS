@@ -1,5 +1,5 @@
 @model UploadInput
-@{ ViewData["Title"] = "Upload document"; }
+@{ ViewData["Title"] = "Upload document"; var counts = ViewData["UploadedCounts"] as Dictionary<string, int> ?? new(); }
 <a class="back-link" asp-action="RegistrationStatus"><partial name="_Icon" model='@("back")' /> My application</a>
 <header class="page-heading"><div><p class="eyebrow">SUPPLIER APPLICATION</p><h1>Upload a document</h1><p>Add supporting evidence for your company application.</p></div></header>
 <partial name="_ApplicationSteps" model="2" />
@@ -15,18 +15,63 @@
                     </select><span asp-validation-for="DocumentType" class="text-danger"></span>
                 </div>
                 <div class="field"><label asp-for="ExpiryDate" class="form-label">Expiry date (optional)</label><input asp-for="ExpiryDate" class="form-control"><span asp-validation-for="ExpiryDate" class="text-danger"></span></div>
-                <div class="field field-wide upload-zone" data-upload-zone>
+                <div class="field field-wide upload-zone">
                     <span class="icon-tile tone-teal"><partial name="_Icon" model='@("upload")' /></span>
-                    <label asp-for="File" class="form-label d-block">Choose a PDF or drop it here</label>
-                    <p class="field-hint mb-2" id="upload-rules">One PDF per upload. Maximum size: 10 MB.</p>
-                    <input asp-for="File" class="form-control" type="file" accept=".pdf,application/pdf" aria-describedby="upload-rules file-status">
-                    <p id="file-status" class="field-hint" data-file-status aria-live="polite"></p>
-                    <span asp-validation-for="File" class="text-danger"></span>
+                    <label asp-for="Files" class="form-label d-block">Choose a PDF or drop it here</label>
+                    <p class="field-hint mb-2" id="upload-rules">Select up to 5 PDFs of the selected document type. Maximum size: 10 MB per file.</p>
+                    <input asp-for="Files" class="form-control" type="file" multiple accept=".pdf,application/pdf" aria-describedby="upload-rules file-status">
+                    <div id="selected-files" class="d-flex flex-wrap gap-2 mt-3"></div><p class="field-hint">Selected files are not uploaded until you click Upload documents.</p><p id="file-status" class="field-hint" data-file-status aria-live="polite"></p>
+                    <span asp-validation-for="Files" class="text-danger"></span>
                 </div>
             </div>
         </section>
-        <div class="form-actions"><button class="btn btn-primary" type="submit">Upload document <partial name="_Icon" model='@("upload")' /></button><a class="btn btn-outline-secondary" asp-action="RegistrationStatus">Cancel</a></div>
+        <div class="form-actions"><button class="btn btn-primary" type="submit">Upload documents <partial name="_Icon" model='@("upload")' /></button><button class="btn btn-outline-secondary" type="submit" name="continueToStatus" value="true" formnovalidate>Save and continue to application status</button></div>
     </form>
-    <aside class="surface helper-card"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("file")' /></span><h2>Before uploading</h2><ul><li>Check that the entire document is readable.</li><li>Choose the document type that matches your PDF.</li><li>Return here to add another document if needed.</li></ul></aside>
+    <aside class="surface helper-card"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("file")' /></span><h2>Document checklist</h2><ul>@foreach (var type in SupplierFileStore.DocumentTypes) { <li><strong>@type:</strong> @(counts.GetValueOrDefault(type) > 0 ? $"{counts[type]} uploaded" : "Not uploaded")</li> }</ul><h2>Before uploading</h2><ul><li>Check that the entire document is readable.</li><li>Choose the document type that matches your PDF.</li><li>Upload files for each document type, then continue to application status.</li></ul></aside>
 </div>
-@section Scripts { <partial name="_ValidationScriptsPartial" /> }
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        (() => {
+            const input = document.getElementById("Files");
+            const list = document.getElementById("selected-files");
+            const status = document.getElementById("file-status");
+            let selected = [];
+            function render() {
+                const transfer = new DataTransfer();
+                selected.forEach(file => transfer.items.add(file));
+                input.files = transfer.files;
+                input.setCustomValidity(selected.length > 5 ? "Select up to 5 PDF files." : "");
+                list.replaceChildren();
+                selected.forEach((file, index) => {
+                    const chip = document.createElement("span");
+                    chip.className = "d-inline-flex align-items-center gap-2 border rounded px-3 py-2 bg-white";
+                    const name = document.createElement("span");
+                    name.textContent = file.name;
+                    const remove = document.createElement("button");
+                    remove.type = "button";
+                    remove.className = "btn btn-sm btn-outline-danger";
+                    remove.textContent = "×";
+                    remove.setAttribute("aria-label", "Remove " + file.name);
+                    remove.addEventListener("click", () => { selected.splice(index, 1); render(); });
+                    chip.append(name, remove);
+                    list.append(chip);
+                });
+                status.textContent = selected.length ? selected.length + " file(s) selected, ready to upload." : "No files selected.";
+            }
+            function add(files) {
+                for (const file of files) {
+                    if (!selected.some(item => item.name === file.name && item.size === file.size && item.lastModified === file.lastModified)) selected.push(file);
+                }
+                render();
+            }
+            input.addEventListener("change", () => add(Array.from(input.files)));
+            const zone = input.closest(".upload-zone");
+            zone.addEventListener("dragover", event => event.preventDefault());
+            zone.addEventListener("drop", event => { event.preventDefault(); add(Array.from(event.dataTransfer.files)); });
+            render();
+        })();
+    </script>
+
+
+}

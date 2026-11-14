@@ -78,10 +78,11 @@
         const status = zone.querySelector("[data-file-status]");
         if (!input || !status) return;
         const sync = () => {
-            const file = input.files[0];
-            const error = file && (file.size === 0 || file.size > 10485760 || !/\.pdf$/i.test(file.name));
+            const selected = Array.from(input.files);
+            const file = selected[0];
+            const error = (input.multiple && selected.length > 5) || selected.some(file => file.size === 0 || file.size > 10485760 || !/\.pdf$/i.test(file.name));
             input.setCustomValidity(error ? "Choose a nonempty PDF no larger than 10 MB." : "");
-            status.textContent = error ? input.validationMessage : file ? file.name + " · " + Math.max(1, Math.round(file.size / 1024)) + " KB" : "No file selected.";
+            status.textContent = error ? input.validationMessage : selected.length ? selected.map(file => file.name).join(", ") : "No file selected.";
         };
         input.addEventListener("change", sync);
         zone.addEventListener("dragover", event => { event.preventDefault(); zone.classList.add("is-dragging"); });
@@ -89,7 +90,7 @@
         zone.addEventListener("drop", event => {
             event.preventDefault();
             zone.classList.remove("is-dragging");
-            if (event.dataTransfer.files.length === 1) { input.files = event.dataTransfer.files; sync(); }
+            if (event.dataTransfer.files.length === 1 || (input.multiple && event.dataTransfer.files.length <= 5)) { input.files = event.dataTransfer.files; sync(); }
             else { status.textContent = "Drop one PDF at a time."; }
         });
     });
@@ -97,3 +98,4 @@
     initialize(document);
     document.addEventListener("workspace:load", event => initialize(event.detail));
 })();
+

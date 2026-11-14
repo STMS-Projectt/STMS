@@ -331,6 +331,9 @@ public sealed class AccountController(SignInManager<IdentityUser> signIn, UserMa
             await users.IsInRoleAsync(user, Roles.SourcingManager)) return "/CommitteeReviews";
         if (await users.IsInRoleAsync(user, Roles.TopCommittee)) return "/EvaluationWorkflow";
         if (await users.IsInRoleAsync(user, "RequestingDepartment")) return "/PurchaseRequisitions/Dashboard";
+        if (await db.SupplierProfiles.AnyAsync(x => x.UserId == user.Id &&
+            x.Status == Models.SupplierStatus.Pending && !x.SupplierDocuments.Any()))
+            return "/SupplierRegistration/UploadDocuments";
         return await db.SupplierProfiles.AnyAsync(x => x.UserId == user.Id) ? "/SupplierWorkspace" : "/";
     }
 }
