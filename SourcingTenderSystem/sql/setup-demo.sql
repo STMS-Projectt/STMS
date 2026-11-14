@@ -993,3 +993,16 @@ BEGIN
     COMMIT;
 END;
 GO
+
+IF OBJECT_ID(N'dbo.AspNetUserPasskeys', N'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.AspNetUserPasskeys (
+        CredentialId varbinary(1024) NOT NULL,
+        UserId nvarchar(450) NOT NULL,
+        Data nvarchar(max) NOT NULL,
+        CONSTRAINT PK_AspNetUserPasskeys PRIMARY KEY NONCLUSTERED (CredentialId),
+        CONSTRAINT FK_AspNetUserPasskeys_AspNetUsers_UserId FOREIGN KEY (UserId) REFERENCES dbo.AspNetUsers(Id) ON DELETE CASCADE
+    );
+    CREATE INDEX IX_AspNetUserPasskeys_UserId ON dbo.AspNetUserPasskeys(UserId);
+END;
+GO

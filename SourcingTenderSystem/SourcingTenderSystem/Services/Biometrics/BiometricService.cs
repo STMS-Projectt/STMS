@@ -54,7 +54,6 @@ public class BiometricService : IBiometricService
             var response = await client.PostAsync($"{BaseUrl}/detect", content);
             var body = await response.Content.ReadAsStringAsync();
 
-            _logger.LogInformation("Face++ detect HTTP {StatusCode}: {Body}", response.StatusCode, body);
 
             using var doc = JsonDocument.Parse(body);
             var root = doc.RootElement;
@@ -67,14 +66,14 @@ public class BiometricService : IBiometricService
             }
 
             // Check if any face was detected
-            if (!root.TryGetProperty("faces", out var faces) || faces.GetArrayLength() == 0)
+            if (!root.TryGetProperty("faces", out var faces) || faces.GetArrayLength() != 1)
             {
-                _logger.LogInformation("Face++ detect: 0 faces found (camera may be covered).");
+                _logger.LogInformation("Face++ detect: Expected one face in the camera image.");
                 return null;
             }
 
             var faceToken = faces[0].GetProperty("face_token").GetString();
-            _logger.LogInformation("Face++ detect: successfully acquired face_token={Token}", faceToken);
+
             return faceToken;
         }
         catch (Exception ex)
@@ -88,7 +87,7 @@ public class BiometricService : IBiometricService
     /// Calls Face++ Compare API using FormUrlEncodedContent with two face_tokens.
     /// Returns confidence score (0–100), or -1 on failure.
     /// </summary>
-    public async Task<double> CompareFaceTokensAsync(string faceToken1, string faceToken2)
+    public async Task<double> CompareFaceTokensAsync(string faceToken1, string faceToken2, string? referenceImage = null)
     {
         if (string.IsNullOrWhiteSpace(faceToken1) || string.IsNullOrWhiteSpace(faceToken2))
             return -1;
@@ -101,7 +100,7 @@ public class BiometricService : IBiometricService
             {
                 { "api_key", ApiKey },
                 { "api_secret", ApiSecret },
-                { "face_token1", faceToken1 },
+                { referenceImage is null ? "face_token1" : "image_base64_1", referenceImage ?? faceToken1 },
                 { "face_token2", faceToken2 }
             };
 
@@ -109,7 +108,6 @@ public class BiometricService : IBiometricService
             var response = await client.PostAsync($"{BaseUrl}/compare", content);
             var body = await response.Content.ReadAsStringAsync();
 
-            _logger.LogInformation("Face++ compare HTTP {StatusCode}: {Body}", response.StatusCode, body);
 
             using var doc = JsonDocument.Parse(body);
             var root = doc.RootElement;
@@ -117,7 +115,7 @@ public class BiometricService : IBiometricService
             if (root.TryGetProperty("error_message", out var errProp))
             {
                 _logger.LogWarning("Face++ compare error: {Error}", errProp.GetString());
-                return -1;
+                return referenceImage is null && errProp.GetString()?.StartsWith("INVALID_FACE_TOKEN", StringComparison.Ordinal) == true ? -2 : -1;
             }
 
             if (!root.TryGetProperty("confidence", out var confidenceProp))

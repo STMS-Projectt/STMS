@@ -1,134 +1,104 @@
-/**
- * Biometric Authentication — Client-Side Engine
- * Face: captures a live webcam JPEG and sends it to the server for Face++ processing.
- * Fingerprint: uses WebAuthn platform authenticator (Windows Hello / Touch ID).
- */
-class BiometricManager {
-    constructor() {
-        this.stream = null;
+(() => {
+    const root = document.querySelector("[data-bio]");
+    if (!root) return;
+    const status = root.querySelector("[data-bio-status]");
+    const token = root.querySelector('input[name="__RequestVerificationToken"]').value;
+    const video = root.querySelector("[data-preview]");
+    const open = root.querySelector("[data-open-camera]");
+    const capture = root.querySelector("[data-capture]");
+    const stop = root.querySelector("[data-stop-camera]");
+    const phone = root.querySelector("[data-phone-button]");
+    const password = root.querySelector("#bio-password");
+    let stream;
+    let busy = false;
+
+    function closeCamera() {
+        stream?.getTracks().forEach(track => track.stop());
+        stream = null;
+        if (video) {
+            video.srcObject = null;
+            video.hidden = true;
+            capture.disabled = true;
+            stop.hidden = true;
+        }
     }
-
-    // ─────────────── CAMERA ───────────────
-
-    /** Starts the live webcam stream into a <video> element. */
-    async startCamera(videoElementId) {
-        const video = document.getElementById(videoElementId);
-        if (!video) throw new Error("Video element not found.");
-
-        if (this.stream) this.stopCamera();
-
+    window.addEventListener("pagehide", closeCamera);
+    stop?.addEventListener("click", closeCamera);
+    open?.addEventListener("click", async () => {
+        if (busy || stream) return;
         try {
-            this.stream = await navigator.mediaDevices.getUserMedia({
-                video: { width: { ideal: 640 }, height: { ideal: 480 }, facingMode: "user" },
-                audio: false
-            });
-            video.srcObject = this.stream;
+            open.disabled = true;
+            if (!navigator.mediaDevices?.getUserMedia) throw new Error();
+            stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user", width: { ideal: 720 } }, audio: false });
+            video.srcObject = stream;
+            video.hidden = false;
+            stop.hidden = false;
             await video.play();
+            capture.disabled = false;
+            status.textContent = "Camera ready. Look directly at the camera before continuing.";
         } catch {
-            throw new Error("Camera access is required. Please allow camera permissions in your browser.");
+            closeCamera();
+            status.textContent = "Camera unavailable. Allow camera access and use HTTPS or localhost.";
+        } finally { open.disabled = false; }
+    });
+
+    async function post(url, data) {
+        const response = await fetch(url, { method: "POST", credentials: "same-origin",
+            headers: { "Content-Type": "application/json", "RequestVerificationToken": token },
+            body: JSON.stringify({ manage: root.dataset.manage === "true", password: password?.value, email: root.querySelector("[data-bio-email]")?.value, returnUrl: root.dataset.returnUrl, data }) });
+        const result = await response.json().catch(() => null);
+        if (!response.ok || !result) throw new Error(result?.message || (response.status === 429 ? "Too many attempts. Wait a moment and try again." : "Could not complete verification. Try signing in again."));
+        return result;
+    }
+    async function run(operation) {
+        if (busy) return;
+        if (password && !password.value) {
+            status.textContent = "Enter your current password first.";
+            password.focus();
+            return;
+        }
+        busy = true;
+        if (capture) capture.disabled = true;
+        if (phone) phone.disabled = true;
+        status.textContent = "Verifying…";
+        try { window.location.assign((await operation()).redirectUrl); }
+        catch (error) {
+            status.textContent = error.name === "NotAllowedError" ? "Phone verification was cancelled or timed out. Try again." : error.message;
+        } finally {
+            if (password) password.value = "";
+            busy = false;
+            if (capture) capture.disabled = !stream;
+            if (phone) phone.disabled = false;
         }
     }
-
-    /** Stops the active webcam stream. */
-    stopCamera() {
-        if (this.stream) {
-            this.stream.getTracks().forEach(t => t.stop());
-            this.stream = null;
+    capture?.addEventListener("click", () => {
+        if (!video.videoWidth) return;
+        const email = root.querySelector("[data-bio-email]");
+        if (email && root.dataset.knownFace !== "true" && !email.value.trim()) {
+            status.textContent = "Enter your account email above to use face sign-in on this browser.";
+            email.focus();
+            return;
         }
-    }
-
-    /**
-     * Captures a JPEG snapshot from the live video stream and returns it as a base64 string.
-     * Throws if the camera is not active (prevents static image spoofing).
-     */
-    captureSnapshot(videoElementId, quality = 0.85) {
-        const video = document.getElementById(videoElementId);
-        if (!video || !video.srcObject || video.readyState < 2) {
-            throw new Error("Live camera stream is required. Please open the camera first.");
-        }
-
-        const canvas = document.createElement("canvas");
-        const vw = video.videoWidth || 640;
-        const vh = video.videoHeight || 480;
-        const scale = Math.min(1, 640 / Math.max(vw, vh));
-        canvas.width = Math.round(vw * scale);
-        canvas.height = Math.round(vh * scale);
-
-        const ctx = canvas.getContext("2d");
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-        // Returns full data-URI: "data:image/jpeg;base64,..."
-        return canvas.toDataURL("image/jpeg", quality);
-    }
-
-    // ─────────────── FINGERPRINT (WebAuthn) ───────────────
-
-    /** Registers a new WebAuthn platform credential (fingerprint / Windows Hello). */
-    async enrollFingerprint(userEmail) {
-        this._requireWebAuthn();
-
-        const challenge = crypto.getRandomValues(new Uint8Array(32));
-        const userId = new TextEncoder().encode(userEmail);
-
-        try {
-            const credential = await navigator.credentials.create({
-                publicKey: {
-                    challenge,
-                    rp: { name: "Sourcing & Tender Management System", id: window.location.hostname },
-                    user: { id: userId, name: userEmail, displayName: userEmail },
-                    pubKeyCredParams: [
-                        { type: "public-key", alg: -7 },   // ES256
-                        { type: "public-key", alg: -257 }  // RS256
-                    ],
-                    authenticatorSelection: { authenticatorAttachment: "platform", userVerification: "required" },
-                    timeout: 60000,
-                    attestation: "none"
-                }
-            });
-            return { credentialId: this._bufferToBase64(credential.rawId) };
-        } catch (err) {
-            if (err.name === "NotAllowedError")
-                throw new Error("Fingerprint sensor not available or request was cancelled.");
-            throw err;
-        }
-    }
-
-    /** Authenticates using a previously enrolled WebAuthn credential. */
-    async verifyFingerprint() {
-        this._requireWebAuthn();
-
-        const challenge = crypto.getRandomValues(new Uint8Array(32));
-
-        try {
-            const assertion = await navigator.credentials.get({
-                publicKey: {
-                    challenge,
-                    rpId: window.location.hostname,
-                    userVerification: "required",
-                    timeout: 60000
-                }
-            });
-            return { credentialId: this._bufferToBase64(assertion.rawId) };
-        } catch (err) {
-            if (err.name === "NotAllowedError")
-                throw new Error("Fingerprint sensor not available or request was cancelled.");
-            throw err;
-        }
-    }
-
-    // ─────────────── HELPERS ───────────────
-
-    _requireWebAuthn() {
-        if (!window.PublicKeyCredential)
-            throw new Error("WebAuthn is not supported by this browser.");
-    }
-
-    _bufferToBase64(buffer) {
-        const bytes = new Uint8Array(buffer);
-        let binary = "";
-        for (let i = 0; i < bytes.byteLength; i++) binary += String.fromCharCode(bytes[i]);
-        return window.btoa(binary);
-    }
-}
-
-window.biometrics = new BiometricManager();
+        if (email?.value && !email.reportValidity()) return;
+        run(async () => {
+            const canvas = document.createElement("canvas");
+            canvas.width = Math.min(video.videoWidth, 720);
+            canvas.height = Math.round(video.videoHeight * canvas.width / video.videoWidth);
+            canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
+            const jpeg = canvas.toDataURL("image/jpeg", 0.8);
+            closeCamera();
+            return post(root.dataset.camera, jpeg);
+        });
+    });
+    phone?.addEventListener("click", () => run(async () => {
+        closeCamera();
+        if (!window.isSecureContext || !window.PublicKeyCredential?.parseCreationOptionsFromJSON ||
+            !PublicKeyCredential.parseRequestOptionsFromJSON || !PublicKeyCredential.prototype.toJSON)
+            throw new Error("Use HTTPS and a current browser on a phone with screen unlock configured.");
+        const options = await post(root.dataset.phoneOptions);
+        const credential = phone.dataset.create === "true"
+            ? await navigator.credentials.create({ publicKey: PublicKeyCredential.parseCreationOptionsFromJSON(options) })
+            : await navigator.credentials.get({ publicKey: PublicKeyCredential.parseRequestOptionsFromJSON(options) });
+        return post(root.dataset.phone, JSON.stringify(credential));
+    }));
+})();

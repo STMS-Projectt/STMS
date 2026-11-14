@@ -1,55 +1,25 @@
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Controllers;
 
 namespace SourcingTenderSystem.Services.Biometrics;
 
-public class BiometricEnforcementMiddleware
+public sealed class BiometricEnforcementMiddleware(RequestDelegate next)
 {
-    private readonly RequestDelegate _next;
-
-    public BiometricEnforcementMiddleware(RequestDelegate next)
+    public async Task InvokeAsync(HttpContext context, UserManager<IdentityUser> users)
     {
-        _next = next;
-    }
-
-    public async Task InvokeAsync(HttpContext context, UserManager<IdentityUser> userManager)
-    {
-        var path = context.Request.Path.Value?.ToLowerInvariant() ?? "";
-
-        // Paths allowed without prior biometric enrollment
-        var isExempt = path.StartsWith("/account/login") ||
-                       path.StartsWith("/account/biometricverify") ||
-                       path.StartsWith("/account/processbiometricverify") ||
-                       path.StartsWith("/account/facelogin") ||
-                       path.StartsWith("/account/fingerprintlogin") ||
-                       path.StartsWith("/account/biometricsetup") ||
-                       path.StartsWith("/account/registerface") ||
-                       path.StartsWith("/account/registerfingerprint") ||
-                       path.StartsWith("/account/completesetup") ||
-                       path.StartsWith("/account/logout") ||
-                       path.StartsWith("/account/accessdenied") ||
-                       path.StartsWith("/supplierregistration") ||
-                       path.StartsWith("/css") ||
-                       path.StartsWith("/js") ||
-                       path.StartsWith("/lib") ||
-                       path.StartsWith("/sourcing-desk.svg") ||
-                       path.StartsWith("/favicon.ico");
-
-        if (context.User.Identity?.IsAuthenticated == true && !isExempt)
+        var endpoint = context.GetEndpoint()?.Metadata.GetMetadata<ControllerActionDescriptor>();
+        if (endpoint is not null && endpoint.ControllerName != "Account" && context.User.Identity?.IsAuthenticated == true)
         {
-            var user = await userManager.GetUserAsync(context.User);
-            if (user != null)
+            var user = await users.GetUserAsync(context.User);
+            if (user is not null && (await users.GetPasskeysAsync(user)).Count == 0 &&
+                string.IsNullOrEmpty(await users.GetAuthenticationTokenAsync(user, "Biometrics", "FaceToken")))
             {
-                var isEnrolled = await userManager.GetAuthenticationTokenAsync(user, "Biometrics", "IsEnrolled");
-                if (string.IsNullOrEmpty(isEnrolled))
-                {
-                    context.Response.Redirect($"/Account/BiometricVerify?email={user.Email}");
-                    return;
-                }
+                if (HttpMethods.IsGet(context.Request.Method))
+                    context.Response.Redirect(context.Request.PathBase + "/Account/BiometricSetup");
+                else context.Response.StatusCode = 403;
+                return;
             }
         }
-
-        await _next(context);
+        await next(context);
     }
 }

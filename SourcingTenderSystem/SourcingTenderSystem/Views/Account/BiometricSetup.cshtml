@@ -1,193 +1,43 @@
-@model SourcingTenderSystem.ViewModels.Biometrics.BiometricSetupViewModel
+@model SourcingTenderSystem.ViewModels.Biometrics.BiometricVerifyViewModel
 @{
-    ViewData["Title"] = "Biometric Security Setup";
+    var first = !Model.HasFace && !Model.HasFingerprint;
+    var canCamera = Model.Manage ? !Model.HasFace || Model.CanRenewFace : first || Model.HasFace;
+    var canPhone = Model.Manage ? !Model.HasFingerprint : first || Model.HasFingerprint;
+    ViewData["Title"] = Model.Manage ? "Sign-in security" : first ? "Set up verification" : "Verify your identity";
 }
-
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <div class="card border-0 shadow-sm border-top border-4 border-primary">
-                <div class="card-header bg-white p-4 border-bottom">
-                    <div class="d-flex align-items-center">
-                        <div class="me-3 fs-1 text-primary">
-                            <i class="bi bi-shield-lock-fill"></i>
-                        </div>
-                        <div>
-                            <span class="badge bg-primary-subtle text-primary border border-primary px-2 py-1 mb-1">
-                                First-Time Login Requirement
-                            </span>
-                            <h3 class="fw-bold text-dark mb-0">Biometric Security Enrollment</h3>
-                            <p class="text-muted small mb-0">Welcome, <strong>@Model.FullName</strong> (@Model.UserEmail). Please enroll your biometric credentials to secure your account.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card-body p-4">
-                    <div id="setupAlert" class="alert d-none mb-4" role="alert"></div>
-
-                    <!-- Step 1: Live Face Recognition -->
-                    <div class="p-3 border rounded mb-4">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h5 class="fw-bold mb-0 text-dark">
-                                <i class="bi bi-camera-video-fill text-primary me-2"></i>1. Live Face Recognition Enrollment
-                            </h5>
-                            <span id="faceStatusBadge" class="badge @(Model.HasFaceRegistered ? "bg-success" : "bg-warning text-dark")">
-                                @(Model.HasFaceRegistered ? "Enrolled" : "Pending")
-                            </span>
-                        </div>
-                        <p class="text-muted small">
-                            A live webcam scan is required. <strong>Static image uploads are strictly forbidden.</strong> Position your face in front of the camera.
-                        </p>
-
-                        <div class="text-center my-3">
-                            <div class="position-relative d-inline-block bg-dark rounded overflow-hidden" style="width: 320px; height: 240px;">
-                                <video id="setupFaceVideo" width="320" height="240" autoplay playsinline class="w-100 h-100 object-fit-cover"></video>
-                                <div id="faceOverlay" class="position-absolute top-50 start-50 translate-middle border border-2 border-warning rounded-circle d-none" style="width: 160px; height: 200px; opacity: 0.85;"></div>
-                            </div>
-                        </div>
-
-                        <div class="d-flex justify-content-center gap-2">
-                            <button type="button" id="btnStartFaceCam" class="btn btn-outline-primary btn-sm">
-                                <i class="bi bi-camera me-1"></i> Start Camera
-                            </button>
-                            <button type="button" id="btnCaptureFace" class="btn btn-primary btn-sm" disabled>
-                                <i class="bi bi-check2-circle me-1"></i> Capture & Register Face
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Step 2: Fingerprint Verification -->
-                    <div class="p-3 border rounded mb-4">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h5 class="fw-bold mb-0 text-dark">
-                                <i class="bi bi-fingerprint text-primary me-2"></i>2. Fingerprint Verification (WebAuthn)
-                            </h5>
-                            <span id="fingerprintStatusBadge" class="badge @(Model.HasFingerprintRegistered ? "bg-success" : "bg-warning text-dark")">
-                                @(Model.HasFingerprintRegistered ? "Enrolled" : "Pending")
-                            </span>
-                        </div>
-                        <p class="text-muted small">
-                            Touch your device's fingerprint scanner or platform authenticator (Windows Hello / Touch ID) to register your hardware biometric credential.
-                        </p>
-
-                        <div class="text-center my-3">
-                            <button type="button" id="btnEnrollFingerprint" class="btn btn-outline-dark px-4 py-2">
-                                <i class="bi bi-fingerprint me-2 fs-5 align-middle"></i> Touch Fingerprint Sensor
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Step 3: Complete Setup -->
-                    <form method="post" asp-action="CompleteSetup">
-                        @Html.AntiForgeryToken()
-                        <input type="hidden" name="returnUrl" value="@Model.ReturnUrl" />
-                        <div class="d-grid mt-4">
-                            <button type="submit" id="btnComplete" class="btn btn-success py-2 fw-semibold">
-                                Complete Setup & Continue to Dashboard <i class="bi bi-arrow-right ms-1"></i>
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
+<section class="review-banner"><div class="review-copy">
+<p class="banner-label"><partial name="_Icon" model='@("shield")' /> @(Model.Manage ? "ACCOUNT SECURITY" : "STEP 2 OF 2")</p>
+<h1>@ViewData["Title"]</h1>
+<p>@(first ? "Set up at least one method before opening your workspace. You can add the other in Sign-in security." : Model.Manage ? "See your registered methods and add a backup." : "Use one of your registered methods to continue.")</p>
+</div><div class="banner-art" aria-hidden="true"><span></span><span></span><span></span></div></section>
+<div data-bio data-manage="@(Model.Manage ? "true" : "false")" data-camera="@Url.Action("Camera")" data-phone-options="@Url.Action("PhoneOptions")" data-phone="@Url.Action("Phone")">
+    @Html.AntiForgeryToken()
+    @if (Model.Manage && (canCamera || canPhone))
+    {
+        <section class="surface detail-card mb-3"><label class="form-label" for="bio-password">Current password</label><input class="form-control" id="bio-password" type="password" autocomplete="current-password" /><p class="field-hint">Required when adding another verification method.</p></section>
+    }
+    <div class="dashboard-grid">
+        <section class="surface detail-card">
+            <div class="card-heading"><span class="icon-tile tone-blue"><partial name="_Icon" model='@("shield")' /></span><span class="status-pill @(Model.HasFace ? "status-positive" : "status-neutral")">@(Model.HasFace ? "Registered" : "Not registered")</span></div>
+            <h2>Face recognition</h2><p class="subtle">Face++ processes a camera image to register or match your face. Sit in good light with only your face in view.</p>
+            @if (canCamera)
+            {
+                <video data-preview hidden autoplay muted playsinline class="w-100 rounded mb-3" aria-label="Camera preview"></video>
+                <div class="button-row"><button type="button" class="btn btn-outline-secondary" data-open-camera>Start camera</button>
+                <button type="button" class="btn btn-primary" data-capture disabled>@(Model.CanRenewFace ? "Renew face registration" : Model.HasFace ? "Verify face" : "Register face")</button>
+                <button type="button" class="btn btn-outline-secondary" data-stop-camera hidden>Stop camera</button></div>
+            }
+        </section>
+        <section class="surface detail-card">
+            <div class="card-heading"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("check")' /></span><span class="status-pill @(Model.HasFingerprint ? "status-positive" : "status-neutral")">@(Model.HasFingerprint ? "Registered" : "Not registered")</span></div>
+            <h2>Phone fingerprint</h2><p class="subtle">Open this site on your phone and follow its passkey prompt. Your phone may offer its fingerprint sensor or another screen-unlock method.</p>
+            @if (canPhone) { <button type="button" class="btn btn-outline-secondary" data-phone-button data-create="@(!Model.HasFingerprint ? "true" : "false")">@(Model.HasFingerprint ? "Verify with phone" : "Set up on phone")</button> }
+        </section>
+    </div>
+    <p class="mt-3" data-bio-status role="status" aria-live="polite"></p>
+    <div class="button-row">
+        @if (Model.Manage && !first) { <a class="btn btn-primary" href="@Model.ReturnUrl">Continue to workspace</a> }
+        @if (!Model.Manage) { <form asp-action="Logout" method="post"><button type="submit" class="btn btn-outline-secondary">Back to sign in</button></form> }
     </div>
 </div>
-
-@section Scripts {
-    <script src="~/js/biometrics.js"></script>
-    <script>
-        const userEmail = "@Model.UserEmail";
-        const alertBox = document.getElementById("setupAlert");
-
-        function showAlert(msg, isSuccess) {
-            alertBox.className = "alert " + (isSuccess ? "alert-success" : "alert-danger");
-            alertBox.textContent = msg;
-            alertBox.classList.remove("d-none");
-        }
-
-        // Camera Start
-        document.getElementById("btnStartFaceCam").addEventListener("click", async () => {
-            try {
-                await window.biometrics.startCamera("setupFaceVideo");
-                document.getElementById("btnCaptureFace").disabled = false;
-                document.getElementById("faceOverlay").classList.remove("d-none");
-            } catch (err) {
-                const msg = err.message || "";
-                if (msg.includes("timed out") || msg.includes("not allowed") || msg.includes("NotAllowedError")) {
-                    showAlert("ملاحظة: جهازك لا يحتوي على قارئ بصمة إصبع مفعّل (أو تم إلغاء الطلب). بما أنك سجّلت بصمة الوجه بنجاح، يمكنك الضغط على زر المتابعة في الأسفل مباشرة!", true);
-                } else {
-                    showAlert(msg, false);
-                }
-            }
-        });
-
-        // Face Capture & Register
-        document.getElementById("btnCaptureFace").addEventListener("click", async () => {
-            try {
-                const liveData = window.biometrics.captureLiveVector("setupFaceVideo");
-                const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
-
-                const response = await fetch('/Account/RegisterFace', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'RequestVerificationToken': token
-                    },
-                    body: JSON.stringify(liveData)
-                });
-
-                const res = await response.json();
-                if (response.ok && res.success) {
-                    showAlert("Face biometric registered successfully!", true);
-                    const badge = document.getElementById("faceStatusBadge");
-                    badge.className = "badge bg-success";
-                    badge.textContent = "Enrolled";
-                    window.biometrics.stopCamera();
-                } else {
-                    showAlert(res.message || "Failed to register face.", false);
-                }
-            } catch (err) {
-                const msg = err.message || "";
-                if (msg.includes("timed out") || msg.includes("not allowed") || msg.includes("NotAllowedError")) {
-                    showAlert("ملاحظة: جهازك لا يحتوي على قارئ بصمة إصبع مفعّل (أو تم إلغاء الطلب). بما أنك سجّلت بصمة الوجه بنجاح، يمكنك الضغط على زر المتابعة في الأسفل مباشرة!", true);
-                } else {
-                    showAlert(msg, false);
-                }
-            }
-        });
-
-        // Fingerprint Enrollment
-        document.getElementById("btnEnrollFingerprint").addEventListener("click", async () => {
-            try {
-                const cred = await window.biometrics.enrollFingerprint(userEmail);
-                const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
-
-                const response = await fetch('/Account/RegisterFingerprint', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'RequestVerificationToken': token
-                    },
-                    body: JSON.stringify({ credentialId: cred.credentialId })
-                });
-
-                const res = await response.json();
-                if (response.ok && res.success) {
-                    showAlert("Fingerprint registered successfully via WebAuthn!", true);
-                    const badge = document.getElementById("fingerprintStatusBadge");
-                    badge.className = "badge bg-success";
-                    badge.textContent = "Enrolled";
-                } else {
-                    showAlert(res.message || "Fingerprint enrollment failed.", false);
-                }
-            } catch (err) {
-                const msg = err.message || "";
-                if (msg.includes("timed out") || msg.includes("not allowed") || msg.includes("NotAllowedError")) {
-                    showAlert("ملاحظة: جهازك لا يحتوي على قارئ بصمة إصبع مفعّل (أو تم إلغاء الطلب). بما أنك سجّلت بصمة الوجه بنجاح، يمكنك الضغط على زر المتابعة في الأسفل مباشرة!", true);
-                } else {
-                    showAlert(msg, false);
-                }
-            }
-        });
-    </script>
-}
+@section Scripts { <script src="~/js/biometrics.js" asp-append-version="true" defer></script> }

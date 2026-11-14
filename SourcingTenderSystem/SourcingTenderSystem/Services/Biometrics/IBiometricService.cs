@@ -14,7 +14,7 @@ public interface IBiometricService
     /// Calls Face++ Compare API with two face tokens.
     /// Returns the confidence score (0–100). Returns -1 on error.
     /// </summary>
-    Task<double> CompareFaceTokensAsync(string faceToken1, string faceToken2);
+    Task<double> CompareFaceTokensAsync(string faceToken1, string faceToken2, string? referenceImage = null);
 
     /// <summary>
     /// Verifies fingerprint by comparing stored WebAuthn credential ID with submitted one.
