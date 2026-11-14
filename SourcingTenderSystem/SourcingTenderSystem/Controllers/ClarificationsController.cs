@@ -59,7 +59,10 @@ public sealed class ClarificationsController(ApplicationDbContext db, Clarificat
     {
         var actor = await routing.Current(User);
         if (actor is null) return Forbid();
-        await using var tx = await db.Database.BeginTransactionAsync(IsolationLevel.Serializable);
+        int? tenderId = input.Kind == "bid" ? await db.Bids.Where(b => b.Id == input.RecordId)
+            .Select(b => (int?)b.TenderId).SingleOrDefaultAsync() : null;
+        await using var tx = tenderId is int key ? await TenderRules.LockAsync(db, key)
+            : await db.Database.BeginTransactionAsync(IsolationLevel.Serializable);
         var route = await routing.Get(input.Kind, input.RecordId, actor);
         if (route is null) return NotFound();
         var recipient = route.Recipients.SingleOrDefault(p => p.Key == input.Recipient);
@@ -75,6 +78,18 @@ public sealed class ClarificationsController(ApplicationDbContext db, Clarificat
             BidId = input.Kind == "bid" ? input.RecordId : null, CreatedAt = DateTime.UtcNow
         };
         db.ClarificationRequests.Add(row);
+        if (tenderId is int tenderKey && actor.Employee is int officer && recipient.Supplier is not null)
+        {
+            var bid = await db.Bids.Include(b => b.Tender).SingleAsync(b => b.Id == input.RecordId);
+            if (bid.Tender.Status == "Closed" && bid.Status is ("Submitted" or "Pending Clarification") &&
+                (bid.ComplianceClarificationId == null || await db.ClarificationRequests.AnyAsync(r =>
+                    r.Id == bid.ComplianceClarificationId && r.Status == "Resolved")))
+            {
+                bid.Status = "Pending Clarification";
+                bid.ComplianceClarification = row;
+                EvaluationRules.Audit(db, tenderKey, officer, "ComplianceClarificationRequested", $"Bid #{bid.Id}", row.CreatedAt);
+            }
+        }
         await db.SaveChangesAsync();
         Notify(recipient.Employee, recipient.Supplier, "New clarification request", row);
         await db.SaveChangesAsync();

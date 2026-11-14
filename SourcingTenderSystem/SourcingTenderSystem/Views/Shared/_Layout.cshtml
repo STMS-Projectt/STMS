@@ -26,11 +26,17 @@
         supplier = false;
     }
 
+    var workspace = admin || department || sourcing || supplier || committee;
+    var workspaceKey = admin ? "admin" : department ? "department" : sourcing ? "sourcing" : supplier ? "supplier" : committee ? "committee" : "portal";
+    var fragment = workspace && Context.Request.Headers["X-STMS-Fragment"] == "workspace";
+    Context.Response.Headers.Append("Vary", "X-STMS-Fragment");
+    if (fragment) Context.Response.Headers.CacheControl = "private, no-store";
     var title = ViewData["Title"]?.ToString();
 }
 
-<!DOCTYPE html>
-<html lang="en">
+@if (!fragment) { @Html.Raw("<!DOCTYPE html><html lang='en'>") }
+@if (!fragment)
+{
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -43,9 +49,16 @@
     {
         <link rel="stylesheet" href="~/css/department.css" asp-append-version="true">
     }
+    <link rel="stylesheet" href="~/css/workspace.css" asp-append-version="true">
 </head>
+}
 
-<body class="@(admin || department || sourcing || supplier || committee ? "workspace" : "portal") @(department ? "department-workspace" : "")">
+@if (!fragment)
+{
+    var classes = (workspace ? "workspace" : "portal") + (department ? " department-workspace" : "");
+    @Html.Raw("<body class='" + classes + "'>")
+}
+<div data-workspace-frame="@workspaceKey" data-page-title="@title · Sourcing Desk" hidden></div>
     <a class="skip-link" href="#main">Skip to content</a>
 
     @if (sourcing)
@@ -231,11 +244,33 @@
         </footer>
     </div>
 
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-
-    @if (signedIn) { <script src="~/js/notifications.js" asp-append-version="true" defer></script> }
-    @await RenderSectionAsync("Scripts", required: false)
-</body>
-</html>
+    @if (!fragment)
+    {
+        <script src="~/lib/jquery/dist/jquery.min.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="~/js/site.js" asp-append-version="true"></script>
+        @if (signedIn) { <script src="~/js/notifications.js" asp-append-version="true" defer></script> }
+        @if (workspace)
+        {
+            <dialog class="workspace-dialog" id="workspace-dialog" aria-labelledby="workspace-dialog-title">
+                <div class="workspace-dialog-bar"><strong id="workspace-dialog-title">Edit record</strong><button type="button" class="icon-button" data-dialog-close aria-label="Close dialog"><partial name="_Icon" model='@("close")' /></button></div>
+                <div class="workspace-dialog-loader" data-dialog-loader hidden role="status"><span class="workspace-spinner" aria-hidden="true"></span><span data-dialog-loader-label>Loading…</span></div>
+                <div data-dialog-content></div>
+            </dialog>
+            <dialog id="workspace-confirm" class="workspace-dialog workspace-confirm" aria-labelledby="workspace-confirm-title">
+                <form method="dialog" class="p-4">
+                    <h2 id="workspace-confirm-title">Confirm action</h2>
+                    <p class="mt-2" data-confirm-question></p>
+                    <div class="button-row justify-content-end">
+                        <button class="btn btn-outline-secondary" value="cancel" autofocus>Cancel</button>
+                        <button class="btn btn-primary" value="confirm">Continue</button>
+                    </div>
+                </form>
+            </dialog>
+            <div class="workspace-progress" hidden role="status" aria-label="Loading"></div>
+            <div class="visually-hidden" aria-live="polite" data-workspace-status></div>
+            <script src="~/js/workspace.js" asp-append-version="true" defer></script>
+        }
+    }
+    <div data-page-scripts hidden>@await RenderSectionAsync("Scripts", required: false)</div>
+@if (!fragment) { @Html.Raw("</body></html>") }

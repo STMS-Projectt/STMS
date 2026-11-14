@@ -1,9 +1,8 @@
 (() => {
-    const badge = document.querySelector("[data-notification-count]");
-    if (!badge) return;
     let checking = false;
     async function refresh() {
-        if (document.hidden || checking) return;
+        const badge = document.querySelector("[data-notification-count]");
+        if (!badge || document.hidden || checking) return;
         checking = true;
         try {
             const response = await fetch(badge.dataset.notificationCount, { cache: "no-store" });

@@ -29,7 +29,7 @@ else
                             }
                             @if (TenderRules.CanCreate(request))
                             {
-                                <a class="btn btn-sm btn-primary ms-2" asp-controller="Tenders" asp-action="Create" asp-route-purchaseRequisitionId="@request.Id">Create tender</a>
+                                <a data-workspace-dialog class="btn btn-sm btn-primary ms-2" asp-controller="Tenders" asp-action="Create" asp-route-purchaseRequisitionId="@request.Id">Create tender</a>
                             }
                         </td>
                     </tr>

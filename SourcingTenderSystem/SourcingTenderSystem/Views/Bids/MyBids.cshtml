@@ -33,7 +33,7 @@
                                 <td>@invitation.Tender.Title</td>
                                 <td>@invitation.Tender.CloseDate.ToString("yyyy-MM-dd HH:mm")</td>
                                 <td>
-                                    <a class="btn btn-sm btn-primary" asp-action="Create" asp-route-tenderId="@invitation.TenderId">Create bid</a>
+                                    <a data-workspace-dialog class="btn btn-sm btn-primary" asp-action="Create" asp-route-tenderId="@invitation.TenderId">Create bid</a>
                                 </td>
                             </tr>
                         }
@@ -71,7 +71,7 @@ else
                         <td>@bid.Tender.Title</td>
                         <td class="text-end">@bid.TotalPrice.ToString("N2")</td>
                         <td>@bid.Currency</td>
-                        <td><partial name="_StatusBadge" model="bid.Status" /></td>
+                        <td><partial name="_StatusBadge" model="bid.Status" /> @if (bid.AwardOutcome is string result) { <span class="badge bg-secondary">Result: @result</span> }</td>
                         <td>@(bid.SubmittedAt?.ToString("yyyy-MM-dd HH:mm") ?? "—")</td>
                         <td><a asp-action="Details" asp-route-id="@bid.Id">Details</a></td>
                     </tr>

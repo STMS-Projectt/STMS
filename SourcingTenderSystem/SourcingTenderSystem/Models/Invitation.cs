@@ -9,6 +9,8 @@ public class Invitation
 {
     public int Id { get; set; }
     public int TenderId { get; set; }
+    public int? RoundNumber { get; set; }
+    public TenderRound? Round { get; set; }
     public int SupplierProfileId { get; set; }
     public string Status { get; set; } = string.Empty;
     public DateTime SentAt { get; set; }

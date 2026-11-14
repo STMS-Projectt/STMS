@@ -11,8 +11,7 @@ public sealed class BiometricEnforcementMiddleware(RequestDelegate next)
         if (endpoint is not null && endpoint.ControllerName != "Account" && context.User.Identity?.IsAuthenticated == true)
         {
             var user = await users.GetUserAsync(context.User);
-            if (user is not null && (await users.GetPasskeysAsync(user)).Count == 0 &&
-                string.IsNullOrEmpty(await users.GetAuthenticationTokenAsync(user, "Biometrics", "FaceToken")))
+            if (user is not null && (await users.GetPasskeysAsync(user)).Count == 0)
             {
                 if (HttpMethods.IsGet(context.Request.Method))
                     context.Response.Redirect(context.Request.PathBase + "/Account/BiometricSetup");

@@ -13,6 +13,8 @@ public class EvaluationReport
     public string Summary { get; set; } = string.Empty;
     public string SupplierComparison { get; set; } = string.Empty;
     public string Recommendation { get; set; } = string.Empty;
+    public string? ResultsSnapshot { get; set; }
+    public DateTime? FinalizedAt { get; set; }
     public string? FileKey { get; set; }
     public string Status { get; set; } = string.Empty;
     public int PreparedByEmployeeProfileId { get; set; }

@@ -1,3 +1,4 @@
+@using SourcingTenderSystem.Services
 @model ComplianceReviewViewModel
 @{
     var tender = Model.Tender;
@@ -169,14 +170,18 @@ else
                         @foreach (var bid in Model.Bids)
                         {
                             <td>
-                                @if (bid.Status == "Submitted")
+                                @if (bid.Status == "Pending Clarification" && bid.ComplianceClarification is { } clarification)
+                                {
+                                    <a asp-controller="Clarifications" asp-action="Details" asp-route-id="@clarification.Id">Clarification: @clarification.Status</a>
+                                }
+                                @if (bid.Status == "Submitted" || bid.Status == "Pending Clarification" && bid.ComplianceClarification?.Status == "Resolved")
                                 {
                                     <div class="d-flex flex-wrap gap-1">
                                         <form asp-action="MarkCompliant" asp-route-id="@bid.Id" method="post" asp-antiforgery="true"
-                                              onsubmit="return confirm('Mark this bid as Compliant?');">
+                                              data-workspace-confirm="Mark this bid as Compliant?" onsubmit="return window.stmsWorkspaceReady || confirm(this.dataset.workspaceConfirm);">
                                             <button type="submit" class="btn btn-sm btn-success">Compliant</button>
                                         </form>
-                                        <a class="btn btn-sm btn-outline-danger" asp-action="MarkNonCompliant" asp-route-id="@bid.Id">Non-compliant</a>
+                                        <a data-workspace-dialog class="btn btn-sm btn-outline-danger" asp-action="MarkNonCompliant" asp-route-id="@bid.Id">Non-compliant</a>
                                         @* Placeholder: clarification requests belong to Person 4 (ClarificationsController).
                                            Replace this with the real link when it is ready. *@
                                         <a class="btn btn-sm btn-outline-secondary disabled" aria-disabled="true">Request clarification</a>
@@ -199,7 +204,13 @@ else
 @if (Model.TenderIsClosed)
 {
     <div class="card mb-3">
-        <div class="card-header">Send to evaluation</div>
+        <div class="card-header">Send to evaluation · Round @tender.Counter of @TenderRules.MaxRounds</div>
+        <p class="px-3 pt-3">Eligible suppliers: @ViewBag.EligibleSuppliers · Required: @TenderRules.Minimum(tender).
+        @if (!TenderRules.CanEvaluate(tender, (int)ViewBag.EligibleSuppliers))
+        {
+            <span>The bid minimum has not been met.</span>
+            <a asp-controller="Tenders" asp-action="Details" asp-route-id="@tender.Id">View bidding rounds</a>
+        }</p>
         <ul class="list-group list-group-flush">
             <li class="list-group-item">
                 @if (Model.SubmittedCount == 0)
@@ -228,7 +239,7 @@ else
             @if (Model.CanSendToEvaluation)
             {
                 <form asp-action="SendToEvaluation" asp-route-tenderId="@tender.Id" method="post" asp-antiforgery="true"
-                      onsubmit="return confirm('Send this tender to evaluation? The compliance check will be closed.');">
+                      data-workspace-confirm="Send this tender to evaluation? The compliance check will be closed." onsubmit="return window.stmsWorkspaceReady || confirm(this.dataset.workspaceConfirm);">
                     <button type="submit" class="btn btn-primary">Assign evaluation committee</button>
                 </form>
             }

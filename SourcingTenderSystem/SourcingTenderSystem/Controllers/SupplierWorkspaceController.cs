@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using SourcingTenderSystem.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -35,6 +36,7 @@ public sealed class SupplierWorkspaceController(ApplicationDbContext db) : Contr
             {
                 Invitations = await invitations.CountAsync(),
                 AwaitingResponse = await invitations.CountAsync(i => i.Status == "Pending" &&
+                    (i.RoundNumber == i.Tender.Counter || i.RoundNumber == null && db.TenderRounds.Any(r => r.TenderId == i.TenderId && r.Number == i.Tender.Counter && r.Legacy)) &&
                     i.ExpiresAt > now && i.Tender.Status == "Open" &&
                     i.Tender.OpenDate <= now && i.Tender.CloseDate > now),
                 DraftBids = await bids.CountAsync(b => b.Status == "Draft"),
@@ -51,10 +53,13 @@ public sealed class SupplierWorkspaceController(ApplicationDbContext db) : Contr
         var supplier = await OwnProfile().AsNoTracking().SingleOrDefaultAsync();
         if (supplier?.Status != SupplierStatus.Approved) return Forbid();
 
-        var rows = await OwnInvitations(supplier.Id).AsNoTracking().Include(i => i.Tender)
+        var rows = await OwnInvitations(supplier.Id).AsNoTracking().Include(i => i.Tender).Include(i => i.Round)
             .OrderByDescending(i => i.SentAt).ThenByDescending(i => i.Id).ToListAsync();
         var bidTenders = await db.Bids.Where(b => b.SupplierProfileId == supplier.Id)
             .Select(b => b.TenderId).ToListAsync();
+        ViewBag.CurrentLegacyTenders = (await db.TenderRounds.Where(r => r.Legacy && r.Number == r.Tender.Counter &&
+            r.Tender.Invitations.Any(i => i.SupplierProfileId == supplier.Id && i.RoundNumber == null))
+            .Select(r => r.TenderId).ToListAsync()).ToHashSet();
         return View(new SupplierInvitationList(rows, bidTenders.ToHashSet(), DateTime.UtcNow));
     }
 
@@ -66,15 +71,20 @@ public sealed class SupplierWorkspaceController(ApplicationDbContext db) : Contr
         if (supplier?.Status != SupplierStatus.Approved) return Forbid();
 
         var ownInvitation = OwnInvitations(supplier.Id).Where(i => i.Id == id);
-        if (!await ownInvitation.AnyAsync()) return NotFound();
+        var tenderId = await ownInvitation.Select(i => (int?)i.TenderId).SingleOrDefaultAsync();
+        if (tenderId is null) return NotFound();
+        await using var tx = await TenderRules.LockAsync(db, tenderId.Value);
 
         var now = DateTime.UtcNow;
         var changed = await ownInvitation
-            .Where(i => i.Status == "Pending" && i.ExpiresAt > now && i.Tender.Status == "Open" &&
+            .Where(i => i.Status == "Pending" &&
+                (i.RoundNumber == i.Tender.Counter || i.RoundNumber == null && db.TenderRounds.Any(r => r.TenderId == i.TenderId && r.Number == i.Tender.Counter && r.Legacy)) &&
+                i.ExpiresAt > now && i.Tender.Status == "Open" &&
                 i.Tender.OpenDate <= now && i.Tender.CloseDate > now &&
                 i.SupplierProfile.Status == SupplierStatus.Approved)
             .ExecuteUpdateAsync(set => set.SetProperty(i => i.Status, decision)
                 .SetProperty(i => i.RespondedAt, now));
+        await tx.CommitAsync();
         if (changed == 0)
             TempData["InvitationError"] = "This invitation is no longer available for a response.";
         else

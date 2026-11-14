@@ -28,7 +28,7 @@
             var current = controller == target && (action == route || target == "Bids") ||
                 (target == "Bids" && controller is "BidItems" or "BidDocuments");
             <a class="side-link @(current ? "is-current" : "")" aria-current="@(current ? "page" : null)"
-               asp-controller="@target" asp-action="@route" asp-route-id="">
+               asp-controller="@target" asp-action="@route" asp-route-id="" data-workspace-dialog="@(route == "UploadDocuments" ? "true" : null)">
                 <partial name="_Icon" model="icon" /> @label
             </a>
         }

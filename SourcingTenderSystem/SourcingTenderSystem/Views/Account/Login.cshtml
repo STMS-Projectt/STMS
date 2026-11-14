@@ -1,35 +1,26 @@
 @model LoginInput
 @{
     ViewData["Title"] = "Sign in";
-    var knownFace = ViewData["KnownFaceAccount"] is true;
 }
 <div class="auth-shell">
     <aside class="auth-aside">
         <span class="brand-mark"><partial name="_Icon" model='@("shield")' /></span>
         <p class="eyebrow">SOURCING DESK</p><h2>Choose how to sign in</h2>
-        <p>Use a registered face or phone for quick access. Use your password when setting up a new account or switching accounts.</p>
+        <p>Use a registered phone for quick access. Use your password when setting up a new account or switching accounts.</p>
     </aside>
-    <section class="surface auth-panel" data-bio data-return-url="@Model.ReturnUrl" data-known-face="@(knownFace ? "true" : "false")"
-        data-camera="@Url.Action("DirectCamera")" data-phone-options="@Url.Action("DirectPhoneOptions")" data-phone="@Url.Action("DirectPhone")">
+    <section class="surface auth-panel" data-bio data-return-url="@Model.ReturnUrl"
+        data-phone-options="@Url.Action("DirectPhoneOptions")" data-phone="@Url.Action("DirectPhone")">
         <p class="eyebrow">WELCOME</p><h1>Sign in</h1>
         <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
         <label class="field mt-2" for="Email">Email <span class="subtle">· when needed</span></label>
         <input asp-for="Email" form="password-sign-in" type="email" class="form-control" autocomplete="username" data-bio-email aria-describedby="sign-in-email-hint" />
         <span asp-validation-for="Email" class="text-danger"></span>
-        <p id="sign-in-email-hint" class="field-hint mb-3">@(knownFace ? "This browser remembers your face account. Enter an email to use a different account." : "Phone sign-in needs no email. For face sign-in, identify your account once on this browser.")</p>
+        <p id="sign-in-email-hint" class="field-hint mb-3">Phone sign-in needs no email.</p>
 
         <div class="stack" aria-label="Sign-in methods">
             <button class="btn btn-primary justify-content-start w-100" type="button" data-phone-button><partial name="_Icon" model='@("check")' /> Use registered phone</button>
             <details class="border rounded p-3">
-                <summary class="fw-semibold">Use face recognition</summary>
-                <p class="field-hint mb-2">Look directly at the camera in a well-lit space.</p>
-                <video data-preview hidden autoplay muted playsinline class="w-100 rounded mb-2" aria-label="Camera preview"></video>
-                <div class="button-row">
-                    <button class="btn btn-outline-secondary" type="button" data-open-camera>Start camera</button>
-                    <button class="btn btn-primary" type="button" data-capture disabled>Verify face</button>
-                    <button class="btn btn-outline-secondary" type="button" data-stop-camera hidden>Stop camera</button>
-                </div>
-            </details>
+                <summary class="fw-semibold">Face recognition</summary><p class="field-hint mb-0">Face-only sign-in is unavailable. Use a password or passkey. If your device offers Face ID or another face unlock, you can use it through your registered passkey.</p></details>
             <details class="border rounded p-3" open="@(!ViewData.ModelState.IsValid)">
                 <summary class="fw-semibold">Use password</summary>
                 <form id="password-sign-in" asp-action="Login" method="post" class="stack mt-2">

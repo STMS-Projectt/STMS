@@ -1,0 +1,30 @@
+@model Tender
+@{ ViewData["Title"] = "Evaluation criteria"; }
+<header class="page-heading"><div><h1>Evaluation criteria</h1><p>@Model.Title · @Model.EvaluationCriteria.Sum(c => c.WeightPercent)% of 100%</p></div></header>
+@if (TempData["Error"] is string error) { <p class="alert alert-warning" role="alert">@error</p> }
+<ul class="list-group mb-3">
+@foreach (var criterion in Model.EvaluationCriteria)
+{
+    <li class="list-group-item d-flex justify-content-between">
+        <span>@criterion.Name · @criterion.Type · @criterion.WeightPercent% · @criterion.MaxScore points</span>
+        @if (Model.Status == "Draft")
+        {
+            <form asp-action="Criterion" asp-route-id="@Model.Id" method="post">
+                <button class="btn btn-sm btn-outline-danger" type="submit" name="remove" value="@criterion.Id">Remove</button>
+            </form>
+        }
+    </li>
+}
+</ul>
+@if (Model.Status == "Draft")
+{
+    <form asp-action="Criterion" asp-route-id="@Model.Id" method="post" class="surface form-card">
+        <label class="field">Criterion name<input class="form-control" name="Name" maxlength="120" required /></label>
+        <label class="field">Type<select class="form-select" name="Type"><option>Technical</option><option>Financial</option></select></label>
+        <label class="field">Maximum score<input class="form-control" name="MaxScore" type="number" min="1" max="100" required /></label>
+        <label class="field">Weight (%)<input class="form-control" name="WeightPercent" type="number" min=".01" max="100" step=".01" required /></label>
+        <button class="btn btn-primary mt-3" type="submit">Add criterion</button>
+    </form>
+}
+else { <p>Criteria are frozen after publication.</p> }
+<a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary mt-3">Tender details</a>

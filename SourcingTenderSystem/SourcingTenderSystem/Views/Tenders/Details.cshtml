@@ -1,7 +1,12 @@
+@using SourcingTenderSystem.Services
 @model SourcingTenderSystem.Models.Tender
 
 @{
     ViewData["Title"] = "Tender Details";
+    int count = ViewBag.OfferCount;
+    var rounds = (List<TenderRound>)ViewBag.Rounds;
+    var submitted = (List<string>)ViewBag.SubmittedSuppliers;
+    var invitable = (List<string>)ViewBag.InvitableSuppliers;
     var isDraft = Model.Status == "Draft";
 }
 
@@ -47,14 +52,15 @@
 </div>
 
 <div class="d-flex flex-wrap gap-2">
+    <a data-workspace-dialog asp-action="Criteria" asp-route-id="@Model.Id" class="btn btn-outline-secondary">Evaluation criteria</a>
     <a asp-action="Index" class="btn btn-outline-secondary">Back to list</a>
     @if (isDraft)
     {
-        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary">Edit</a>
+        <a data-workspace-dialog asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary">Edit</a>
     }
-    @if (Model.Status == "Closed")
+    @if (TenderRules.CanEvaluate(Model, count))
     {
-        <a asp-action="AssignCommittee" asp-route-id="@Model.Id" class="btn btn-primary">Evaluation committee</a>
+        <a data-workspace-dialog asp-action="AssignCommittee" asp-route-id="@Model.Id" class="btn btn-primary">Evaluation committee</a>
     }
     @if (Model.Status == "Open" && Model.CloseDate <= DateTime.UtcNow)
     {
@@ -72,18 +78,44 @@
 {
     <form asp-action="Publish" asp-route-id="@Model.Id" method="post" class="mt-3"><button class="btn btn-primary" type="submit">Submit tender</button></form>
 }
-@if (Model.Status == "Closed")
-{
-    <section class="surface detail-card mt-3">
-        <h2>Bidding round @Model.Counter</h2>
-        <p>@ViewBag.OfferCount submitted offers · Minimum @(Model.Counter >= 2 ? 2 : 3) to proceed.</p>
-        @if (Model.Counter < 2 && (int)ViewBag.OfferCount < 3)
-        {
-            <form asp-action="Reopen" asp-route-id="@Model.Id" method="post">
-                <label class="form-label">New closing deadline (UTC)<input class="form-control" name="closeDate" type="datetime-local" required /></label>
-                <button class="btn btn-primary" type="submit">Reopen for second round</button>
-            </form>
-        }
-        <a class="text-link mt-2" asp-controller="Compliance" asp-action="Review" asp-route-tenderId="@Model.Id">Compliance review</a>
-    </section>
-}
+<section class="surface detail-card mt-3">
+    <h2>Round @Model.Counter of @TenderRules.MaxRounds</h2>
+    <p>@count distinct eligible suppliers · @TenderRules.Minimum(Model) required · @(TenderRules.MaxRounds - Model.Counter) rounds remaining</p>
+    @if (Model.Counter == TenderRules.MaxRounds)
+    {
+        <p>Final round: one eligible bid is sufficient after closing, subject to compliance review. Zero bids always blocks evaluation.</p>
+    }
+    @if (TenderRules.CanReopen(Model, count))
+    {
+        <a data-workspace-dialog asp-action="Reopen" asp-route-id="@Model.Id" class="btn btn-primary">Open round @(Model.Counter + 1)</a>
+    }
+    else
+    {
+        <p class="subtle">@(Model.Status != "Closed" ? "Reopening is available only after a round closes." : Model.Counter == TenderRules.MaxRounds ? "All three rounds have been used." : "The tender already has three eligible suppliers.")</p>
+    }
+    @if (Model.Status == "Closed")
+    {
+        <p>@(TenderRules.CanEvaluate(Model, count) ? "Bid minimum met. Complete compliance review before assignment." : "Evaluation is blocked because the bid minimum has not been met.")</p>
+        <a asp-controller="Compliance" asp-action="Review" asp-route-tenderId="@Model.Id">Compliance review</a>
+    }
+    @if (Model.Status is "Draft" or "Open" or "Published")
+    {
+        <a data-workspace-dialog asp-controller="Invitations" asp-action="Create" asp-route-tenderId="@Model.Id" class="btn btn-outline-primary">Invite suppliers</a>
+        <p class="mt-2">Available to invite: @(invitable.Count == 0 ? "None" : string.Join(", ", invitable))</p>
+    }
+    <p>Previously submitted: @(submitted.Count == 0 ? "None" : string.Join(", ", submitted))</p>
+    <div class="table-responsive">
+        <table class="table">
+            <thead><tr><th>Round</th><th>Opens (UTC)</th><th>Deadline (UTC)</th><th>Outcome</th><th>Reason</th></tr></thead>
+            <tbody>
+            @foreach (var round in rounds)
+            {
+                <tr><td>@round.Number</td><td>@(round.OpensAt?.ToString("yyyy-MM-dd HH:mm") ?? "Unknown")</td>
+                    <td>@(round.ClosesAt?.ToString("yyyy-MM-dd HH:mm") ?? "Unknown")</td>
+                    <td>@(round.ClosingOutcome ?? "Not closed") @if (round.EligibleSuppliersAtClose is int n) { <small>(@n eligible)</small> }</td>
+                    <td>@round.ReopenReason</td></tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</section>

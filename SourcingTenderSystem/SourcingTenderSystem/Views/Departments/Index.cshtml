@@ -1,6 +1,6 @@
 @model IReadOnlyList<Department>
 @{ ViewData["Title"] = "Departments"; }
-<header class="page-heading"><div><p class="eyebrow">ADMINISTRATION</p><h1>Departments</h1><p>Organize employee accounts by department.</p></div><a class="btn btn-primary" asp-action="Create" ><partial name="_Icon" model='@("plus")' /> Add department</a></header>
+<header class="page-heading"><div><p class="eyebrow">ADMINISTRATION</p><h1>Departments</h1><p>Organize employee accounts by department.</p></div><a data-workspace-dialog class="btn btn-primary" asp-action="Create" ><partial name="_Icon" model='@("plus")' /> Add department</a></header>
 <section class="surface directory" aria-label="Departments directory" data-directory>
     <div class="directory-toolbar">
     @* Voice search trial on the Admin Departments page. *@
@@ -12,7 +12,7 @@
 </div>
     @if (Model.Count == 0)
     {
-        <div class="empty-state"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("building")' /></span><h2>No departments yet</h2><p>Add a department so employees can be assigned to it.</p><a class="btn btn-primary" asp-action="Create" >Add department</a></div>
+        <div class="empty-state"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("building")' /></span><h2>No departments yet</h2><p>Add a department so employees can be assigned to it.</p><a data-workspace-dialog class="btn btn-primary" asp-action="Create" >Add department</a></div>
     }
     else
     {

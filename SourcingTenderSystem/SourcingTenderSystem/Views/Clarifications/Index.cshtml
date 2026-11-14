@@ -5,7 +5,7 @@
     <p>@(Model.Route?.Title ?? "Questions and responses involving your account.")</p></div>
     <div class="button-row">
         @if (Model.RecordId.HasValue) { <a class="btn btn-outline-secondary" asp-action="Index">All clarifications</a> }
-        @if (Model.Route is not null) { <a class="btn btn-primary" asp-action="Create" asp-route-kind="@Model.Kind" asp-route-recordId="@Model.RecordId"><partial name="_Icon" model='@("plus")' /> New clarification</a> }
+        @if (Model.Route is not null) { <a data-workspace-dialog class="btn btn-primary" asp-action="Create" asp-route-kind="@Model.Kind" asp-route-recordId="@Model.RecordId"><partial name="_Icon" model='@("plus")' /> New clarification</a> }
     </div>
 </header>
 @if (Model.RecordId.HasValue && Model.Route == null)

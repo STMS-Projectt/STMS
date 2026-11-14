@@ -24,6 +24,15 @@
     @if (Model.Scores.Count == 0) { <div class="surface detail-card">No evaluation criteria have been set yet.</div> }
     @foreach (var row in Model.Scores)
     {
+        @if (ViewBag.ReadOnly is true)
+        {
+            <section class="surface detail-card"><h3>@row.Criterion.Name</h3>
+                <p>@row.Score / @row.Criterion.MaxScore · @row.Criterion.WeightPercent%</p><p>@row.Notes</p>
+                @if (row.Taxes.HasValue) { <p>Taxes: @row.Taxes · Extra costs: @row.Extras</p> }
+            </section>
+        }
+        else
+        {
         <form class="surface form-card" asp-action="SaveScore" asp-route-id="@Model.Bid.Id" asp-route-criterionId="@row.Criterion.Id" method="post">
             <div class="card-heading"><div><p class="eyebrow">@row.Criterion.Type · @row.Criterion.WeightPercent% WEIGHT</p><h3>@row.Criterion.Name</h3></div>
                 @if (row.Score.HasValue) { <span class="status-pill status-positive"><span></span>Saved</span> }</div>
@@ -38,5 +47,6 @@
             </div>
             <button class="btn btn-primary" type="submit">Save score</button>
         </form>
+        }
     }
 </section>

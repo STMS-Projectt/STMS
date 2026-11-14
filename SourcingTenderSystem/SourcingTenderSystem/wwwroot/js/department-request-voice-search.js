@@ -1,10 +1,12 @@
 // Voice search for the Department My Requests title filter.
 (() => {
-    const form = document.querySelector('.request-filters');
+    function bind(form) {
     const search = form?.querySelector('input[name="q"]');
     const button = form?.querySelector('[data-request-voice-search]');
     const status = form?.querySelector('[data-request-voice-status]');
-    if (!search || !button || !status) return;
+    if (!search || !button || !status || button.dataset.bound) return;
+    button.dataset.bound = 'true';
+    button.hidden = false;
     const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!Recognition) {
         button.disabled = true;
@@ -23,7 +25,7 @@
     recognition.onresult = event => {
         search.value = event.results[0][0].transcript;
         status.textContent = 'Searching for ' + search.value;
-        form.requestSubmit();
+        if (form.isConnected) form.requestSubmit();
     };
     recognition.onerror = event => {
         status.textContent = event.error === 'not-allowed'
@@ -35,4 +37,8 @@
         try { recognition.start(); }
         catch { status.textContent = 'Could not start voice search.'; }
     });
+    }
+    const init = () => document.querySelectorAll('.request-filters').forEach(bind);
+    document.addEventListener('workspace:load', init);
+    init();
 })();

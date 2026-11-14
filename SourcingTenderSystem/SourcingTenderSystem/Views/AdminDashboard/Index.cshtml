@@ -44,8 +44,8 @@
     <section class="surface dashboard-card">
         <div class="card-heading"><div><h2>Quick actions</h2><p>Common administration tasks</p></div></div>
         <div class="quick-actions">
-            <a asp-controller="Departments" asp-action="Create"><span class="icon-tile tone-blue"><partial name="_Icon" model='@("building")' /></span><span><strong>Add department</strong><small>Organize employees by team</small></span><partial name="_Icon" model='@("arrow")' /></a>
-            <a asp-controller="Employees" asp-action="Create"><span class="icon-tile tone-violet"><partial name="_Icon" model='@("users")' /></span><span><strong>Add employee</strong><small>Create an account and assign access</small></span><partial name="_Icon" model='@("arrow")' /></a>
+            <a data-workspace-dialog asp-controller="Departments" asp-action="Create"><span class="icon-tile tone-blue"><partial name="_Icon" model='@("building")' /></span><span><strong>Add department</strong><small>Organize employees by team</small></span><partial name="_Icon" model='@("arrow")' /></a>
+            <a data-workspace-dialog asp-controller="Employees" asp-action="Create"><span class="icon-tile tone-violet"><partial name="_Icon" model='@("users")' /></span><span><strong>Add employee</strong><small>Create an account and assign access</small></span><partial name="_Icon" model='@("arrow")' /></a>
             <a asp-controller="Suppliers" asp-action="Index"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("supplier")' /></span><span><strong>Manage suppliers</strong><small>Review applications and documents</small></span><partial name="_Icon" model='@("arrow")' /></a>
         </div>
     </section>

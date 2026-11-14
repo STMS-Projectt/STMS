@@ -1,3 +1,4 @@
+using SourcingTenderSystem.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -57,6 +58,7 @@ public class BidsController : Controller
             .Include(i => i.Tender)
             .Where(i => i.SupplierProfileId == supplier.Id
                      && i.Status == "Accepted"
+                     && (i.RoundNumber == i.Tender.Counter || i.RoundNumber == null && _context.TenderRounds.Any(r => r.TenderId == i.TenderId && r.Number == i.Tender.Counter && r.Legacy))
                      && i.Tender.Status == "Open"
                      && i.Tender.OpenDate <= now && i.Tender.CloseDate > now
                      && !tenderIdsWithBid.Contains(i.TenderId))
@@ -110,6 +112,7 @@ public class BidsController : Controller
             return NotApprovedView(supplier);
         }
 
+        await using var tx = await TenderRules.LockAsync(_context, tenderId);
         var tender = await _context.Tenders.FindAsync(tenderId);
         if (tender == null)
         {
@@ -151,7 +154,17 @@ public class BidsController : Controller
         };
 
         _context.Bids.Add(bid);
-        await _context.SaveChangesAsync();
+        try
+        {
+            await _context.SaveChangesAsync();
+            await tx.CommitAsync();
+        }
+        catch (DbUpdateException ex) when (ex.InnerException is Microsoft.Data.SqlClient.SqlException sql &&
+            sql.Number is 2601 or 2627)
+        {
+            TempData["Error"] = "You already have a bid on this tender.";
+            return RedirectToAction(nameof(MyBids));
+        }
 
         TempData["Msg"] = "Draft bid created. Add a price for every item and upload at least one document, then submit.";
         return RedirectToAction(nameof(Details), new { id = bid.Id });
@@ -203,6 +216,10 @@ public class BidsController : Controller
             return NotApprovedView(supplier);
         }
 
+        var tenderId = await _context.Bids.Where(b => b.Id == id && b.SupplierProfileId == supplier.Id)
+            .Select(b => (int?)b.TenderId).SingleOrDefaultAsync();
+        if (tenderId is null) return NotFound();
+        await using var tx = await TenderRules.LockAsync(_context, tenderId.Value);
         var bid = await GetMyBidAsync(id, supplier.Id);
         if (bid == null)
         {
@@ -232,6 +249,7 @@ public class BidsController : Controller
         bid.DeliveryDays = model.DeliveryDays;
         bid.ValidityDays = model.ValidityDays;
         await _context.SaveChangesAsync();
+        await tx.CommitAsync();
 
         TempData["Msg"] = "Bid information updated.";
         return RedirectToAction(nameof(Details), new { id = bid.Id });
@@ -273,7 +291,8 @@ public class BidsController : Controller
         }
 
         // Which buttons to show
-        model.CanChange = bid.Status == "Draft" && model.TenderIsOpen;
+        model.CanChange = bid.Status == "Draft" && model.TenderIsOpen &&
+            await HasAcceptedInvitationAsync(supplier.Id, bid.Tender);
         model.CanSubmit = model.CanChange
                           && requestedItems.Count > 0
                           && model.MissingPrices == 0
@@ -294,7 +313,11 @@ public class BidsController : Controller
             return NotApprovedView(supplier);
         }
 
-        await using var transaction = await _context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
+
+        var tenderId = await _context.Bids.Where(b => b.Id == id && b.SupplierProfileId == supplier.Id)
+            .Select(b => (int?)b.TenderId).SingleOrDefaultAsync();
+        if (tenderId is null) return NotFound();
+        await using var transaction = await TenderRules.LockAsync(_context, tenderId.Value);
         var bid = await _context.Bids
             .Include(b => b.Tender)
             .Include(b => b.BidItems)
@@ -346,8 +369,16 @@ public class BidsController : Controller
             .Where(bi => bi.BidId == bid.Id)
             .SumAsync(bi => bi.UnitPrice * bi.Quantity);
 
+        var accepted = await HasAcceptedInvitationAsync(supplier.Id, bid.Tender);
+        var submittedAt = DateTime.UtcNow;
+        if (!accepted || !TenderRules.IsOpen(bid.Tender, submittedAt))
+        {
+            TempData["Error"] = "An active bidding round and an accepted invitation for that round are required.";
+            return RedirectToAction(nameof(Details), new { id = bid.Id });
+        }
+        bid.SubmittedRoundNumber = bid.Tender.Counter;
         bid.Status = "Submitted";
-        bid.SubmittedAt = DateTime.UtcNow;
+        bid.SubmittedAt = submittedAt;
         await _context.SaveChangesAsync();
 
         await transaction.CommitAsync();
@@ -368,6 +399,10 @@ public class BidsController : Controller
             return NotApprovedView(supplier);
         }
 
+        var tenderId = await _context.Bids.Where(b => b.Id == id && b.SupplierProfileId == supplier.Id)
+            .Select(b => (int?)b.TenderId).SingleOrDefaultAsync();
+        if (tenderId is null) return NotFound();
+        await using var tx = await TenderRules.LockAsync(_context, tenderId.Value);
         var bid = await GetMyBidAsync(id, supplier.Id);
         if (bid == null)
         {
@@ -388,6 +423,7 @@ public class BidsController : Controller
 
         bid.Status = "Withdrawn";
         await _context.SaveChangesAsync();
+        await tx.CommitAsync();
 
         // TODO: audit log + notification (team mechanism) - bid withdrawn
 
@@ -420,19 +456,16 @@ public class BidsController : Controller
     }
 
     // Bidding is allowed only while the tender is "Open" and before CloseDate
-    private bool IsOpenForBidding(Tender tender)
-    {
-        var now = DateTime.UtcNow;
-        return tender.Status == "Open" && tender.OpenDate <= now && now < tender.CloseDate;
-    }
+    private static bool IsOpenForBidding(Tender tender) => TenderRules.IsOpen(tender, DateTime.UtcNow);
+
+    private Task<bool> HasAcceptedInvitationAsync(int supplierId, Tender tender) =>
+        TenderRules.CurrentInvitations(_context, tender)
+            .AnyAsync(i => i.SupplierProfileId == supplierId && i.Status == "Accepted");
 
     // Returns an error message, or null if the supplier may create a bid on this tender
     private async Task<string?> CheckCanCreateBidAsync(int supplierProfileId, Tender tender)
     {
-        bool hasAcceptedInvitation = await _context.Invitations.AnyAsync(i =>
-            i.TenderId == tender.Id
-            && i.SupplierProfileId == supplierProfileId
-            && i.Status == "Accepted");
+        bool hasAcceptedInvitation = await HasAcceptedInvitationAsync(supplierProfileId, tender);
         if (!hasAcceptedInvitation)
         {
             return "You don't have an accepted invitation for this tender.";
