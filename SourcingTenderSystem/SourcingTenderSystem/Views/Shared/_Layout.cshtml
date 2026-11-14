@@ -2,6 +2,7 @@
 @using System.Security.Claims
 @using Microsoft.EntityFrameworkCore
 @inject SourcingTenderSystem.Data.ApplicationDbContext WorkspaceDb
+
 @{
     var admin = User.IsInRole(Roles.Admin);
     var sourcing = !admin && User.IsInRole(Roles.SourcingOfficer);
@@ -15,6 +16,7 @@
     var supplier = supplierStatus != null;
     var controller = ViewContext.RouteData.Values["controller"]?.ToString();
     var action = ViewContext.RouteData.Values["action"]?.ToString();
+
     if (controller == "Account" && (action == "BiometricSetup" || action == "BiometricVerify" || action == "Login"))
     {
         admin = false;
@@ -23,8 +25,10 @@
         department = false;
         supplier = false;
     }
+
     var title = ViewData["Title"]?.ToString();
 }
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -34,10 +38,16 @@
     <link rel="icon" type="image/svg+xml" href="~/sourcing-desk.svg" asp-append-version="true">
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true">
-    @if (department) { <link rel="stylesheet" href="~/css/department.css" asp-append-version="true"> }
+
+    @if (department)
+    {
+        <link rel="stylesheet" href="~/css/department.css" asp-append-version="true">
+    }
 </head>
+
 <body class="@(admin || department || sourcing || supplier || committee ? "workspace" : "portal") @(department ? "department-workspace" : "")">
     <a class="skip-link" href="#main">Skip to content</a>
+
     @if (sourcing)
     {
         <partial name="_SourcingNavigation" />
@@ -54,78 +64,111 @@
     {
         <partial name="_SupplierNavigation" model="supplierStatus" />
     }
-
-else if (admin)
-{
-    <aside class="sidebar" id="workspace-nav" aria-label="Administration">
-        <a class="brand" asp-controller="AdminDashboard" asp-action="Index">
-            <span class="brand-mark">
-                <partial name="_Icon" model='@("brand")' />
-            </span>
-            <span>Sourcing Desk<small>Administration</small></span>
-        </a>
-
-        <div class="side-nav">
-            <span class="nav-caption">WORKSPACE</span>
-
-            @foreach (var item in new[]
-            {
-                ("AdminDashboard", "Overview", "dashboard"),
-                ("Departments", "Departments", "building"),
-                ("Employees", "Employees", "users"),
-                ("Suppliers", "Suppliers", "supplier")
-            })
-            {
-                <a class="side-link @(controller == item.Item1 ? "is-current" : "")"
-                   aria-current="@(controller == item.Item1 ? "page" : null)"
-                   asp-controller="@item.Item1"
-                   asp-action="Index">
-                    <partial name="_Icon" model="item.Item3" />
-                    @item.Item2
-                </a>
-            }
-
-            <partial name="~/Views/Profile/_ProfileNav.cshtml" />
-        </div>
-
-        <div class="side-bottom">
-            <a class="side-link" asp-controller="Home" asp-action="Index">
-                <partial name="_Icon" model='@("arrow")' />
-                Public portal
+    else if (admin)
+    {
+        <aside class="sidebar" id="workspace-nav" aria-label="Administration">
+            <a class="brand" asp-controller="AdminDashboard" asp-action="Index">
+                <span class="brand-mark">
+                    <partial name="_Icon" model='@("brand")' />
+                </span>
+                <span>Sourcing Desk<small>Administration</small></span>
             </a>
 
-            <partial name="_LoginPartial" />
-        </div>
-    </aside>
+            <div class="side-nav">
+                <span class="nav-caption">WORKSPACE</span>
 
-    <button type="button"
-            class="nav-scrim"
-            data-nav-close
-            tabindex="-1"
-            aria-label="Close navigation"
-            hidden>
-    </button>
-}
+                @foreach (var item in new[]
+                {
+                    ("AdminDashboard", "Overview", "dashboard"),
+                    ("Departments", "Departments", "building"),
+                    ("Employees", "Employees", "users"),
+                    ("Suppliers", "Suppliers", "supplier")
+                })
+                {
+                    <a class="side-link @(controller == item.Item1 ? "is-current" : "")"
+                       aria-current="@(controller == item.Item1 ? "page" : null)"
+                       asp-controller="@item.Item1"
+                       asp-action="Index">
+                        <partial name="_Icon" model="item.Item3" />
+                        @item.Item2
+                    </a>
+                }
+
+                <partial name="~/Views/Profile/_ProfileNav.cshtml" />
+            </div>
+
+            <div class="side-bottom">
+                <a class="side-link" asp-controller="Home" asp-action="Index">
+                    <partial name="_Icon" model='@("arrow")' />
+                    Public portal
+                </a>
+
+                <partial name="_LoginPartial" />
+            </div>
+        </aside>
+
+        <button type="button"
+                class="nav-scrim"
+                data-nav-close
+                tabindex="-1"
+                aria-label="Close navigation"
+                hidden>
+        </button>
     }
+
     <div class="site-body">
         @if (department || sourcing || supplier || committee)
         {
             <header class="workspace-bar">
                 <div class="bar-context">
-                    <button class="btn btn-outline-secondary menu-toggle" type="button" data-nav-toggle aria-controls="workspace-nav" aria-expanded="false" aria-label="Open navigation"><partial name="_Icon" model='@("menu")' /></button>
-                    <span class="context-root">@(sourcing ? "Sourcing" : supplier ? "Supplier" : committee ? "Evaluation" : "Department")</span><span class="context-separator" aria-hidden="true">/</span><strong>@title</strong>
+                    <button class="btn btn-outline-secondary menu-toggle"
+                            type="button"
+                            data-nav-toggle
+                            aria-controls="workspace-nav"
+                            aria-expanded="false"
+                            aria-label="Open navigation">
+                        <partial name="_Icon" model='@("menu")' />
+                    </button>
+
+                    <span class="context-root">@(sourcing ? "Sourcing" : supplier ? "Supplier" : committee ? "Evaluation" : "Department")</span>
+                    <span class="context-separator" aria-hidden="true">/</span>
+                    <strong>@title</strong>
                 </div>
-                <div class="bar-profile"><span class="avatar" aria-hidden="true">@((User.Identity?.Name ?? "D").FirstOrDefault().ToString().ToUpperInvariant())</span><span><strong>@(sourcing ? "Sourcing officer" : supplier ? "Supplier" : committee ? "Committee reviewer" : "Department employee")</strong><small title="@User.Identity?.Name">@User.Identity?.Name</small></span></div>
+
+                <div class="bar-profile">
+                    <span class="avatar" aria-hidden="true">@((User.Identity?.Name ?? "D").FirstOrDefault().ToString().ToUpperInvariant())</span>
+                    <span>
+                        <strong>@(sourcing ? "Sourcing officer" : supplier ? "Supplier" : committee ? "Committee reviewer" : "Department employee")</strong>
+                        <small title="@User.Identity?.Name">@User.Identity?.Name</small>
+                    </span>
+                </div>
             </header>
         }
         else if (admin)
         {
             <header class="workspace-bar">
                 <div class="bar-context">
-                    <button class="btn btn-outline-secondary menu-toggle" type="button" data-nav-toggle aria-controls="workspace-nav" aria-expanded="false" aria-label="Open navigation"><partial name="_Icon" model='@("menu")' /></button>
-                    <span class="context-root">Administration</span><span class="context-separator" aria-hidden="true">/</span><strong>@(controller == "AdminDashboard" ? "Overview" : title ?? controller)</strong>
+                    <button class="btn btn-outline-secondary menu-toggle"
+                            type="button"
+                            data-nav-toggle
+                            aria-controls="workspace-nav"
+                            aria-expanded="false"
+                            aria-label="Open navigation">
+                        <partial name="_Icon" model='@("menu")' />
+                    </button>
+
+                    <span class="context-root">Administration</span>
+                    <span class="context-separator" aria-hidden="true">/</span>
+                    <strong>@(controller == "AdminDashboard" ? "Overview" : title ?? controller)</strong>
                 </div>
-                <div class="bar-profile"><span class="avatar" aria-hidden="true">@((User.Identity?.Name ?? "A").FirstOrDefault().ToString().ToUpperInvariant())</span><span><strong>Administrator</strong><small title="@User.Identity?.Name">@User.Identity?.Name</small></span></div>
+
+                <div class="bar-profile">
+                    <span class="avatar" aria-hidden="true">@((User.Identity?.Name ?? "A").FirstOrDefault().ToString().ToUpperInvariant())</span>
+                    <span>
+                        <strong>Administrator</strong>
+                        <small title="@User.Identity?.Name">@User.Identity?.Name</small>
+                    </span>
+                </div>
             </header>
         }
         else
@@ -133,34 +176,65 @@ else if (admin)
             <header class="portal-bar">
                 <div class="portal-bar-inner">
                     <a class="brand" asp-controller="Home" asp-action="Index">
-                        <span class="brand-mark"><partial name="_Icon" model='@("brand")' /></span>
+                        <span class="brand-mark">
+                            <partial name="_Icon" model='@("brand")' />
+                        </span>
                         <span>Sourcing Desk<small>Supplier portal</small></span>
                     </a>
+
                     <nav class="portal-nav" aria-label="Account">
                         @if (signedIn && !Roles.EmployeeRoles.Any(User.IsInRole))
-                        { <a class="portal-link" asp-controller="SupplierRegistration" asp-action="RegistrationStatus">My application</a> }
+                        {
+                            <a class="portal-link"
+                               asp-controller="SupplierRegistration"
+                               asp-action="RegistrationStatus">My application</a>
+                        }
+
                         @if (!signedIn)
                         {
-                            <a class="portal-link" asp-controller="Account" asp-action="Login">Sign in</a>
-                            <a class="btn btn-primary portal-register" asp-controller="SupplierRegistration" asp-action="Register">Supplier registration</a>
+                            <a class="portal-link"
+                               asp-controller="Account"
+                               asp-action="Login">Sign in</a>
+
+                            <a class="btn btn-primary portal-register"
+                               asp-controller="SupplierRegistration"
+                               asp-action="Register">Supplier registration</a>
                         }
+
                         <partial name="_LoginPartial" />
                     </nav>
                 </div>
             </header>
         }
+
         <main id="main" class="page-content" tabindex="-1">
             @if (TempData["Message"] is string message)
             {
-                <div class="notice notice-success" role="status"><partial name="_Icon" model='@("check")' /><span>@message</span><button class="icon-button" type="button" data-dismiss-notice aria-label="Dismiss notification"><partial name="_Icon" model='@("close")' /></button></div>
+                <div class="notice notice-success" role="status">
+                    <partial name="_Icon" model='@("check")' />
+                    <span>@message</span>
+                    <button class="icon-button"
+                            type="button"
+                            data-dismiss-notice
+                            aria-label="Dismiss notification">
+                        <partial name="_Icon" model='@("close")' />
+                    </button>
+                </div>
             }
+
             @RenderBody()
         </main>
-        <footer class="site-footer"><span>Sourcing Desk</span><a asp-controller="Home" asp-action="Privacy">Privacy</a></footer>
+
+        <footer class="site-footer">
+            <span>Sourcing Desk</span>
+            <a asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </footer>
     </div>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
