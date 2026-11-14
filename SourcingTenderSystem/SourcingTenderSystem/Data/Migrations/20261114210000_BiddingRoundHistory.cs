@@ -26,8 +26,8 @@ namespace SourcingTenderSystem.Data.Migrations
                         THROW 51014, 'Unexpected bid index definition. Inspect the schema before upgrading.', 1;
                     CREATE UNIQUE INDEX IX_Bids_TenderId_SupplierProfileId ON dbo.Bids(TenderId,SupplierProfileId);
                 END;
-                IF EXISTS (SELECT 1 FROM dbo.Tenders WHERE [counter] NOT BETWEEN 1 AND 2)
-                    THROW 51015, 'Unexpected legacy tender round number. Inspect legacy tender history before upgrading.', 1;
+                IF EXISTS (SELECT 1 FROM dbo.Tenders WHERE [counter] NOT BETWEEN 1 AND 3)
+                    THROW 51015, 'Legacy tender round number must be between 1 and 3. Inspect dbo.Tenders.counter before upgrading.', 1;
                 """);
 
             migrationBuilder.DropForeignKey(
@@ -107,7 +107,10 @@ namespace SourcingTenderSystem.Data.Migrations
                 FROM dbo.Tenders;
                 INSERT dbo.TenderRounds(TenderId, Number, CreatedAt, OfficerId, ClosingOutcome, Legacy)
                 SELECT Id, 1, NULL, CreatedByEmployeeProfileId, ''LegacyClosed'', 1
-                FROM dbo.Tenders WHERE [counter]=2;
+                FROM dbo.Tenders WHERE [counter] IN (2, 3);
+                INSERT dbo.TenderRounds(TenderId, Number, ClosingOutcome, Legacy)
+                SELECT Id, 2, ''LegacyClosed'', 1
+                FROM dbo.Tenders WHERE [counter]=3;
                 UPDATE i SET RoundNumber=1 FROM dbo.Invitations i JOIN dbo.Tenders t ON t.Id=i.TenderId
                 WHERE t.[counter]=1 AND NOT EXISTS (
                     SELECT 1 FROM dbo.Invitations other WHERE other.TenderId=i.TenderId
