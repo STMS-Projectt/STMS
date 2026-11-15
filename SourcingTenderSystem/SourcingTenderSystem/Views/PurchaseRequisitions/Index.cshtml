@@ -35,7 +35,9 @@
             @foreach (var request in Model.Requests)
             {
                 <article class="record-card" data-record>
-                    <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("file")' /></span><span>@request.Title<small>PR-@request.Id · @request.CreatedByEmployeeProfile.FullName</small></span></div>
+                    <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("file")' /></span><span>@request.Title<small>PR-@request.Id · @request.CreatedByEmployeeProfile.FullName</small>
+                        @if (request.Status == "Returned" && !string.IsNullOrWhiteSpace(request.ReviewNotes)) { <small class="request-return-preview">Changes requested: @request.ReviewNotes</small> }
+                    </span></div>
                     <dl class="record-facts">
                         <div><dt class="record-field-icon" title="Target date"><partial name="_Icon" model='@("calendar")' /><span class="visually-hidden">Target date</span></dt><dd>@request.TargetDate.ToString("dd MMM yyyy")</dd></div>
                         <div><dt>Priority</dt><dd>@request.Priority</dd></div>

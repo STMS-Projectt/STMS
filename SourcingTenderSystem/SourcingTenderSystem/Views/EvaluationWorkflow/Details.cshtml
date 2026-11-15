@@ -52,14 +52,16 @@
 {
 @if (ViewBag.Comparison is List<SupplierEvaluationResult> comparison)
 {
-    <section class="surface detail-card mb-3">
-        <h2>Weighted supplier comparison</h2>
+    <section class="surface detail-card mb-3 comparison-panel">
+        <div class="record-section-heading"><div><h2>Weighted supplier comparison</h2></div>
+            @if (!full) { <a class="text-link" data-workspace-page asp-action="Details" asp-route-id="@tender.Id">Open complete evaluation <partial name="_Icon" model='@("arrow")' /></a> }
+        </div>
         <p>Each reviewer’s scores are normalized and weighted by their selected criteria. The four reviewer totals contribute equally.</p>
         @if (comparison.Select(r => r.Currency).Distinct().Count() > 1)
         {
             <p class="alert alert-info">Bids use different currencies. USD equivalents are approximate references at one rate date (the tender closing date) and are not used to rank suppliers or pick a winner.</p>
         }
-        <details class="mb-3"><summary>View weights applied by each reviewer</summary>
+        <details class="review-disclosure mb-3"><summary>Weights applied by each reviewer</summary>
             <div class="record-list record-list-inset">
                 @foreach (var reviewer in Model.Progress)
                 {
@@ -72,15 +74,25 @@
                 }
             </div>
         </details>
-        <div class="record-list record-list-inset">@foreach (var row in comparison)
+        <div class="comparison-grid">@foreach (var row in comparison)
         {
-            <article class="record-card"><div class="record-name">@row.Supplier</div><dl class="record-facts"><div><dt>Compliance</dt><dd>@row.Compliance @if (!string.IsNullOrWhiteSpace(row.ComplianceNotes)) { <small>@row.ComplianceNotes</small> }</dd></div><div><dt>Price</dt><dd><partial name="_UsdReference" model="@(new UsdReferenceView(row.Price, row.Currency, row.UsdEquivalent, row.UsdRate, row.RateDate, row.RateSource))" /></dd></div>
-                <div><dt>Technical</dt><dd>@row.Technical</dd></div><div><dt>Financial</dt><dd>@row.Financial</dd></div><div><dt>Total / 100</dt><dd>@row.Total</dd></div><div><dt>Evidence</dt><dd>@if (row.Compliance == "Compliant" || User.IsInRole("SourcingOfficer"))
+            <article class="comparison-offer">
+                <div class="comparison-offer-heading"><div><h3>@row.Supplier</h3><partial name="_Status" model="row.Compliance" /></div><span class="record-panel-label">@row.Total / 100</span></div>
+                <dl class="comparison-facts">
+                    <div><dt>Price</dt><dd><partial name="_UsdReference" model="@(new UsdReferenceView(row.Price, row.Currency, row.UsdEquivalent, row.UsdRate, row.RateDate, row.RateSource))" /></dd></div>
+                    <div><dt>Technical</dt><dd>@row.Technical</dd></div><div><dt>Financial</dt><dd>@row.Financial</dd></div>
+                </dl>
+                <details class="action-disclosure"><summary>Evidence and notes · @row.EvidenceIds.Count</summary>
+                @if (!string.IsNullOrWhiteSpace(row.ComplianceNotes)) { <p class="subtle my-2">@row.ComplianceNotes</p> }
+                @if (row.EvidenceIds.Count == 0) { <p class="subtle my-2">No documents attached.</p> }
+                else if (row.Compliance == "Compliant" || User.IsInRole("SourcingOfficer"))
                 {
                     @foreach (var documentId in row.EvidenceIds)
-                    { <a class="me-2" asp-controller="BidDocuments" asp-action="Download" asp-route-id="@documentId">Document #@documentId</a> }
+                    { <a class="btn btn-outline-secondary btn-sm me-2 mt-2" asp-controller="BidDocuments" asp-action="Download" asp-route-id="@documentId">Document #@documentId</a> }
                 }
-                else { <span>@row.EvidenceIds.Count documents</span> }</dd></div></dl></article>
+                else { <p class="subtle my-2">@row.EvidenceIds.Count documents</p> }
+                </details>
+            </article>
         }</div>
     </section>
 }
@@ -115,7 +127,22 @@ else if (report == null && User.IsInRole("SourcingManager"))
     <section class="surface detail-card mb-3">
         <h2>Final report</h2>
         <p>Recommended supplier: <strong>@(tender.Bids.FirstOrDefault(b => b.Id == report.RecommendedBidId)?.SupplierProfile.CompanyName ?? "—")</strong></p>
-        <p style="white-space:pre-wrap">@report.Summary</p>
+        @if (User.IsInRole("TopCommittee") && tender.CommitteeMembers.Any(m => m.CommitteeType == "Top"))
+        {
+            <details class="action-disclosure mb-3">
+                <summary>Committee votes · @report.TenderApprovals.Count(a => a.Decision == "Top Committee Approved") of 4 approved</summary>
+                <ul class="vote-roster">
+                @foreach (var seat in tender.CommitteeMembers.Where(m => m.CommitteeType == "Top"))
+                {
+                    var vote = report.TenderApprovals.FirstOrDefault(a => a.ApproverEmployeeProfileId == seat.EmployeeProfileId && a.Decision is ("Top Committee Approved" or "Top Committee Rejected"));
+                    <li><span>@seat.EmployeeProfile.FullName</span><span class="status-pill @(vote?.Decision == "Top Committee Approved" ? "status-positive" : vote == null ? "status-waiting" : "status-negative")">@(vote?.Decision == "Top Committee Approved" ? "Approved" : vote == null ? "Not voted" : "Rejected")</span></li>
+                }
+                </ul>
+            </details>
+        }
+        <details class="action-disclosure mb-3" open="@(!User.IsInRole("TopCommittee") || Model.NextStage == null)"><summary>Evaluation summary</summary>
+            <p class="record-terms">@report.Summary</p>
+        </details>
         @if (report.FinalizedAt is DateTime finalized)
         {
             <p><strong>@tender.Status</strong> · @finalized.ToString("yyyy-MM-dd HH:mm:ss") UTC</p>

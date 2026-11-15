@@ -47,7 +47,9 @@ else
                         <div><dt class="record-field-icon" title="@reference"><partial name="_Icon" model='@("file")' /><span class="visually-hidden">@reference</span></dt><dd>@(row.PurchaseRequisition?.Title ?? row.Tender?.Title ?? row.Bid?.Tender.Title ?? row.SupplierApplication?.CompanyName ?? "—")<small class="d-block subtle">@reference</small></dd></div>
                         <div><dt class="record-field-icon" title="From"><partial name="_Icon" model='@("users")' /><span class="visually-hidden">From</span></dt><dd>@(row.SenderEmployeeProfile?.FullName ?? row.SenderSupplierProfile?.CompanyName ?? "—")</dd></div>
                         <div><dt class="record-field-icon" title="To"><partial name="_Icon" model='@("arrow")' /><span class="visually-hidden">To</span></dt><dd>@(row.ReceiverEmployeeProfile?.FullName ?? row.ReceiverSupplierProfile?.CompanyName ?? "—")</dd></div>
-                        <div><dt class="visually-hidden">Status</dt><dd><partial name="_ClarificationStatus" model="row.Status" /></dd></div>
+                        <div><dt class="visually-hidden">Status</dt><dd><partial name="_ClarificationStatus" model="row.Status" />
+                            <small>@(row.AnsweredAt is DateTime answered ? $"Last reply {answered:dd MMM yyyy HH:mm} UTC" : "No reply yet")</small>
+                        </dd></div>
                     </dl>
                     <div class="record-action"><a data-workspace-dialog="details" class="record-icon-action" asp-action="Details" asp-route-id="@row.Id" aria-label="View clarification: @row.Subject" data-tooltip="View details"><partial name="_Icon" model='@("eye")' /></a></div>
                 </article>

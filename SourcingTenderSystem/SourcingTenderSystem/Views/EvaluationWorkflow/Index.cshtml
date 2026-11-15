@@ -1,11 +1,20 @@
 @model IReadOnlyList<Tender>
 @{
     var top = User.IsInRole("TopCommittee");
+    var awaiting = ViewData["AwaitingMyVote"] as HashSet<int> ?? [];
     ViewData["Title"] = top ? "Award decisions" : "Evaluation progress";
 }
 <header class="page-heading stms-hero"><div><p class="eyebrow">EVALUATION WORKFLOW</p><h1>@ViewData["Title"]</h1><p>@(top ? "Review final reports, record your vote and track completed decisions." : "Track committee reviews and approval of final reports.")</p></div></header>
 @if (top)
 {
+    <section class="surface detail-card vote-queue" aria-labelledby="my-votes">
+        <div class="record-section-heading"><div><h2 id="my-votes">Awaiting my vote</h2>
+            <p>@(awaiting.Count == 0 ? "No decisions need your vote right now." : "Read the final report and record your decision.")</p></div><span class="record-panel-label">@awaiting.Count</span></div>
+        @foreach (var tender in Model.Where(t => awaiting.Contains(t.Id)))
+        {
+            <a data-workspace-dialog="details" class="text-link vote-queue-link" asp-action="Details" asp-route-id="@tender.Id" asp-route-panel="decision"><span>@tender.Title</span><span>Open decision <partial name="_Icon" model='@("arrow")' /></span></a>
+        }
+    </section>
     <section class="metrics-grid stms-metrics" aria-label="Award decision statistics">
         <article class="surface metric"><span class="icon-tile tone-blue"><partial name="_Icon" model='@("file")' /></span><strong>@Model.Count</strong><span>Evaluation reports</span></article>
         <article class="surface metric"><span class="icon-tile tone-amber"><partial name="_Icon" model='@("clock")' /></span><strong>@Model.Count(t => t.EvaluationReport?.Status == "Pending Top Committee")</strong><span>Awaiting committee decision</span></article>
@@ -22,7 +31,7 @@
         <partial name="_ListFilters" model='@("Search evaluations", Model.Select(t => t.EvaluationReport?.Status ?? t.Status))' />
         <partial name="_DirectoryPages" model='@("Evaluation pages")' />
         <div class="record-list" data-record-list>
-        @foreach (var tender in Model)
+        @foreach (var tender in Model.OrderByDescending(t => awaiting.Contains(t.Id)))
         {
             <article class="record-card" data-record data-status="@(tender.EvaluationReport?.Status ?? tender.Status)">
                 <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("check")' /></span><span>@tender.Title<small>#@tender.Id</small></span></div>

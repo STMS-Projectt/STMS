@@ -78,7 +78,9 @@
                 @foreach (var request in Model.Recent)
                 {
                     <article class="record-card">
-                        <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("file")' /></span><span>@request.Title<small>PR-@request.Id</small></span></div>
+                        <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("file")' /></span><span>@request.Title<small>PR-@request.Id</small>
+                            @if (request.Status == "Returned" && !string.IsNullOrWhiteSpace(request.ReviewNotes)) { <small class="request-return-preview">Changes requested: @request.ReviewNotes</small> }
+                        </span></div>
                         <dl class="record-facts"><div><dt>Target date</dt><dd>@request.TargetDate.ToString("dd MMM yyyy")</dd></div><div><dt>Status</dt><dd><partial name="_RequestStatus" model="request.Status" /></dd></div></dl>
                         <div class="record-action"><partial name="_RequestActions" model="@( (request.Id, editable.Contains(request.Id)) )" />
                         </div>

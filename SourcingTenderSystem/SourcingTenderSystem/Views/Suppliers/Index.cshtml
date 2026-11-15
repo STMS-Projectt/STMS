@@ -53,7 +53,9 @@
                 <article class="record-card" data-record data-sort-name="@item.CompanyName" data-sort-date="@item.CreatedAt.Ticks">
                     <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("supplier")' /></span><span>@item.CompanyName</span></div><dl class="record-facts">
                     <div><dt class="record-field-icon" title="Tax number"><partial name="_Icon" model='@("file")' /><span class="visually-hidden">Tax number</span></dt><dd>@item.TaxNumber</dd></div>
-                    <div><dt class="visually-hidden">Status</dt><dd><partial name="_Status" model='@(item.Status)' /></dd></div>
+                    <div><dt class="visually-hidden">Status</dt><dd><partial name="_Status" model='@(item.Status)' />
+                        @if (item.Status == SupplierStatus.Pending) { <small>Application submitted · documents awaiting review</small> }
+                    </dd></div>
                     <div><dt class="record-field-icon" title="Registered (UTC)"><partial name="_Icon" model='@("calendar")' /><span class="visually-hidden">Registered (UTC)</span></dt><dd>@item.CreatedAt.ToString("dd MMM yyyy")</dd></div>
                     </dl><div class="record-action"><a data-workspace-dialog="details" class="record-icon-action" asp-action="Details" asp-route-id="@item.Id" asp-route-panel="overview" aria-label="Open application for @item.CompanyName" data-tooltip="Open application"><partial name="_Icon" model='@("eye")' /></a>
                         <a data-workspace-dialog="details" class="record-icon-action" asp-action="Details" asp-route-id="@item.Id" asp-route-panel="documents" aria-label="View documents for @item.CompanyName" data-tooltip="Supporting documents"><partial name="_Icon" model='@("file")' /></a>

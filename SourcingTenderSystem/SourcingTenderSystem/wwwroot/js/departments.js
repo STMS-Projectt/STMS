@@ -26,7 +26,7 @@
         dock.setAttribute("aria-label", "Record filters");
         const paths = {
             Status: "M4 7h16 M7 12h10 M10 17h4",
-            Sort: "M5 7h14 M5 12h10 M5 17h6",
+            More: "M5 12h.01 M12 12h.01 M19 12h.01",
             Search: "M16 16l4 4 M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0z",
             Pages: "M14 2H6v20h12V6z M14 2v5h4 M8 13h8m-8 4h8",
             Reset: "M20 7v5h-5 M4 17v-5h5 M5.5 9a7 7 0 0 1 12-2L20 12 M4 12l2.5 5a7 7 0 0 0 12-2"
@@ -63,8 +63,8 @@
             dock.append(group);
         };
         menu("Status", panel.querySelector(".directory-status-options"));
-        menu("Sort", panel.querySelector("label:has([data-filter-sort])"));
-        const search = panel.querySelector("form, .directory-search");
+        menu("More", panel.querySelector("label:has([data-filter-sort])"));
+        const search = panel.querySelector("[data-directory-search-form], form, .directory-search");
         menu("Search", search?.hidden ? null : search);
         menu("Pages", directory.querySelector("[data-register-pages]"));
         const pages = directory.querySelector("[data-dept-pagination]");
@@ -76,23 +76,21 @@
         if (!dock.children.length) return;
         if (count) (directory.querySelector(".dept-directory-heading") || dock).append(count);
         panel.hidden = true;
-        directory.append(dock);
         return dock;
     }
 
     function setupDirectory(directory, signal) {
         const dock = directory.querySelector(".dept-filter-dock") || upgradeDock(directory);
         if (!dock) return;
-        directory.append(dock);
-        const updateDockVisibility = () => {
-            if (!directory.isConnected) return;
-            const heading = (directory.querySelector(".dept-directory-heading") || directory).getBoundingClientRect();
-            const section = directory.getBoundingClientRect();
-            dock.classList.toggle("is-in-view", heading.bottom < innerHeight - 72 && section.bottom > 0);
-        };
-        window.addEventListener("scroll", updateDockVisibility, { passive: true, signal });
-        window.addEventListener("resize", updateDockVisibility, { signal });
-        updateDockVisibility();
+        const heading = directory.querySelector(":scope > .dept-directory-heading");
+        if (heading) heading.after(dock);
+        else directory.prepend(dock);
+        dock.classList.add("is-in-view");
+        const active = document.createElement("span");
+        active.className = "filter-active-count";
+        active.setAttribute("aria-live", "polite");
+        active.hidden = true;
+        dock.append(active);
         const menus = [...directory.querySelectorAll("[data-dept-menu]")];
         const closeMenus = () => menus.forEach(menu => {
             menu.querySelector(".dept-filter-popover").hidden = true;
@@ -112,10 +110,12 @@
         };
         menus.forEach(menu => {
             const trigger = menu.querySelector(".dept-dock-button");
-            menu.addEventListener("pointerenter", event => { if (event.pointerType !== "touch") openMenu(menu); });
-            trigger.addEventListener("click", () => {
+            if (menu.matches("[data-dept-pagination], :has([data-register-pages])"))
+                menu.addEventListener("pointerenter", event => { if (event.pointerType === "mouse") openMenu(menu); });
+            trigger.addEventListener("click", event => {
                 const input = menu.querySelector("input[type=search]");
-                if (!input && trigger.getAttribute("aria-expanded") === "true" && !trigger.matches(":hover")) closeMenus();
+                if (trigger.getAttribute("aria-expanded") === "true" &&
+                    !(event.detail && trigger.matches(":hover") && menu.matches("[data-dept-pagination], :has([data-register-pages])"))) closeMenus();
                 else { openMenu(menu); input?.focus(); }
             });
             menu.querySelectorAll("[data-dept-select]").forEach(option => option.addEventListener("click", () => {
@@ -137,6 +137,12 @@
             });
             menus.forEach(menu => menu.querySelector(".dept-dock-button").classList.toggle("is-active", !!menu.querySelector('[aria-pressed="true"][data-status-choice]:not([data-status-choice=""]), [aria-pressed="true"][data-dept-select]:not([data-value=""])')));
             directory.querySelector('[data-dept-search-open], .dept-dock-button[aria-label="Search"]')?.classList.toggle("is-active", !!directory.querySelector("[data-filter-search]")?.value);
+            const status = directory.querySelector('[data-status-choice]:not([data-status-choice=""])[aria-pressed="true"], .directory-status-options a[aria-current=page][href*="status="]');
+            const searchValue = directory.querySelector('[data-filter-search]')?.value.trim();
+            const options = [...directory.querySelectorAll('select[data-filter-sort], select[data-filter-department], select[data-filter-staff], select[data-activity-event], input[data-activity-date]')];
+            const count = Number(!!status) + Number(!!searchValue) + options.filter(option => option.value).length;
+            active.hidden = !count;
+            active.textContent = count === 1 ? "1 active filter" : `${count} active filters`;
         };
         directory.querySelector("[data-filter-reset]")?.addEventListener("click", () => { closeMenus(); queueMicrotask(sync); });
         const dialog = directory.querySelector("[data-dept-search-dialog]");
@@ -149,6 +155,7 @@
         directory.querySelector("[data-dept-search-close]")?.addEventListener("click", () => dialog.close());
         dialog?.addEventListener("click", event => { if (event.target === dialog) dialog.close(); });
         search?.addEventListener("input", sync);
+        dock.addEventListener("change", () => queueMicrotask(sync), { signal });
         document.addEventListener("click", event => { if (!directory.isConnected || !event.target.closest("[data-dept-menu]")) closeMenus(); }, { signal });
         document.addEventListener("keydown", event => {
             if (event.key !== "Escape" || !directory.contains(document.activeElement)) return;

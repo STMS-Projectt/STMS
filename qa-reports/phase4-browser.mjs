@@ -1,4 +1,6 @@
 import {lifecycle} from './phase6-lifecycle.mjs';
+import {siteUxAudit} from './full-site-ux-audit.mjs';
+import {additionalFunctionalAudit} from './full-site-functional-audit.mjs';
 import assert from 'node:assert/strict';
 import {spawn} from 'node:child_process';
 import {mkdtemp, mkdir, readFile, rm, writeFile} from 'node:fs/promises';
@@ -212,6 +214,22 @@ try {
     await wait('document.body.innerText.includes("Under Review") && !document.querySelector("a[href*=RequisitionItems]")','submitted and read-only');
     await capture('department-submitted');
   });
+  await test('BR-clarification-on-eligible-request-card',async()=>{
+    await go('/PurchaseRequisitions/MyRequests');
+    const link='#main .record-card a[href*="/Clarifications/StartRequest/"]';
+    await wait('!!document.querySelector('+JSON.stringify(link)+')','clarification icon on submitted request');
+    const scope=await ev('document.querySelector('+JSON.stringify(link)+').closest(".record-card").querySelector("a[href$=\'panel=overview\']").href');
+    await ev('Array.from(document.querySelectorAll("#main a")).find(a=>a.href==='+JSON.stringify(scope)+').click()');
+    await wait('!!document.querySelector("#workspace-dialog[open] .request-meta")','request overview');
+    assert.equal(await ev('!!document.querySelector(\'#workspace-dialog a[href*="/Clarifications/StartRequest/"]\')'),false);
+    await click('#workspace-dialog [data-dialog-close]');
+    await wait('!document.querySelector("#workspace-dialog").open','overview closed');
+    await click(link);
+    await wait('!!document.querySelector("#workspace-dialog[open] input[name=Subject]")','direct clarification composer');
+    await click('#workspace-dialog [data-dialog-close]');
+  });
+  const quick = process.env.STMS_EXTRA_FUNCTIONAL_AUDIT === 'only';
+  if (!quick) {
   const rolePaths={Admin:'/AdminDashboard',SourcingOfficer:'/SourcingDashboard',Supplier:'/SupplierWorkspace',SourcingManager:'/CommitteeReviews',TechnicalCommittee:'/CommitteeReviews',FinancialCommittee:'/CommitteeReviews',TopCommittee:'/EvaluationWorkflow'};
   for(const [role,path] of Object.entries(rolePaths)){
     await test('BR-login-'+role,async()=>{
@@ -356,6 +374,8 @@ try {
     })) await set('[name="'+name+'"]',value);
     await ev('document.querySelectorAll("input[name=CategoryIds]").forEach(input=>input.click())');
     await wait('document.querySelector("[data-category-count]").textContent==="2 selected"','multiple supply categories selected');
+    await ev(`(()=>{const input=document.querySelector('[data-category-search] input');input.value='unmatched audit category';input.dispatchEvent(new Event('input'));})()`);
+    assert(await ev('!document.querySelector("[data-category-empty]").hidden && document.querySelectorAll(".supplier-category-option:not([hidden]) input:checked").length===2'));
     await click('#main form button[type=submit]');
     await wait('location.pathname.endsWith("/UploadDocuments") && window.stmsWorkspaceReady && !!document.querySelector("a[href*=AddDocument]")','registered and redirected to the document register');
     const origin=await ev('location.href');
@@ -472,6 +492,38 @@ try {
     await capture('supplier-approved-modal');
     await click(overlay+'[data-dialog-close]');
   });
+  await test('BR-supplier-bid-register-narrow-hit-targets',async()=>{
+    await logout();
+    await login('Supplier');
+    await wait('location.pathname.startsWith("/SupplierWorkspace") && document.readyState==="complete"','supplier signed in');
+    await go('/Bids/MyBids');
+    const selector='#main .record-card .bid-register-action';
+    await wait('document.querySelectorAll('+JSON.stringify(selector)+').length >= 4','four bid actions');
+    try {
+      for (const width of [320,360,390]){
+        await call('Emulation.setDeviceMetricsOverride',{width,height:740,deviceScaleFactor:1,mobile:false});
+        assert(await ev(`(async()=>{
+          await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+          if(document.documentElement.scrollWidth>innerWidth)return false;
+          if(getComputedStyle(document.querySelector('[data-scroll-top]')).position==='fixed')return false;
+          for(const link of [...document.querySelectorAll(${JSON.stringify(selector)})].slice(0,12)){
+            link.scrollIntoView({block:'center',behavior:'instant'});
+            const box=link.getBoundingClientRect();
+            if(!link.contains(document.elementFromPoint(box.x+box.width/2,box.y+box.height/2)))return false;
+          }
+          return true;
+        })()`),'Bid actions were obscured or overflowed at '+width);
+        if (width===320) await capture('supplier-bids-320-after');
+      }
+    } finally { await viewport(1440); }
+  });
+  }
+  if (process.env.STMS_FULL_UX_AUDIT === '1') {
+    await siteUxAudit({base,go,wait,click,ev,login,logout,capture,call,evidence});
+  }
+  if (process.env.STMS_EXTRA_FUNCTIONAL_AUDIT === '1' || quick) {
+    await additionalFunctionalAudit({go,wait,click,set,ev,login,logout,capture,call,test});
+  }
   await writeFile(join(evidence,'results.json'),JSON.stringify({results,errors,http},null,2));
   process.stdout.write(JSON.stringify({results,errors})+'\n');
   if(results.some(r=>r.status==='FAIL')) process.exitCode=1;

@@ -153,13 +153,18 @@
 
         <footer class="site-footer stms-footer">
             <span><img src="~/images/stms-cube.svg" alt="" /> STMS <small>Sourcing &amp; Tender Management System</small></span>
-            <a asp-controller="Home" asp-action="Privacy">Privacy</a>
+            <div class="stms-footer-actions">
+                <a asp-controller="Home" asp-action="Privacy">Privacy</a>
+                @if (!fragment)
+                {
+                    <button class="stms-scroll-top" type="button" data-scroll-top aria-label="Back to top" title="Back to top" hidden><partial name="_Icon" model='@("back")' /></button>
+                }
+            </div>
         </footer>
     </div>
 
     @if (!fragment)
     {
-        <button class="stms-scroll-top" type="button" data-scroll-top aria-label="Back to top" title="Back to top" hidden><partial name="_Icon" model='@("back")' /></button>
         <script src="~/lib/jquery/dist/jquery.min.js"></script>
         <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
         <script src="~/js/site.js" asp-append-version="true"></script>

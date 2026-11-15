@@ -2,27 +2,19 @@
     if (window.__stmsAdminMotionBound) return;
     window.__stmsAdminMotionBound = true;
 
-    function animateCount(element) {
-        const number = element.querySelector("strong[data-count]");
-        if (!number) return;
-        const target = Number(number.dataset.count);
-        if (!Number.isFinite(target) || target <= 0) return;
-        const formatter = new Intl.NumberFormat(document.documentElement.lang || "en");
-        const duration = 1100;
-        let start;
-        function frame(now) {
-            start ??= now;
-            const progress = Math.min((now - start) / duration, 1);
-            number.textContent = formatter.format(Math.round(target * (1 - Math.pow(1 - progress, 3))));
-            if (progress < 1) requestAnimationFrame(frame);
-        }
-        requestAnimationFrame(frame);
-    }
-
     function initialize() {
         const main = document.querySelector(".admin-overview")?.closest("main");
         if (!main || main.dataset.adminMotionReady) return;
         main.dataset.adminMotionReady = "true";
+        const chart = main.querySelector("[data-procurement-chart]");
+        chart?.addEventListener("click", event => {
+            const point = event.target.closest("[data-month]");
+            if (!point) return;
+            chart.querySelector('[data-month][aria-pressed="true"]')?.setAttribute("aria-pressed", "false");
+            point.setAttribute("aria-pressed", "true");
+            chart.querySelector("[data-chart-selection]").textContent =
+                `${point.dataset.month} · ${point.dataset.requests} requests · ${point.dataset.tenders} tenders`;
+        });
         const cards = main.querySelectorAll(".admin-metric-link, .admin-chart-grid .dashboard-card, .admin-secondary .dashboard-card, .admin-total-card");
         cards.forEach(card => {
             card.addEventListener("pointermove", event => {
@@ -48,7 +40,6 @@
             for (const entry of entries) {
                 if (!entry.isIntersecting) continue;
                 entry.target.classList.add("is-visible");
-                animateCount(entry.target);
                 observer.unobserve(entry.target);
             }
         }, { threshold: 0.12, rootMargin: "0px 0px -5% 0px" });

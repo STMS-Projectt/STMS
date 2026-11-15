@@ -6,4 +6,7 @@
 }
 <a class="record-icon-action" data-workspace-dialog asp-controller="PurchaseRequisitions" asp-action="Details" asp-route-id="@Model.Id" asp-route-panel="items" aria-label="Items for PR-@Model.Id" data-tooltip="Items"><partial name="_Icon" model='@("inbox")' /></a>
 <a class="record-icon-action" data-workspace-dialog asp-controller="PurchaseRequisitions" asp-action="Details" asp-route-id="@Model.Id" asp-route-panel="qr" aria-label="QR code for PR-@Model.Id" data-tooltip="QR code"><partial name="_Icon" model='@("qr")' /></a>
-<a class="record-icon-action" data-workspace-dialog asp-controller="Clarifications" asp-action="StartRequest" asp-route-id="@Model.Id" aria-label="Start a clarification for PR-@Model.Id" data-tooltip="Clarification"><partial name="_Icon" model='@("mail")' /></a>
+@if (ViewData["ClarificationRequestIds"] is ISet<int> startable && startable.Contains(Model.Id))
+{
+    <a class="record-icon-action" data-workspace-dialog asp-controller="Clarifications" asp-action="StartRequest" asp-route-id="@Model.Id" aria-label="Start a clarification for PR-@Model.Id" data-tooltip="Clarification"><partial name="_Icon" model='@("mail")' /></a>
+}

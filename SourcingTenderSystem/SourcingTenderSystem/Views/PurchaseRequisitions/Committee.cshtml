@@ -16,7 +16,7 @@
             {
                 <article class="record-card" data-record data-status="@assignment.Status">
                     <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("briefcase")' /></span><span>@assignment.Title<small>Tender #@assignment.TenderId</small></span></div>
-                    <dl class="record-facts"><div><dt>Status</dt><dd><partial name="_Status" model="assignment.Status" /></dd></div>
+                    <dl class="record-facts"><div><dt>Status</dt><dd><partial name="_Status" model="assignment.Status" />@if (assignment.Status == "Under Evaluation") { <small>Open the evaluation to see your checklist and submission status.</small> }</dd></div>
                         <div><dt class="record-field-icon" title="Purchase request"><partial name="_Icon" model='@("file")' /><span class="visually-hidden">Purchase request</span></dt><dd>PR-@assignment.RequestId</dd></div></dl>
                     <div class="record-action">
                         <partial name="_RequestActions" model="@( (assignment.RequestId, assignment.CanEditRequest) )" />

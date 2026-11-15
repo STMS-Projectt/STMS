@@ -57,12 +57,16 @@
                 <label asp-for="Notes" class="form-label">Review notes</label>
                 <textarea asp-for="Notes" class="form-control" rows="4" placeholder="Explain the reason for your decision..." aria-describedby="review-notes-help"></textarea>
                 <span asp-validation-for="Notes" class="text-danger"></span>
-                <p id="review-notes-help" class="field-hint mt-2">Return sends the request back to the employee for changes.</p>
+                <p id="review-notes-help" class="field-hint mt-2">Your notes appear on the request and in the employee’s notification. Explain the required changes before returning it.</p>
                 <div class="sourcing-request-decisions">
+                    <div aria-label="Approval options">
                     <button type="submit" class="btn btn-primary" asp-action="ApproveAndCreateTender" asp-route-id="@request.Id"><partial name="_Icon" model='@("plus")' /> Approve and create tender</button>
                     <button type="submit" class="btn btn-outline-success" asp-action="Approve" asp-route-id="@request.Id"><partial name="_Icon" model='@("check")' /> Approve only</button>
+                    </div>
+                    <div class="review-alternatives" aria-label="Return or reject">
                     <button type="submit" class="btn btn-outline-secondary" asp-action="Return" asp-route-id="@request.Id"><partial name="_Icon" model='@("back")' /> Return for changes</button>
                     <button type="submit" class="btn btn-outline-danger" asp-action="Reject" asp-route-id="@request.Id"><partial name="_Icon" model='@("close")' /> Reject</button>
+                    </div>
                 </div>
             </form>
         }

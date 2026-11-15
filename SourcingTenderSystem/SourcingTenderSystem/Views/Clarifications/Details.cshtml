@@ -10,7 +10,7 @@
 <header class="page-heading stms-hero admin-record-hero"><div><p class="eyebrow">CLARIFICATION #@row.Id</p><h1>@row.Subject</h1>
 <p>@(row.PurchaseRequisition?.Title ?? row.Tender?.Title ?? row.Bid?.Tender.Title ?? row.SupplierApplication?.CompanyName) · @kind #@record</p></div><partial name="_ClarificationStatus" model="row.Status" /></header>
 @if (TempData["ClarificationError"] is string error) { <div class="alert alert-warning" role="alert">@error</div> }
-<div class="stack">
+<div class="stack clarification-conversation">
     <section class="surface detail-card"><h2>Question</h2>
         <p class="subtle">@(row.SenderEmployeeProfile?.FullName ?? row.SenderSupplierProfile?.CompanyName) → @(row.ReceiverEmployeeProfile?.FullName ?? row.ReceiverSupplierProfile?.CompanyName) · @row.CreatedAt.ToString("dd MMM yyyy HH:mm") UTC</p>
         <p class="mb-0" style="white-space:pre-wrap;overflow-wrap:anywhere">@row.Description</p>
@@ -18,7 +18,7 @@
     </section>
     @if (row.Response is not null)
     {
-        <section class="surface detail-card"><h2>Response</h2><p class="subtle">@row.AnsweredAt?.ToString("dd MMM yyyy HH:mm") UTC</p><p class="mb-0" style="white-space:pre-wrap;overflow-wrap:anywhere">@row.Response</p></section>
+        <section class="surface detail-card clarification-reply"><h2>Response</h2><p class="subtle">@(row.ReceiverEmployeeProfile?.FullName ?? row.ReceiverSupplierProfile?.CompanyName) · @row.AnsweredAt?.ToString("dd MMM yyyy HH:mm") UTC</p><p class="record-terms mb-0">@row.Response</p></section>
     }
     @if (row.AttachmentName is not null)
     {

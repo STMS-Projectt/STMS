@@ -18,6 +18,14 @@
         </div>
     </div>
 </header>
+@if (trading && Model.NextInvitation is { } next)
+{
+    <section class="surface detail-card vote-queue" aria-label="Next invitation deadline">
+        <div class="record-section-heading"><div><h2>Next invitation to review</h2><p>@next.Tender · Respond by <time datetime="@next.Deadline.ToString("O")">@next.Deadline.ToString("dd MMM yyyy · HH:mm") UTC</time></p></div>
+            <a data-workspace-dialog="details" class="btn btn-primary" asp-action="Invitations" asp-route-invitationId="@next.Id">Review invitation</a>
+        </div>
+    </section>
+}
 <section class="metrics-grid stms-metrics" aria-label="Supplier statistics">
     <article class="surface metric">
         <span class="icon-tile tone-teal"><partial name="_Icon" model='@("shield")' /></span>

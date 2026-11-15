@@ -24,26 +24,12 @@
 @if (TempData["Error"] is string error) { <p class="alert alert-warning" role="alert">@error</p> }
 @if (full || panel == "overview")
 {
-<section class="surface detail-card tender-overview">
-    <div class="record-section-heading"><div><h2>Tender overview</h2><p>Schedule, activity, and procurement requirements</p></div><span class="record-panel-label">Round @Model.Counter of @TenderRules.MaxRounds</span></div>
-    <dl class="detail-grid tender-overview-facts">
-        <div><dt>Opens (UTC)</dt><dd>@Model.OpenDate.ToString("dd MMM yyyy HH:mm")</dd></div>
-        <div><dt>Closes (UTC)</dt><dd>@Model.CloseDate.ToString("dd MMM yyyy HH:mm")</dd></div>
-        <div><dt>Created by</dt><dd>@Model.CreatedByEmployeeProfile.FullName</dd></div>
-        <div><dt>Created (UTC)</dt><dd>@Model.CreatedAt.ToString("dd MMM yyyy HH:mm")</dd></div>
-        <div><dt>Invitations</dt><dd>@ViewBag.InvitationCount</dd></div>
-        <div><dt>Bids</dt><dd>@ViewBag.BidCount</dd></div>
-    </dl>
-    <h3 class="h6 mt-3">Description</h3><p class="record-terms">@Model.Description</p>
-    <details class="tender-terms"><summary>Terms and conditions</summary><p class="mb-0 mt-2 record-terms">@Model.Terms</p></details>
-</section>
 <section class="surface detail-card tender-action-panel" aria-label="Tender actions">
-    <div class="record-section-heading"><div><h2>Tender actions</h2><p>Manage this tender at its current stage.</p></div></div>
+    <div class="record-section-heading"><div><h2>Tender actions</h2><p>Closes <time datetime="@Model.CloseDate.ToString("O")">@Model.CloseDate.ToString("dd MMM yyyy · HH:mm") UTC</time></p></div><span class="record-panel-label">Round @Model.Counter of @TenderRules.MaxRounds</span></div>
     <div class="tender-actions">
         @if (isDraft)
         {
             <form asp-action="Publish" asp-route-id="@Model.Id" method="post"><button class="btn btn-primary" type="submit"><partial name="_Icon" model='@("check")' /> Submit tender</button></form>
-            <a data-workspace-dialog asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-secondary"><partial name="_Icon" model='@("edit")' /> Edit draft</a>
         }
         @if (canClose)
         {
@@ -59,10 +45,32 @@
             <a data-workspace-dialog asp-action="AssignCommittee" asp-route-id="@Model.Id" class="btn btn-primary"><partial name="_Icon" model='@("users")' /> Assign committee</a>
         }
         <a data-workspace-dialog asp-action="Criteria" asp-route-id="@Model.Id" class="btn btn-outline-secondary"><partial name="_Icon" model='@("filter")' /> Evaluation criteria</a>
+    </div>
+    <details class="action-disclosure">
+        <summary>More actions</summary>
+        <div class="tender-actions">
+        @if (isDraft)
+        {
+            <a data-workspace-dialog asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-secondary"><partial name="_Icon" model='@("edit")' /> Edit draft</a>
+        }
         <a data-workspace-dialog="details" asp-controller="Invitations" asp-action="Index" asp-route-tenderId="@Model.Id" class="btn btn-outline-secondary"><partial name="_Icon" model='@("supplier")' /> Invitations</a>
         <a data-workspace-dialog="details" class="btn btn-outline-secondary" asp-controller="Clarifications" asp-action="Index" asp-route-kind="tender" asp-route-recordId="@Model.Id"><partial name="_Icon" model='@("mail")' /> Clarifications</a>
         <a asp-action="Index" data-dialog-cancel class="btn btn-outline-secondary"><partial name="_Icon" model='@("back")' /> Back to tenders</a>
-    </div>
+        </div>
+    </details>
+</section>
+<section class="surface detail-card tender-overview">
+    <div class="record-section-heading"><div><h2>Tender overview</h2><p>Schedule, activity, and procurement requirements</p></div></div>
+    <dl class="detail-grid tender-overview-facts">
+        <div><dt>Opens (UTC)</dt><dd>@Model.OpenDate.ToString("dd MMM yyyy HH:mm")</dd></div>
+        <div><dt>Invitations</dt><dd>@ViewBag.InvitationCount</dd></div>
+        <div><dt>Bids</dt><dd>@ViewBag.BidCount</dd></div>
+    </dl>
+    <h3 class="h6 mt-3">Description</h3><p class="record-terms">@Model.Description</p>
+    <details class="tender-terms"><summary>Terms and record information</summary>
+        <p class="mt-2 record-terms">@Model.Terms</p>
+        <p class="subtle mb-0">Created by @Model.CreatedByEmployeeProfile.FullName · @Model.CreatedAt.ToString("dd MMM yyyy HH:mm") UTC</p>
+    </details>
 </section>
 }
 @if (full || panel == "qr")

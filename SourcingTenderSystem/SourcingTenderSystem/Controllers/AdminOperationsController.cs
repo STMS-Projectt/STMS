@@ -32,11 +32,25 @@ public sealed class AdminOperationsController(ApplicationDbContext db) : Control
             new AdminRecord { Id = b.Id, Name = b.SupplierProfile.CompanyName, Context = b.Tender.Title, Status = b.Status, Date = b.SubmittedAt, TenderId = b.TenderId }));
 
     [HttpGet]
-    public Task<IActionResult> Activity(string? q, int page = 1) => Register("Activity log",
-        "Review recorded workflow and account activity.", nameof(Activity), q, page, null,
-        db.AuditLogs.Select(a => new AdminRecord { Id = a.Id, Name = a.Action, Context =
-            (a.EmployeeProfile != null ? a.EmployeeProfile.FullName : a.SupplierProfile != null ? a.SupplierProfile.CompanyName : "System")
-                + " · " + a.EntityName + " #" + a.EntityId, Status = a.Details, Date = a.CreatedAt }));
+    public async Task<IActionResult> Activity(string? q, int page = 1, string? eventType = null, DateOnly? from = null, DateOnly? to = null)
+    {
+        var entries = db.AuditLogs.AsNoTracking();
+        var events = await entries.Select(a => a.Action).Distinct().OrderBy(a => a).ToListAsync();
+        eventType = events.FirstOrDefault(e => string.Equals(e, eventType, StringComparison.OrdinalIgnoreCase));
+        if (eventType is not null) entries = entries.Where(a => a.Action == eventType);
+        string? error = !ModelState.IsValid ? "Enter valid dates." : from > to ? "The end date must be on or after the start date." : null;
+        if (error is not null) entries = entries.Where(_ => false);
+        else
+        {
+            if (from is { } start) { var first = start.ToDateTime(TimeOnly.MinValue); entries = entries.Where(a => a.CreatedAt >= first); }
+            if (to is { } end) { var last = end.ToDateTime(TimeOnly.MaxValue); entries = entries.Where(a => a.CreatedAt <= last); }
+        }
+        return await Register("Activity log", "Review recorded workflow and account activity.", nameof(Activity), q, page, null,
+            entries.Select(a => new AdminRecord { Id = a.Id, Name = a.Action, Context =
+                (a.EmployeeProfile != null ? a.EmployeeProfile.FullName : a.SupplierProfile != null ? a.SupplierProfile.CompanyName : "System")
+                    + " · " + a.EntityName + " #" + a.EntityId, Status = a.Details, Date = a.CreatedAt }),
+            new(eventType, from, to, events, error));
+    }
 
     [HttpGet]
     public async Task<IActionResult> RequestDetails(int id)
@@ -110,7 +124,7 @@ public sealed class AdminOperationsController(ApplicationDbContext db) : Control
     }
 
     private async Task<IActionResult> Register(string title, string description, string action, string? q, int page, string? status,
-        IQueryable<AdminRecord> query)
+        IQueryable<AdminRecord> query, AdminActivityFilters? activity = null)
     {
         const int size = 25;
         page = Math.Clamp(page, 1, int.MaxValue / size);
@@ -124,6 +138,6 @@ public sealed class AdminOperationsController(ApplicationDbContext db) : Control
         if (!string.IsNullOrWhiteSpace(status)) query = query.Where(r => r.Status == status);
         var rows = await query.OrderByDescending(r => r.Date).ThenByDescending(r => r.Id)
             .Skip((page - 1) * size).Take(size + 1).ToListAsync();
-        return View("Register", new AdminRegister(title, description, action, q, rows.Take(size).ToList(), page, rows.Count > size, status, statuses));
+        return View("Register", new AdminRegister(title, description, action, q, rows.Take(size).ToList(), page, rows.Count > size, status, statuses, activity));
     }
 }

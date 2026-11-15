@@ -29,10 +29,12 @@
     const dialogTitle = dialog.querySelector("#workspace-dialog-title");
     const dialogContext = dialog.querySelector("[data-dialog-context]");
     const previousDialogs = [];
+    const dialogPositions = new WeakMap();
     let refreshOnClose = false;
     const showPrevious = () => {
         if (sending || loadingDialog || !previousDialogs.length) return;
-        navigate(previousDialogs.pop(), "dialog");
+        const previous = previousDialogs.pop();
+        navigate(previous, "dialog", true, dialogPositions.get(previous));
     };
     back.addEventListener("click", showPrevious);
 
@@ -76,7 +78,7 @@
     function sameWorkspace(result) {
         return result.main && result.nextFrame?.dataset.workspaceFrame === frame.dataset.workspaceFrame;
     }
-    async function install(result, mode, updateHistory = true) {
+    async function install(result, mode, updateHistory = true, restore) {
         if (mode === "dialog") {
             loadingDialog = false;
             setDialogLoading(false);
@@ -93,7 +95,11 @@
             if (!matchMedia("(prefers-reduced-motion: reduce)").matches)
                 content.animate?.([{ opacity: .45 }, { opacity: 1 }], { duration: 160, easing: "ease-out" });
             await scripts(result.page, content);
-            const focusTarget = details ? dialogTitle : content.querySelector("input:not([type=hidden]), select, textarea") || dialogTitle;
+            const disclosures = content.querySelectorAll("details");
+            restore?.open.forEach(index => { if (disclosures[index]) disclosures[index].open = true; });
+            if (restore) dialog.scrollTop = restore.scroll;
+            const restoredLink = restore && [...content.querySelectorAll("a[href]")].find(link => link.href === restore.href);
+            const focusTarget = restoredLink || (details ? dialogTitle : content.querySelector("input:not([type=hidden]), select, textarea") || dialogTitle);
             focusTarget.focus({ preventScroll: true });
             return;
         }
@@ -112,7 +118,7 @@
         window.scrollTo(0, 0);
         result.main.focus({ preventScroll: true });
     }
-    async function navigate(url, mode = "page", updateHistory = true) {
+    async function navigate(url, mode = "page", updateHistory = true, restore) {
         controller?.abort();
         const request = new AbortController();
         controller = request;
@@ -146,7 +152,7 @@
                 else location.assign(result.res.url || url);
                 return;
             }
-            await install(result, mode, updateHistory);
+            await install(result, mode, updateHistory, restore);
             status.textContent = "Content loaded";
         } catch (error) {
             if (error.name !== "AbortError" && !request.signal.aborted) {
@@ -195,7 +201,13 @@
             (link.hasAttribute("data-workspace-dialog") || insideDialog) ? "dialog" : "page";
         if (mode === "dialog") {
             if (!dialog.open) { previousDialogs.length = 0; dialogUrl = null; }
-            if (dialog.open && dialogUrl && dialogUrl.href !== url.href) previousDialogs.push(dialogUrl);
+            if (dialog.open && dialogUrl && dialogUrl.href !== url.href) {
+                dialogPositions.set(dialogUrl, {
+                    scroll: dialog.scrollTop, href: link.href,
+                    open: [...content.querySelectorAll("details")].flatMap((item, index) => item.open ? [index] : [])
+                });
+                previousDialogs.push(dialogUrl);
+            }
             else if (!dialog.open) dialogTrigger = link;
         }
         if (document.body.classList.contains("nav-open")) document.querySelector("[data-nav-close]")?.click();

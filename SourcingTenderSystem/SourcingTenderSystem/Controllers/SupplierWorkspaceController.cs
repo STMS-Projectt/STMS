@@ -33,13 +33,17 @@ public sealed class SupplierWorkspaceController(ApplicationDbContext db) : Contr
             var now = DateTime.UtcNow;
             var invitations = OwnInvitations(id);
             var bids = db.Bids.Where(b => b.SupplierProfileId == id);
+            var pending = invitations.Where(i => i.Status == "Pending" &&
+                (i.RoundNumber == i.Tender.Counter || i.RoundNumber == null && db.TenderRounds.Any(r => r.TenderId == i.TenderId && r.Number == i.Tender.Counter && r.Legacy)) &&
+                i.ExpiresAt > now && i.Tender.Status == "Open" && i.Tender.OpenDate <= now && i.Tender.CloseDate > now);
+            var next = await pending.OrderBy(i => i.ExpiresAt < i.Tender.CloseDate ? i.ExpiresAt : i.Tender.CloseDate)
+                .ThenBy(i => i.Id).Select(i => new SupplierInvitationDeadline(i.Id, i.Tender.Title,
+                    i.ExpiresAt < i.Tender.CloseDate ? i.ExpiresAt : i.Tender.CloseDate)).FirstOrDefaultAsync();
             model = model with
             {
                 Invitations = await invitations.CountAsync(),
-                AwaitingResponse = await invitations.CountAsync(i => i.Status == "Pending" &&
-                    (i.RoundNumber == i.Tender.Counter || i.RoundNumber == null && db.TenderRounds.Any(r => r.TenderId == i.TenderId && r.Number == i.Tender.Counter && r.Legacy)) &&
-                    i.ExpiresAt > now && i.Tender.Status == "Open" &&
-                    i.Tender.OpenDate <= now && i.Tender.CloseDate > now),
+                AwaitingResponse = await pending.CountAsync(),
+                NextInvitation = next,
                 DraftBids = await bids.CountAsync(b => b.Status == "Draft"),
                 SentBids = await bids.CountAsync(b => b.SubmittedAt != null)
             };

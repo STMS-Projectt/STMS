@@ -92,6 +92,11 @@ public sealed class BrowserReleaseTests(ITestOutputHelper output)
             try { await process.WaitForExitAsync(deadline.Token); }
             catch(OperationCanceledException) { process.Kill(entireProcessTree:true); throw; }
             output.WriteLine(await stdout);
+            if (Environment.GetEnvironmentVariable("STMS_EXTRA_FUNCTIONAL_AUDIT") == "only")
+            {
+                Assert.True(process.ExitCode==0,await stderr+"\n"+await stdout);
+                return;
+            }
             var persisted = await db.Tenders.AsNoTracking().Where(t => t.Title.StartsWith("Phase 6 ")).Select(t => new {
                 t.Id,t.Title,t.Status,t.PurchaseRequisitionId,
                 Bids=t.Bids.Select(b=>new { b.Status,b.AwardOutcome,b.SubmittedAt,b.SubmittedRoundNumber }).ToList(),

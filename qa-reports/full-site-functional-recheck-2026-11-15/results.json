@@ -1,0 +1,597 @@
+{
+  "results": [
+    {
+      "id": "BR01-invalid-password",
+      "status": "PASS"
+    },
+    {
+      "id": "BR02-real-passkey",
+      "status": "PASS"
+    },
+    {
+      "id": "BR03-real-modal-draft",
+      "status": "PASS"
+    },
+    {
+      "id": "BR04-responsive-smoke",
+      "status": "PASS"
+    },
+    {
+      "id": "BR05-voice-ajax-binding",
+      "status": "PASS"
+    },
+    {
+      "id": "BR-department-dashboard-modal-workflow",
+      "status": "PASS"
+    },
+    {
+      "id": "BR06-department-submit",
+      "status": "PASS"
+    },
+    {
+      "id": "QA-purchase-request-return-resubmit-reject",
+      "status": "PASS"
+    },
+    {
+      "id": "QA-notification-read-opens-linked-record",
+      "status": "PASS"
+    },
+    {
+      "id": "QA-department-create-switch-and-details",
+      "status": "PASS"
+    },
+    {
+      "id": "QA-employee-search-no-results-and-reset",
+      "status": "PASS"
+    },
+    {
+      "id": "QA-header-account-click-and-mobile-search",
+      "status": "PASS"
+    },
+    {
+      "id": "QA-profile-photo-upload-and-remove",
+      "status": "PASS"
+    },
+    {
+      "id": "QA-filter-enter-and-modal-focus-return",
+      "status": "FAIL",
+      "reason": "Timed out: .dept-filter-dock.is-in-view .dept-dock-button[aria-haspopup][aria-expanded=true] ",
+      "page": "/Employees"
+    }
+  ],
+  "errors": [],
+  "http": [
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/Account/BiometricVerify",
+      "status": 200
+    },
+    {
+      "path": "/Account/PhoneOptions",
+      "status": 200
+    },
+    {
+      "path": "/Account/Phone",
+      "status": 200
+    },
+    {
+      "path": "/Profile",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Dashboard",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/Account/DirectPhoneOptions",
+      "status": 200
+    },
+    {
+      "path": "/Account/DirectPhone",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Dashboard",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/MyRequests",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Create",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/MyRequests",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Dashboard",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/MyRequests",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Dashboard",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/MyRequests",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Dashboard",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Dashboard",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Edit/1",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/RequisitionItems/Create",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/RequisitionItems/Create",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/RequisitionItems/Edit/1",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/RequisitionItems/Delete/1",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/RequisitionItems/Delete/1",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/MyRequests",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/RequisitionItems/Create",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/RequisitionItems/Create",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Dashboard",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/MyRequests",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/SourcingDashboard",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/RequisitionReviews/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/RequisitionReviews/Pending",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Dashboard",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Edit/1",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/SourcingDashboard",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/RequisitionReviews/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/RequisitionReviews/Pending",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Dashboard",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Dashboard",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Notifications",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Notifications",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/AdminDashboard",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Departments",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Departments/Create",
+      "status": 200
+    },
+    {
+      "path": "/Departments/Details/2",
+      "status": 200
+    },
+    {
+      "path": "/Departments",
+      "status": 200
+    },
+    {
+      "path": "/Departments/Details/2",
+      "status": 200
+    },
+    {
+      "path": "/Departments/Edit/2",
+      "status": 200
+    },
+    {
+      "path": "/Departments/Details/2",
+      "status": 200
+    },
+    {
+      "path": "/Departments",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/AdminDashboard",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Employees",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/AdminDashboard",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/AdminDashboard",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Employees",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/AdminDashboard",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Profile",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Profile",
+      "status": 200
+    },
+    {
+      "path": "/Profile/Photo",
+      "status": 200
+    },
+    {
+      "path": "/Profile",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/AdminDashboard",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Employees",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    }
+  ]
+}

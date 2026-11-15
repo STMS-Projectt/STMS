@@ -1,6 +1,7 @@
 @model PurchaseRequisition
 @{
     var items = (string?)ViewData["RequestPanel"] == "items";
+    var returned = Model.Status == "Returned";
     ViewData["Title"] = items ? "Requested items" : "Request QR code";
 }
 <a class="back-link" asp-action="Details" asp-route-id="@Model.Id">Back to request</a>
@@ -17,8 +18,8 @@
     @if (ViewBag.CanEdit == true && Model.Items.Count > 0)
     {
         <form asp-action="Submit" asp-route-id="@Model.Id" method="post" class="surface detail-card request-submit mt-3">
-            <div><h2>Ready for review?</h2><p class="subtle mb-0">Send this purchase request and its items to the sourcing officer.</p></div>
-            <button type="submit" class="btn btn-primary">Submit for review</button>
+            <div><h2>@(returned ? "Ready to send it back?" : "Ready for review?")</h2><p class="subtle mb-0">Send this purchase request and its items to the sourcing officer.</p></div>
+            <button type="submit" class="btn btn-primary">@(returned ? "Resubmit for review" : "Submit for review")</button>
         </form>
     }
 }

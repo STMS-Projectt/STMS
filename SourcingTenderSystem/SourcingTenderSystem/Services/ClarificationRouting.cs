@@ -30,6 +30,27 @@ public sealed class ClarificationRouting(ApplicationDbContext db)
         .Where(e => e.IsActive && db.UserRoles.Any(ur => ur.UserId == e.UserId &&
             db.Roles.Any(r => r.Id == ur.RoleId && r.Name == role)));
 
+    private IQueryable<PurchaseRequisition> RequestsInReview() => db.PurchaseRequisitions.AsNoTracking()
+        .Where(r => r.Status == "Submitted" || r.Status == "Under Review" || r.Status == "Returned");
+
+    private IQueryable<EmployeeProfile> Requesters(int departmentId) => WithRole("RequestingDepartment")
+        .Where(e => e.DepartmentId == departmentId && e.Department!.IsActive);
+
+    public async Task<HashSet<int>> StartableRequests(EmployeeProfile employee, IEnumerable<int> requestIds)
+    {
+        var ids = requestIds.Distinct().ToArray();
+        if (ids.Length == 0 || employee.DepartmentId is not int departmentId ||
+            !await Requesters(departmentId).AnyAsync(e => e.Id == employee.Id)) return [];
+        var officers = WithRole(Roles.SourcingOfficer).Select(e => e.Id);
+        var alone = (await officers.Take(2).ToListAsync()).Count == 1;
+        var eligible = await RequestsInReview().Where(r => ids.Contains(r.Id) &&
+            r.CreatedByEmployeeProfileId == employee.Id && r.DepartmentId == departmentId &&
+            (r.ReviewedByEmployeeProfileId != null && officers.Any(id => id == r.ReviewedByEmployeeProfileId) ||
+             r.ReviewedByEmployeeProfileId == null && alone && r.Status != "Returned"))
+            .Select(r => r.Id).ToListAsync();
+        return eligible.ToHashSet();
+    }
+
     public async Task<IReadOnlyList<ClarificationTarget>> RequestTargets(ClarificationPerson actor)
     {
         if (actor.Employee is not int id) return [];
@@ -65,16 +86,15 @@ public sealed class ClarificationRouting(ApplicationDbContext db)
         }
         if (kind == "request")
         {
-            var request = await db.PurchaseRequisitions.AsNoTracking().SingleOrDefaultAsync(r => r.Id == id);
-            if (request is null || request.Status is not ("Submitted" or "Under Review" or "Returned")) return null;
+            var request = await RequestsInReview().SingleOrDefaultAsync(r => r.Id == id);
+            if (request is null) return null;
             var officerId = request.ReviewedByEmployeeProfileId;
             if (officerId is null && request.Status != "Returned")
             {
                 var available = await officers.Select(e => e.Id).Take(2).ToListAsync();
                 if (available.Count == 1) officerId = available[0];
             }
-            var requesters = WithRole("RequestingDepartment").Where(e => e.Id == request.CreatedByEmployeeProfileId &&
-                e.DepartmentId == request.DepartmentId && e.Department!.IsActive);
+            var requesters = Requesters(request.DepartmentId).Where(e => e.Id == request.CreatedByEmployeeProfileId);
             var assignedOfficer = officers.Where(e => e.Id == officerId);
             if (actor.Employee == request.CreatedByEmployeeProfileId && await requesters.AnyAsync())
                 await Add(assignedOfficer, recipients);

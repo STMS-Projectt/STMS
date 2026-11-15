@@ -14,6 +14,9 @@
         <section class="form-section"><div class="application-section-heading"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("filter")' /></span><div><h2>What you supply</h2><p>Choose the categories that match your business.</p></div></div>
             <fieldset class="field field-wide application-categories" data-category-selection>
                 <legend class="visually-hidden">Supply categories</legend>
+                <label class="field" data-category-search hidden>Find a category
+                    <input type="search" class="form-control" placeholder="Search supply categories" autocomplete="off" />
+                </label>
                 <output data-category-count aria-live="polite" class="application-count" hidden></output>
                 <div class="supplier-category-grid">
                     @foreach (var category in (IEnumerable<Category>)ViewBag.Categories)
@@ -21,6 +24,7 @@
                         <label class="supplier-category-option"><input type="checkbox" name="CategoryIds" value="@category.Id" checked="@Model.CategoryIds.Contains(category.Id)" /> @category.Name</label>
                     }
                 </div>
+                <p class="field-hint" data-category-empty hidden>No categories match your search.</p>
                 <span asp-validation-for="CategoryIds" class="text-danger"></span>
             </fieldset>
         </section>

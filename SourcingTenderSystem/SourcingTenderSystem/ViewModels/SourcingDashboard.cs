@@ -6,4 +6,4 @@ public sealed record SourcingDashboard(string OfficerName, int PendingRequests, 
 
 public sealed record SourcingMonth(DateTime Month, int Requests, int Tenders);
 
-public sealed record SourcingRequestRow(int Id, string Title, string Department, string Priority, string Status);
+public sealed record SourcingRequestRow(int Id, string Title, string Department, string Priority, string Status, DateTime TargetDate);

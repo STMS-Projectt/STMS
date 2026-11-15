@@ -2,8 +2,27 @@
     function initialize(root) {
         for (const fieldset of root.querySelectorAll("[data-category-selection]")) {
             const output = fieldset.querySelector("[data-category-count]");
-            const sync = () => { output.textContent = `${fieldset.querySelectorAll("input:checked").length} selected`; };
+            const search = fieldset.querySelector("[data-category-search]");
+            const options = [...fieldset.querySelectorAll(".supplier-category-option")];
+            const query = search?.querySelector("input");
+            const empty = fieldset.querySelector("[data-category-empty]");
+            const sync = () => {
+                output.textContent = `${fieldset.querySelectorAll('input[name="CategoryIds"]:checked').length} selected`;
+                const term = query?.value.trim().toLocaleLowerCase() || "";
+                let matches = 0;
+                for (const option of options) {
+                    const selected = option.querySelector("input").checked;
+                    const match = option.textContent.trim().toLocaleLowerCase().includes(term);
+                    option.hidden = !selected && !match;
+                    if (match) matches++;
+                }
+                if (empty) empty.hidden = matches > 0;
+            };
             fieldset.addEventListener("change", sync);
+            if (search && options.length > 1) {
+                search.hidden = false;
+                query.addEventListener("input", sync);
+            }
             output.hidden = false;
             sync();
         }

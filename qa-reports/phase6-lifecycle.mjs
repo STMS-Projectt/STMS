@@ -336,6 +336,7 @@ export async function lifecycle(b) {
      await go('/EvaluationWorkflow');
      const origin=await ev('location.href');
      await has('#main .dept-filter-dock');
+     await has('#main .vote-queue a[href="/EvaluationWorkflow/Details/'+id+'?panel=decision"]');
      await modal('#main a[href="/EvaluationWorkflow/Details/'+id+'?panel=decision"]','a[href*="/EvaluationWorkflow/Reject/"]');
      assert.equal(await ev('document.querySelector("#workspace-dialog").innerText.includes("Committee progress")'),false);
      await click(dialog+'a[href*="/EvaluationWorkflow/Reject/"]');

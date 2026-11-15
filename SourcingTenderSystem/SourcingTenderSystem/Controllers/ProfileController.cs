@@ -43,7 +43,7 @@ public sealed class ProfileController(UserManager<IdentityUser> users, Applicati
             var result = await users.SetAuthenticationTokenAsync(user, Provider, PersonalKey, JsonSerializer.Serialize(personal));
             if (result.Succeeded)
             {
-                TempData["Message"] = "Personal details saved.";
+                TempData["PersonalDetailsFeedback"] = "Personal details saved.";
                 return RedirectToAction(nameof(Index));
             }
             ModelState.AddModelError("", "Could not save your personal details. Try again.");
@@ -83,7 +83,7 @@ public sealed class ProfileController(UserManager<IdentityUser> users, Applicati
         if (type is null) return Fail("Choose a valid JPEG or PNG image. SVG and other file types are not supported.");
         var result = await users.SetAuthenticationTokenAsync(user, Provider, PhotoKey, Convert.ToBase64String(bytes));
         if (!result.Succeeded) return Fail("Could not save your photo. Try again.");
-        TempData["Message"] = "Profile photo updated.";
+        TempData["ProfilePhotoFeedback"] = "Profile photo updated.";
         return RedirectToAction(nameof(Index));
     }
 
@@ -110,7 +110,7 @@ public sealed class ProfileController(UserManager<IdentityUser> users, Applicati
         if (user is null || await db.SupplierProfiles.AnyAsync(s => s.UserId == user.Id)) return Forbid();
         if (!(await users.RemoveAuthenticationTokenAsync(user, Provider, PhotoKey)).Succeeded)
             return Fail("Could not remove your photo. Try again.");
-        TempData["Message"] = "Profile photo removed.";
+        TempData["ProfilePhotoFeedback"] = "Profile photo removed.";
         return RedirectToAction(nameof(Index));
     }
 

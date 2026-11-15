@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SourcingTenderSystem.Data;
 using SourcingTenderSystem.Models;
+using SourcingTenderSystem.Services;
 using SourcingTenderSystem.ViewModels;
 
 namespace SourcingTenderSystem.Controllers;
@@ -11,7 +12,8 @@ namespace SourcingTenderSystem.Controllers;
 [Authorize(Roles = "RequestingDepartment")]
 public class PurchaseRequisitionsController : RequisitionBaseController
 {
-    public PurchaseRequisitionsController(ApplicationDbContext db) : base(db) { }
+    private readonly ClarificationRouting routing;
+    public PurchaseRequisitionsController(ApplicationDbContext db, ClarificationRouting routing) : base(db) { this.routing = routing; }
 
     private static readonly string[] Statuses =
         ["Draft", "Submitted", "Under Review", "Returned", "Approved", "Rejected", "Converted to Tender"];
@@ -30,6 +32,7 @@ public class PurchaseRequisitionsController : RequisitionBaseController
             .ToDictionaryAsync(x => x.Status, x => x.Count);
         var recent = await RequestRows(requests).Take(5).ToListAsync();
         ViewBag.EditableRequestIds = recent.Where(r => Owns(r, employee!) && CanEdit(r)).Select(r => r.Id).ToHashSet();
+        ViewData["ClarificationRequestIds"] = await routing.StartableRequests(employee!, recent.Select(r => r.Id));
         var now = DateTime.UtcNow;
         var first = new DateTime(now.Year, now.Month, 1, 0, 0, 0, DateTimeKind.Utc).AddMonths(-5);
         var monthly = await requests.Where(r => r.CreatedAt >= first && r.CreatedAt < first.AddMonths(6))
@@ -53,6 +56,7 @@ public class PurchaseRequisitionsController : RequisitionBaseController
         if (!string.IsNullOrEmpty(q)) requests = requests.Where(x => x.Title.Contains(q));
         var rows = await RequestRows(requests).ToListAsync();
         ViewBag.EditableRequestIds = rows.Where(r => Owns(r, employee!) && CanEdit(r)).Select(r => r.Id).ToHashSet();
+        ViewData["ClarificationRequestIds"] = await routing.StartableRequests(employee!, rows.Select(r => r.Id));
         return View("Index", new DepartmentRequestList(employee!.Department!.Name, Statuses, status, q, rows));
     }
 
@@ -70,6 +74,7 @@ public class PurchaseRequisitionsController : RequisitionBaseController
                 t.PurchaseRequisition.CreatedByEmployeeProfileId == employee!.Id &&
                 (t.PurchaseRequisition.Status == "Draft" || t.PurchaseRequisition.Status == "Returned")))
             .ToListAsync();
+        ViewData["ClarificationRequestIds"] = await routing.StartableRequests(employee!, assignments.Select(r => r.RequestId));
         return View(assignments);
     }
 
@@ -128,6 +133,7 @@ public class PurchaseRequisitionsController : RequisitionBaseController
             return View("DashboardRequestPanel", request);
         }
         ViewBag.OverviewOnly = panel == "overview";
+        if (panel != "overview") ViewData["ClarificationRequestIds"] = await routing.StartableRequests(employee!, [id]);
         return View(request);
     }
 

@@ -58,6 +58,7 @@ else
                     <div class="account-field-wide"><label class="form-label" asp-for="Personal.Bio"></label><textarea class="form-control" asp-for="Personal.Bio" rows="4" maxlength="400"></textarea><span asp-validation-for="Personal.Bio" class="text-danger"></span></div>
                 </div>
                 <div class="form-actions"><button class="btn btn-primary" type="submit"><partial name="_Icon" model='@("check")' /> Save changes</button></div>
+                @if (TempData["PersonalDetailsFeedback"] is string saved) { <p class="alert alert-success mt-2 mb-0" role="status">@saved</p> }
             </form>
             <div class="account-photo-section" data-photo-upload>
                 <div class="account-section-heading"><h3>Profile photo</h3><p>Preview your image before saving it to your profile.</p></div>
@@ -72,6 +73,7 @@ else
                     <div class="account-photo-actions"><button class="btn btn-primary" type="submit" data-photo-save><partial name="_Icon" model='@("check")' /> Save photo</button><button class="btn btn-outline-secondary" type="button" data-photo-cancel hidden>Cancel selection</button></div>
                 </form>
                 @if (Model.HasPhoto) { <form asp-action="Remove" method="post" class="mt-3"><button class="btn btn-outline-danger" type="submit">Remove photo</button></form> }
+                @if (TempData["ProfilePhotoFeedback"] is string photoSaved) { <p class="alert alert-success mt-2 mb-0" role="status">@photoSaved</p> }
             </div>
         </div>
     </section>

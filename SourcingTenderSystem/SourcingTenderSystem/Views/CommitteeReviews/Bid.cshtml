@@ -10,6 +10,8 @@
 <a class="back-link" asp-action="Details" asp-route-id="@Model.Bid.TenderId"><partial name="_Icon" model='@("back")' /> Tender evaluation</a>
 <header class="page-heading stms-hero admin-record-hero"><div><p class="eyebrow">BID #@Model.Bid.Id · @Model.Bid.Tender.Title</p><h1>@Model.Bid.SupplierProfile.CompanyName</h1><p>@Model.Bid.TotalPrice.ToString("N2") @Model.Bid.Currency · Delivery in @Model.Bid.DeliveryDays days</p></div></header>
 @if (TempData["ReviewError"] is string error) { <div class="alert alert-warning" role="alert">@error</div> }
+<div class="review-workspace">
+<aside class="review-references" aria-label="Bid reference materials">
 <details class="surface detail-card mb-3 bid-evidence">
     <summary>Offered items <span class="record-panel-label">@Model.Bid.BidItems.Count</span></summary>
     @if (Model.Bid.BidItems.Count == 0) { <div class="empty-state">No items were attached to this bid.</div> }
@@ -40,6 +42,7 @@
         </div>
     }
 </details>
+</aside>
 <section class="surface detail-card bid-checklist" aria-label="Your evaluation">
     <div class="record-section-heading"><div><h2>Your evaluation checklist</h2><p>@(locked ? "Saved scores are read-only." : "Check each criterion the offer meets, then save the checklist for this bid.")</p></div>
         <span class="record-panel-label" data-checklist-total>@Percent(Model.Scores.Sum(Earned)) / @Percent(Model.Scores.Sum(r => r.WeightPercent))</span>
@@ -98,8 +101,9 @@
             </div>
             @if (!locked)
             {
-                <div class="form-actions mt-3"><button class="btn btn-primary" type="submit"><partial name="_Icon" model='@("check")' /> Save checklist</button></div>
+                <div class="form-actions mt-3 checklist-save"><button class="btn btn-primary" type="submit"><partial name="_Icon" model='@("check")' /> Save checklist</button></div>
             }
         </form>
     }
 </section>
+</div>

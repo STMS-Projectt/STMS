@@ -35,13 +35,6 @@
     </dl>
     <h3>Reason for purchase</h3><p class="request-prose mb-0">@Model.Reason</p>
 </section>
-@if (overviewOnly)
-{
-    <div class="button-row mt-3">
-        <a class="btn btn-outline-secondary" data-workspace-dialog asp-controller="Clarifications" asp-action="StartRequest" asp-route-id="@Model.Id" aria-label="Start a clarification" title="Start a clarification"><partial name="_Icon" model='@("mail")' /></a>
-        <a class="btn btn-outline-secondary" data-workspace-dialog="details" asp-controller="Clarifications" asp-action="Index" asp-route-kind="request" asp-route-recordId="@Model.Id">Clarification history</a>
-    </div>
-}
 @if (!overviewOnly)
 {
 <section class="surface directory request-section">
@@ -59,7 +52,13 @@
     </form>
 }
 
-<div class="button-row mb-3"><a class="btn btn-outline-secondary" data-workspace-dialog asp-controller="Clarifications" asp-action="StartRequest" asp-route-id="@Model.Id" aria-label="Start a clarification" title="Start a clarification"><partial name="_Icon" model='@("mail")' /></a><a class="btn btn-outline-secondary" data-workspace-dialog="details" asp-controller="Clarifications" asp-action="Index" asp-route-kind="request" asp-route-recordId="@Model.Id">Clarification history</a></div>
+<div class="button-row mb-3">
+    @if (ViewData["ClarificationRequestIds"] is ISet<int> startable && startable.Contains(Model.Id))
+    {
+        <a class="btn btn-outline-secondary" data-workspace-dialog asp-controller="Clarifications" asp-action="StartRequest" asp-route-id="@Model.Id"><partial name="_Icon" model='@("mail")' /> Start a clarification</a>
+    }
+    <a class="btn btn-outline-secondary" data-workspace-dialog="details" asp-controller="Clarifications" asp-action="Index" asp-route-kind="request" asp-route-recordId="@Model.Id">Clarification history</a>
+</div>
 
 <partial name="_TenderHistory" model="Model.Tenders" />
 }

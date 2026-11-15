@@ -2,7 +2,7 @@
 @{ ViewData["Title"] = "My bids"; }
 <header class="page-heading stms-hero"><div><p class="eyebrow">SUPPLIER WORKSPACE</p><h1>My bids</h1><p>Prepare offers and track submitted bids.</p></div></header>
 <partial name="_Alerts" />
-<section class="surface directory dept-directory" data-directory>
+<section class="surface directory dept-directory supplier-bid-register" data-directory>
     <div class="dept-directory-heading"><h2>Bid register</h2><p>Search your bids and filter by status.</p></div>
     @if (Model.MyBids.Count == 0) { <div class="empty-state"><h2>No bids yet</h2></div> }
     else
@@ -19,10 +19,11 @@
                     <div><dt>Status</dt><dd><partial name="_StatusBadge" model="bid.Status" /> @if (bid.AwardOutcome is string result) { <span class="badge bg-secondary">@result</span> }</dd></div>
                     <div><dt>Submitted (UTC)</dt><dd>@(bid.SubmittedAt?.ToString("dd MMM yyyy HH:mm") ?? "—")</dd></div>
                 </dl>
-                <div class="record-action">
+                <div class="record-action bid-register-actions">
                     @foreach (var (panel, label, icon) in new[] { ("overview", "Bid summary", "eye"), ("prices", "Item prices", "inbox"), ("documents", "Bid documents", "file"), ("submission", "Bid submission status", "check") })
                     {
-                        <a data-workspace-dialog="details" class="record-icon-action" asp-action="Details" asp-route-id="@bid.Id" asp-route-panel="@panel" aria-label="@label: @bid.Tender.Title" data-tooltip="@label"><partial name="_Icon" model="icon" /></a>
+                        var caption = panel switch { "overview" => "Summary", "prices" => "Prices", "documents" => "Files", _ => "Submission" };
+                        <a data-workspace-dialog="details" class="record-icon-action bid-register-action" asp-action="Details" asp-route-id="@bid.Id" asp-route-panel="@panel" aria-label="@label: @bid.Tender.Title" data-tooltip="@label"><partial name="_Icon" model="icon" /><span>@caption</span></a>
                     }
                 </div>
             </article>

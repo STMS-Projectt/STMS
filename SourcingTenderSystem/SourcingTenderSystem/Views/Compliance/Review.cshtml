@@ -35,6 +35,15 @@
 {
     <div class="alert alert-info" role="status">Tender status: @tender.Status. Compliance decisions are available after closing.</div>
 }
+else if (Model.Bids.Count > 0)
+{
+    var waiting = Model.Bids.Count(b => b.Status == "Pending Clarification");
+    var unreviewed = Model.Bids.Count(b => b.Status == "Submitted");
+    if (waiting + unreviewed > 0)
+    {
+        <p class="callout" role="status"><strong>Compliance still in progress.</strong> @unreviewed to review · @waiting awaiting clarification. Only bids marked compliant are included in evaluation.</p>
+    }
+}
 @if (Model.MixedCurrencies)
 {
     <div class="alert alert-warning" role="alert">The bids use different currencies. @(Model.UsdOrdered

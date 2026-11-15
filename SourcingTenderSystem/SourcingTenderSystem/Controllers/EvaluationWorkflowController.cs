@@ -36,8 +36,17 @@ public sealed class EvaluationWorkflowController(ApplicationDbContext db, Suppli
     {
         var employee = await CurrentEmployeeAsync();
         if (employee is null) return Forbid();
-        return View(await Visible(employee.Id).AsNoTracking().Include(t => t.EvaluationReport)
-            .OrderByDescending(t => t.Id).ToListAsync());
+        var visible = Visible(employee.Id).AsNoTracking();
+        var tenders = await visible.Include(t => t.EvaluationReport).OrderByDescending(t => t.Id).ToListAsync();
+        if (User.IsInRole(Roles.TopCommittee))
+        {
+            var awaiting = await visible.Where(t => t.EvaluationReport!.Status == Top &&
+                t.EvaluationReport.ResultsSnapshot != null &&
+                !t.EvaluationReport.TenderApprovals.Any(a => a.ApproverEmployeeProfileId == employee.Id && a.Decision == Vote))
+                .Select(t => t.Id).ToListAsync();
+            ViewData["AwaitingMyVote"] = awaiting.ToHashSet();
+        }
+        return View(tenders);
     }
 
     [HttpGet]

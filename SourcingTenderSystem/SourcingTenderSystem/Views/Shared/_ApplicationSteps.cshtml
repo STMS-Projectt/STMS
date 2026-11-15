@@ -4,7 +4,7 @@
     {
         <li class="@(number < Model ? "is-complete" : null)" aria-current="@(Model == number ? "step" : null)">
             <span aria-hidden="true">@if (number < Model) { <partial name="_Icon" model='@("check")' /> } else { @number }</span>
-            <div><small>@(number < Model ? "Completed" : Model == number ? "Current step" : $"Step {number}")</small><strong>@title</strong></div>
+            <div><small>@(number < Model ? "Completed" : Model == number ? $"Step {number} of 3" : $"Step {number}")</small><strong>@title</strong></div>
         </li>
     }
 </ol>

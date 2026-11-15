@@ -18,8 +18,9 @@ public sealed class SourcingDashboardController(ApplicationDbContext db) : Requi
 
         var pending = Db.PurchaseRequisitions.AsNoTracking()
             .Where(r => r.Status == "Submitted" || r.Status == "Under Review");
-        var recent = await pending.OrderBy(r => r.CreatedAt).ThenBy(r => r.Id).Take(5)
-            .Select(r => new SourcingRequestRow(r.Id, r.Title, r.Department.Name, r.Priority, r.Status))
+        var recent = await pending.OrderByDescending(r => r.Priority == "Urgent" ? 3 : r.Priority == "High" ? 2 : r.Priority == "Normal" ? 1 : 0)
+            .ThenBy(r => r.TargetDate).ThenBy(r => r.CreatedAt).ThenBy(r => r.Id).Take(5)
+            .Select(r => new SourcingRequestRow(r.Id, r.Title, r.Department.Name, r.Priority, r.Status, r.TargetDate))
             .ToListAsync(cancellationToken);
         var pendingCount = await pending.CountAsync(cancellationToken);
         var tenderStatuses = await Db.Tenders.GroupBy(t => t.Status)
