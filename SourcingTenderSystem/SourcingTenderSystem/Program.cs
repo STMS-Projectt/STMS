@@ -66,6 +66,13 @@ if (builder.Configuration["Authentication:Google:ClientId"] is { Length: > 0 } g
         options.ClientSecret = googleClientSecret;
         options.SignInScheme = IdentityConstants.ExternalScheme;
         Microsoft.AspNetCore.Authentication.ClaimActionCollectionMapExtensions.MapJsonKey(options.ClaimActions, "email_verified", "email_verified");
+        // A cancelled consent or a misconfigured client returns to the sign-in page instead of a 500 error.
+        options.Events.OnRemoteFailure = context =>
+        {
+            context.Response.Redirect(context.Request.PathBase + "/Account/ExternalLoginCallback?remoteError=1");
+            context.HandleResponse();
+            return Task.CompletedTask;
+        };
     });
 }
 builder.Services.Configure<IdentityPasskeyOptions>(options =>
