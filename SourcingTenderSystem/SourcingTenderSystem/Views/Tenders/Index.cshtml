@@ -46,87 +46,35 @@
 }
 
 <section class="surface directory dept-directory" data-directory><div class="directory-toolbar"><h2 class="h5 mb-0">All tenders</h2></div><partial name="_ListFilters" model='@("Search tenders", Model.Select(t => t.Status))' />
-    <div class="table-responsive" tabindex="0" role="region" aria-label="All tenders">
-    <table class="table table-hover align-middle">
-        <thead class="table-light">
-            <tr>
-                <th>#</th>
-                <th>Title</th>
-                <th>Purchase Request</th>
-                <th>Open Date</th>
-                <th>Close Date</th>
-                <th>Status</th>
-                <th>Created By</th>
-                <th>Created At</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var t in Model)
-            {
-                var isDraft = t.Status == "Draft";
-                var canAssign = t.Status == "Closed";
-                <tr data-status="@t.Status">
-                    <td>@t.Id</td>
-                    <td>@t.Title</td>
-                    <td>@t.PurchaseRequisition.Title</td>
-                    <td class="text-nowrap">@t.OpenDate.ToString("yyyy-MM-dd HH:mm")</td>
-                    <td class="text-nowrap">@t.CloseDate.ToString("yyyy-MM-dd HH:mm")</td>
-                    <td><span class="badge @BadgeClass(t.Status)">@t.Status</span></td>
-                    <td>@t.CreatedByEmployeeProfile.FullName</td>
-                    <td class="text-nowrap">@t.CreatedAt.ToString("yyyy-MM-dd")</td>
-                    <td>
-                        <div class="d-flex flex-wrap gap-1">
-                            <a asp-action="Details" asp-route-id="@t.Id" class="btn btn-sm btn-outline-info">Details</a>
-
-                            @if (isDraft)
-                            {
-                                <a data-workspace-dialog asp-action="Edit" asp-route-id="@t.Id" class="btn btn-sm btn-outline-primary">Edit</a>
-                                <form asp-action="Delete" asp-route-id="@t.Id" method="post" class="d-inline"
-                                      data-workspace-confirm="Delete this tender? The purchase request will go back to Approved." onsubmit="return window.stmsWorkspaceReady || confirm(this.dataset.workspaceConfirm);">
-                                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
-                                </form>
-                            }
-                            else
-                            {
-                                <button type="button" class="btn btn-sm btn-outline-secondary" disabled
-                                        title="Only draft tenders can be edited">
-                                    Edit
-                                </button>
-                                <button type="button" class="btn btn-sm btn-outline-secondary" disabled
-                                        title="Only draft tenders can be deleted">
-                                    Delete
-                                </button>
-                            }
-
-                            <a asp-controller="Invitations" asp-action="Index" asp-route-tenderId="@t.Id"
-                               class="btn btn-sm btn-outline-success">Invitation</a>
-
-                            @if (canAssign)
-                            {
-                                <a data-workspace-dialog asp-action="AssignCommittee" asp-route-id="@t.Id"
-                                   class="btn btn-sm btn-outline-dark">Assign</a>
-                            }
-                            else
-                            {
-                                <button type="button" class="btn btn-sm btn-outline-secondary" disabled
-                                        title="Committee assignment is unavailable after bidding closes">
-                                    Assign
-                                </button>
-                            }
-                        </div>
-                    </td>
-                </tr>
-            }
-            @if (!Model.Any())
-            {
-                <tr>
-                    <td colspan="9" class="text-center text-muted py-4">No tenders yet.</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-</div>
+    <partial name="_DirectoryPages" model='@("Tender pages")' />
+@if (!Model.Any()) { <div class="empty-state"><h2>No tenders yet</h2></div> }
+else
+{
+    <div class="record-list" data-record-list>
+    @foreach (var t in Model)
+    {
+        <article class="record-card" data-record data-status="@t.Status">
+            <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("briefcase")' /></span><span>@t.Title<small>Tender #@t.Id · @t.CreatedByEmployeeProfile.FullName · @t.CreatedAt.ToString("dd MMM yyyy")</small></span></div>
+            <dl class="record-facts"><div><dt>Purchase request</dt><dd>@t.PurchaseRequisition.Title</dd></div><div><dt>Opens (UTC)</dt><dd>@t.OpenDate.ToString("dd MMM yyyy HH:mm")</dd></div><div><dt>Closes (UTC)</dt><dd>@t.CloseDate.ToString("dd MMM yyyy HH:mm")</dd></div><div><dt>Status</dt><dd><span class="badge @BadgeClass(t.Status)">@t.Status</span></dd></div></dl>
+            <div class="record-action">
+                <a class="record-icon-action" data-workspace-dialog="details" asp-action="Details" asp-route-id="@t.Id" aria-label="View tender @t.Title" data-tooltip="View details"><partial name="_Icon" model='@("eye")' /></a>
+                @if (t.Status == "Draft")
+                {
+                    <a class="record-icon-action" data-workspace-dialog asp-action="Edit" asp-route-id="@t.Id" aria-label="Edit tender @t.Title" data-tooltip="Edit"><partial name="_Icon" model='@("edit")' /></a>
+                    <form asp-action="Delete" asp-route-id="@t.Id" method="post" data-workspace-confirm="Delete this tender? The purchase request will go back to Approved." onsubmit="return window.stmsWorkspaceReady || confirm(this.dataset.workspaceConfirm);">
+                        <button type="submit" class="record-icon-action record-icon-danger" aria-label="Delete tender @t.Title" data-tooltip="Delete"><partial name="_Icon" model='@("close")' /></button>
+                    </form>
+                }
+                <a class="record-icon-action" data-workspace-dialog asp-controller="Invitations" asp-action="Index" asp-route-tenderId="@t.Id" aria-label="Invitations for @t.Title" data-tooltip="Invitations"><partial name="_Icon" model='@("mail")' /></a>
+                @if (t.Status == "Closed")
+                {
+                    <a class="record-icon-action" data-workspace-dialog asp-action="AssignCommittee" asp-route-id="@t.Id" aria-label="Assign committee for @t.Title" data-tooltip="Assign committee"><partial name="_Icon" model='@("users")' /></a>
+                }
+            </div>
+        </article>
+    }
+    </div>
+}
 <partial name="_ListFilterEmpty" />
 </section>
 <div class="stms-page-panels">

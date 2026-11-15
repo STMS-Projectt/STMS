@@ -736,3 +736,63 @@ body:has(.dept-directory) [data-scroll-top]{bottom:18px}
 .request-editor-actions{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:8px;margin-top:18px;padding-top:14px;border-top:1px solid #e4eeeb}
 #workspace-dialog .request-editor-card{padding:16px;border:1px solid #e0ebe8;border-radius:15px;background:#fff}
 @media(max-width:520px){.request-editor-fields{grid-template-columns:1fr}.request-editor-actions>*{flex:1 1 auto}}
+.sourcing-analytics .sourcing-pipeline-row{grid-template-columns:34px minmax(0,1fr) auto}
+.sourcing-analytics .sourcing-queue{display:grid;gap:8px}
+.sourcing-analytics .sourcing-queue-row{display:grid;grid-template-columns:36px minmax(0,1fr) auto auto;gap:10px;align-items:center;padding:9px}
+.sourcing-queue-row>.icon-tile{width:36px;height:36px}
+.sourcing-queue-row strong,.sourcing-queue-row small{display:block;overflow-wrap:anywhere}
+.sourcing-queue-row small{color:#516a76}
+.sourcing-queue-row .record-action{padding:0;margin:0;border:0}
+@media(max-width:520px){.sourcing-analytics .sourcing-queue-row{grid-template-columns:36px minmax(0,1fr) auto}.sourcing-queue-row>.status-pill{grid-column:2;grid-row:2;justify-self:start}.sourcing-queue-row .record-action{grid-column:3;grid-row:1/3}}
+#workspace-dialog .dept-filter-dock{visibility:visible;opacity:1;pointer-events:auto;animation:none}
+#workspace-dialog .dept-filter-dock .dept-filter-popover{z-index:2}
+
+/* Sourcing detail records, related forms, and confirmation windows. */
+#workspace-dialog.sourcing-dialog{width:min(48rem,calc(100vw - 24px));border-radius:20px}
+#workspace-dialog.sourcing-dialog.is-detail{width:min(72rem,calc(100vw - 24px))}
+.sourcing-dialog .workspace-dialog-caption{display:grid;gap:3px;min-width:0}
+.sourcing-dialog .workspace-dialog-context{font-size:.64rem;text-transform:uppercase;letter-spacing:.11em;color:#356c61;font-weight:800}
+#workspace-dialog.sourcing-dialog .workspace-dialog-bar{background:#fafffe;padding-block:10px}
+#workspace-dialog.sourcing-dialog [data-dialog-content]{display:flow-root;background:#f4f9f8;min-width:0}
+.sourcing-dialog [data-dialog-content]>.page-heading{gap:12px;margin:0 0 14px}
+.sourcing-dialog [data-dialog-content]>.page-heading p:last-child{margin-bottom:0}
+.sourcing-dialog [data-dialog-content] .form-card,.sourcing-dialog [data-dialog-content] .admin-form{padding:clamp(12px,2.4vw,20px);border:1px solid #dcebe7;border-radius:15px;background:#fff;box-shadow:none}
+.sourcing-dialog [data-dialog-content] :is(.detail-card,.dashboard-card,.directory,.card){border:1px solid #dcebe7;border-radius:15px;box-shadow:none}
+.sourcing-dialog [data-dialog-content] .form-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:14px;padding:12px 0 0;border-top:1px solid #e5efec}
+.sourcing-dialog [data-dialog-content] .validation-summary-valid{display:none}
+.sourcing-dialog [data-dialog-content] .form-label{color:#234a48}
+.sourcing-dialog [data-dialog-content] .table-responsive{min-width:0;border:1px solid #e3eeeb;border-radius:12px}
+.sourcing-dialog [data-dialog-content] .table-responsive>.table{margin-bottom:0}
+.sourcing-confirm{border-color:#dcebe7;background:linear-gradient(135deg,#fff,#eef8f4)}
+.sourcing-confirm h2{font-size:1.2rem;color:#17473d}
+.sourcing-confirm [data-confirm-question]{color:#355268;line-height:1.55}
+@media(max-width:560px){#workspace-dialog.sourcing-dialog{width:calc(100vw - 16px);max-height:calc(100dvh - 16px);border-radius:14px}.sourcing-dialog [data-dialog-content] .form-actions>*{flex:1 1 auto}.sourcing-dialog [data-dialog-content] .button-row{flex-wrap:wrap}}
+
+.sourcing-request-hero{gap:12px;align-items:center}
+.sourcing-request-hero>.icon-tile{flex:none}
+.sourcing-request-hero>div{flex:1;min-width:0;overflow-wrap:anywhere}
+.sourcing-request-layout{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:14px;align-items:start}
+.sourcing-request-stack{display:grid;gap:14px;min-width:0}
+.sourcing-request-stack>.surface{min-width:0;margin:0!important}
+.sourcing-request-stack h2{font-size:1.15rem}
+.sourcing-request-stack .card-heading{align-items:flex-start;gap:8px}
+.sourcing-request-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0}
+.sourcing-request-facts>div,.sourcing-request-items>li{min-width:0;padding:11px 12px;border:1px solid #e0ebe8;border-radius:12px;background:#f7fbfa}
+.sourcing-request-facts dt{display:flex;align-items:center;gap:6px;font-size:.76rem;color:#48656c}
+.sourcing-request-facts dt .icon{width:15px;height:15px;flex:none}
+.sourcing-request-facts dd{margin:5px 0 0;font-weight:720;overflow-wrap:anywhere}
+.sourcing-request-reason{margin-top:14px;padding-top:12px;border-top:1px solid #e3eeeb}
+.sourcing-request-reason h3,.sourcing-request-item-heading h3{font-size:.95rem;margin:0 0 6px}
+.sourcing-request-items{display:grid;gap:8px;padding:0;margin:0;list-style:none}
+.sourcing-request-item-heading{display:flex;align-items:center;gap:9px;margin-bottom:8px}
+.sourcing-request-item-heading h3{flex:1;min-width:0;margin:0;overflow-wrap:anywhere}
+.sourcing-request-item-heading .icon-tile{width:32px;height:32px;flex:none}
+.sourcing-request-item-heading .department-status-count{white-space:normal;overflow-wrap:anywhere;max-width:45%;text-align:center}
+.sourcing-request-items .request-prose,.sourcing-request-reason .request-prose{white-space:pre-wrap;overflow-wrap:anywhere}
+.sourcing-request-decisions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:14px}
+.sourcing-request-decisions .btn:first-child{grid-column:1/-1}
+.sourcing-request-decisions .btn{display:flex;align-items:center;justify-content:center;gap:6px;white-space:normal}
+.sourcing-request-decisions .icon{flex:none}
+.sourcing-request-communication .button-row{display:flex;flex-wrap:wrap}
+@media(max-width:850px){.sourcing-request-layout{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:360px){.sourcing-request-decisions,.sourcing-request-facts{grid-template-columns:minmax(0,1fr)}}

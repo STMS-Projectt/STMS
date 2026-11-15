@@ -4,6 +4,8 @@ export async function lifecycle(b) {
  const { go, wait, click, set, ev, login, logout, capture, test, resetSession }=b;
  const q=JSON.stringify;
  const dialog='#workspace-dialog ';
+ const closeOverlay=async()=>{await click(dialog+'[data-dialog-close]');await closed();};
+ let sourcingTenderChecked=false, sourcingComplianceChecked=false, sourcingEvaluationChecked=false;
  const submit=(s='form')=>click(s+' button[type=submit]');
  const has=s=>wait('!!document.querySelector('+q(s)+')',s);
  const words=x=>wait('document.querySelector("#main")?.innerText.includes('+q(x)+')',x);
@@ -56,21 +58,43 @@ export async function lifecycle(b) {
  async function makeTender(title){
    await fields({Title:title,Description:'Synthetic tender',Terms:'Test terms',OpenDate:iso(-5),CloseDate:iso(180)},dialog);
    await submit(dialog+'form');await closed();await words(title);
-   const tender=await ev(`Array.from(document.querySelectorAll('a[href*="/Tenders/Details/"]')).find(a=>a.closest('tr')?.innerText.includes(${q(title)}))?.href`);
+   const tender=await ev(`Array.from(document.querySelectorAll('a[href*="/Tenders/Details/"]')).find(a=>a.closest('.record-card')?.innerText.includes(${q(title)}))?.href`);
    assert(tender,'Tender details link missing');
    await go(new URL(tender).pathname);return await idFrom();
  }
  async function configure(id){
+   if(!sourcingTenderChecked){
+     await go('/Tenders');
+     const origin=await ev('location.href');
+     await modal('#main a[href="/Tenders/Details/'+id+'"]','.admin-record-hero');
+     await capture('sourcing-tender-modal');
+     await click(dialog+'a[href*="/Tenders/Edit/"]');
+     await has(dialog+'input[name=Title]');
+     await capture('sourcing-nested-edit-modal');
+     await click(dialog+'[data-dialog-back]');
+     await has(dialog+'a[href*="/Tenders/Criteria/"]');
+     await click(dialog+'a[href*="/Tenders/Criteria/"]');
+     await has(dialog+'input[name=Name]');
+     await click(dialog+'[data-dialog-back]');
+     await has(dialog+'form[action*="/Publish/"]');
+     assert.equal(await ev('!!document.querySelector("#workspace-dialog a[href*=\"/Invitations/Create\"]")'),false);
+     assert.equal(await ev('location.href'),origin);
+     await closeOverlay();
+     sourcingTenderChecked=true;
+     await go('/Tenders/Details/'+id);
+   }
    await modal('a[href*="/Tenders/Criteria/"]','input[name=Name]');
    await fields({Name:'Quality',Type:'Technical',MaxScore:100,WeightPercent:100},dialog);
    await submit(dialog+'form');await words('Quality');await closed();
    await go('/Tenders/Details/'+id);
+   await submit('form[action*="/Publish/"]');await wait('document.querySelector("#main .badge")?.textContent.trim()==="Open"','published Open');
    await modal('#main a[href*="/Invitations/Create"]','input[name=selectedSuppliers]');
    assert.equal(await ev('document.querySelector("#workspace-dialog input[type=hidden][name=TenderId]").value'),String(id));
    await ev('document.querySelectorAll("#workspace-dialog input[name=selectedSuppliers]").forEach(i=>i.checked=true)');
    await fields({ExpiresAt:iso(90)},dialog);await click(dialog+'[data-send-invitations]');await closed();
+   await modal('#main a[href*="/Invitations/Details/"]','.admin-record-hero');
+   await closeOverlay();
    await go('/Tenders/Details/'+id);
-   await submit('form[action*="/Publish/"]');await wait('document.querySelector("#main .badge")?.textContent.trim()==="Open"','published Open');
  }
  async function bid(role,id,price){
    await as(role,'/SupplierWorkspace/Invitations');
@@ -104,6 +128,23 @@ export async function lifecycle(b) {
    await words('Closed');
  }
  async function evaluate(id,bids){
+   if(!sourcingComplianceChecked && bids.length){
+     await go('/Compliance/Pending');
+     const origin=await ev('location.href');
+     await modal('#main a[href*="tenderId='+id+'"]','.admin-record-hero');
+     await click(dialog+'a[href*="/MarkNonCompliant/"]');
+     await has(dialog+'textarea[name=Reason]');
+     await capture('sourcing-nested-compliance-modal');
+     await click(dialog+'[data-dialog-back]');
+     await has(dialog+'a[href*="/MarkNonCompliant/"]');
+     assert.equal(await ev('location.href'),origin);
+     await closeOverlay();
+     await go('/Tenders');
+     await modal('#main a[href="/Tenders/AssignCommittee/'+id+'"]','form[action*="/AssignCommittee/"]');
+     await closeOverlay();
+     await go('/Compliance/Review?tenderId='+id);
+     sourcingComplianceChecked=true;
+   }
    for(const bidId of bids){await act('form[action*="/MarkCompliant/'+bidId+'"] button');await wait('!document.querySelector('+q('form[action*="/MarkCompliant/'+bidId+'"]')+')','compliance saved');}
    await go('/Tenders/AssignCommittee/'+id);await submit('form[action*="/AssignCommittee/"]');
    for(const role of ['DepartmentSmoke','TechnicalCommittee','FinancialCommittee','SourcingManager']){
@@ -123,6 +164,13 @@ export async function lifecycle(b) {
  }
  async function decision(role,id,status,kind='approve'){
    await as(role,'/EvaluationWorkflow/Details/'+id);
+   if(role==='SourcingOfficer' && !sourcingEvaluationChecked){
+     await go('/EvaluationWorkflow');
+     await modal('#main a[href="/EvaluationWorkflow/Details/'+id+'"]','.admin-record-hero');
+     await closeOverlay();
+     await go('/EvaluationWorkflow/Details/'+id);
+     sourcingEvaluationChecked=true;
+   }
    if(kind==='reject'){
       await modal('a[href*="/EvaluationWorkflow/Reject/"]','textarea[name=comments]');
       await fields({comments:'Documented synthetic rejection',password:'Synthetic-Browser!2046'},dialog);

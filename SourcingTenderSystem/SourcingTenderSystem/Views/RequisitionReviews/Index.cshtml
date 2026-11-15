@@ -1,44 +1,4 @@
 @model List<PurchaseRequisition>
-@{
-    ViewData["Title"] = "Requests";
-}
-<h1>Requests </h1>
-@if (Model.Count == 0)
-{
-    <p>No purchase requests yet.</p>
-}
-else
-{
-    <section class="surface directory dept-directory" data-directory>
-    <partial name="_ListFilters" model='@("Search purchase requests", Model.Select(r => r.Status))' />
-    <div class="table-responsive">
-        <table class="table table-striped align-middle">
-            <thead><tr><th>Title</th><th>Department</th><th>Employee</th><th>Priority</th><th>Target date</th><th>Status</th><th></th></tr></thead>
-            <tbody>
-                @foreach (var request in Model)
-                {
-                    <tr data-status="@request.Status">
-                        <td>@request.Title</td>
-                        <td>@request.Department.Name</td>
-                        <td>@request.CreatedByEmployeeProfile.FullName</td>
-                        <td>@request.Priority</td>
-                        <td>@request.TargetDate.ToString("yyyy-MM-dd")</td>
-                        <td>@request.Status</td>
-                        <td>
-                            @if (request.Status != "Draft")
-                            {
-                                <a asp-action="Details" asp-route-id="@request.Id">@(request.Status is "Submitted" or "Under Review" ? "Review" : "Details")</a>
-                            }
-                            @if (TenderRules.CanCreate(request))
-                            {
-                                <a data-workspace-dialog class="btn btn-sm btn-primary ms-2" asp-controller="Tenders" asp-action="Create" asp-route-purchaseRequisitionId="@request.Id">Create tender</a>
-                            }
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-    <partial name="_ListFilterEmpty" />
-    </section>
-}
+@{ ViewData["Title"] = "All purchase requests"; }
+<header class="page-heading stms-hero"><div><p class="eyebrow">SOURCING WORKSPACE</p><h1>@ViewData["Title"]</h1><p>Review requests submitted by your departments.</p></div></header>
+<partial name="_RequestDirectory" model="Model" />

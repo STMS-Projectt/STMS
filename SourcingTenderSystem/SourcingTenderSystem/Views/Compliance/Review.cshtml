@@ -6,7 +6,7 @@
     var canClose = tender.Status == "Open" && tender.OpenDate <= now && tender.CloseDate > now;
     ViewData["Title"] = "Review & compare offers";
 }
-<h1>Review &amp; compare offers</h1>
+<header class="page-heading stms-hero admin-record-hero"><div><p class="eyebrow">BID COMPLIANCE</p><h1>Review &amp; compare offers</h1></div></header>
 <partial name="~/Views/Bids/_Alerts.cshtml" />
 
 @* Tender information *@
@@ -254,7 +254,7 @@ else
     </div>
 }
 
-<a class="btn btn-outline-secondary" asp-action="Pending">Back to compliance list</a>
+<a class="btn btn-outline-secondary back-link" asp-action="Pending">Back to compliance list</a>
 
 <section class="surface detail-card mt-3">
     <h2>Clarifications</h2>

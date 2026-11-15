@@ -59,32 +59,32 @@
     {
       "id": "P6-A-award",
       "status": "FAIL",
-      "reason": "Timed out: dialog closed ",
-      "page": "/Tenders/Details/1"
+      "reason": "Timed out: #workspace-dialog .admin-record-hero ",
+      "page": "/Invitations"
     },
     {
       "id": "P6-B-rounds",
       "status": "FAIL",
-      "reason": "Timed out: dialog closed ",
-      "page": "/Tenders/Details/2"
+      "reason": "Timed out: #workspace-dialog .admin-record-hero ",
+      "page": "/Invitations"
     },
     {
       "id": "P6-B-rounds-1",
       "status": "FAIL",
-      "reason": "Timed out: dialog closed ",
-      "page": "/Tenders/Details/3"
+      "reason": "Timed out: #workspace-dialog .admin-record-hero ",
+      "page": "/Invitations"
     },
     {
       "id": "P6-B-rounds-0",
       "status": "FAIL",
-      "reason": "Timed out: dialog closed ",
-      "page": "/Tenders/Details/4"
+      "reason": "Timed out: #workspace-dialog .admin-record-hero ",
+      "page": "/Invitations"
     },
     {
       "id": "P6-C-cancellation",
       "status": "FAIL",
-      "reason": "Timed out: dialog closed ",
-      "page": "/Tenders/Details/5"
+      "reason": "Timed out: #workspace-dialog .admin-record-hero ",
+      "page": "/Invitations"
     },
     {
       "id": "BR-admin-operations-record-modals",
@@ -216,6 +216,10 @@
       "status": 200
     },
     {
+      "path": "/PurchaseRequisitions/Details/1",
+      "status": 200
+    },
+    {
       "path": "/PurchaseRequisitions/Edit/1",
       "status": 200
     },
@@ -224,6 +228,10 @@
       "status": 200
     },
     {
+      "path": "/PurchaseRequisitions/Details/1",
+      "status": 200
+    },
+    {
       "path": "/RequisitionItems/Create",
       "status": 200
     },
@@ -233,6 +241,10 @@
     },
     {
       "path": "/RequisitionItems/Create",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Details/1",
       "status": 200
     },
     {
@@ -248,10 +260,6 @@
       "status": 200
     },
     {
-      "path": "/RequisitionItems/Delete/1",
-      "status": 200
-    },
-    {
       "path": "/PurchaseRequisitions/Details/1",
       "status": 200
     },
@@ -264,7 +272,11 @@
       "status": 200
     },
     {
-      "path": "/Clarifications",
+      "path": "/RequisitionItems/Delete/1",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Details/1",
       "status": 200
     },
     {
@@ -281,6 +293,10 @@
     },
     {
       "path": "/PurchaseRequisitions/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
       "status": 200
     },
     {
@@ -452,6 +468,26 @@
       "status": 200
     },
     {
+      "path": "/RequisitionReviews/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Clarifications/StartRequest/1",
+      "status": 200
+    },
+    {
+      "path": "/RequisitionReviews/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/RequisitionReviews/Pending",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/Account/Login",
       "status": 200
     },
@@ -612,6 +648,42 @@
       "status": 200
     },
     {
+      "path": "/Tenders",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Tenders/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Tenders/Edit/1",
+      "status": 200
+    },
+    {
+      "path": "/Tenders/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Tenders/Criteria/1",
+      "status": 200
+    },
+    {
+      "path": "/Tenders/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Tenders/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
       "path": "/Tenders/Criteria/1",
       "status": 200
     },
@@ -632,8 +704,12 @@
       "status": 200
     },
     {
-      "path": "/Invitations/Create",
+      "path": "/Invitations",
       "status": 200
+    },
+    {
+      "path": "/Invitations/Details/3",
+      "status": 500
     },
     {
       "path": "/Account/Login",
@@ -744,8 +820,12 @@
       "status": 200
     },
     {
-      "path": "/Invitations/Create",
+      "path": "/Invitations",
       "status": 200
+    },
+    {
+      "path": "/Invitations/Details/6",
+      "status": 500
     },
     {
       "path": "/Account/Login",
@@ -856,8 +936,12 @@
       "status": 200
     },
     {
-      "path": "/Invitations/Create",
+      "path": "/Invitations",
       "status": 200
+    },
+    {
+      "path": "/Invitations/Details/9",
+      "status": 500
     },
     {
       "path": "/Account/Login",
@@ -968,8 +1052,12 @@
       "status": 200
     },
     {
-      "path": "/Invitations/Create",
+      "path": "/Invitations",
       "status": 200
+    },
+    {
+      "path": "/Invitations/Details/12",
+      "status": 500
     },
     {
       "path": "/Account/Login",
@@ -1080,8 +1168,12 @@
       "status": 200
     },
     {
-      "path": "/Invitations/Create",
+      "path": "/Invitations",
       "status": 200
+    },
+    {
+      "path": "/Invitations/Details/15",
+      "status": 500
     },
     {
       "path": "/Account/Login",

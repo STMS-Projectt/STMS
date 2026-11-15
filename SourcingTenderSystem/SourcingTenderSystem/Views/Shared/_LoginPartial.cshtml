@@ -2,7 +2,7 @@
 @if (User.Identity?.IsAuthenticated == true)
 {
     <partial name="_CommunicationNav" model="false" />
-    @if (!User.IsInRole("RequestingDepartment"))
+    @if (!User.IsInRole("RequestingDepartment") && !User.IsInRole(Roles.SourcingOfficer))
     {
         <a class="side-link" asp-controller="Profile" asp-action="Index"><partial name="_Icon" model='@("users")' /> Account settings</a>
     }

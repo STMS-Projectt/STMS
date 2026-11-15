@@ -22,8 +22,11 @@
     let dialogTrigger;
     const admin = frame.dataset.workspaceFrame === "admin";
     const department = frame.dataset.workspaceFrame === "department";
+    const sourcing = frame.dataset.workspaceFrame === "sourcing";
+    const nestedWorkspace = department || sourcing;
     const back = dialog.querySelector("[data-dialog-back]");
     const dialogTitle = dialog.querySelector("#workspace-dialog-title");
+    const dialogContext = dialog.querySelector("[data-dialog-context]");
     const previousDialogs = [];
     let refreshOnClose = false;
     const showPrevious = () => {
@@ -81,10 +84,13 @@
             const details = !!result.main.querySelector(".admin-record-hero");
             dialog.classList.toggle("is-detail", details);
             dialogTitle.textContent = heading?.textContent || "Record";
+            if (dialogContext) dialogContext.textContent = previousDialogs.length ? "Related action" : "Sourcing workspace";
             back.hidden = previousDialogs.length === 0;
             dialog.scrollTop = 0;
             content.replaceChildren(...result.main.childNodes);
             if (!dialog.open) dialog.showModal();
+            if (sourcing && !matchMedia("(prefers-reduced-motion: reduce)").matches)
+                content.animate?.([{ opacity: .2 }, { opacity: 1 }], { duration: 180, easing: "ease-out" });
             await scripts(result.page, content);
             const focusTarget = details ? dialogTitle : content.querySelector("input:not([type=hidden]), select, textarea") || dialogTitle;
             focusTarget.focus({ preventScroll: true });
@@ -134,7 +140,7 @@
             const result = await load(url, request.signal);
             if (request.signal.aborted) return;
             if (!sameWorkspace(result)) {
-                if (mode === "dialog" && department && !result.res.redirected)
+                if (mode === "dialog" && nestedWorkspace && !result.res.redirected)
                     showDialogError("This record is unavailable or you no longer have permission to open it.");
                 else location.assign(result.res.url || url);
                 return;
@@ -143,7 +149,7 @@
             status.textContent = "Content loaded";
         } catch (error) {
             if (error.name !== "AbortError" && !request.signal.aborted) {
-                if (mode === "dialog" && department) showDialogError("The record could not be loaded. Go back or close this window and try again.");
+                if (mode === "dialog" && nestedWorkspace) showDialogError("The record could not be loaded. Go back or close this window and try again.");
                 else location.assign(url);
             }
         } finally {
@@ -174,7 +180,7 @@
             event.shiftKey || event.altKey || link.target || link.hasAttribute("download") ||
             link.hasAttribute("data-full-page") || !link.closest("#main, #workspace-nav, #workspace-dialog, .stms-topbar")) return;
         const insideDialog = dialog.contains(link);
-        if (insideDialog && (link.hasAttribute("data-dialog-cancel") || (department && link.classList.contains("back-link")) || /^(cancel|back(?: to .+)?)$/i.test(link.textContent.trim()))) {
+        if (insideDialog && (link.hasAttribute("data-dialog-cancel") || (nestedWorkspace && link.classList.contains("back-link")) || /^(cancel|back(?: to .+)?)$/i.test(link.textContent.trim()))) {
             event.preventDefault();
             if (!sending) previousDialogs.length ? showPrevious() : dialog.close();
             return;
@@ -184,10 +190,10 @@
         if (!supported(url) || url.hash) return;
         event.preventDefault();
         const mode = !link.hasAttribute("data-workspace-page") &&
-            (link.hasAttribute("data-workspace-dialog") || (department && insideDialog)) ? "dialog" : "page";
+            (link.hasAttribute("data-workspace-dialog") || (nestedWorkspace && insideDialog)) ? "dialog" : "page";
         if (mode === "dialog") {
             if (!dialog.open) { previousDialogs.length = 0; dialogUrl = null; }
-            if ((admin || department) && dialog.open && dialogUrl && dialogUrl.href !== url.href) previousDialogs.push(dialogUrl);
+            if ((admin || nestedWorkspace) && dialog.open && dialogUrl && dialogUrl.href !== url.href) previousDialogs.push(dialogUrl);
             else if (!dialog.open) dialogTrigger = link;
         }
         if (document.body.classList.contains("nav-open")) document.querySelector("[data-nav-close]")?.click();
@@ -265,7 +271,10 @@
                 const origin = await load(location.href, request.signal);
                 if (sameWorkspace(origin)) await install(origin, "page", false);
                 await install(nextForm, "dialog");
-            } else if (inDialog && result.res.redirected && (department || (admin && result.main.querySelector(".admin-record-hero")))) {
+            } else if (inDialog && result.res.redirected && (department ||
+                (sourcing && (redirectedToForm || previousDialogs.length || content.querySelector(".admin-record-hero") ||
+                    url.pathname.startsWith("/Suppliers/Approve/"))) ||
+                (admin && result.main.querySelector(".admin-record-hero")))) {
                 refreshOnClose = true;
                 const prior = previousDialogs.at(-1);
                 const destination = new URL(result.res.url);

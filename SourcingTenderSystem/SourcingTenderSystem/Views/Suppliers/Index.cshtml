@@ -4,7 +4,7 @@
     var counts = (Dictionary<string, int>)ViewBag.SupplierCounts;
     var metrics = new[] { ("Registered suppliers", counts.Values.Sum(), "supplier", "blue"), ("Approved", counts.GetValueOrDefault(SupplierStatus.Approved), "check", "teal"), ("Pending review", counts.GetValueOrDefault(SupplierStatus.Pending), "clock", "amber"), ("Suspended", counts.GetValueOrDefault(SupplierStatus.Suspended), "shield", "violet") };
 }
-<header class="page-heading stms-hero"><div><p class="eyebrow">ADMINISTRATION</p><h1>Supplier Directory</h1><p>Track supplier applications and review supporting documents.</p></div></header>
+<header class="page-heading stms-hero"><div><p class="eyebrow">@(User.IsInRole("Admin") ? "ADMINISTRATION" : "SOURCING WORKSPACE")</p><h1>Supplier Directory</h1><p>Track supplier applications and review supporting documents.</p></div></header>
 <partial name="_DesignMetrics" model="metrics" />
 <details class="surface dashboard-card supplier-health mb-3">
     <summary><span class="icon-tile tone-teal"><partial name="_Icon" model='@("shield")' /></span><span><strong>Supplier health</strong><small>Registration status across all suppliers</small></span></summary>
@@ -56,7 +56,7 @@
                     <div><dt class="visually-hidden">Status</dt><dd><partial name="_Status" model='@(item.Status)' /></dd></div>
                     <div><dt class="record-field-icon" title="Registered (UTC)"><partial name="_Icon" model='@("calendar")' /><span class="visually-hidden">Registered (UTC)</span></dt><dd>@item.CreatedAt.ToString("dd MMM yyyy")</dd></div>
                     </dl><div class="record-action"><a data-workspace-dialog="details" class="record-icon-action" asp-action="Details" asp-route-id="@item.Id" aria-label="Open application for @item.CompanyName" data-tooltip="Open application"><partial name="_Icon" model='@("eye")' /></a>
-                        @if (item.Status == SupplierStatus.Approved) { <a data-workspace-dialog="details" class="record-icon-action record-icon-danger" asp-action="Suspend" asp-route-id="@item.Id" aria-label="Suspend supplier" data-tooltip="Suspend supplier" title="Suspend supplier"><partial name="_Icon" model='@("pause")' /></a> }
+                        @if (User.IsInRole("Admin") && item.Status == SupplierStatus.Approved) { <a data-workspace-dialog="details" class="record-icon-action record-icon-danger" asp-action="Suspend" asp-route-id="@item.Id" aria-label="Suspend supplier" data-tooltip="Suspend supplier" title="Suspend supplier"><partial name="_Icon" model='@("pause")' /></a> }
                         @if (item.Status is SupplierStatus.Pending or SupplierStatus.Suspended)
                         {
                             var label = item.Status == SupplierStatus.Suspended ? "Activate supplier" : "Approve supplier";

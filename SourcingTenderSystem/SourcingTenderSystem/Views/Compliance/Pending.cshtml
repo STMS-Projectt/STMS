@@ -1,64 +1,26 @@
 @model List<CompliancePendingRow>
-@{
-    ViewData["Title"] = "Compliance check";
-}
-<h1>Compliance check</h1>
+@{ ViewData["Title"] = "Bid compliance"; }
+<header class="page-heading stms-hero"><div><p class="eyebrow">SOURCING WORKSPACE</p><h1>Bid compliance</h1><p>Close bidding before reviewing offers and sending a tender to evaluation.</p></div></header>
 <partial name="~/Views/Bids/_Alerts.cshtml" />
-<p class="text-muted">Open and closed tenders. Close bidding before reviewing offers and sending the tender to evaluation.</p>
-
-@if (Model.Count == 0)
-{
-    <p class="text-muted">There are no tenders in the compliance queue.</p>
-}
-else
-{
-    <section class="surface directory dept-directory" data-directory>
-    <partial name="_ListFilters" model='@("Search compliance queue", Model.Select(r => r.Tender.Status))' />
-    <div class="table-responsive">
-        <table class="table table-striped align-middle">
-            <thead>
-                <tr>
-                    <th scope="col">Tender</th>
-                    <th scope="col">Deadline (UTC)</th>
-                    <th scope="col" class="text-center">Not checked</th>
-                    <th scope="col" class="text-center">Compliant</th>
-                    <th scope="col" class="text-center">Non-Compliant</th>
-                    <th scope="col">State</th>
-                    <th scope="col">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var row in Model)
-                {
-                    <tr data-status="@row.Tender.Status">
-                        <td>@row.Tender.Title</td>
-                        <td>@row.Tender.CloseDate.ToString("yyyy-MM-dd HH:mm")</td>
-                        <td class="text-center">@(row.Tender.Status == "Open" ? "—" : row.SubmittedCount.ToString())</td>
-                        <td class="text-center">@(row.Tender.Status == "Open" ? "—" : row.CompliantCount.ToString())</td>
-                        <td class="text-center">@(row.Tender.Status == "Open" ? "—" : row.NonCompliantCount.ToString())</td>
-                        <td>
-                            @if (row.Tender.Status == "Open") { <span class="status-pill status-neutral">Open</span> }
-                            else if (row.ReadyForEvaluation)
-                            {
-                                <span class="badge bg-success">Ready for evaluation</span>
-                            }
-                            else if (row.SubmittedCount > 0)
-                            {
-                                <span class="badge bg-warning text-dark">@row.SubmittedCount to check</span>
-                            }
-                            else
-                            {
-                                <span class="badge bg-danger">No compliant bid</span>
-                            }
-                        </td>
-                        <td>
-                            <a class="btn btn-sm btn-primary" asp-action="Review" asp-route-tenderId="@row.Tender.Id">Review &amp; compare</a>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-    <partial name="_ListFilterEmpty" />
-    </section>
-}
+<section class="surface directory dept-directory" data-directory aria-label="Compliance queue">
+    <div class="dept-directory-heading"><h2>Compliance queue</h2><p>Open and closed tenders ready for your next action.</p></div>
+    @if (Model.Count == 0) { <div class="empty-state"><h2>No tenders in the compliance queue</h2></div> }
+    else
+    {
+        <partial name="_ListFilters" model='@("Search compliance queue", Model.Select(r => r.Tender.Status))' />
+        <partial name="_DirectoryPages" model='@("Compliance pages")' />
+        <div class="record-list" data-record-list>
+        @foreach (var row in Model)
+        {
+            var isOpen = row.Tender.Status == "Open";
+            var state = isOpen ? "Open" : row.ReadyForEvaluation ? "Ready for evaluation" : row.SubmittedCount > 0 ? $"{row.SubmittedCount} to check" : "No compliant bid";
+            <article class="record-card" data-record data-status="@row.Tender.Status">
+                <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("shield")' /></span><span>@row.Tender.Title<small>Tender #@row.Tender.Id · Closes @row.Tender.CloseDate.ToString("dd MMM yyyy HH:mm") UTC</small></span></div>
+                <dl class="record-facts"><div><dt>State</dt><dd><partial name="_Status" model="state" /></dd></div><div><dt>To check</dt><dd>@(isOpen ? "—" : row.SubmittedCount.ToString())</dd></div><div><dt>Compliant</dt><dd>@(isOpen ? "—" : row.CompliantCount.ToString())</dd></div><div><dt>Non-compliant</dt><dd>@(isOpen ? "—" : row.NonCompliantCount.ToString())</dd></div></dl>
+                <div class="record-action"><a class="record-icon-action" data-workspace-dialog="details" asp-action="Review" asp-route-tenderId="@row.Tender.Id" aria-label="Review and compare offers for @row.Tender.Title" data-tooltip="Review and compare"><partial name="_Icon" model='@("eye")' /></a></div>
+            </article>
+        }
+        </div>
+        <partial name="_ListFilterEmpty" />
+    }
+</section>

@@ -10,50 +10,26 @@
     var isDraft = Model.Status == "Draft";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h1 class="h3 mb-0">@Model.Title</h1>
+<header class="page-heading stms-hero admin-record-hero">
+    <div><p class="eyebrow">TENDER #@Model.Id</p><h1>@Model.Title</h1><p>@Model.PurchaseRequisition.Department.Name · @Model.PurchaseRequisition.Title</p></div>
     <span class="badge bg-secondary fs-6">@Model.Status</span>
-</div>
-
-<div class="card mb-4">
-    <div class="card-body">
-        <dl class="row mb-0">
-            <dt class="col-sm-3">Purchase Request</dt>
-            <dd class="col-sm-9">@Model.PurchaseRequisition.Title</dd>
-
-            <dt class="col-sm-3">Department</dt>
-            <dd class="col-sm-9">@Model.PurchaseRequisition.Department.Name</dd>
-
-            <dt class="col-sm-3">Description</dt>
-            <dd class="col-sm-9">@Model.Description</dd>
-
-            <dt class="col-sm-3">Terms</dt>
-            <dd class="col-sm-9" style="white-space: pre-line;">@Model.Terms</dd>
-
-            <dt class="col-sm-3">Open Date</dt>
-            <dd class="col-sm-9">@Model.OpenDate.ToString("yyyy-MM-dd HH:mm")</dd>
-
-            <dt class="col-sm-3">Close Date</dt>
-            <dd class="col-sm-9">@Model.CloseDate.ToString("yyyy-MM-dd HH:mm")</dd>
-
-            <dt class="col-sm-3">Created By</dt>
-            <dd class="col-sm-9">@Model.CreatedByEmployeeProfile.FullName</dd>
-
-            <dt class="col-sm-3">Created At</dt>
-            <dd class="col-sm-9">@Model.CreatedAt.ToString("yyyy-MM-dd HH:mm")</dd>
-
-            <dt class="col-sm-3">Invitations</dt>
-            <dd class="col-sm-9">@ViewBag.InvitationCount</dd>
-
-            <dt class="col-sm-3">Bids</dt>
-            <dd class="col-sm-9 mb-0">@ViewBag.BidCount</dd>
-        </dl>
-    </div>
-</div>
-
+</header>
+<section class="surface detail-card mb-3">
+    <h2>Tender overview</h2>
+    <dl class="detail-grid">
+        <div><dt>Opens (UTC)</dt><dd>@Model.OpenDate.ToString("dd MMM yyyy HH:mm")</dd></div>
+        <div><dt>Closes (UTC)</dt><dd>@Model.CloseDate.ToString("dd MMM yyyy HH:mm")</dd></div>
+        <div><dt>Created by</dt><dd>@Model.CreatedByEmployeeProfile.FullName</dd></div>
+        <div><dt>Created (UTC)</dt><dd>@Model.CreatedAt.ToString("dd MMM yyyy HH:mm")</dd></div>
+        <div><dt>Invitations</dt><dd>@ViewBag.InvitationCount</dd></div>
+        <div><dt>Bids</dt><dd>@ViewBag.BidCount</dd></div>
+    </dl>
+    <p style="white-space:pre-wrap;overflow-wrap:anywhere">@Model.Description</p>
+    <details><summary>Terms and conditions</summary><p class="mb-0 mt-2" style="white-space:pre-wrap;overflow-wrap:anywhere">@Model.Terms</p></details>
+</section>
 <div class="d-flex flex-wrap gap-2">
     <a data-workspace-dialog asp-action="Criteria" asp-route-id="@Model.Id" class="btn btn-outline-secondary">Evaluation criteria</a>
-    <a asp-action="Index" class="btn btn-outline-secondary">Back to list</a>
+    <a asp-action="Index" class="btn btn-outline-secondary back-link">Back to list</a>
     @if (isDraft)
     {
         <a data-workspace-dialog asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary">Edit</a>
@@ -98,7 +74,7 @@
         <p>@(TenderRules.CanEvaluate(Model, count) ? "Bid minimum met. Complete compliance review before assignment." : "Evaluation is blocked because the bid minimum has not been met.")</p>
         <a asp-controller="Compliance" asp-action="Review" asp-route-tenderId="@Model.Id">Compliance review</a>
     }
-    @if (Model.Status is "Draft" or "Open" or "Published")
+    @if (Model.Status == "Open" && Model.OpenDate <= DateTime.UtcNow && Model.CloseDate > DateTime.UtcNow)
     {
         <a data-workspace-dialog asp-controller="Invitations" asp-action="Create" asp-route-tenderId="@Model.Id" class="btn btn-outline-primary">Invite suppliers</a>
         <p class="mt-2">Available to invite: @(invitable.Count == 0 ? "None" : string.Join(", ", invitable))</p>

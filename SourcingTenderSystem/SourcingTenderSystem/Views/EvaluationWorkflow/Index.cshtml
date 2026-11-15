@@ -19,6 +19,10 @@
                 <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("check")' /></span><span>@tender.Title<small>#@tender.Id</small></span></div>
                 <dl class="record-facts"><div><dt class="visually-hidden">Stage</dt><dd><partial name="_Status" model="@(tender.EvaluationReport?.Status ?? tender.Status)" /></dd></div></dl>
                 <div class="record-action"><a data-workspace-dialog="details" class="record-icon-action" asp-action="Details" asp-route-id="@tender.Id" aria-label="View evaluation" data-tooltip="View evaluation"><partial name="_Icon" model='@("eye")' /></a>
+                    @if (User.IsInRole("SourcingOfficer"))
+                    {
+                        <a data-workspace-dialog="details" class="record-icon-action" asp-controller="Tenders" asp-action="Details" asp-route-id="@tender.Id" aria-label="View related tender" data-tooltip="View tender"><partial name="_Icon" model='@("briefcase")' /></a>
+                    }
                     @if (User.IsInRole("Admin"))
                     {
                         <a data-workspace-dialog="details" class="record-icon-action" asp-controller="AdminOperations" asp-action="Tender" asp-route-id="@tender.Id" aria-label="View related tender" data-tooltip="View related tender" title="View related tender"><partial name="_Icon" model='@("briefcase")' /></a>

@@ -1,6 +1,6 @@
 @model Tender
 @{ ViewData["Title"] = "Evaluation criteria"; }
-<header class="page-heading"><div><h1>Evaluation criteria</h1><p>@Model.Title · @Model.EvaluationCriteria.Sum(c => c.WeightPercent)% of 100%</p></div></header>
+<header class="page-heading admin-action-heading"><div><h1>Evaluation criteria</h1><p>@Model.Title · @Model.EvaluationCriteria.Sum(c => c.WeightPercent)% of 100%</p></div></header>
 @if (TempData["Error"] is string error) { <p class="alert alert-warning" role="alert">@error</p> }
 <ul class="list-group mb-3">
 @foreach (var criterion in Model.EvaluationCriteria)

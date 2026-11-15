@@ -10,7 +10,7 @@ using SourcingTenderSystem.ViewModels;
 
 namespace SourcingTenderSystem.Controllers;
 
-[Authorize(Roles = Roles.Admin)]
+[Authorize(Roles = Roles.Admin + "," + Roles.SourcingOfficer)]
 public sealed class SuppliersController(ApplicationDbContext db, UserManager<IdentityUser> users,
     SupplierFileStore files) : Controller
 {
@@ -33,7 +33,7 @@ public sealed class SuppliersController(ApplicationDbContext db, UserManager<Ide
         return supplier is null ? NotFound() : View(supplier);
     }
 
-    [HttpGet]
+    [HttpGet, Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> Categories(int id)
     {
         var supplier = await db.SupplierProfiles.AsNoTracking().Include(s => s.Categories).SingleOrDefaultAsync(s => s.Id == id);
@@ -42,7 +42,7 @@ public sealed class SuppliersController(ApplicationDbContext db, UserManager<Ide
         return View(supplier);
     }
 
-    [HttpPost]
+    [HttpPost, Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> Categories(int id, List<int> categoryIds)
     {
         if (!ModelState.IsValid) return BadRequest();
@@ -70,12 +70,12 @@ public sealed class SuppliersController(ApplicationDbContext db, UserManager<Ide
     }
 
     [HttpGet] public Task<IActionResult> Approve(int id) => DecisionPageAsync(id, SupplierStatus.Approved, new());
-    [HttpGet] public Task<IActionResult> Reject(int id) => DecisionPageAsync(id, SupplierStatus.Rejected, new());
-    [HttpGet] public Task<IActionResult> Suspend(int id) => DecisionPageAsync(id, SupplierStatus.Suspended, new());
+    [HttpGet, Authorize(Roles = Roles.Admin)] public Task<IActionResult> Reject(int id) => DecisionPageAsync(id, SupplierStatus.Rejected, new());
+    [HttpGet, Authorize(Roles = Roles.Admin)] public Task<IActionResult> Suspend(int id) => DecisionPageAsync(id, SupplierStatus.Suspended, new());
 
     [HttpPost] public Task<IActionResult> Approve(int id, DecisionInput input) => DecideAsync(id, SupplierStatus.Approved, input);
-    [HttpPost] public Task<IActionResult> Reject(int id, DecisionInput input) => DecideAsync(id, SupplierStatus.Rejected, input);
-    [HttpPost] public Task<IActionResult> Suspend(int id, DecisionInput input) => DecideAsync(id, SupplierStatus.Suspended, input);
+    [HttpPost, Authorize(Roles = Roles.Admin)] public Task<IActionResult> Reject(int id, DecisionInput input) => DecideAsync(id, SupplierStatus.Rejected, input);
+    [HttpPost, Authorize(Roles = Roles.Admin)] public Task<IActionResult> Suspend(int id, DecisionInput input) => DecideAsync(id, SupplierStatus.Suspended, input);
 
     private async Task<IActionResult> DecisionPageAsync(int id, string next, DecisionInput input)
     {

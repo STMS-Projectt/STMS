@@ -124,7 +124,7 @@ try {
   await test('BR05-voice-ajax-binding',async()=>{
     await go('/PurchaseRequisitions/Dashboard');
     await wait('location.pathname.endsWith("/Dashboard")','department dashboard');
-    await ev('window.speechStarts=0; window.SpeechRecognition=class{start(){window.speechStarts++;}};');
+    await ev('window.speechStarts=0; window.SpeechRecognition=class{start(){window.speechStarts++;} abort(){this.onend?.();} stop(){this.onend?.();}};');
     for (let i=0;i<2;i++){
       await click('a[href*="/PurchaseRequisitions/MyRequests"]');
       await wait('!!document.querySelector(".request-filters [data-directory-voice-search]")','voice control');
@@ -276,6 +276,21 @@ try {
           }
         }
         await call('Emulation.setDeviceMetricsOverride',{width:1440,height:900,deviceScaleFactor:1,mobile:false});
+      }
+      if(role==='SourcingOfficer'){
+        assert.equal(await ev('!!document.querySelector("#workspace-nav a[href*=Profile], #workspace-nav a[href*=Create]")'),false);
+        const url=await ev('location.href');
+        const details='#workspace-dialog [data-dialog-content] ';
+        await click('#main .sourcing-queue a[data-workspace-dialog]');
+        await wait('!!document.querySelector("#workspace-dialog[open] .admin-record-hero")','request review opens in modal');
+        await click(details+'a[href*="/Clarifications/StartRequest/"]');
+        await wait('!!document.querySelector("#workspace-dialog[open] input[name=Subject]")','nested clarification form');
+        assert.equal(await ev('location.href'),url);
+        await click('#workspace-dialog [data-dialog-back]');
+        await wait('!!document.querySelector("#workspace-dialog[open] .admin-record-hero")','back to review');
+        await click('#workspace-dialog [data-dialog-close]');
+        await go('/RequisitionReviews/Pending');
+        await wait('!!document.querySelector("#main .dept-filter-dock") && !!document.querySelector("#main article.record-card")','sourcing queue cards and filters');
       }
       if(role==='Supplier'){
         await go('/Tenders/Index');

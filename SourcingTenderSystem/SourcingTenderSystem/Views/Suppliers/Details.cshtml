@@ -13,7 +13,7 @@
                 <div><dt>Address</dt><dd>@Model.Address</dd></div>
                 <div><dt>Supply categories</dt><dd>@(Model.Categories.Count == 0 ? "Unassigned" : string.Join(", ", Model.Categories.OrderBy(c => c.Name).Select(c => c.Name)))</dd></div>
             </dl>
-            <a data-workspace-dialog class="btn btn-outline-secondary mt-3" asp-action="Categories" asp-route-id="@Model.Id">Edit categories</a>
+            @if (User.IsInRole("Admin")) { <a data-workspace-dialog class="btn btn-outline-secondary mt-3" asp-action="Categories" asp-route-id="@Model.Id">Edit categories</a> }
         </section>
         <partial name="_SupplierDocuments" model="Model.SupplierDocuments" />
     </div>
@@ -28,9 +28,9 @@
         <div class="button-row">
             @if ((Model.Status is SupplierStatus.Pending or SupplierStatus.Suspended) && Model.SupplierDocuments.Count > 0)
             { <a data-workspace-dialog class="btn btn-primary" asp-action="Approve" asp-route-id="@Model.Id"><partial name="_Icon" model='@("check")' /> @(Model.Status == SupplierStatus.Suspended ? "Activate" : "Approve")</a> }
-            @if (Model.Status == SupplierStatus.Pending)
+            @if (User.IsInRole("Admin") && Model.Status == SupplierStatus.Pending)
             { <a data-workspace-dialog class="btn btn-outline-danger" asp-action="Reject" asp-route-id="@Model.Id">Reject</a> }
-            @if (Model.Status == SupplierStatus.Approved)
+            @if (User.IsInRole("Admin") && Model.Status == SupplierStatus.Approved)
             { <a data-workspace-dialog class="btn btn-outline-danger" asp-action="Suspend" asp-route-id="@Model.Id">Suspend</a> }
         </div>
     </aside>

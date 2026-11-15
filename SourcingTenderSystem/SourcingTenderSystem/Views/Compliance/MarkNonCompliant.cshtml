@@ -3,7 +3,7 @@
     var bid = (Bid)ViewBag.Bid;
     ViewData["Title"] = "Mark bid as non-compliant";
 }
-<h1>Mark bid as non-compliant</h1>
+<header class="page-heading admin-action-heading"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("file")' /></span><div><p class="eyebrow">SOURCING WORKSPACE</p><h1>Mark bid as non-compliant</h1><p>Review the offer and explain the compliance decision.</p></div></header>
 
 <div class="card mb-3">
     <div class="card-body">
@@ -21,7 +21,7 @@
 </div>
 
 @* The bid id goes in the URL (/Compliance/MarkNonCompliant/5); the controller checks the bid again on POST *@
-<form asp-action="MarkNonCompliant" asp-route-id="@bid.Id" method="post" asp-antiforgery="true" class="admin-form"
+<form asp-action="MarkNonCompliant" asp-route-id="@bid.Id" method="post" asp-antiforgery="true" class="surface form-card sourcing-edit-form"
       data-workspace-confirm="Mark this bid as Non-Compliant? The supplier will see the reason." onsubmit="return window.stmsWorkspaceReady || confirm(this.dataset.workspaceConfirm);">
     <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
     <div class="mb-3">

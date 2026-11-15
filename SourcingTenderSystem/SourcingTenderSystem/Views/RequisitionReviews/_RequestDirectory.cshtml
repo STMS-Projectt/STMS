@@ -1,0 +1,24 @@
+@model IReadOnlyList<PurchaseRequisition>
+<section class="surface directory dept-directory" data-directory aria-label="Purchase requests">
+    <div class="dept-directory-heading"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("file")' /></span><div><h2>Purchase requests</h2><p>Search the queue and open a request to review its details.</p></div></div>
+    @if (Model.Count == 0) { <div class="empty-state"><h2>No requests in this queue</h2></div> }
+    else
+    {
+        <partial name="_ListFilters" model='@("Search purchase requests", Model.Select(r => r.Status))' />
+        <partial name="_DirectoryPages" model='@("Request pages")' />
+        <div class="record-list" data-record-list>
+        @foreach (var request in Model)
+        {
+            <article class="record-card" data-record data-status="@request.Status">
+                <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("file")' /></span><span>@request.Title<small>PR-@request.Id · @request.CreatedByEmployeeProfile.FullName</small></span></div>
+                <dl class="record-facts"><div><dt>Department</dt><dd>@request.Department.Name</dd></div><div><dt>Priority</dt><dd>@request.Priority</dd></div><div><dt>Target date</dt><dd>@request.TargetDate.ToString("dd MMM yyyy")</dd></div><div><dt>Status</dt><dd><partial name="_Status" model="request.Status" /></dd></div></dl>
+                <div class="record-action">
+                    @if (request.Status != "Draft") { <a class="record-icon-action" data-workspace-dialog="details" asp-action="Details" asp-route-id="@request.Id" aria-label="View request PR-@request.Id" data-tooltip="View request"><partial name="_Icon" model='@("eye")' /></a> }
+                    @if (TenderRules.CanCreate(request)) { <a class="record-icon-action" data-workspace-dialog asp-controller="Tenders" asp-action="Create" asp-route-purchaseRequisitionId="@request.Id" aria-label="Create tender" data-tooltip="Create tender"><partial name="_Icon" model='@("plus")' /></a> }
+                </div>
+            </article>
+        }
+        </div>
+        <partial name="_ListFilterEmpty" />
+    }
+</section>

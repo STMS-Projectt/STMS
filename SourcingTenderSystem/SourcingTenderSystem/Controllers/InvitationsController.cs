@@ -33,6 +33,7 @@ public class InvitationsController : Controller
             var tender = await _context.Tenders.FindAsync(tenderId.Value);
             if (tender == null) return NotFound();
             ViewData["TenderTitle"] = tender.Title;
+            ViewData["CanInvite"] = CanInvite(tender, DateTime.UtcNow);
             invitations = invitations.Where(i => i.TenderId == tenderId.Value);
         }
 
@@ -46,7 +47,7 @@ public class InvitationsController : Controller
             return NotFound();
         }
 
-        var invitation = await _context.Invitations
+        var invitation = await _context.Invitations.AsNoTracking().Include(i => i.Tender).Include(i => i.SupplierProfile)
             .FirstOrDefaultAsync(m => m.Id == id);
         if (invitation == null)
         {
@@ -79,8 +80,8 @@ public class InvitationsController : Controller
         var tender = await _context.Tenders.FindAsync(invitation.TenderId);
         var now = DateTime.UtcNow;
         invitation.ExpiresAt = TenderRules.AsUtc(invitation.ExpiresAt);
-        if (tender is null || tender.Status is not ("Draft" or "Published" or "Open") || tender.CloseDate <= now)
-            ModelState.AddModelError(nameof(Invitation.TenderId), "Select a tender with an active or planned bidding round.");
+        if (tender is null || !CanInvite(tender, now))
+            ModelState.AddModelError(nameof(Invitation.TenderId), "Invitations can only be sent while the tender is open for bidding.");
         if (ids.Count == 0 || await EligibleSuppliers(invitation.TenderId).CountAsync(s => ids.Contains(s.Id)) != ids.Count)
             ModelState.AddModelError(string.Empty, "Select approved suppliers that belong to the purchase request category.");
         if (tender != null && (invitation.ExpiresAt <= now || invitation.ExpiresAt <= tender.OpenDate))
@@ -127,12 +128,13 @@ public class InvitationsController : Controller
     {
         var now = DateTime.UtcNow;
         ViewData["TenderId"] = new SelectList(await _context.Tenders.AsNoTracking()
-            .Where(t => (t.Status == "Draft" || t.Status == "Published" || t.Status == "Open") && t.CloseDate > now)
+            .Where(t => t.Status == "Open" && t.OpenDate <= now && t.CloseDate > now)
             .OrderBy(t => t.Title).ToListAsync(), "Id", "Title", tenderId);
         var tender = tenderId.HasValue ? await _context.Tenders.FindAsync(tenderId.Value) : null;
-        var suppliers = EligibleSuppliers(tenderId ?? 0);
-        if (tender != null)
+        var suppliers = EligibleSuppliers(tenderId ?? 0).Where(s => false);
+        if (tender != null && CanInvite(tender, now))
         {
+            suppliers = EligibleSuppliers(tender.Id);
             var sent = TenderRules.CurrentInvitations(_context, tender).Select(i => i.SupplierProfileId);
             var submitted = TenderRules.PreviouslySubmitted(_context, tender.Id);
             suppliers = suppliers.Where(s => !sent.Contains(s.Id) && !submitted.Contains(s.Id));
@@ -140,8 +142,11 @@ public class InvitationsController : Controller
             ViewData["CategoryName"] = await _context.PurchaseRequisitions.Where(r => r.Id == tender.PurchaseRequisitionId)
                 .Select(r => r.Category == null ? null : r.Category.Name).SingleOrDefaultAsync();
         }
+        ViewData["TenderUnavailable"] = tenderId > 0 && (tender is null || !CanInvite(tender, now));
         ViewData["Suppliers"] = await suppliers.OrderBy(s => s.CompanyName).ToListAsync();
         ViewData["SelectedSuppliers"] = selected?.ToHashSet() ?? new HashSet<int>();
     }
+    private static bool CanInvite(Tender tender, DateTime now) =>
+        tender.Status == "Open" && tender.OpenDate <= now && tender.CloseDate > now;
     // Sent attempts are immutable except for the supplier's response.
 }

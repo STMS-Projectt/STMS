@@ -1,42 +1,87 @@
 @model RequisitionReviewInput
-@{ ViewData["Title"] = "Review purchase request"; var request = (PurchaseRequisition)ViewBag.Request; }
-<h1>Review request #@request.Id</h1>
-<partial name="_RequisitionSummary" model="request" />
-<partial name="_RequisitionItems" model="request.Items" />
-@if (request.Status == "Submitted" || request.Status == "Under Review")
-{
-    <form asp-action="Approve" asp-route-id="@request.Id" method="post" class="mb-3">
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-        <label asp-for="Notes" class="form-label"></label>
-        <textarea asp-for="Notes" class="form-control" rows="4"></textarea>
-        <span asp-validation-for="Notes" class="text-danger"></span>
-        <p class="form-text">Enter notes explaining your decision. Return allows the employee to edit and resubmit.</p>
-        <div class="d-flex flex-wrap gap-2">
-            <button type="submit" class="btn btn-success" asp-action="Approve" asp-route-id="@request.Id">Approve</button>
-            <button type="submit" class="btn btn-primary" asp-action="ApproveAndCreateTender" asp-route-id="@request.Id">Approve and create tender</button>
-            <button type="submit" class="btn btn-warning" asp-action="Return" asp-route-id="@request.Id">Return for changes</button>
-            <button type="submit" class="btn btn-danger" asp-action="Reject" asp-route-id="@request.Id">Reject</button>
-        </div>
-    </form>
+@{
+    var request = (PurchaseRequisition)ViewBag.Request;
+    ViewData["Title"] = "Review purchase request";
+    var pending = request.Status is "Submitted" or "Under Review";
+    var count = request.Items.Count;
 }
-@if (TenderRules.CanCreate(request))
-{
-    <div class="mb-3"><a data-workspace-dialog class="btn btn-primary" asp-controller="Tenders" asp-action="Create" asp-route-purchaseRequisitionId="@request.Id">Create tender</a></div>
-}
-@if (request.Tenders.Count > 0)
-{
-    <partial name="_TenderHistory" model="request.Tenders" />
-}
-<a asp-action="Pending">Back to pending requests</a>
-@section Scripts { <partial name="_ValidationScriptsPartial" /> }
+<a class="back-link" asp-action="Pending"><partial name="_Icon" model='@("back")' /> Back to pending requests</a>
+<header class="page-heading stms-hero admin-record-hero sourcing-request-hero">
+    <span class="icon-tile tone-teal"><partial name="_Icon" model='@("file")' /></span>
+    <div><p class="eyebrow">PURCHASE REQUEST · PR-@request.Id</p><h1>@request.Title</h1><p>@request.Department.Name · @request.CreatedByEmployeeProfile.FullName</p></div>
+    <partial name="_Status" model="request.Status" />
+</header>
 
-<div class="button-row mb-3">
-    <a class="btn btn-outline-secondary" asp-controller="Clarifications" asp-action="StartRequest" asp-route-id="@request.Id" aria-label="Start a clarification" title="Start a clarification"><partial name="_Icon" model='@("mail")' /></a>
-    <a class="btn btn-outline-secondary" asp-controller="Clarifications" asp-action="Index" asp-route-kind="request" asp-route-recordId="@request.Id">Clarification history</a>
-    @if (request.ReviewedByEmployeeProfileId == null && request.Status is ("Submitted" or "Under Review"))
-    {
-        <form asp-controller="Clarifications" asp-action="ClaimRequest" asp-route-id="@request.Id" method="post"><button class="btn btn-outline-primary" type="submit">Take review</button></form>
-    }
+<div class="sourcing-request-layout">
+    <div class="sourcing-request-stack">
+        <section class="surface detail-card sourcing-request-overview">
+            <div class="card-heading"><div><h2>Request overview</h2><p>Review the purpose and delivery requirements.</p></div></div>
+            <dl class="sourcing-request-facts">
+                <div><dt><partial name="_Icon" model='@("warning")' /> Priority</dt><dd>@request.Priority</dd></div>
+                <div><dt><partial name="_Icon" model='@("calendar")' /> Target date</dt><dd>@request.TargetDate.ToString("dd MMM yyyy")</dd></div>
+                <div><dt><partial name="_Icon" model='@("clock")' /> Created (UTC)</dt><dd>@request.CreatedAt.ToString("dd MMM yyyy HH:mm")</dd></div>
+                <div><dt><partial name="_Icon" model='@("users")' /> Assigned reviewer</dt><dd>@(request.ReviewedByEmployeeProfile?.FullName ?? "Unassigned")</dd></div>
+            </dl>
+            <div class="sourcing-request-reason"><h3>Reason for purchase</h3><p class="request-prose mb-0">@request.Reason</p></div>
+            @if (!string.IsNullOrWhiteSpace(request.ReviewNotes))
+            {
+                <div class="sourcing-request-reason"><h3>Latest review notes</h3><p class="request-prose mb-0">@request.ReviewNotes</p></div>
+            }
+        </section>
+
+        <section class="surface detail-card">
+            <div class="card-heading"><div><h2>Requested items</h2><p>Quantities and specifications for review.</p></div><span class="department-status-total">@count @(count == 1 ? "item" : "items")</span></div>
+            @if (count == 0) { <p class="subtle mb-0">No items were included in this request.</p> }
+            else
+            {
+                <ul class="sourcing-request-items">
+                @foreach (var item in request.Items.OrderBy(i => i.Id))
+                {
+                    <li>
+                        <div class="sourcing-request-item-heading"><span class="icon-tile tone-blue"><partial name="_Icon" model='@("inbox")' /></span><h3>@item.ItemName</h3><span class="department-status-count">@item.Quantity @item.Unit</span></div>
+                        <p class="request-prose mb-0">@(string.IsNullOrWhiteSpace(item.Specifications) ? "No specifications provided." : item.Specifications)</p>
+                    </li>
+                }
+                </ul>
+            }
+        </section>
+        <partial name="_TenderHistory" model="request.Tenders" />
+    </div>
+
+    <div class="sourcing-request-stack">
+        @if (pending)
+        {
+            <form asp-action="Approve" asp-route-id="@request.Id" method="post" class="surface form-card sourcing-request-decision">
+                <div class="card-heading"><div><h2>Review decision</h2><p>Explain the decision before choosing an action.</p></div></div>
+                <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+                <label asp-for="Notes" class="form-label">Review notes</label>
+                <textarea asp-for="Notes" class="form-control" rows="4" placeholder="Explain the reason for your decision..." aria-describedby="review-notes-help"></textarea>
+                <span asp-validation-for="Notes" class="text-danger"></span>
+                <p id="review-notes-help" class="field-hint mt-2">Return sends the request back to the employee for changes.</p>
+                <div class="sourcing-request-decisions">
+                    <button type="submit" class="btn btn-primary" asp-action="ApproveAndCreateTender" asp-route-id="@request.Id"><partial name="_Icon" model='@("plus")' /> Approve and create tender</button>
+                    <button type="submit" class="btn btn-outline-success" asp-action="Approve" asp-route-id="@request.Id"><partial name="_Icon" model='@("check")' /> Approve only</button>
+                    <button type="submit" class="btn btn-outline-secondary" asp-action="Return" asp-route-id="@request.Id"><partial name="_Icon" model='@("back")' /> Return for changes</button>
+                    <button type="submit" class="btn btn-outline-danger" asp-action="Reject" asp-route-id="@request.Id"><partial name="_Icon" model='@("close")' /> Reject</button>
+                </div>
+            </form>
+        }
+        else if (TenderRules.CanCreate(request))
+        {
+            <section class="surface detail-card"><h2>Next step</h2><p class="subtle">Create a draft tender for this request.</p><a data-workspace-dialog class="btn btn-primary" asp-controller="Tenders" asp-action="Create" asp-route-purchaseRequisitionId="@request.Id"><partial name="_Icon" model='@("plus")' /> Create tender</a></section>
+        }
+        <section class="surface detail-card sourcing-request-communication">
+            <h2>Clarifications</h2>
+            <div class="button-row">
+                <a class="btn btn-outline-secondary" asp-controller="Clarifications" asp-action="StartRequest" asp-route-id="@request.Id"><partial name="_Icon" model='@("mail")' /> Start a clarification</a>
+                <a class="btn btn-outline-secondary" asp-controller="Clarifications" asp-action="Index" asp-route-kind="request" asp-route-recordId="@request.Id">View history</a>
+                @if (request.ReviewedByEmployeeProfileId == null && pending)
+                {
+                    <form asp-controller="Clarifications" asp-action="ClaimRequest" asp-route-id="@request.Id" method="post"><button class="btn btn-outline-primary" type="submit">Take review</button></form>
+                }
+            </div>
+        </section>
+        <partial name="_RecordQr" model='@(Url.Action("Details", new { id = request.Id })!)' />
+    </div>
 </div>
-
-<partial name="_RecordQr" model='@(Url.Action("Details", new { id = request.Id })!)' />
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

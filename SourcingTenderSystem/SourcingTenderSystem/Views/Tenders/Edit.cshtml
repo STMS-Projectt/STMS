@@ -1,14 +1,14 @@
-﻿@model SourcingTenderSystem.Controllers.TenderFormViewModel
+@model SourcingTenderSystem.Controllers.TenderFormViewModel
 
 @{
     ViewData["Title"] = "Edit Tender";
 }
 
-<h1 class="h3 mb-3">Edit Tender</h1>
+<header class="page-heading admin-action-heading"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("file")' /></span><div><p class="eyebrow">SOURCING WORKSPACE</p><h1>Edit Tender</h1><p>Update the draft tender and its bidding dates.</p></div></header>
 
 <div class="row">
     <div class="col-lg-8">
-        <form asp-action="Edit" asp-route-id="@Model.Id" method="post" novalidate>
+        <form asp-action="Edit" asp-route-id="@Model.Id" method="post" class="surface form-card sourcing-edit-form" novalidate>
             <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
             <input type="hidden" asp-for="Id" />
 
@@ -48,7 +48,7 @@
                 </div>
             </div>
 
-            <div class="d-flex gap-2">
+            <div class="form-actions">
                 <button type="submit" class="btn btn-primary">Save Changes</button>
                 <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
             </div>

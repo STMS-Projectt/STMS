@@ -4,7 +4,7 @@
     var route = (ClarificationRoute)ViewData["ClarificationRoute"]!;
 }
 <a class="back-link" asp-action="Index" asp-route-kind="@Model.Kind" asp-route-recordId="@Model.RecordId"><partial name="_Icon" model='@("back")' /> Clarification history</a>
-<header class="page-heading"><div><p class="eyebrow">TRANSACTION COMMUNICATION</p><h1>New clarification</h1><p>@route.Title</p></div></header>
+<header class="page-heading admin-action-heading"><div><p class="eyebrow">TRANSACTION COMMUNICATION</p><h1>New clarification</h1><p>@route.Title</p></div></header>
 <div class="form-shell">
     <form class="surface form-card" asp-action="Create" asp-controller="Clarifications" asp-route-id="" method="post">
         <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>

@@ -35,6 +35,8 @@ public sealed class BrowserReleaseTests(ITestOutputHelper output)
         Assert.Equal(catalog, db.Database.GetDbConnection().Database);
         var root = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../.."));
         var script = Path.Combine(root, "qa-reports", "phase4-browser.mjs");
+        var evidence = Environment.GetEnvironmentVariable("STMS_BROWSER_EVIDENCE_DIR") ??
+            Path.Combine(root, "qa-reports", "phase4-browser-evidence");
         Assert.True(File.Exists(script), script);
         try
         {
@@ -78,7 +80,7 @@ public sealed class BrowserReleaseTests(ITestOutputHelper output)
                 SELECT Id,CONVERT(varbinary(128),Id),'{{}}' FROM dbo.AspNetUsers WHERE UserName<>'RequestingDepartment@example.test'
                 """);
             var node = new ProcessStartInfo("node") { UseShellExecute=false, RedirectStandardError=true, RedirectStandardOutput=true };
-            foreach(var arg in new[]{script,new UriBuilder(client.BaseAddress!) { Host="localhost" }.Uri.ToString(),chrome!,Path.Combine(root,"qa-reports","phase4-browser-evidence")})
+            foreach(var arg in new[]{script,new UriBuilder(client.BaseAddress!) { Host="localhost" }.Uri.ToString(),chrome!,evidence})
                 node.ArgumentList.Add(arg);
             using var process=Process.Start(node)!;
             var stdout=process.StandardOutput.ReadToEndAsync();
@@ -97,7 +99,7 @@ public sealed class BrowserReleaseTests(ITestOutputHelper output)
                 Votes=t.EvaluationReport==null ? 0 : t.EvaluationReport.TenderApprovals.Count(a=>a.Decision.StartsWith("Top Committee")),
                 Notifications=db.Notifications.Where(n=>t.Bids.Any(b=>n.Link=="/Bids/Details/"+b.Id)).Select(n=>n.Title).ToList()
             }).AsSplitQuery().ToListAsync();
-            await File.WriteAllTextAsync(Path.Combine(root,"qa-reports","phase4-browser-evidence","phase6-sql.json"),
+            await File.WriteAllTextAsync(Path.Combine(evidence,"phase6-sql.json"),
                 System.Text.Json.JsonSerializer.Serialize(persisted,new System.Text.Json.JsonSerializerOptions { WriteIndented=true }));
             Assert.True(process.ExitCode==0,await stderr+"\n"+await stdout);
             var completed = await db.Tenders.Where(t=>t.Title.StartsWith("Phase 6 ")).ToListAsync();

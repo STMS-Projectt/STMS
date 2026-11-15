@@ -4,7 +4,7 @@
     var pending = Model.Rows.Count(r => r.Status == "Pending");
     var resolved = Model.Rows.Count(r => r.Status == "Resolved");
     var admin = User.IsInRole(SourcingTenderSystem.Security.Roles.Admin);
-    var useCards = admin || User.IsInRole("RequestingDepartment");
+    var useCards = admin || User.IsInRole("RequestingDepartment") || User.IsInRole("SourcingOfficer");
 }
 <header class="page-heading stms-hero clarification-hero">
     <div><p class="eyebrow">TRANSACTION COMMUNICATION</p><h1>@ViewData["Title"]</h1>

@@ -145,18 +145,26 @@
         directory.querySelector("[data-dept-search-close]")?.addEventListener("click", () => dialog.close());
         dialog?.addEventListener("click", event => { if (event.target === dialog) dialog.close(); });
         search?.addEventListener("input", sync);
-        document.addEventListener("click", event => { if (!event.target.closest("[data-dept-menu]")) closeMenus(); }, { signal });
+        document.addEventListener("click", event => { if (!directory.isConnected || !event.target.closest("[data-dept-menu]")) closeMenus(); }, { signal });
         document.addEventListener("keydown", event => { if (event.key === "Escape") closeMenus(); }, { signal });
         sync();
     }
 
     let pageEvents;
+    let dialogEvents;
+    document.querySelector("#workspace-dialog")?.addEventListener("close", () => dialogEvents?.abort());
     function initialize(event) {
         const workspace = document.querySelector("[data-workspace-frame]")?.dataset.workspaceFrame;
-        if (event?.detail?.closest?.("dialog")) return;
+        if (event?.detail?.closest?.("dialog")) {
+            if (!["admin", "department", "sourcing"].includes(workspace)) return;
+            dialogEvents?.abort();
+            dialogEvents = new AbortController();
+            setupFilters(event.detail, dialogEvents.signal);
+            return;
+        }
         const main = document.querySelector("main#main");
-        if (workspace !== "admin" && workspace !== "department") return;
-        if (workspace === "department" && main?.querySelector(".department-analytics")) {
+        if (!["admin", "department", "sourcing"].includes(workspace)) return;
+        if (main?.querySelector(".department-analytics,.sourcing-analytics")) {
             pageEvents?.abort();
             return;
         }

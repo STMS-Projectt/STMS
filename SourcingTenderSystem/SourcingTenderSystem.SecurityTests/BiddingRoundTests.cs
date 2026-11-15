@@ -83,9 +83,15 @@ public sealed partial class BiddingRoundTests
             await db.Database.MigrateAsync();
             await db.Database.ExecuteSqlRawAsync("INSERT dbo.AspNetUserPasskeys(UserId, CredentialId, Data) VALUES ('officer', 0x01, '{{}}'), ('bidder', 0x02, '{{}}')");
             var category = new Category { Name = "IT" };
-            var unrelated = new SupplierProfile { UserId = "officer", CompanyName = "Unrelated approved supplier",
+            if (!await db.Roles.AnyAsync(r => r.NormalizedName == "SUPPLIER"))
+                db.Roles.Add(new IdentityRole("Supplier") { NormalizedName = "SUPPLIER" });
+            var trialUser = new IdentityUser { Id = "supplier-review-qa", UserName = "supplier-review-qa",
+                Email = "supplier-review-qa@example.test", NormalizedEmail = "SUPPLIER-REVIEW-QA@EXAMPLE.TEST",
+                NormalizedUserName = "SUPPLIER-REVIEW-QA", SecurityStamp = Guid.NewGuid().ToString() };
+            db.Users.Add(trialUser);
+            var unrelated = new SupplierProfile { UserId = trialUser.Id, CompanyName = "Unrelated approved supplier",
                 TaxNumber = "QA-OTHER", CommercialRegNo = "QA-OTHER", Address = "Synthetic", ContactPhone = "000",
-                Status = "Approved", CreatedAt = DateTime.UtcNow, Categories = [new Category { Name = "Furniture" }] };
+                Status = "Pending", CreatedAt = DateTime.UtcNow, Categories = [new Category { Name = "Furniture" }] };
             db.AddRange(category, unrelated);
             var categorizedTender = await db.Tenders.Include(t => t.PurchaseRequisition).SingleAsync(t => t.Id == seed.Tender);
             categorizedTender.PurchaseRequisition.Category = category;
@@ -102,11 +108,46 @@ public sealed partial class BiddingRoundTests
                 """));
 
             using var officer = Client(app, "officer", "SourcingOfficer");
+            var dashboard = await officer.GetStringAsync("/SourcingDashboard");
+            Assert.Contains("Tender pipeline", dashboard);
+            Assert.Contains("Sourcing activity", dashboard);
+            Assert.Contains("data-count=\"1\">1</strong><span>Total tenders", dashboard);
             using var supplier = Client(app, "bidder", "Supplier");
             var officerToken = await Token(officer);
             var supplierToken = await Token(supplier);
+            Assert.Contains(unrelated.CompanyName, await officer.GetStringAsync("/Suppliers"));
+            Assert.Contains(unrelated.CompanyName, await officer.GetStringAsync($"/Suppliers/Details/{unrelated.Id}"));
+            var reviewUrl = $"/Suppliers/Approve/{unrelated.Id}";
+            var reason = new Dictionary<string, string> { ["Reason"] = "Reviewed synthetic application" };
+            var missingDocument = await Post(officer, officerToken, reviewUrl, reason);
+            Assert.Equal(HttpStatusCode.OK, missingDocument.StatusCode);
+            Assert.Equal("Pending", await db.SupplierProfiles.Where(s => s.Id == unrelated.Id).Select(s => s.Status).SingleAsync());
+            db.SupplierDocuments.Add(new SupplierDocument { SupplierProfileId = unrelated.Id, DocumentType = "Registration",
+                FilePath = "synthetic-review.pdf", UploadedAt = DateTime.UtcNow });
+            await db.SaveChangesAsync();
+            Assert.Equal(HttpStatusCode.Redirect, (await Post(officer, officerToken, reviewUrl, reason)).StatusCode);
+            Assert.Equal("Approved", await db.SupplierProfiles.Where(s => s.Id == unrelated.Id).Select(s => s.Status).SingleAsync());
+            Assert.True(await db.UserRoles.AnyAsync(r => r.UserId == trialUser.Id && db.Roles.Any(role => role.Id == r.RoleId && role.Name == "Supplier")));
+            var forbiddenSuspend = await Post(officer, officerToken, $"/Suppliers/Suspend/{unrelated.Id}", reason);
+            Assert.True(forbiddenSuspend.StatusCode == HttpStatusCode.Forbidden ||
+                forbiddenSuspend.Headers.Location?.OriginalString.Contains("AccessDenied") == true);
+            await db.SupplierProfiles.Where(s => s.Id == unrelated.Id).ExecuteUpdateAsync(set => set.SetProperty(s => s.Status, "Suspended"));
+            Assert.Contains("Activate supplier", await officer.GetStringAsync(reviewUrl));
+            Assert.Equal(HttpStatusCode.Redirect, (await Post(officer, officerToken, reviewUrl, reason)).StatusCode);
+            Assert.Equal("Approved", await db.SupplierProfiles.Where(s => s.Id == unrelated.Id).Select(s => s.Status).SingleAsync());
             var reopen = $"/Tenders/Reopen/{seed.Tender}";
             var deadline = DateTime.UtcNow.AddHours(2).ToString("yyyy-MM-ddTHH:mm:ss");
+            foreach (var state in new[] { "Draft", "Published" })
+            {
+                await db.Tenders.Where(t => t.Id == seed.Tender).ExecuteUpdateAsync(set => set.SetProperty(t => t.Status, state));
+                var unavailable = await officer.GetStringAsync($"/Invitations/Create?tenderId={seed.Tender}");
+                Assert.DoesNotContain("name=\"selectedSuppliers\"", unavailable);
+                var blockedInvite = await Invite(officer, officerToken, "/Invitations/Create", seed.Tender, seed.Bidder, deadline);
+                Assert.Equal(HttpStatusCode.OK, blockedInvite.StatusCode);
+                Assert.Contains("Invitations can only be sent while the tender is open", await blockedInvite.Content.ReadAsStringAsync());
+                Assert.Equal(1, await db.Invitations.CountAsync(i => i.TenderId == seed.Tender));
+            }
+            await db.Tenders.Where(t => t.Id == seed.Tender).ExecuteUpdateAsync(set => set.SetProperty(t => t.Status, "Closed"));
             var reopenFields = new Dictionary<string, string> { ["closeDate"] = deadline, ["reason"] = "Need more bids" };
             var denied = await Post(supplier, supplierToken, reopen, reopenFields);
             Assert.True(denied.StatusCode == HttpStatusCode.Forbidden ||

@@ -159,22 +159,25 @@
         <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
         <script src="~/js/site.js" asp-append-version="true"></script>
         <script src="~/js/admin-directory-voice-search.js" asp-append-version="true" defer></script>
-        @if (admin || department) { <script src="~/js/departments.js" asp-append-version="true" defer></script> }
+        @if (admin || department || sourcing) { <script src="~/js/departments.js" asp-append-version="true" defer></script> }
         @if (signedIn) { <script src="~/js/notifications.js" asp-append-version="true" defer></script> }
         @if (workspace)
         {
-            <dialog class="workspace-dialog" id="workspace-dialog" aria-labelledby="workspace-dialog-title">
+            <dialog class="workspace-dialog @(sourcing ? "sourcing-dialog" : "")" id="workspace-dialog" aria-labelledby="workspace-dialog-title">
                 <div class="workspace-dialog-bar">
                     <div class="workspace-dialog-heading">
                         <button type="button" class="icon-button" data-dialog-back aria-label="Back to previous record" title="Back" hidden><partial name="_Icon" model='@("back")' /></button>
-                        <strong id="workspace-dialog-title" tabindex="-1">Record</strong>
+                        <div class="workspace-dialog-caption">
+                            @if (sourcing) { <span class="workspace-dialog-context" data-dialog-context>Sourcing workspace</span> }
+                            <strong id="workspace-dialog-title" tabindex="-1">Record</strong>
+                        </div>
                     </div>
                     <button type="button" class="icon-button" data-dialog-close aria-label="Close dialog" title="Close"><partial name="_Icon" model='@("close")' /></button>
                 </div>
                 <div class="workspace-dialog-loader" data-dialog-loader hidden role="status"><span class="workspace-spinner" aria-hidden="true"></span><span data-dialog-loader-label>Loading…</span></div>
                 <div data-dialog-content></div>
             </dialog>
-            <dialog id="workspace-confirm" class="workspace-dialog workspace-confirm" aria-labelledby="workspace-confirm-title">
+            <dialog id="workspace-confirm" class="workspace-dialog workspace-confirm @(sourcing ? "sourcing-confirm" : "")" aria-labelledby="workspace-confirm-title">
                 <form method="dialog" class="p-4">
                     <h2 id="workspace-confirm-title">Confirm action</h2>
                     <p class="mt-2" data-confirm-question></p>

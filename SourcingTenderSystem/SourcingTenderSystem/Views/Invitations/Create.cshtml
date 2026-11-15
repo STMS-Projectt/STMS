@@ -5,7 +5,7 @@
     var selected = (HashSet<int>)ViewData["SelectedSuppliers"]!;
 }
 <a class="back-link" asp-action="Index"><partial name="_Icon" model='@("back")' /> Supplier invitations</a>
-<header class="page-heading"><div><p class="eyebrow">SUPPLIER INVITATIONS</p><h1>New invitation</h1><p>Choose a tender, its suppliers, and the invitation expiry date.</p></div></header>
+<header class="page-heading admin-action-heading"><div><p class="eyebrow">SUPPLIER INVITATIONS</p><h1>New invitation</h1><p>Choose a tender, its suppliers, and the invitation expiry date.</p></div></header>
 <div class="form-shell">
     <form id="load-invitation-suppliers" asp-action="Create" method="get" hidden></form>
     <form class="surface form-card" asp-action="Create" method="post">
@@ -20,18 +20,22 @@
         <fieldset class="mb-3">
             <legend class="form-label">Eligible suppliers @if (ViewData["RoundNumber"] is int round) { <span>· Round @round</span> }</legend>
             @if (ViewData["CategoryName"] is string categoryName) { <p class="field-hint">Category: @categoryName</p> }
-            @if (suppliers.Count == 0)
+            @if (ViewData["TenderUnavailable"] is true)
+            {
+                <p class="callout callout-warning">This tender is not open for bidding. Select an open tender to send invitations.</p>
+            }
+            else if (suppliers.Count == 0)
             {
                 <p class="subtle mb-0">@(Model.TenderId == 0 ? "Select a tender and load its eligible suppliers." : ViewData["CategoryName"] is null ? "Assign a supply category to the purchase request before sending invitations." : "No approved suppliers in this category are eligible for a new invitation in this round.")</p>
             }
             else
             {
-                <div class="border rounded p-3 overflow-auto" style="max-height: 16rem">
+                <div class="supplier-category-grid">
                     @foreach (var supplier in suppliers)
                     {
-                        <label class="form-check">
-                            <input class="form-check-input" type="checkbox" name="selectedSuppliers" value="@supplier.Id" checked="@selected.Contains(supplier.Id)" />
-                            <span class="form-check-label">@supplier.CompanyName</span>
+                        <label class="supplier-category-option">
+                            <input type="checkbox" name="selectedSuppliers" value="@supplier.Id" checked="@selected.Contains(supplier.Id)" />
+                            <span>@supplier.CompanyName</span>
                         </label>
                     }
                 </div>
@@ -42,6 +46,9 @@
             <input asp-for="ExpiresAt" class="form-control" required />
             <span asp-validation-for="ExpiresAt" class="text-danger"></span>
         </div>
-        <button type="submit" class="btn btn-primary" data-send-invitations disabled="@(suppliers.Count == 0)">Send invitations</button>
+        <div class="form-actions">
+            <a data-dialog-cancel class="btn btn-outline-secondary" asp-action="Index" asp-route-tenderId="@Model.TenderId">Cancel</a>
+            <button type="submit" class="btn btn-primary" data-send-invitations disabled="@(suppliers.Count == 0)"><partial name="_Icon" model='@("mail")' /> Send invitations</button>
+        </div>
     </form>
 </div>
