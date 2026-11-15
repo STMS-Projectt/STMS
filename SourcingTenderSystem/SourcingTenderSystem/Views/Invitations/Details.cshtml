@@ -1,18 +1,18 @@
 @model Invitation
 @{ ViewData["Title"] = "Invitation details"; }
-<a class="back-link" asp-action="Index" asp-route-tenderId="@Model.TenderId">Back to invitations</a>
+<a class="back-link" asp-action="Index" asp-route-tenderId="@Model.TenderId">@L.T("Back to invitations")</a>
 <header class="page-heading stms-hero admin-record-hero">
     <div><p class="eyebrow">INVITATION #@Model.Id</p><h1>@Model.SupplierProfile.CompanyName</h1><p>@Model.Tender.Title</p></div>
     <partial name="_Status" model="Model.Status" />
 </header>
 <section class="surface detail-card">
-    <h2>Invitation information</h2>
+    <h2>@L.T("Invitation information")</h2>
     <dl class="detail-grid">
-        <div><dt>Round</dt><dd>@(Model.RoundNumber?.ToString() ?? "Legacy invitation")</dd></div>
-        <div><dt>Sent (UTC)</dt><dd>@Model.SentAt.ToString("dd MMM yyyy HH:mm")</dd></div>
-        <div><dt>Expires (UTC)</dt><dd>@Model.ExpiresAt.ToString("dd MMM yyyy HH:mm")</dd></div>
-        <div><dt>Responded (UTC)</dt><dd>@(Model.RespondedAt?.ToString("dd MMM yyyy HH:mm") ?? "No response yet")</dd></div>
-        @if (!string.IsNullOrWhiteSpace(Model.DeclineReason)) { <div><dt>Decline reason</dt><dd>@Model.DeclineReason</dd></div> }
+        <div><dt>@L.T("Round")</dt><dd>@(Model.RoundNumber?.ToString() ?? "Legacy invitation")</dd></div>
+        <div><dt>@L.T("Sent (UTC)")</dt><dd>@Model.SentAt.ToString("dd MMM yyyy HH:mm", L.DisplayCulture)</dd></div>
+        <div><dt>@L.T("Expires (UTC)")</dt><dd>@Model.ExpiresAt.ToString("dd MMM yyyy HH:mm", L.DisplayCulture)</dd></div>
+        <div><dt>@L.T("Responded (UTC)")</dt><dd>@(Model.RespondedAt?.ToString("dd MMM yyyy HH:mm", L.DisplayCulture) ?? "No response yet")</dd></div>
+        @if (!string.IsNullOrWhiteSpace(Model.DeclineReason)) { <div><dt>@L.T("Decline reason")</dt><dd>@Model.DeclineReason</dd></div> }
     </dl>
-    <a class="btn btn-outline-secondary" data-workspace-dialog="details" asp-controller="Tenders" asp-action="Details" asp-route-id="@Model.TenderId"><partial name="_Icon" model='@("briefcase")' /> View tender</a>
+    <a class="btn btn-outline-secondary" data-workspace-dialog="details" asp-controller="Tenders" asp-action="Details" asp-route-id="@Model.TenderId"><partial name="_Icon" model='@("briefcase")' /> @L.T("View tender")</a>
 </section>

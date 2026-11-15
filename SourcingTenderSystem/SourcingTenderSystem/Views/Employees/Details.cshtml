@@ -1,15 +1,15 @@
 @model EmployeeProfile
-@{ ViewData["Title"] = "Employee details"; }
-<a class="back-link" asp-action="Index" ><partial name="_Icon" model='@("back")' /> Employees</a>
-<header class="page-heading stms-hero admin-record-hero"><div><p class="eyebrow">ADMINISTRATION</p><h1>@Model.FullName</h1><p>Employee profile and account access.</p></div><div class="button-row"><a data-workspace-dialog class="btn btn-outline-secondary" asp-action="ResetPassword" asp-route-id="@Model.Id">Reset password</a><a data-workspace-dialog class="btn btn-primary" asp-action="Edit" asp-route-id="@Model.Id">Edit employee</a></div></header>
+@{ ViewData["Title"] = L.T("Employee details"); }
+<a class="back-link" asp-action="Index" ><partial name="_Icon" model='@("back")' /> @L.T("Employees")</a>
+<header class="page-heading stms-hero admin-record-hero"><div><p class="eyebrow">@L.T("ADMINISTRATION")</p><h1>@Model.FullName</h1><p>@L.T("Employee profile and account access.")</p></div><div class="button-row"><a data-workspace-dialog class="btn btn-outline-secondary" asp-action="ResetPassword" asp-route-id="@Model.Id">@L.T("Reset password")</a><a data-workspace-dialog class="btn btn-primary" asp-action="Edit" asp-route-id="@Model.Id">@L.T("Edit employee")</a></div></header>
 <div class="form-shell">
-    <section class="surface detail-card"><h2>Employee information</h2><dl class="detail-grid"><div><dt>Email</dt><dd>@Model.User.Email</dd></div>
-<div><dt>Job title</dt><dd>@(string.IsNullOrWhiteSpace(Model.JobTitle) ? "Not specified" : Model.JobTitle)</dd></div>
-<div><dt>Department</dt><dd>@(Model.Department?.Name ?? "Unassigned")</dd></div>
-<div><dt>Role</dt><dd>@ViewBag.Roles</dd></div>
-<div><dt>Account status</dt><dd><partial name="_Status" model='@(Model.IsActive ? "Active" : "Inactive")' /></dd></div></dl></section>
+    <section class="surface detail-card"><h2>@L.T("Employee information")</h2><dl class="detail-grid"><div><dt>@L.T("Email")</dt><dd>@Model.User.Email</dd></div>
+<div><dt>@L.T("Job title")</dt><dd>@(string.IsNullOrWhiteSpace(Model.JobTitle) ? "Not specified" : Model.JobTitle)</dd></div>
+<div><dt>@L.T("Department")</dt><dd>@(Model.Department?.Name ?? "Unassigned")</dd></div>
+<div><dt>@L.T("Role")</dt><dd>@ViewBag.Roles</dd></div>
+<div><dt>@L.T("Account status")</dt><dd><partial name="_Status" model='@L.T(Model.IsActive ? "Active" : "Inactive")' /></dd></div></dl></section>
     @if (Model.IsActive && ViewBag.IsSelf == false)
     {
-        <aside class="surface helper-card"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("shield")' /></span><h2>Account access</h2><p>Deactivate this account to revoke access. The employee record will remain in the directory.</p><a data-workspace-dialog class="btn btn-outline-danger" asp-action="Deactivate" asp-route-id="@Model.Id">Deactivate account</a></aside>
+        <aside class="surface helper-card"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("shield")' /></span><h2>@L.T("Account access")</h2><p>@L.T("Deactivate this account to revoke access. The employee record will remain in the directory.")</p><a data-workspace-dialog class="btn btn-outline-danger" asp-action="Deactivate" asp-route-id="@Model.Id">@L.T("Deactivate account")</a></aside>
     }
 </div>

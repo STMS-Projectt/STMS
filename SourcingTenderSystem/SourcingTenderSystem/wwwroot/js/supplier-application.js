@@ -7,7 +7,7 @@
             const query = search?.querySelector("input");
             const empty = fieldset.querySelector("[data-category-empty]");
             const sync = () => {
-                output.textContent = `${fieldset.querySelectorAll('input[name="CategoryIds"]:checked').length} selected`;
+                output.textContent = window.stmsFormat("{0} selected", fieldset.querySelectorAll('input[name="CategoryIds"]:checked').length);
                 const term = query?.value.trim().toLocaleLowerCase() || "";
                 let matches = 0;
                 for (const option of options) {

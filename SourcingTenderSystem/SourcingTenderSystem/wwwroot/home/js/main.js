@@ -7,6 +7,8 @@
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const t = window.stmsT;
+const f = window.stmsFormat;
 const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
 const seg = (p, a, b) => clamp((p - a) / (b - a));
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -55,25 +57,25 @@ const EXIT = [16.7, 17.5];                                                  // f
 /* ---------------- build UI ---------------- */
 $('#departments').innerHTML = DEPARTMENTS.map((d, i) => `
   <article class="dept-card glass ${d.side}" id="dept${i}" aria-hidden="true">
-    <div class="top"><div class="eyebrow">${d.eyebrow || `Department 0${i + 1} / 03`}</div><div class="num">0${i + 1}</div></div>
-    <h2 class="serif">${d.name}</h2>
-    <div class="age">${d.age}</div>
-    <p>${d.text}</p>
-    <div>${d.tags.map(t => `<span class="chip">${t}</span>`).join('')}</div>
-    <a class="btn btn-dark" href="${d.link}">${d.cta || `Browse ${d.name}`} →</a>
+    <div class="top"><div class="eyebrow">${d.eyebrow ? t(d.eyebrow) : f('Department {0} / 03', '0' + (i + 1))}</div><div class="num">0${i + 1}</div></div>
+    <h2 class="serif">${t(d.name)}</h2>
+    <div class="age">${t(d.age)}</div>
+    <p>${t(d.text)}</p>
+    <div>${d.tags.map(tag => `<span class="chip">${t(tag)}</span>`).join('')}</div>
+    <a class="btn btn-dark" href="${d.link}">${d.cta ? t(d.cta) : f('Browse {0}', t(d.name))} →</a>
   </article>
-  ${d.hotspots.map(h => `<div class="hotspot hs${i}"><i></i><span>${h}</span></div>`).join('')}
+  ${d.hotspots.map(h => `<div class="hotspot hs${i}"><i></i><span>${t(h)}</span></div>`).join('')}
 `).join('');
 
 $('#deptBar').innerHTML = DEPARTMENTS.map((d, i) =>
-  `<div class="dept-step" id="ds${i}"><span class="n">0${i + 1}</span><span class="lbl">${d.label || d.name}</span><span class="track"><b id="dsb${i}"></b></span></div>`).join('');
+  `<div class="dept-step" id="ds${i}"><span class="n">0${i + 1}</span><span class="lbl">${t(d.label || d.name)}</span><span class="track"><b id="dsb${i}"></b></span></div>`).join('');
 
 $('#steps').insertAdjacentHTML('beforeend', STEPS.map((s, k) => `
   <div class="step" style="transition-delay:${k * 120}ms">
     <div class="n">0${k + 1}</div>
     <div class="card">
       <div class="ico" style="background:${s.color}"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#08766c" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="${s.icon}"/></svg></div>
-      <h3>${s.title}</h3><p>${s.text}</p>
+      <h3>${t(s.title)}</h3><p>${t(s.text)}</p>
     </div>
   </div>`).join(''));
 
@@ -161,7 +163,7 @@ function adaptQuality(ms) {
 }
 
 /* loader */
-function setLoader(pct, text) { $('#loaderBar').style.width = pct + '%'; if (text) $('#loaderText').textContent = text; }
+function setLoader(pct, text) { $('#loaderBar').style.width = pct + '%'; if (text) $('#loaderText').textContent = t(text); }
 document.body.classList.add('loading');
 setLoader(10, 'Opening the store…');
 
@@ -191,14 +193,14 @@ update(0);
 const playBtn = $('#videoPlay'), muteBtn = $('#videoMute'), vNote = $('#videoNote');
 function syncVideoUI() {
   const on = store && store.screen.playing;
-  playBtn.innerHTML = on ? '<span class="ico">❚❚</span> Pause' : '<span class="ico">▶</span> Play our story';
+  playBtn.innerHTML = `<span class="ico">${on ? "❚❚" : "▶"}</span> ${t(on ? "Pause" : "Play our story")}`;
   playBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
-  muteBtn.hidden = !on; muteBtn.textContent = store && store.screen.video.muted ? 'Unmute' : 'Mute';
+  muteBtn.hidden = !on; muteBtn.textContent = t(store && store.screen.video.muted ? 'Unmute' : 'Mute');
 }
 async function toggleVideo() {
   if (!store) return;
   try { await store.screen.toggle(); vNote.textContent = ''; }
-  catch (e) { vNote.textContent = 'Video coming soon'; setTimeout(() => (vNote.textContent = ''), 2500); }
+  catch (e) { vNote.textContent = t('Video coming soon'); setTimeout(() => (vNote.textContent = ''), 2500); }
   syncVideoUI(); dirty = true; kick();
 }
 playBtn.addEventListener('click', toggleVideo);
@@ -256,20 +258,20 @@ form.addEventListener('submit', async e => {
     if (bad) { ok = false; input.closest('.fl').classList.add('invalid'); }
   }
   if (!form.elements.consent.checked) { ok = false; form.querySelector('.consent').classList.add('invalid'); }
-  if (!ok) { note.textContent = 'Please add your name, a valid email, a message and tick the consent box.'; note.className = 'form-note err'; return; }
+  if (!ok) { note.textContent = t('Please add your name, a valid email, a message and tick the consent box.'); note.className = 'form-note err'; return; }
 
   const data = Object.fromEntries(new FormData(form));
-  const btn = form.querySelector('button[type="submit"]'); btn.disabled = true; btn.textContent = 'Sending…';
+  const btn = form.querySelector('button[type="submit"]'); btn.disabled = true; btn.textContent = t('Sending…');
   try {
     // TODO: connect to your backend, e.g.
     // await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
     await new Promise(r => setTimeout(r, 700));
     console.log('Contact form', data);
     form.reset();
-    note.textContent = 'Thank you! We’ll get back to you within one business day.'; note.className = 'form-note ok';
+    note.textContent = t('Thank you! We’ll get back to you within one business day.'); note.className = 'form-note ok';
   } catch {
-    note.textContent = 'Something went wrong — please try again.'; note.className = 'form-note err';
-  } finally { btn.disabled = false; btn.textContent = 'Send message →'; }
+    note.textContent = t('Something went wrong — please try again.'); note.className = 'form-note err';
+  } finally { btn.disabled = false; btn.textContent = t('Send message →'); }
 });
 form.addEventListener('input', e => { const f = e.target.closest('.fl, .consent'); if (f) f.classList.remove('invalid'); });
 
@@ -278,10 +280,10 @@ const news = $('#newsForm'), newsNote = $('#newsNote');
 news.addEventListener('submit', e => {
   e.preventDefault();
   const email = news.elements.email.value.trim();
-  if (!EMAIL_RE.test(email)) { news.classList.add('invalid'); newsNote.textContent = 'Please enter a valid email.'; newsNote.className = 'ft-note err'; return; }
+  if (!EMAIL_RE.test(email)) { news.classList.add('invalid'); newsNote.textContent = t('Please enter a valid email.'); newsNote.className = 'ft-note err'; return; }
   news.classList.remove('invalid');
   // TODO: send `email` to your newsletter provider / backend
-  news.reset(); newsNote.textContent = 'You’re subscribed — welcome aboard!'; newsNote.className = 'ft-note ok';
+  news.reset(); newsNote.textContent = t('You’re subscribed — welcome aboard!'); newsNote.className = 'ft-note ok';
 });
 
 // initial state (e.g. when the page is reloaded halfway down)

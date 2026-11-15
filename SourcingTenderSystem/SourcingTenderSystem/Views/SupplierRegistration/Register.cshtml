@@ -1,21 +1,21 @@
 @model RegistrationInput
-@{ ViewData["Title"] = "Supplier registration"; }
-<header class="page-heading stms-hero application-hero"><div><p class="eyebrow">SUPPLIER APPLICATION</p><h1>Register as a supplier</h1><p>Create your company profile to take part in tenders that match what you supply.</p></div><span class="icon-tile tone-teal"><partial name="_Icon" model='@("supplier")' /></span></header>
+@{ ViewData["Title"] = L.T("Supplier registration"); }
+<header class="page-heading stms-hero application-hero"><div><p class="eyebrow">@L.T("SUPPLIER APPLICATION")</p><h1>@L.T("Register as a supplier")</h1><p>@L.T("Create your company profile to take part in tenders that match what you supply.")</p></div><span class="icon-tile tone-teal"><partial name="_Icon" model='@("supplier")' /></span></header>
 <partial name="_ApplicationSteps" model="1" />
 <div class="form-shell application-shell">
     <form method="post" asp-antiforgery="true" class="surface form-card application-form">
         <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
-        <section class="form-section"><div class="application-section-heading"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("building")' /></span><div><h2>Company information</h2><p>Use the details on your official registration.</p></div></div><div class="form-grid mt-3">
-            <div class="field field-wide"><label asp-for="CompanyName" class="form-label"></label><input asp-for="CompanyName" class="form-control" autocomplete="organization" placeholder="Registered company name">
+        <section class="form-section"><div class="application-section-heading"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("building")' /></span><div><h2>@L.T("Company information")</h2><p>@L.T("Use the details on your official registration.")</p></div></div><div class="form-grid mt-3">
+            <div class="field field-wide"><label asp-for="CompanyName" class="form-label"></label><input asp-for="CompanyName" class="form-control" autocomplete="organization" placeholder="@L.T("Registered company name")">
     <span asp-validation-for="CompanyName" class="text-danger"></span></div>
-            <div class="field"><label asp-for="TaxNumber" class="form-label"></label><input asp-for="TaxNumber" class="form-control" placeholder="Company tax number"><span asp-validation-for="TaxNumber" class="text-danger"></span></div>
-            <div class="field"><label asp-for="CommercialRegNo" class="form-label"></label><input asp-for="CommercialRegNo" class="form-control" placeholder="Commercial registration number"><span asp-validation-for="CommercialRegNo" class="text-danger"></span></div>
+            <div class="field"><label asp-for="TaxNumber" class="form-label"></label><input asp-for="TaxNumber" class="form-control" placeholder="@L.T("Company tax number")"><span asp-validation-for="TaxNumber" class="text-danger"></span></div>
+            <div class="field"><label asp-for="CommercialRegNo" class="form-label"></label><input asp-for="CommercialRegNo" class="form-control" placeholder="@L.T("Commercial registration number")"><span asp-validation-for="CommercialRegNo" class="text-danger"></span></div>
         </div></section>
-        <section class="form-section"><div class="application-section-heading"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("filter")' /></span><div><h2>What you supply</h2><p>Choose the categories that match your business.</p></div></div>
+        <section class="form-section"><div class="application-section-heading"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("filter")' /></span><div><h2>@L.T("What you supply")</h2><p>@L.T("Choose the categories that match your business.")</p></div></div>
             <fieldset class="field field-wide application-categories" data-category-selection>
-                <legend class="visually-hidden">Supply categories</legend>
-                <label class="field" data-category-search hidden>Find a category
-                    <input type="search" class="form-control" placeholder="Search supply categories" autocomplete="off" />
+                <legend class="visually-hidden">@L.T("Supply categories")</legend>
+                <label class="field" data-category-search hidden>@L.T("Find a category")
+                    <input type="search" class="form-control" placeholder="@L.T("Search supply categories")" autocomplete="off" />
                 </label>
                 <output data-category-count aria-live="polite" class="application-count" hidden></output>
                 <div class="supplier-category-grid">
@@ -24,30 +24,30 @@
                         <label class="supplier-category-option"><input type="checkbox" name="CategoryIds" value="@category.Id" checked="@Model.CategoryIds.Contains(category.Id)" /> @category.Name</label>
                     }
                 </div>
-                <p class="field-hint" data-category-empty hidden>No categories match your search.</p>
+                <p class="field-hint" data-category-empty hidden>@L.T("No categories match your search.")</p>
                 <span asp-validation-for="CategoryIds" class="text-danger"></span>
             </fieldset>
         </section>
-        <section class="form-section"><div class="application-section-heading"><span class="icon-tile tone-blue"><partial name="_Icon" model='@("mail")' /></span><div><h2>Company contact</h2><p>Enter the contact details the sourcing team can use.</p></div></div><div class="form-grid mt-3">
+        <section class="form-section"><div class="application-section-heading"><span class="icon-tile tone-blue"><partial name="_Icon" model='@("mail")' /></span><div><h2>@L.T("Company contact")</h2><p>@L.T("Enter the contact details the sourcing team can use.")</p></div></div><div class="form-grid mt-3">
             <div class="field"><label asp-for="ContactPhone" class="form-label"></label><input asp-for="ContactPhone" class="form-control" type="tel" autocomplete="tel" placeholder="e.g. +962 79 000 0000">
     <span asp-validation-for="ContactPhone" class="text-danger"></span></div>
-            <div class="field"><label asp-for="Address" class="form-label"></label><input asp-for="Address" class="form-control" autocomplete="street-address" placeholder="Company address">
+            <div class="field"><label asp-for="Address" class="form-label"></label><input asp-for="Address" class="form-control" autocomplete="street-address" placeholder="@L.T("Company address")">
     <span asp-validation-for="Address" class="text-danger"></span></div>
         </div></section>
-        <section class="form-section"><div class="application-section-heading"><span class="icon-tile tone-blue"><partial name="_Icon" model='@("shield")' /></span><div><h2>Sign-in details</h2><p>Use an email address you can access.</p></div></div><div class="form-grid mt-3">
+        <section class="form-section"><div class="application-section-heading"><span class="icon-tile tone-blue"><partial name="_Icon" model='@("shield")' /></span><div><h2>@L.T("Sign-in details")</h2><p>@L.T("Use an email address you can access.")</p></div></div><div class="form-grid mt-3">
             <div class="field field-wide"><label asp-for="Email" class="form-label"></label><input asp-for="Email" class="form-control" autocomplete="email" placeholder="name@company.com">
     <span asp-validation-for="Email" class="text-danger"></span></div>
             <div class="field"><label asp-for="Password" class="form-label"></label><input asp-for="Password" class="form-control" autocomplete="new-password" aria-describedby="Password-hint">
-    <p class="field-hint" id="Password-hint">At least 6 characters, including uppercase, lowercase, a number and a symbol.</p><span asp-validation-for="Password" class="text-danger"></span></div>
+    <p class="field-hint" id="Password-hint">@L.T("At least 6 characters, including uppercase, lowercase, a number and a symbol.")</p><span asp-validation-for="Password" class="text-danger"></span></div>
             <div class="field"><label asp-for="ConfirmPassword" class="form-label"></label><input asp-for="ConfirmPassword" class="form-control" autocomplete="new-password">
     <span asp-validation-for="ConfirmPassword" class="text-danger"></span></div>
         </div></section>
-        <div class="form-actions"><a class="btn btn-outline-secondary" asp-controller="Account" asp-action="Login">Already registered? Sign in</a><button class="btn btn-primary" type="submit">Continue to documents <partial name="_Icon" model='@("arrow")' /></button></div>
+        <div class="form-actions"><a class="btn btn-outline-secondary" asp-controller="Account" asp-action="Login">@L.T("Already registered? Sign in")</a><button class="btn btn-primary" type="submit">@L.T("Continue to documents") <partial name="_Icon" model='@("arrow")' /></button></div>
     </form>
     <aside class="surface helper-card application-assist">
         <span class="icon-tile tone-teal"><partial name="_Icon" model='@("file")' /></span>
-        <h2>Have these ready</h2><ul><li>Your company tax number</li><li>Your commercial registration number</li><li>Supporting documents in PDF format for the next step</li></ul>
-        <p class="field-hint mb-0">You can track the review from My application after uploading your documents.</p>
+        <h2>@L.T("Have these ready")</h2><ul><li>@L.T("Your company tax number")</li><li>@L.T("Your commercial registration number")</li><li>@L.T("Supporting documents in PDF format for the next step")</li></ul>
+        <p class="field-hint mb-0">@L.T("You can track the review from My application after uploading your documents.")</p>
     </aside>
 </div>
 @section Scripts { <partial name="_ValidationScriptsPartial" /> }

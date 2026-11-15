@@ -1,32 +1,32 @@
 @model DepartmentRequestList
 @{
-    ViewData["Title"] = "My Requests";
+    ViewData["Title"] = L.T("My Requests");
     var editable = (ISet<int>)ViewBag.EditableRequestIds;
 }
 <header class="page-heading stms-hero">
-    <div><p class="eyebrow">REQUEST TRACKER</p><h1>My Requests</h1><p>Purchase requests from everyone in @Model.Department.</p></div>
-    <a class="btn btn-primary" asp-action="Create"><partial name="_Icon" model='@("plus")' /> New request</a>
+    <div><p class="eyebrow">@L.T("REQUEST TRACKER")</p><h1>@L.T("My Requests")</h1><p>Purchase requests from everyone in @Model.Department.</p></div>
+    <a class="btn btn-primary" asp-action="Create"><partial name="_Icon" model='@("plus")' /> @L.T("New request")</a>
 </header>
-<section class="surface directory dept-directory" aria-label="Department requests" data-directory>
-    <div class="dept-directory-heading"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("file")' /></span><div><h2>Purchase requests</h2><p>Find requests and manage the drafts you own.</p></div></div>
+<section class="surface directory dept-directory" aria-label="@L.T("Department requests")" data-directory>
+    <div class="dept-directory-heading"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("file")' /></span><div><h2>@L.T("Purchase requests")</h2><p>@L.T("Find requests and manage the drafts you own.")</p></div></div>
     <div class="directory-filter-panel">
-        <nav class="directory-status-options" aria-label="Filter by status">
-            <a asp-action="MyRequests" asp-route-q="@Model.Query" aria-current="@(Model.Status is null ? "page" : null)">All statuses</a>
+        <nav class="directory-status-options" aria-label="@L.T("Filter by status")">
+            <a asp-action="MyRequests" asp-route-q="@Model.Query" aria-current="@(Model.Status is null ? "page" : null)">@L.T("All statuses")</a>
             @foreach (var status in Model.Statuses)
             {
-                <a asp-action="MyRequests" asp-route-q="@Model.Query" asp-route-status="@status" aria-current="@(Model.Status == status ? "page" : null)">@status</a>
+                <a asp-action="MyRequests" asp-route-q="@Model.Query" asp-route-status="@status" aria-current="@(Model.Status == status ? "page" : null)">@L.T(status)</a>
             }
         </nav>
         <form class="directory-toolbar request-filters" asp-action="MyRequests" method="get" role="search">
             @if (Model.Status != null) { <input type="hidden" name="status" value="@Model.Status" /> }
             <div class="directory-search">
-                <label class="search-box"><partial name="_Icon" model='@("search")' /><span class="visually-hidden">Search request titles</span><input class="form-control" type="search" data-filter-search data-filter-submit-only name="q" value="@Model.Query" placeholder="Search request titles" /></label>
+                <label class="search-box"><partial name="_Icon" model='@("search")' /><span class="visually-hidden">@L.T("Search request titles")</span><input class="form-control" type="search" data-filter-search data-filter-submit-only name="q" value="@Model.Query" placeholder="@L.T("Search request titles")" /></label>
                 <partial name="_DirectoryVoice" />
             </div>
             <span class="result-count" data-result-count aria-live="polite">@Model.Requests.Count records</span>
-            <button class="btn btn-primary" type="submit">Search</button>
+            <button class="btn btn-primary" type="submit">@L.T("Search")</button>
         </form>
-        @if (Model.Status != null || !string.IsNullOrEmpty(Model.Query)) { <a class="dept-dock-button" data-directory-clear asp-action="MyRequests" aria-label="Clear filters" title="Clear filters"><partial name="_Icon" model='@("refresh")' /><span>Reset</span></a> }
+        @if (Model.Status != null || !string.IsNullOrEmpty(Model.Query)) { <a class="dept-dock-button" data-directory-clear asp-action="MyRequests" aria-label="@L.T("Clear filters")" title="@L.T("Clear filters")"><partial name="_Icon" model='@("refresh")' /><span>@L.T("Reset")</span></a> }
     </div>
     @if (Model.Requests.Count > 0)
     {
@@ -39,9 +39,9 @@
                         @if (request.Status == "Returned" && !string.IsNullOrWhiteSpace(request.ReviewNotes)) { <small class="request-return-preview">Changes requested: @request.ReviewNotes</small> }
                     </span></div>
                     <dl class="record-facts">
-                        <div><dt class="record-field-icon" title="Target date"><partial name="_Icon" model='@("calendar")' /><span class="visually-hidden">Target date</span></dt><dd>@request.TargetDate.ToString("dd MMM yyyy")</dd></div>
-                        <div><dt>Priority</dt><dd>@request.Priority</dd></div>
-                        <div><dt class="visually-hidden">Status</dt><dd><partial name="_RequestStatus" model="request.Status" /></dd></div>
+                        <div><dt class="record-field-icon" title="@L.T("Target date")"><partial name="_Icon" model='@("calendar")' /><span class="visually-hidden">@L.T("Target date")</span></dt><dd>@request.TargetDate.ToString("dd MMM yyyy", L.DisplayCulture)</dd></div>
+                        <div><dt>@L.T("Priority")</dt><dd>@L.T(request.Priority)</dd></div>
+                        <div><dt class="visually-hidden">@L.T("Status")</dt><dd><partial name="_RequestStatus" model="request.Status" /></dd></div>
                     </dl>
                     <div class="record-action"><partial name="_RequestActions" model="@( (request.Id, editable.Contains(request.Id)) )" /></div>
                 </article>
@@ -54,9 +54,9 @@
         <div class="empty-state">
             <span class="icon-tile tone-teal"><partial name="_Icon" model='@("file")' /></span>
             @if (Model.Status != null || !string.IsNullOrEmpty(Model.Query))
-            { <h2>No matching requests</h2><p>Try a different title or status.</p> }
+            { <h2>@L.T("No matching requests")</h2><p>@L.T("Try a different title or status.")</p> }
             else
-            { <h2>No purchase requests yet</h2><p>Start a draft when your department needs to buy something.</p><a class="btn btn-primary" asp-action="Create">Create a draft</a> }
+            { <h2>@L.T("No purchase requests yet")</h2><p>@L.T("Start a draft when your department needs to buy something.")</p><a class="btn btn-primary" asp-action="Create">@L.T("Create a draft")</a> }
         </div>
     }
 </section>

@@ -5,7 +5,7 @@
     ViewData["BiometricOnboarding"] = true;
 }
 <header class="page-heading"><div>
-    <p class="eyebrow">STEP 2 OF 2</p><h1>@ViewData["Title"]</h1>
+    <p class="eyebrow">@L.T("STEP 2 OF 2")</p><h1>@L.T(ViewData["Title"]?.ToString())</h1>
     <p>@(first ? "Set up at least one method before opening your workspace. You can add another in Account settings." : "Use one of your registered methods to continue.")</p>
 </div></header>
 <partial name="_SignInMethods" model="Model" />

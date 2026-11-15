@@ -1,4 +1,4 @@
 @model List<PurchaseRequisition>
-@{ ViewData["Title"] = "All purchase requests"; }
-<header class="page-heading stms-hero"><div><p class="eyebrow">SOURCING WORKSPACE</p><h1>@ViewData["Title"]</h1><p>Review requests submitted by your departments.</p></div></header>
+@{ ViewData["Title"] = L.T("All purchase requests"); }
+<header class="page-heading stms-hero"><div><p class="eyebrow">@L.T("SOURCING WORKSPACE")</p><h1>@L.T(ViewData["Title"]?.ToString())</h1><p>@L.T("Review requests submitted by your departments.")</p></div></header>
 <partial name="_RequestDirectory" model="Model" />

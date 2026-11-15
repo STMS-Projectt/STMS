@@ -2,23 +2,23 @@
 @{
     var bid = (Bid)ViewBag.Bid;
     var item = (PurchaseRequisitionItem)ViewBag.RequestedItem;
-    ViewData["Title"] = "Add price";
+    ViewData["Title"] = L.T("Add price");
 }
-<header class="page-heading admin-action-heading"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("file")' /></span><div><p class="eyebrow">SUPPLIER BID</p><h1>Add price</h1></div></header>
-<p>Bid for: <strong>@bid.Tender.Title</strong></p>
+<header class="page-heading admin-action-heading"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("file")' /></span><div><p class="eyebrow">@L.T("SUPPLIER BID")</p><h1>@L.T("Add price")</h1></div></header>
+<p>@L.T("Bid for:") <strong>@bid.Tender.Title</strong></p>
 
 @* The requested item (read only) *@
 <div class="card mb-3">
-    <div class="card-header">Requested item</div>
+    <div class="card-header">@L.T("Requested item")</div>
     <div class="card-body">
         <dl class="row mb-0">
-            <dt class="col-sm-3">Item</dt>
+            <dt class="col-sm-3">@L.T("Item")</dt>
             <dd class="col-sm-9">@item.ItemName</dd>
-            <dt class="col-sm-3">Specifications</dt>
+            <dt class="col-sm-3">@L.T("Specifications")</dt>
             <dd class="col-sm-9">@item.Specifications</dd>
-            <dt class="col-sm-3">Quantity</dt>
+            <dt class="col-sm-3">@L.T("Quantity")</dt>
             <dd class="col-sm-9">@item.Quantity @item.Unit <small class="text-muted">(fixed by the requesting department)</small></dd>
-            <dt class="col-sm-3">Currency</dt>
+            <dt class="col-sm-3">@L.T("Currency")</dt>
             <dd class="col-sm-9">@bid.Currency</dd>
         </dl>
     </div>
@@ -30,8 +30,8 @@
     <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
     <partial name="_BidItemFields" model="Model" />
     <p class="form-text">Line total = unit price × @item.Quantity</p>
-    <button type="submit" class="btn btn-primary">Save price</button>
-    <a class="btn btn-outline-secondary" asp-controller="Bids" asp-action="Details" asp-route-id="@bid.Id">Cancel</a>
+    <button type="submit" class="btn btn-primary">@L.T("Save price")</button>
+    <a class="btn btn-outline-secondary" asp-controller="Bids" asp-action="Details" asp-route-id="@bid.Id">@L.T("Cancel")</a>
 </form>
 
 @section Scripts { <partial name="_ValidationScriptsPartial" /> }

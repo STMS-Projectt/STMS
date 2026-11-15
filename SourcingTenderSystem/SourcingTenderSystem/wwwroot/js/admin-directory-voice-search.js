@@ -24,8 +24,8 @@
             const idle = () => {
                 listening = false;
                 button.classList.remove("is-listening");
-                button.setAttribute("aria-label", "Search by voice");
-                button.title = "Search by voice";
+                button.setAttribute("aria-label", window.stmsT("Search by voice"));
+                button.title = window.stmsT("Search by voice");
             };
             button.addEventListener("click", () => {
                 if (listening) { recognition.stop(); return; }
@@ -62,7 +62,7 @@
                     button.classList.add("is-listening");
                     button.setAttribute("aria-label", "Stop listening");
                     button.title = "Stop listening";
-                    status.textContent = "Listening…";
+                    status.textContent = window.stmsT("Listening…");
                 } catch {
                     idle();
                     status.textContent = "Could not start voice search. Try again or type your search.";

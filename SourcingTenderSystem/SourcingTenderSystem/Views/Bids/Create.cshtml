@@ -1,9 +1,9 @@
 @model BidFormViewModel
 @{
     var tender = (Tender)ViewBag.Tender;
-    ViewData["Title"] = "Create bid";
+    ViewData["Title"] = L.T("Create bid");
 }
-<header class="page-heading admin-action-heading"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("file")' /></span><div><p class="eyebrow">SUPPLIER BID</p><h1>Create bid</h1></div></header>
+<header class="page-heading admin-action-heading"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("file")' /></span><div><p class="eyebrow">@L.T("SUPPLIER BID")</p><h1>@L.T("Create bid")</h1></div></header>
 
 <div class="card mb-3">
     <div class="card-body">
@@ -17,8 +17,8 @@
 <form asp-action="Create" asp-route-tenderId="@tender.Id" method="post" asp-antiforgery="true" class="admin-form">
     <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
     <partial name="_BidFields" model="Model" />
-    <button type="submit" class="btn btn-primary">Create draft bid</button>
-    <a class="btn btn-outline-secondary" asp-action="MyBids">Cancel</a>
+    <button type="submit" class="btn btn-primary">@L.T("Create draft bid")</button>
+    <a class="btn btn-outline-secondary" asp-action="MyBids">@L.T("Cancel")</a>
 </form>
 
 @section Scripts { <partial name="_ValidationScriptsPartial" /> }

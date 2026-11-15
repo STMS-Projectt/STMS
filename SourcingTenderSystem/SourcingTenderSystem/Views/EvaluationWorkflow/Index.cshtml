@@ -4,30 +4,30 @@
     var awaiting = ViewData["AwaitingMyVote"] as HashSet<int> ?? [];
     ViewData["Title"] = top ? "Award decisions" : "Evaluation progress";
 }
-<header class="page-heading stms-hero"><div><p class="eyebrow">EVALUATION WORKFLOW</p><h1>@ViewData["Title"]</h1><p>@(top ? "Review final reports, record your vote and track completed decisions." : "Track committee reviews and approval of final reports.")</p></div></header>
+<header class="page-heading stms-hero"><div><p class="eyebrow">@L.T("EVALUATION WORKFLOW")</p><h1>@L.T(ViewData["Title"]?.ToString())</h1><p>@L.T(top ? "Review final reports, record your vote and track completed decisions." : "Track committee reviews and approval of final reports.")</p></div></header>
 @if (top)
 {
     <section class="surface detail-card vote-queue" aria-labelledby="my-votes">
-        <div class="record-section-heading"><div><h2 id="my-votes">Awaiting my vote</h2>
-            <p>@(awaiting.Count == 0 ? "No decisions need your vote right now." : "Read the final report and record your decision.")</p></div><span class="record-panel-label">@awaiting.Count</span></div>
+        <div class="record-section-heading"><div><h2 id="my-votes">@L.T("Awaiting my vote")</h2>
+            <p>@L.T(awaiting.Count == 0 ? "No decisions need your vote right now." : "Read the final report and record your decision.")</p></div><span class="record-panel-label">@awaiting.Count</span></div>
         @foreach (var tender in Model.Where(t => awaiting.Contains(t.Id)))
         {
-            <a data-workspace-dialog="details" class="text-link vote-queue-link" asp-action="Details" asp-route-id="@tender.Id" asp-route-panel="decision"><span>@tender.Title</span><span>Open decision <partial name="_Icon" model='@("arrow")' /></span></a>
+            <a data-workspace-dialog="details" class="text-link vote-queue-link" asp-action="Details" asp-route-id="@tender.Id" asp-route-panel="decision"><span>@tender.Title</span><span>@L.T("Open decision") <partial name="_Icon" model='@("arrow")' /></span></a>
         }
     </section>
-    <section class="metrics-grid stms-metrics" aria-label="Award decision statistics">
-        <article class="surface metric"><span class="icon-tile tone-blue"><partial name="_Icon" model='@("file")' /></span><strong>@Model.Count</strong><span>Evaluation reports</span></article>
-        <article class="surface metric"><span class="icon-tile tone-amber"><partial name="_Icon" model='@("clock")' /></span><strong>@Model.Count(t => t.EvaluationReport?.Status == "Pending Top Committee")</strong><span>Awaiting committee decision</span></article>
-        <article class="surface metric"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("check")' /></span><strong>@Model.Count(t => t.Status == "Awarded")</strong><span>Awarded</span></article>
-        <article class="surface metric"><span class="icon-tile tone-violet"><partial name="_Icon" model='@("shield")' /></span><strong>@Model.Count(t => t.Status == "Cancelled")</strong><span>Cancelled</span></article>
+    <section class="metrics-grid stms-metrics" aria-label="@L.T("Award decision statistics")">
+        <article class="surface metric"><span class="icon-tile tone-blue"><partial name="_Icon" model='@("file")' /></span><strong>@Model.Count</strong><span>@L.T("Evaluation reports")</span></article>
+        <article class="surface metric"><span class="icon-tile tone-amber"><partial name="_Icon" model='@("clock")' /></span><strong>@Model.Count(t => t.EvaluationReport?.Status == "Pending Top Committee")</strong><span>@L.T("Awaiting committee decision")</span></article>
+        <article class="surface metric"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("check")' /></span><strong>@Model.Count(t => t.Status == "Awarded")</strong><span>@L.T("Awarded")</span></article>
+        <article class="surface metric"><span class="icon-tile tone-violet"><partial name="_Icon" model='@("shield")' /></span><strong>@Model.Count(t => t.Status == "Cancelled")</strong><span>@L.T("Cancelled")</span></article>
     </section>
 }
 <section class="surface directory dept-directory" data-directory>
     @if (Model.Count == 0)
-    { <div class="empty-state"><h2>No evaluations to review</h2><p>Tenders appear here when they reach your workflow.</p></div> }
+    { <div class="empty-state"><h2>@L.T("No evaluations to review")</h2><p>@L.T("Tenders appear here when they reach your workflow.")</p></div> }
     else
     {
-        <div class="dept-directory-heading"><h2>Evaluation register</h2><p>Find a tender by name or stage.</p></div>
+        <div class="dept-directory-heading"><h2>@L.T("Evaluation register")</h2><p>@L.T("Find a tender by name or stage.")</p></div>
         <partial name="_ListFilters" model='@("Search evaluations", Model.Select(t => t.EvaluationReport?.Status ?? t.Status))' />
         <partial name="_DirectoryPages" model='@("Evaluation pages")' />
         <div class="record-list" data-record-list>
@@ -35,20 +35,20 @@
         {
             <article class="record-card" data-record data-status="@(tender.EvaluationReport?.Status ?? tender.Status)">
                 <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("check")' /></span><span>@tender.Title<small>#@tender.Id</small></span></div>
-                <dl class="record-facts"><div><dt class="visually-hidden">Stage</dt><dd><partial name="_Status" model="@(tender.EvaluationReport?.Status ?? tender.Status)" /></dd></div></dl>
+                <dl class="record-facts"><div><dt class="visually-hidden">@L.T("Stage")</dt><dd><partial name="_Status" model="@(tender.EvaluationReport?.Status ?? tender.Status)" /></dd></div></dl>
                 <div class="record-action">
                     @foreach (var (panel, label, icon) in new[] { ("progress", "Reviewer progress", "eye"), ("comparison", "Weighted comparison", "chart"), ("decision", "Report and decision", "file") })
                     {
-                        <a data-workspace-dialog="details" class="record-icon-action" asp-action="Details" asp-route-id="@tender.Id" asp-route-panel="@panel" aria-label="@label: @tender.Title" data-tooltip="@label"><partial name="_Icon" model="icon" /></a>
+                        <a data-workspace-dialog="details" class="record-icon-action" asp-action="Details" asp-route-id="@tender.Id" asp-route-panel="@panel" aria-label="@L.T(label): @tender.Title" data-tooltip="@L.T(label)"><partial name="_Icon" model="icon" /></a>
                     }
                     @if (User.IsInRole("SourcingOfficer"))
                     {
-                        <a data-workspace-dialog="details" class="record-icon-action" asp-controller="Tenders" asp-action="Details" asp-route-id="@tender.Id" aria-label="View related tender" data-tooltip="View tender"><partial name="_Icon" model='@("briefcase")' /></a>
+                        <a data-workspace-dialog="details" class="record-icon-action" asp-controller="Tenders" asp-action="Details" asp-route-id="@tender.Id" aria-label="@L.T("View related tender")" data-tooltip="@L.T("View tender")"><partial name="_Icon" model='@("briefcase")' /></a>
                     }
                     @if (User.IsInRole("Admin"))
                     {
-                        <a data-workspace-dialog="details" class="record-icon-action" asp-controller="AdminOperations" asp-action="Tender" asp-route-id="@tender.Id" aria-label="View related tender" data-tooltip="View related tender" title="View related tender"><partial name="_Icon" model='@("briefcase")' /></a>
-                        <a data-workspace-dialog="details" class="record-icon-action" asp-controller="AdminOperations" asp-action="TenderQr" asp-route-id="@tender.Id" aria-label="Show tender QR code" data-tooltip="Show tender QR code" title="Show tender QR code"><partial name="_Icon" model='@("qr")' /></a>
+                        <a data-workspace-dialog="details" class="record-icon-action" asp-controller="AdminOperations" asp-action="Tender" asp-route-id="@tender.Id" aria-label="@L.T("View related tender")" data-tooltip="@L.T("View related tender")" title="@L.T("View related tender")"><partial name="_Icon" model='@("briefcase")' /></a>
+                        <a data-workspace-dialog="details" class="record-icon-action" asp-controller="AdminOperations" asp-action="TenderQr" asp-route-id="@tender.Id" aria-label="@L.T("Show tender QR code")" data-tooltip="@L.T("Show tender QR code")" title="@L.T("Show tender QR code")"><partial name="_Icon" model='@("qr")' /></a>
                     }
                 </div>
             </article>

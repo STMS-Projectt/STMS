@@ -3,8 +3,8 @@
     ViewData["Title"] = "Invitation details";
     var invitation = Model.Invitations.Single();
 }
-<a class="back-link" asp-action="Invitations">Back to invitations</a>
-@if (TempData["InvitationError"] is string error) { <div class="alert alert-warning" role="alert">@error</div> }
+<a class="back-link" asp-action="Invitations">@L.T("Back to invitations")</a>
+@if (TempData["InvitationError"] is string error) { <div class="alert alert-warning" role="alert">@L.T(error)</div> }
 @{
             var tender = invitation.Tender;
             var current = invitation.RoundNumber == tender.Counter || invitation.RoundNumber is null && ((HashSet<int>)ViewBag.CurrentLegacyTenders).Contains(tender.Id);
@@ -18,18 +18,18 @@
                     <span class="status-pill @(invitation.Status == "Accepted" ? "status-positive" : expired || invitation.Status == "Declined" ? "status-neutral" : "status-waiting")"><span aria-hidden="true"></span>@(expired ? "Expired" : invitation.Status)</span>
                 </header>
                 <dl class="detail-grid">
-                    <div><dt>Invitation expires (UTC)</dt><dd>@invitation.ExpiresAt.ToString("dd MMM yyyy HH:mm")</dd></div>
-                    <div><dt>Bidding opens (UTC)</dt><dd>@(invitation.Round?.OpensAt?.ToString("dd MMM yyyy HH:mm") ?? "Unknown")</dd></div>
-                    <div><dt>Bidding closes (UTC)</dt><dd>@(invitation.Round?.ClosesAt?.ToString("dd MMM yyyy HH:mm") ?? "Unknown")</dd></div>
+                    <div><dt>@L.T("Invitation expires (UTC)")</dt><dd>@invitation.ExpiresAt.ToString("dd MMM yyyy HH:mm", L.DisplayCulture)</dd></div>
+                    <div><dt>@L.T("Bidding opens (UTC)")</dt><dd>@(invitation.Round?.OpensAt?.ToString("dd MMM yyyy HH:mm", L.DisplayCulture) ?? "Unknown")</dd></div>
+                    <div><dt>@L.T("Bidding closes (UTC)")</dt><dd>@(invitation.Round?.ClosesAt?.ToString("dd MMM yyyy HH:mm", L.DisplayCulture) ?? "Unknown")</dd></div>
                 </dl>
                 @if (tender.Status == "Draft")
                 {
-                    <p class="subtle mb-0">Waiting for the sourcing officer to open this tender. You can respond once bidding opens, provided the invitation has not expired.</p>
+                    <p class="subtle mb-0">@L.T("Waiting for the sourcing officer to open this tender. You can respond once bidding opens, provided the invitation has not expired.")</p>
                 }
                 else
                 {
                 <details class="mb-3">
-                    <summary>Tender description and terms</summary>
+                    <summary>@L.T("Tender description and terms")</summary>
                     <p class="mt-2" style="white-space:pre-wrap;overflow-wrap:anywhere">@tender.Description</p>
                     <p class="mb-0" style="white-space:pre-wrap;overflow-wrap:anywhere">@tender.Terms</p>
                 </details>
@@ -37,20 +37,20 @@
                 @if (open && !expired && invitation.Status == "Pending")
                 {
                     <form asp-action="Respond" asp-route-id="@invitation.Id" method="post" class="button-row">
-                        <button class="btn btn-primary" name="decision" value="Accepted" type="submit">Accept invitation</button>
-                        <button class="btn btn-outline-secondary" name="decision" value="Declined" type="submit">Decline</button>
+                        <button class="btn btn-primary" name="decision" value="Accepted" type="submit">@L.T("Accept invitation")</button>
+                        <button class="btn btn-outline-secondary" name="decision" value="Declined" type="submit">@L.T("Decline")</button>
                     </form>
                 }
                 else if (tender.Status != "Draft" && invitation.Status == "Pending" && !expired && !open)
                 {
-                    <p class="subtle mb-0">This tender is outside its bidding window. Responses are only available while bidding is open.</p>
+                    <p class="subtle mb-0">@L.T("This tender is outside its bidding window. Responses are only available while bidding is open.")</p>
                 }
                 else if (invitation.Status == "Accepted" && hasBid)
                 {
-                    <a class="btn btn-outline-secondary" asp-controller="Bids" asp-action="MyBids">View my bids</a>
+                    <a class="btn btn-outline-secondary" asp-controller="Bids" asp-action="MyBids">@L.T("View my bids")</a>
                 }
                 else if (open && invitation.Status == "Accepted")
                 {
-                    <a data-workspace-dialog class="btn btn-primary" asp-controller="Bids" asp-action="Create" asp-route-tenderId="@tender.Id">Create bid</a>
+                    <a data-workspace-dialog class="btn btn-primary" asp-controller="Bids" asp-action="Create" asp-route-tenderId="@tender.Id">@L.T("Create bid")</a>
                 }
             </article>

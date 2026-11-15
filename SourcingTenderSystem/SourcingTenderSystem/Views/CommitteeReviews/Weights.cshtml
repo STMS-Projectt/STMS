@@ -1,17 +1,17 @@
 @using System.Globalization
 @model CommitteeWeights
-@{ ViewData["Title"] = "Select evaluation criteria"; }
-<a class="back-link" asp-action="Details" asp-route-id="@Model.TenderId"><partial name="_Icon" model='@("back")' /> Tender evaluation</a>
-<header class="page-heading admin-action-heading"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("filter")' /></span><div><p class="eyebrow">TENDER #@Model.TenderId</p><h1>Select evaluation criteria</h1><p>@Model.Title · Set the weights you will apply to every compliant bid.</p></div></header>
-@if (ViewBag.WeightError is string error) { <div class="alert alert-warning" role="alert">@error</div> }
+@{ ViewData["Title"] = L.T("Select evaluation criteria"); }
+<a class="back-link" asp-action="Details" asp-route-id="@Model.TenderId"><partial name="_Icon" model='@("back")' /> @L.T("Tender evaluation")</a>
+<header class="page-heading admin-action-heading"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("filter")' /></span><div><p class="eyebrow">TENDER #@Model.TenderId</p><h1>@L.T("Select evaluation criteria")</h1><p>@Model.Title · Set the weights you will apply to every compliant bid.</p></div></header>
+@if (ViewBag.WeightError is string error) { <div class="alert alert-warning" role="alert">@L.T(error)</div> }
 @if (Model.Criteria.Count == 0)
 {
-    <section class="surface empty-state"><h2>No evaluation criteria</h2><p>The sourcing officer must publish the criteria first.</p></section>
+    <section class="surface empty-state"><h2>@L.T("No evaluation criteria")</h2><p>@L.T("The sourcing officer must publish the criteria first.")</p></section>
 }
 else
 {
     <form asp-action="SaveWeights" asp-route-id="@Model.TenderId" method="post" class="surface form-card" data-weight-plan data-ai-url="@Url.Action("SuggestWeights", new { id = Model.TenderId })">
-        <div class="record-section-heading"><div><h2>Your scoring weights</h2><p>Check the criteria you want to use. Their combined weight must be exactly 100%.</p></div><output class="record-panel-label" data-weight-total aria-live="polite">@Model.Weights.Values.Sum().ToString("0.##") / 100%</output></div>
+        <div class="record-section-heading"><div><h2>@L.T("Your scoring weights")</h2><p>@L.T("Check the criteria you want to use. Their combined weight must be exactly 100%.")</p></div><output class="record-panel-label" data-weight-total aria-live="polite">@Model.Weights.Values.Sum().ToString("0.##") / 100%</output></div>
         <div class="weight-plan-list">
             @for (var i = 0; i < Model.Criteria.Count; i++)
             {
@@ -22,18 +22,18 @@ else
                     <label class="weight-choice"><input type="checkbox" name="weights[@i].Selected" value="true" checked="@selected" data-weight-choice />
                         <span><strong>@criterion.Name</strong><small>@criterion.Type · @criterion.MaxScore points · Officer proposed @criterion.WeightPercent.ToString("0.##")%</small></span>
                     </label>
-                    <label class="field weight-value"><span>My weight (%)</span><input type="number" min="0.01" max="100" step=".01" inputmode="decimal" name="weights[@i].WeightPercent" value="@((selected ? weight : criterion.WeightPercent).ToString(CultureInfo.InvariantCulture))" class="form-control" data-weight-value /></label>
+                    <label class="field weight-value"><span>@L.T("My weight (%)")</span><input type="number" min="0.01" max="100" step=".01" inputmode="decimal" name="weights[@i].WeightPercent" value="@((selected ? weight : criterion.WeightPercent).ToString(CultureInfo.InvariantCulture))" class="form-control" data-weight-value /></label>
                 </div>
             }
         </div>
         <div class="record-panel-actions" data-weight-tools hidden>
-            <button type="button" class="btn btn-outline-secondary" data-suggest-weights><partial name="_Icon" model='@("chart")' /> Suggest weights with AI</button>
-            <button type="button" class="btn btn-outline-secondary" data-reset-weights>Use officer's weights</button>
+            <button type="button" class="btn btn-outline-secondary" data-suggest-weights><partial name="_Icon" model='@("chart")' /> @L.T("Suggest weights with AI")</button>
+            <button type="button" class="btn btn-outline-secondary" data-reset-weights>@L.T("Use officer's weights")</button>
         </div>
-        <p class="field-hint mt-2" data-weight-status role="status">AI suggestions can be edited before saving.</p>
+        <p class="field-hint mt-2" data-weight-status role="status">@L.T("AI suggestions can be edited before saving.")</p>
         <div class="form-actions">
-            <a class="btn btn-outline-secondary" data-dialog-cancel asp-action="Details" asp-route-id="@Model.TenderId">Back to evaluation</a>
-            <button class="btn btn-primary" type="submit"><partial name="_Icon" model='@("check")' /> Save my weights</button>
+            <a class="btn btn-outline-secondary" data-dialog-cancel asp-action="Details" asp-route-id="@Model.TenderId">@L.T("Back to evaluation")</a>
+            <button class="btn btn-primary" type="submit"><partial name="_Icon" model='@("check")' /> @L.T("Save my weights")</button>
         </div>
     </form>
 }

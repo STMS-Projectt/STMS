@@ -1,11 +1,11 @@
 @model PurchaseRequisition
 @{
-    ViewData["Title"] = "Request details";
+    ViewData["Title"] = L.T("Request details");
     bool canEdit = ViewBag.CanEdit == true;
     bool returned = Model.Status == "Returned";
     bool overviewOnly = ViewBag.OverviewOnly == true;
 }
-<a class="back-link" asp-action="MyRequests"><partial name="_Icon" model='@("back")' /> My Requests</a>
+<a class="back-link" asp-action="MyRequests"><partial name="_Icon" model='@("back")' /> @L.T("My Requests")</a>
 <header class="page-heading stms-hero admin-record-hero">
     <div><p class="eyebrow">PURCHASE REQUEST · PR-@Model.Id</p><h1>@Model.Title</h1><p>@Model.Department.Name · Requested by @Model.CreatedByEmployeeProfile.FullName</p></div>
     <partial name="_RequestStatus" model="Model.Status" />
@@ -13,51 +13,51 @@
 @if (!overviewOnly) { <partial name="_RecordQr" model='@(Url.Action("Details", new { id = Model.Id })!)' /> }
 @if (TempData["RequestError"] is string error)
 {
-    <div class="alert alert-danger" role="alert">@error</div>
+    <div class="alert alert-danger" role="alert">@L.T(error)</div>
 }
 @if (!string.IsNullOrWhiteSpace(Model.ReviewNotes))
 {
     <section class="surface detail-card request-review @(returned ? "request-returned" : "")">
-        <h2>@(returned ? "Changes requested" : "Latest review notes")</h2>
+        <h2>@L.T(returned ? "Changes requested" : "Latest review notes")</h2>
         <p class="request-prose mb-0">@Model.ReviewNotes</p>
         @if (Model.ReviewedByEmployeeProfile != null) { <small class="subtle">@Model.ReviewedByEmployeeProfile.FullName</small> }
-        @if (returned && canEdit) { <p class="subtle mt-2 mb-0">Update the request or its items, then submit it again.</p> }
+        @if (returned && canEdit) { <p class="subtle mt-2 mb-0">@L.T("Update the request or its items, then submit it again.")</p> }
     </section>
 }
 <section class="surface detail-card request-section">
-    <div class="card-heading"><h2>Request overview</h2>
-        @if (canEdit && !overviewOnly) { <a class="btn btn-outline-secondary" data-workspace-dialog asp-action="Edit" asp-route-id="@Model.Id"><partial name="_Icon" model='@("edit")' /> Edit request</a> }
+    <div class="card-heading"><h2>@L.T("Request overview")</h2>
+        @if (canEdit && !overviewOnly) { <a class="btn btn-outline-secondary" data-workspace-dialog asp-action="Edit" asp-route-id="@Model.Id"><partial name="_Icon" model='@("edit")' /> @L.T("Edit request")</a> }
     </div>
     <dl class="request-meta">
-        <div><dt>Priority <span lang="ar" dir="rtl">الأولوية</span></dt><dd>@Model.Priority</dd></div>
-        <div><dt>Target date</dt><dd>@Model.TargetDate.ToString("dd MMM yyyy")</dd></div>
-        <div><dt>Created</dt><dd>@Model.CreatedAt.ToString("dd MMM yyyy")</dd></div>
+        <div><dt>@L.T("Priority") <span lang="ar" dir="rtl">الأولوية</span></dt><dd>@Model.Priority</dd></div>
+        <div><dt>@L.T("Target date")</dt><dd>@Model.TargetDate.ToString("dd MMM yyyy", L.DisplayCulture)</dd></div>
+        <div><dt>@L.T("Created")</dt><dd>@Model.CreatedAt.ToString("dd MMM yyyy", L.DisplayCulture)</dd></div>
     </dl>
-    <h3>Reason for purchase</h3><p class="request-prose mb-0">@Model.Reason</p>
+    <h3>@L.T("Reason for purchase")</h3><p class="request-prose mb-0">@Model.Reason</p>
 </section>
 @if (!overviewOnly)
 {
 <section class="surface directory request-section">
     <div class="directory-toolbar">
-        <div><h2 class="mb-0">Requested items</h2><span class="result-count">@Model.Items.Count line item(s)</span></div>
-        @if (canEdit) { <a class="btn btn-outline-secondary" data-workspace-dialog asp-controller="RequisitionItems" asp-action="Create" asp-route-requestId="@Model.Id"><partial name="_Icon" model='@("plus")' /> Add item</a> }
+        <div><h2 class="mb-0">@L.T("Requested items")</h2><span class="result-count">@Model.Items.Count line item(s)</span></div>
+        @if (canEdit) { <a class="btn btn-outline-secondary" data-workspace-dialog asp-controller="RequisitionItems" asp-action="Create" asp-route-requestId="@Model.Id"><partial name="_Icon" model='@("plus")' /> @L.T("Add item")</a> }
     </div>
     <partial name="_RequisitionItems" model="Model.Items" />
 </section>
 @if (canEdit && Model.Items.Count > 0)
 {
     <form asp-action="Submit" asp-route-id="@Model.Id" method="post" class="surface detail-card request-submit">
-        <div><h2>@(returned ? "Ready to send it back?" : "Ready for review?")</h2><p class="subtle mb-0">You can make changes again if the reviewer returns this request.</p></div>
-        <button type="submit" class="btn btn-primary">@(returned ? "Resubmit for review" : "Submit for review") <partial name="_Icon" model='@("arrow")' /></button>
+        <div><h2>@L.T(returned ? "Ready to send it back?" : "Ready for review?")</h2><p class="subtle mb-0">@L.T("You can make changes again if the reviewer returns this request.")</p></div>
+        <button type="submit" class="btn btn-primary">@L.T(returned ? "Resubmit for review" : "Submit for review") <partial name="_Icon" model='@("arrow")' /></button>
     </form>
 }
 
 <div class="button-row mb-3">
     @if (ViewData["ClarificationRequestIds"] is ISet<int> startable && startable.Contains(Model.Id))
     {
-        <a class="btn btn-outline-secondary" data-workspace-dialog asp-controller="Clarifications" asp-action="StartRequest" asp-route-id="@Model.Id"><partial name="_Icon" model='@("mail")' /> Start a clarification</a>
+        <a class="btn btn-outline-secondary" data-workspace-dialog asp-controller="Clarifications" asp-action="StartRequest" asp-route-id="@Model.Id"><partial name="_Icon" model='@("mail")' /> @L.T("Start a clarification")</a>
     }
-    <a class="btn btn-outline-secondary" data-workspace-dialog="details" asp-controller="Clarifications" asp-action="Index" asp-route-kind="request" asp-route-recordId="@Model.Id">Clarification history</a>
+    <a class="btn btn-outline-secondary" data-workspace-dialog="details" asp-controller="Clarifications" asp-action="Index" asp-route-kind="request" asp-route-recordId="@Model.Id">@L.T("Clarification history")</a>
 </div>
 
 <partial name="_TenderHistory" model="Model.Tenders" />

@@ -1,19 +1,19 @@
 @model SourcingTenderSystem.Controllers.TenderFormViewModel
 
 @{
-    ViewData["Title"] = "New Tender";
+    ViewData["Title"] = L.T("New Tender");
 }
 
-<header class="page-heading admin-action-heading"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("file")' /></span><div><p class="eyebrow">SOURCING WORKSPACE</p><h1>New Tender</h1><p>Create a draft from an approved purchase request.</p></div></header>
+<header class="page-heading admin-action-heading"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("file")' /></span><div><p class="eyebrow">@L.T("SOURCING WORKSPACE")</p><h1>@L.T("New Tender")</h1><p>@L.T("Create a draft from an approved purchase request.")</p></div></header>
 @if (TempData["Success"] is string message)
 {
-    <div class="alert alert-success" role="status">@message</div>
+    <div class="alert alert-success" role="status">@L.T(message)</div>
 }
 
 @if (!Model.PurchaseRequests.Any())
 {
     <div class="alert alert-warning">
-        There are no approved purchase requests waiting for a tender.
+        @L.T("There are no approved purchase requests waiting for a tender.")
     </div>
 }
 
@@ -62,8 +62,8 @@
             </div>
 
             <div class="form-actions">
-                <button type="submit" class="btn btn-primary" disabled="@(!Model.PurchaseRequests.Any())">Create Tender</button>
-                <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary" disabled="@(!Model.PurchaseRequests.Any())">@L.T("Create Tender")</button>
+                <a asp-action="Index" class="btn btn-outline-secondary">@L.T("Cancel")</a>
             </div>
         </form>
     </div>

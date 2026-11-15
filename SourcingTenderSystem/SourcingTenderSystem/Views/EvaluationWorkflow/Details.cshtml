@@ -8,10 +8,10 @@
     var full = !labels.TryGetValue(panel, out var label);
     ViewData["Title"] = label ?? "Evaluation progress";
 }
-<a class="back-link" asp-action="Index"><partial name="_Icon" model='@("back")' /> Evaluations</a>
+<a class="back-link" asp-action="Index"><partial name="_Icon" model='@("back")' /> @L.T("Evaluations")</a>
 <header class="page-heading stms-hero admin-record-hero"><div><p class="eyebrow">TENDER #@tender.Id</p><h1>@(label ?? tender.Title)</h1><p>@(full ? report?.Status ?? tender.Status : tender.Title)</p></div>@if (!full) { <partial name="_Status" model="@(report?.Status ?? tender.Status)" /> }</header>
 @if (full) { <partial name="_RecordQr" model='@(Url.Action("Details", new { id = tender.Id })!)' /> }
-@if (TempData["WorkflowError"] is string error) { <div class="alert alert-warning" data-workspace-feedback role="alert">@error</div> }
+@if (TempData["WorkflowError"] is string error) { <div class="alert alert-warning" data-workspace-feedback role="alert">@L.T(error)</div> }
 @if (full || panel == "progress")
 {
 <section class="surface directory mb-3">
@@ -22,26 +22,26 @@
             <article class="record-card">
                 <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("users")' /></span><span>@member.Employee<small>@member.Seat</small></span></div>
                 <dl class="record-facts">
-                    <div><dt>Scores saved</dt><dd>@member.Scored / @member.Required</dd></div>
-                    <div><dt>Status</dt><dd><span class="status-pill @(member.Complete ? "status-positive" : "status-waiting")">@(member.Complete ? "Submitted" : member.Scored > 0 ? "In progress" : "Pending")</span> @if (member.SubmittedAt is DateTime submitted) { <small>@submitted.ToString("yyyy-MM-dd HH:mm") UTC</small> }</dd></div>
+                    <div><dt>@L.T("Scores saved")</dt><dd>@member.Scored / @member.Required</dd></div>
+                    <div><dt>@L.T("Status")</dt><dd><span class="status-pill @(member.Complete ? "status-positive" : "status-waiting")">@(member.Complete ? "Submitted" : member.Scored > 0 ? "In progress" : "Pending")</span> @if (member.SubmittedAt is DateTime submitted) { <small>@submitted.ToString("yyyy-MM-dd HH:mm") UTC</small> }</dd></div>
                 </dl>
             </article>
         }
     </div>
 </section>
 <section class="surface detail-card mb-3">
-    <h2>Saved evaluations</h2>
-    @if (Model.Scores.Count == 0) { <p class="subtle mb-0">No scores saved yet.</p> }
+    <h2>@L.T("Saved evaluations")</h2>
+    @if (Model.Scores.Count == 0) { <p class="subtle mb-0">@L.T("No scores saved yet.")</p> }
     else
     {
-        <details><summary>View scores and reviewer notes</summary>
+        <details><summary>@L.T("View scores and reviewer notes")</summary>
             <div class="record-list record-list-inset">@foreach (var score in Model.Scores)
                 {
                     var member = tender.CommitteeMembers.FirstOrDefault(m => m.EmployeeProfileId == score.EmployeeId);
                     var bid = tender.Bids.First(b => b.Id == score.BidId);
                     var criterion = tender.EvaluationCriteria.First(c => c.Id == score.CriterionId);
                     <article class="record-card"><div class="record-name"><span>@criterion.Name<small>@bid.SupplierProfile.CompanyName</small></span></div>
-                        <dl class="record-facts"><div><dt>Reviewer</dt><dd>@member?.EmployeeProfile.FullName</dd></div><div><dt>Score</dt><dd>@score.Score / @criterion.MaxScore</dd></div><div><dt>Applied weight</dt><dd>@Model.ReviewerWeights[score.EmployeeId][score.CriterionId].ToString("0.##")%</dd></div><div><dt>Notes</dt><dd>@score.Notes</dd></div></dl></article>
+                        <dl class="record-facts"><div><dt>@L.T("Reviewer")</dt><dd>@member?.EmployeeProfile.FullName</dd></div><div><dt>@L.T("Score")</dt><dd>@score.Score / @criterion.MaxScore</dd></div><div><dt>@L.T("Applied weight")</dt><dd>@Model.ReviewerWeights[score.EmployeeId][score.CriterionId].ToString("0.##")%</dd></div><div><dt>@L.T("Notes")</dt><dd>@score.Notes</dd></div></dl></article>
                 }
             </div>
         </details>
@@ -53,15 +53,15 @@
 @if (ViewBag.Comparison is List<SupplierEvaluationResult> comparison)
 {
     <section class="surface detail-card mb-3 comparison-panel">
-        <div class="record-section-heading"><div><h2>Weighted supplier comparison</h2></div>
-            @if (!full) { <a class="text-link" data-workspace-page asp-action="Details" asp-route-id="@tender.Id">Open complete evaluation <partial name="_Icon" model='@("arrow")' /></a> }
+        <div class="record-section-heading"><div><h2>@L.T("Weighted supplier comparison")</h2></div>
+            @if (!full) { <a class="text-link" data-workspace-page asp-action="Details" asp-route-id="@tender.Id">@L.T("Open complete evaluation") <partial name="_Icon" model='@("arrow")' /></a> }
         </div>
-        <p>Each reviewer’s scores are normalized and weighted by their selected criteria. The four reviewer totals contribute equally.</p>
+        <p>@L.T("Each reviewer’s scores are normalized and weighted by their selected criteria. The four reviewer totals contribute equally.")</p>
         @if (comparison.Select(r => r.Currency).Distinct().Count() > 1)
         {
-            <p class="alert alert-info">Bids use different currencies. USD equivalents are approximate references at one rate date (the tender closing date) and are not used to rank suppliers or pick a winner.</p>
+            <p class="alert alert-info">@L.T("Bids use different currencies. USD equivalents are approximate references at one rate date (the tender closing date) and are not used to rank suppliers or pick a winner.")</p>
         }
-        <details class="review-disclosure mb-3"><summary>Weights applied by each reviewer</summary>
+        <details class="review-disclosure mb-3"><summary>@L.T("Weights applied by each reviewer")</summary>
             <div class="record-list record-list-inset">
                 @foreach (var reviewer in Model.Progress)
                 {
@@ -79,12 +79,12 @@
             <article class="comparison-offer">
                 <div class="comparison-offer-heading"><div><h3>@row.Supplier</h3><partial name="_Status" model="row.Compliance" /></div><span class="record-panel-label">@row.Total / 100</span></div>
                 <dl class="comparison-facts">
-                    <div><dt>Price</dt><dd><partial name="_UsdReference" model="@(new UsdReferenceView(row.Price, row.Currency, row.UsdEquivalent, row.UsdRate, row.RateDate, row.RateSource))" /></dd></div>
-                    <div><dt>Technical</dt><dd>@row.Technical</dd></div><div><dt>Financial</dt><dd>@row.Financial</dd></div>
+                    <div><dt>@L.T("Price")</dt><dd><partial name="_UsdReference" model="@(new UsdReferenceView(row.Price, row.Currency, row.UsdEquivalent, row.UsdRate, row.RateDate, row.RateSource))" /></dd></div>
+                    <div><dt>@L.T("Technical")</dt><dd>@row.Technical</dd></div><div><dt>@L.T("Financial")</dt><dd>@row.Financial</dd></div>
                 </dl>
                 <details class="action-disclosure"><summary>Evidence and notes · @row.EvidenceIds.Count</summary>
                 @if (!string.IsNullOrWhiteSpace(row.ComplianceNotes)) { <p class="subtle my-2">@row.ComplianceNotes</p> }
-                @if (row.EvidenceIds.Count == 0) { <p class="subtle my-2">No documents attached.</p> }
+                @if (row.EvidenceIds.Count == 0) { <p class="subtle my-2">@L.T("No documents attached.")</p> }
                 else if (row.Compliance == "Compliant" || User.IsInRole("SourcingOfficer"))
                 {
                     @foreach (var documentId in row.EvidenceIds)
@@ -98,7 +98,7 @@
 }
 else if (!full)
 {
-    <section class="surface empty-state"><span class="icon-tile tone-blue"><partial name="_Icon" model='@("chart")' /></span><h2>Comparison not available</h2><p>Supplier comparisons appear when they are available for this evaluation.</p></section>
+    <section class="surface empty-state"><span class="icon-tile tone-blue"><partial name="_Icon" model='@("chart")' /></span><h2>@L.T("Comparison not available")</h2><p>@L.T("Supplier comparisons appear when they are available for this evaluation.")</p></section>
 }
 }
 @if (full || panel == "decision")
@@ -106,27 +106,27 @@ else if (!full)
 @if (Model.CanUpload)
 {
     <section class="surface form-card mb-3">
-        <h2>Upload final evaluation report</h2>
-        <p class="subtle">All four reviewers have finished. Uploading the PDF closes scoring and sends the report to the sourcing officer.</p>
+        <h2>@L.T("Upload final evaluation report")</h2>
+        <p class="subtle">@L.T("All four reviewers have finished. Uploading the PDF closes scoring and sends the report to the sourcing officer.")</p>
         <form asp-action="Upload" asp-route-id="@tender.Id" method="post" enctype="multipart/form-data">
-            <label class="field mb-3 d-block">Recommended bid<select class="form-select" name="RecommendedBidId" required><option value="">Select supplier</option>
+            <label class="field mb-3 d-block">@L.T("Recommended bid")<select class="form-select" name="RecommendedBidId" required><option value="">@L.T("Select supplier")</option>
             @foreach (var bid in tender.Bids) { <option value="@bid.Id">@bid.SupplierProfile.CompanyName · @bid.TotalPrice.ToString("N2") @bid.Currency</option> }
             </select></label>
-            <label class="field mb-3 d-block">Summary<textarea class="form-control" name="Summary" maxlength="1000" required></textarea></label>
-            <label class="field mb-3 d-block">Final report PDF<input class="form-control" type="file" name="File" accept="application/pdf,.pdf" required /></label>
-            <button class="btn btn-primary" type="submit">Upload and close evaluation</button>
+            <label class="field mb-3 d-block">@L.T("Summary")<textarea class="form-control" name="Summary" maxlength="1000" required></textarea></label>
+            <label class="field mb-3 d-block">@L.T("Final report PDF")<input class="form-control" type="file" name="File" accept="application/pdf,.pdf" required /></label>
+            <button class="btn btn-primary" type="submit">@L.T("Upload and close evaluation")</button>
         </form>
     </section>
 }
 else if (report == null && User.IsInRole("SourcingManager"))
 {
-    <p class="subtle">The final report can be uploaded once all four members submit their checklists for every compliant bid.</p>
+    <p class="subtle">@L.T("The final report can be uploaded once all four members submit their checklists for every compliant bid.")</p>
 }
 @if (report != null)
 {
     <section class="surface detail-card mb-3">
-        <h2>Final report</h2>
-        <p>Recommended supplier: <strong>@(tender.Bids.FirstOrDefault(b => b.Id == report.RecommendedBidId)?.SupplierProfile.CompanyName ?? "—")</strong></p>
+        <h2>@L.T("Final report")</h2>
+        <p>@L.T("Recommended supplier:") <strong>@(tender.Bids.FirstOrDefault(b => b.Id == report.RecommendedBidId)?.SupplierProfile.CompanyName ?? "—")</strong></p>
         @if (User.IsInRole("TopCommittee") && tender.CommitteeMembers.Any(m => m.CommitteeType == "Top"))
         {
             <details class="action-disclosure mb-3">
@@ -135,17 +135,17 @@ else if (report == null && User.IsInRole("SourcingManager"))
                 @foreach (var seat in tender.CommitteeMembers.Where(m => m.CommitteeType == "Top"))
                 {
                     var vote = report.TenderApprovals.FirstOrDefault(a => a.ApproverEmployeeProfileId == seat.EmployeeProfileId && a.Decision is ("Top Committee Approved" or "Top Committee Rejected"));
-                    <li><span>@seat.EmployeeProfile.FullName</span><span class="status-pill @(vote?.Decision == "Top Committee Approved" ? "status-positive" : vote == null ? "status-waiting" : "status-negative")">@(vote?.Decision == "Top Committee Approved" ? "Approved" : vote == null ? "Not voted" : "Rejected")</span></li>
+                    <li><span>@seat.EmployeeProfile.FullName</span><span class="status-pill @(vote?.Decision == "Top Committee Approved" ? "status-positive" : vote == null ? "status-waiting" : "status-negative")">@L.T(vote?.Decision == "Top Committee Approved" ? "Approved" : vote == null ? "Not voted" : "Rejected")</span></li>
                 }
                 </ul>
             </details>
         }
-        <details class="action-disclosure mb-3" open="@(!User.IsInRole("TopCommittee") || Model.NextStage == null)"><summary>Evaluation summary</summary>
+        <details class="action-disclosure mb-3" open="@(!User.IsInRole("TopCommittee") || Model.NextStage == null)"><summary>@L.T("Evaluation summary")</summary>
             <p class="record-terms">@report.Summary</p>
         </details>
         @if (report.FinalizedAt is DateTime finalized)
         {
-            <p><strong>@tender.Status</strong> · @finalized.ToString("yyyy-MM-dd HH:mm:ss") UTC</p>
+            <p><strong>@L.T(tender.Status)</strong> · @finalized.ToString("yyyy-MM-dd HH:mm:ss") UTC</p>
         }
         @if (tender.Status == "Cancelled" && report.TenderApprovals.Where(a => a.Decision == "Top Committee Rejected").OrderByDescending(a => a.DecidedAt).FirstOrDefault() is { } rejection)
         {
@@ -165,16 +165,16 @@ else if (report == null && User.IsInRole("SourcingManager"))
         @if (report.FileKey != null)
         {
             <div class="button-row mb-3">
-                <a class="btn btn-outline-secondary" asp-action="Download" asp-route-id="@tender.Id" asp-route-preview="true" target="_blank" rel="noopener">Preview PDF</a>
-                <a class="btn btn-outline-secondary" asp-action="Download" asp-route-id="@tender.Id">Download PDF</a>
+                <a class="btn btn-outline-secondary" asp-action="Download" asp-route-id="@tender.Id" asp-route-preview="true" target="_blank" rel="noopener">@L.T("Preview PDF")</a>
+                <a class="btn btn-outline-secondary" asp-action="Download" asp-route-id="@tender.Id">@L.T("Download PDF")</a>
             </div>
             @if (PdfSecurity.SigningEnabled && (User.IsInRole("SourcingManager") || User.IsInRole("SourcingOfficer")))
             {
-                <details class="border rounded p-3 mb-3"><summary>Download a digitally signed copy</summary>
+                <details class="border rounded p-3 mb-3"><summary>@L.T("Download a digitally signed copy")</summary>
                     <form asp-action="SignDocument" asp-route-id="@tender.Id" method="post" class="mt-3">
-                        <p class="subtle">Your password confirms the request. The organization certificate signs this watermarked copy.</p>
-                        <label class="form-label">Current password<input name="password" type="password" required autocomplete="current-password" class="form-control" /></label>
-                        <button class="btn btn-primary" type="submit">Sign and download</button>
+                        <p class="subtle">@L.T("Your password confirms the request. The organization certificate signs this watermarked copy.")</p>
+                        <label class="form-label">@L.T("Current password")<input name="password" type="password" required autocomplete="current-password" class="form-control" /></label>
+                        <button class="btn btn-primary" type="submit">@L.T("Sign and download")</button>
                     </form>
                 </details>
             }
@@ -183,47 +183,47 @@ else if (report == null && User.IsInRole("SourcingManager"))
         {
             <form asp-action="Approve" asp-route-id="@tender.Id" method="post">
                 <input type="hidden" name="expectedStage" value="@report.Status" />
-                <label class="field mb-3 d-block">Approval notes<textarea class="form-control" name="comments" maxlength="1000" rows="2"></textarea></label>
-                <label class="field mb-2 d-block">Current password<input class="form-control" type="password" name="password" autocomplete="current-password" required /></label>
-                <label class="form-check mb-3"><input class="form-check-input" type="checkbox" name="confirmDecision" value="true" required /> I confirm this official decision.</label>
+                <label class="field mb-3 d-block">@L.T("Approval notes")<textarea class="form-control" name="comments" maxlength="1000" rows="2"></textarea></label>
+                <label class="field mb-2 d-block">@L.T("Current password")<input class="form-control" type="password" name="password" autocomplete="current-password" required /></label>
+                <label class="form-check mb-3"><input class="form-check-input" type="checkbox" name="confirmDecision" value="true" required /> @L.T("I confirm this official decision.")</label>
                 @if (report.Status == "Pending Top Committee")
                 {
                     <p class="subtle">Unanimous approval required: @report.TenderApprovals.Count(a => a.Decision == "Top Committee Approved") / 4</p>
-                    <div class="button-row"><button class="btn btn-primary" type="submit" name="vote" value="approve">Approve award</button><a class="btn btn-outline-danger" data-workspace-dialog asp-action="Reject" asp-route-id="@tender.Id">Reject and cancel</a></div>
+                    <div class="button-row"><button class="btn btn-primary" type="submit" name="vote" value="approve">@L.T("Approve award")</button><a class="btn btn-outline-danger" data-workspace-dialog asp-action="Reject" asp-route-id="@tender.Id">@L.T("Reject and cancel")</a></div>
                 }
                 else
                 {
-                <button class="btn btn-primary" type="submit">@(Model.NextStage == "Pending Manager Approval" ? "Approve and send to sourcing manager" : Model.NextStage == "Pending Top Committee" ? "Approve and send to top committee" : "Approve final report")</button>
+                <button class="btn btn-primary" type="submit">@L.T(Model.NextStage == "Pending Manager Approval" ? "Approve and send to sourcing manager" : Model.NextStage == "Pending Top Committee" ? "Approve and send to top committee" : "Approve final report")</button>
                 }
             </form>
         }
         @if (report.TenderApprovals.Count > 0)
         {
-            <h3 class="mt-3">Approval history</h3><ul class="mb-0">
+            <h3 class="mt-3">@L.T("Approval history")</h3><ul class="mb-0">
             @foreach (var entry in report.TenderApprovals.OrderBy(a => a.DecidedAt))
-            { <li>@entry.ApproverEmployeeProfile.FullName · @entry.Decision · @entry.DecidedAt.ToString("dd MMM yyyy HH:mm") UTC @if (PdfSecurity.SigningEnabled) { <a class="ms-2" asp-action="DecisionPdf" asp-route-id="@entry.Id">Signed decision PDF</a> } @if (!string.IsNullOrWhiteSpace(entry.Comments)) { <p>@entry.Comments</p> }</li> }
+            { <li>@entry.ApproverEmployeeProfile.FullName · @entry.Decision · @entry.DecidedAt.ToString("dd MMM yyyy HH:mm", L.DisplayCulture) UTC @if (PdfSecurity.SigningEnabled) { <a class="ms-2" asp-action="DecisionPdf" asp-route-id="@entry.Id">@L.T("Signed decision PDF")</a> } @if (!string.IsNullOrWhiteSpace(entry.Comments)) { <p>@entry.Comments</p> }</li> }
             </ul>
         }
     </section>
 }
 else if (!full && !Model.CanUpload && !User.IsInRole("SourcingManager"))
 {
-    <section class="surface empty-state"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("file")' /></span><h2>No final report yet</h2><p>The report appears here after the evaluation is complete.</p></section>
+    <section class="surface empty-state"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("file")' /></span><h2>@L.T("No final report yet")</h2><p>@L.T("The report appears here after the evaluation is complete.")</p></section>
 }
 
-<div class="mb-3"><a class="btn btn-outline-secondary" data-workspace-dialog="details" asp-controller="Clarifications" asp-action="Index" asp-route-kind="tender" asp-route-recordId="@tender.Id"><partial name="_Icon" model='@("mail")' /> Clarification history</a></div>
+<div class="mb-3"><a class="btn btn-outline-secondary" data-workspace-dialog="details" asp-controller="Clarifications" asp-action="Index" asp-route-kind="tender" asp-route-recordId="@tender.Id"><partial name="_Icon" model='@("mail")' /> @L.T("Clarification history")</a></div>
 
 @if (report?.Status == TenderRules.AwaitingReturn && User.IsInRole("SourcingManager"))
 {
-    <section class="surface detail-card mt-3"><h2>Return the cancelled tender</h2><p>The sourcing officer can prepare a new tender for the same request after you return this one.</p>
-        <form asp-action="ReturnToOfficer" asp-route-id="@tender.Id" method="post"><button class="btn btn-primary" type="submit">Return to sourcing officer</button></form>
+    <section class="surface detail-card mt-3"><h2>@L.T("Return the cancelled tender")</h2><p>@L.T("The sourcing officer can prepare a new tender for the same request after you return this one.")</p>
+        <form asp-action="ReturnToOfficer" asp-route-id="@tender.Id" method="post"><button class="btn btn-primary" type="submit">@L.T("Return to sourcing officer")</button></form>
     </section>
 }
 @if (ViewData["CanRetender"] is true && User.IsInRole("SourcingOfficer"))
 {
-    <section class="surface detail-card mt-3"><h2>Create a new tender</h2>
+    <section class="surface detail-card mt-3"><h2>@L.T("Create a new tender")</h2>
         <p>This tender was cancelled by the Top Committee and returned by the sourcing manager. Create a NEW tender for the same purchase requisition #@tender.PurchaseRequisitionId. This cancelled tender and its history stay unchanged.</p>
-        <a data-workspace-dialog class="btn btn-primary" asp-controller="Tenders" asp-action="Create" asp-route-purchaseRequisitionId="@tender.PurchaseRequisitionId">Create replacement tender</a>
+        <a data-workspace-dialog class="btn btn-primary" asp-controller="Tenders" asp-action="Create" asp-route-purchaseRequisitionId="@tender.PurchaseRequisitionId">@L.T("Create replacement tender")</a>
     </section>
 }
 }

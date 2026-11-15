@@ -7,7 +7,7 @@
     <span class="avatar overflow-hidden" aria-hidden="true">@if (exists) { <img class="w-100 h-100" style="object-fit:cover" src="@Url.Action("Photo", "Profile")" alt="" /> }
     else { @((User.Identity?.Name ?? "U").FirstOrDefault().ToString().ToUpperInvariant()) }</span>
 } else {
-<a class="avatar overflow-hidden text-decoration-none" asp-controller="Profile" asp-action="Index" aria-label="My profile">
+<a class="avatar overflow-hidden text-decoration-none" asp-controller="Profile" asp-action="Index" aria-label="@L.T("My profile")">
     @if (exists) { <img class="w-100 h-100" style="object-fit:cover" src="@Url.Action("Photo", "Profile")" alt="" /> }
     else { @((User.Identity?.Name ?? "U").FirstOrDefault().ToString().ToUpperInvariant()) }
 </a>

@@ -23,7 +23,7 @@ function bind(root) {
         root.querySelectorAll("[data-face-show]").forEach(el => { el.hidden = !el.dataset.faceShow.split(" ").includes(state); });
         const busy = state === "starting" || state === "checking" || state === "saving";
         loader.hidden = !busy;
-        if (busy) loaderLabel.textContent = state === "starting" ? "Starting camera…" : state === "saving" ? "Saving…" : "Checking with Face++…";
+        if (busy) loaderLabel.textContent = state === "starting" ? window.stmsT("Starting camera…") : state === "saving" ? window.stmsT("Saving…") : window.stmsT("Checking with Face++…");
         placeholder.hidden = !!stream;
         root.querySelectorAll("[data-face-step]").forEach(step => {
             const n = Number(step.dataset.faceStep), current = prompt?.step ?? 0;
@@ -116,7 +116,7 @@ function bind(root) {
     }
 
     start?.addEventListener("click", async () => {
-        if (password && !password.value) { setState(root.dataset.state || "idle", "Enter your current password first.", "error"); password.focus(); return; }
+        if (password && !password.value) { setState(root.dataset.state || "idle", window.stmsT("Enter your current password first."), "error"); password.focus(); return; }
         if (email && !email.value.trim()) { setState(root.dataset.state || "idle", "Enter the email of the account to sign in to.", "error"); email.focus(); return; }
         release();
         prompt = null;

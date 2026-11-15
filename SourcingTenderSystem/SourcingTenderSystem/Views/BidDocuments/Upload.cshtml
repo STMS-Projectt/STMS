@@ -1,10 +1,10 @@
 @model BidDocumentUploadViewModel
 @{
     var bid = (Bid)ViewBag.Bid;
-    ViewData["Title"] = "Upload document";
+    ViewData["Title"] = L.T("Upload document");
 }
-<header class="page-heading admin-action-heading"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("file")' /></span><div><p class="eyebrow">SUPPLIER BID</p><h1>Upload document</h1></div></header>
-<p>Bid for: <strong>@bid.Tender.Title</strong></p>
+<header class="page-heading admin-action-heading"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("file")' /></span><div><p class="eyebrow">@L.T("SUPPLIER BID")</p><h1>@L.T("Upload document")</h1></div></header>
+<p>@L.T("Bid for:") <strong>@bid.Tender.Title</strong></p>
 
 @* enctype="multipart/form-data" is required, otherwise the file is not sent *@
 <form asp-action="Upload" asp-route-bidId="@bid.Id" method="post" enctype="multipart/form-data"
@@ -22,12 +22,12 @@
     <div class="mb-3">
         <label asp-for="File" class="form-label"></label>
         <input asp-for="File" type="file" accept=".pdf,application/pdf" class="form-control" />
-        <div class="form-text">PDF only, maximum 10 MB.</div>
+        <div class="form-text">@L.T("PDF only, maximum 10 MB.")</div>
         <span asp-validation-for="File" class="text-danger"></span>
     </div>
 
-    <button type="submit" class="btn btn-primary">Upload</button>
-    <a class="btn btn-outline-secondary" asp-controller="Bids" asp-action="Details" asp-route-id="@bid.Id">Cancel</a>
+    <button type="submit" class="btn btn-primary">@L.T("Upload")</button>
+    <a class="btn btn-outline-secondary" asp-controller="Bids" asp-action="Details" asp-route-id="@bid.Id">@L.T("Cancel")</a>
 </form>
 
 @section Scripts { <partial name="_ValidationScriptsPartial" /> }

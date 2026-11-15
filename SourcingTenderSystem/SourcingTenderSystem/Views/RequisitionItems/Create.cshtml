@@ -1,13 +1,13 @@
 @model RequisitionItemInput
-@{ ViewData["Title"] = "Add item"; }
-<a class="back-link" asp-controller="PurchaseRequisitions" asp-action="Details" asp-route-id="@ViewBag.RequestId"><partial name="_Icon" model='@("back")' /> Request details</a>
-<header class="page-heading admin-action-heading request-editor-heading"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("inbox")' /></span><div><p class="eyebrow">PURCHASE REQUEST · PR-@ViewBag.RequestId</p><h1>Add item</h1><p>Add one line for each product or service you need.</p></div></header>
+@{ ViewData["Title"] = L.T("Add item"); }
+<a class="back-link" asp-controller="PurchaseRequisitions" asp-action="Details" asp-route-id="@ViewBag.RequestId"><partial name="_Icon" model='@("back")' /> @L.T("Request details")</a>
+<header class="page-heading admin-action-heading request-editor-heading"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("inbox")' /></span><div><p class="eyebrow">PURCHASE REQUEST · PR-@ViewBag.RequestId</p><h1>@L.T("Add item")</h1><p>@L.T("Add one line for each product or service you need.")</p></div></header>
 <div class="form-shell request-editor-shell">
     <form class="surface form-card request-editor-card" asp-action="Create" asp-route-requestId="@ViewBag.RequestId" method="post">
-        <h2>Item information</h2>
+        <h2>@L.T("Item information")</h2>
         <div class="request-editor-fields item-editor-fields"><partial name="_Fields" model="Model" /></div>
-        <div class="form-actions request-editor-actions"><button class="btn btn-primary" type="submit">Add item</button><a data-dialog-cancel class="btn btn-outline-secondary" asp-controller="PurchaseRequisitions" asp-action="Details" asp-route-id="@ViewBag.RequestId">Cancel</a></div>
+        <div class="form-actions request-editor-actions"><button class="btn btn-primary" type="submit">@L.T("Add item")</button><a data-dialog-cancel class="btn btn-outline-secondary" asp-controller="PurchaseRequisitions" asp-action="Details" asp-route-id="@ViewBag.RequestId">@L.T("Cancel")</a></div>
     </form>
-    <aside class="surface helper-card"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("file")' /></span><h2>Specifications</h2><p class="mb-0">Include the features, dimensions, or service requirements the reviewer needs to understand the item.</p></aside>
+    <aside class="surface helper-card"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("file")' /></span><h2>@L.T("Specifications")</h2><p class="mb-0">@L.T("Include the features, dimensions, or service requirements the reviewer needs to understand the item.")</p></aside>
 </div>
 @section Scripts { <partial name="_ValidationScriptsPartial" /> }

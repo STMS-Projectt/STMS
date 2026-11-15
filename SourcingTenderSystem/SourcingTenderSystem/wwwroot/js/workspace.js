@@ -6,8 +6,8 @@
     const loader = dialog.querySelector("[data-dialog-loader]");
     const loaderLabel = loader.querySelector("[data-dialog-loader-label]");
     let loadingDialog = false;
-    const setDialogLoading = (active, label = "Loading…") => {
-        loaderLabel.textContent = label;
+    const setDialogLoading = (active, label = window.stmsT("Loading…")) => {
+        loaderLabel.textContent = window.stmsT(label);
         loader.hidden = !active;
         content.setAttribute("aria-busy", String(active));
         dialog.classList.toggle("is-saving", active && label === "Saving…");
@@ -86,8 +86,8 @@
             const heading = result.main.querySelector("h1");
             const details = !!result.main.querySelector(".admin-record-hero");
             dialog.classList.toggle("is-detail", details);
-            dialogTitle.textContent = heading?.textContent || "Record";
-            if (dialogContext) dialogContext.textContent = previousDialogs.length ? "Related action" : dialogContext.dataset.rootContext;
+            dialogTitle.textContent = heading?.textContent || window.stmsT("Record");
+            if (dialogContext) dialogContext.textContent = previousDialogs.length ? window.stmsT("Related action") : dialogContext.dataset.rootContext;
             back.hidden = previousDialogs.length === 0;
             dialog.scrollTop = 0;
             content.replaceChildren(...result.main.childNodes);
@@ -123,11 +123,11 @@
         const request = new AbortController();
         controller = request;
         progress.hidden = false;
-        status.textContent = "Loading…";
+        status.textContent = window.stmsT("Loading…");
         function showDialogError(message) {
             loadingDialog = false;
             setDialogLoading(false);
-            dialogTitle.textContent = "Could not open this record";
+            dialogTitle.textContent = window.stmsT("Could not open this record");
             back.hidden = previousDialogs.length === 0;
             const alert = document.createElement("p");
             alert.className = "alert alert-warning mb-0";
@@ -138,7 +138,7 @@
         }
         if (mode === "dialog") {
             loadingDialog = true;
-            dialogTitle.textContent = "Loading…";
+            dialogTitle.textContent = window.stmsT("Loading…");
             content.replaceChildren();
             setDialogLoading(true);
             if (!dialog.open) dialog.showModal();
@@ -148,15 +148,15 @@
             if (request.signal.aborted) return;
             if (!sameWorkspace(result)) {
                 if (mode === "dialog" && !/\/Account\//i.test(new URL(result.res.url || url).pathname))
-                    showDialogError("This record is unavailable or you no longer have permission to open it.");
+                    showDialogError(window.stmsT("This record is unavailable or you no longer have permission to open it."));
                 else location.assign(result.res.url || url);
                 return;
             }
             await install(result, mode, updateHistory, restore);
-            status.textContent = "Content loaded";
+            status.textContent = window.stmsT("Content loaded");
         } catch (error) {
             if (error.name !== "AbortError" && !request.signal.aborted) {
-                if (mode === "dialog") showDialogError("The record could not be loaded. Go back or close this window and try again.");
+                if (mode === "dialog") showDialogError(window.stmsT("The record could not be loaded. Go back or close this window and try again."));
                 else location.assign(url);
             }
         } finally {
@@ -281,7 +281,7 @@
                 location.assign(result.res.url);
                 return;
             }
-            if (!sameWorkspace(result)) { fail("The site did not return an editable page. Refresh to check the result before trying again."); return; }
+            if (!sameWorkspace(result)) { fail(window.stmsT("The site did not return an editable page. Refresh to check the result before trying again.")); return; }
             const redirectedToForm = result.res.redirected && /\/(Tenders\/Create|Tenders\/AssignCommittee)(\/|$)/i.test(new URL(result.res.url).pathname);
             if ((redirectedToForm || form.hasAttribute("data-workspace-dialog")) && !dialog.open) {
                 // Refresh the originating page after the completed workflow action before opening its next form.
@@ -315,7 +315,7 @@
                 await install(result, inDialog && !result.res.redirected ? "dialog" : "page");
             }
         } catch {
-            fail("The connection was interrupted. Refresh to check whether your changes were saved.");
+            fail(window.stmsT("The connection was interrupted. Refresh to check whether your changes were saved."));
         } finally {
             sending = false;
             form.removeAttribute("aria-busy");

@@ -1,10 +1,10 @@
 @model MyBidsViewModel
-@{ ViewData["Title"] = "My bids"; }
-<header class="page-heading stms-hero"><div><p class="eyebrow">SUPPLIER WORKSPACE</p><h1>My bids</h1><p>Prepare offers and track submitted bids.</p></div></header>
+@{ ViewData["Title"] = L.T("My bids"); }
+<header class="page-heading stms-hero"><div><p class="eyebrow">@L.T("SUPPLIER WORKSPACE")</p><h1>@L.T("My bids")</h1><p>@L.T("Prepare offers and track submitted bids.")</p></div></header>
 <partial name="_Alerts" />
 <section class="surface directory dept-directory supplier-bid-register" data-directory>
-    <div class="dept-directory-heading"><h2>Bid register</h2><p>Search your bids and filter by status.</p></div>
-    @if (Model.MyBids.Count == 0) { <div class="empty-state"><h2>No bids yet</h2></div> }
+    <div class="dept-directory-heading"><h2>@L.T("Bid register")</h2><p>@L.T("Search your bids and filter by status.")</p></div>
+    @if (Model.MyBids.Count == 0) { <div class="empty-state"><h2>@L.T("No bids yet")</h2></div> }
     else
     {
         <partial name="_ListFilters" model='@("Search my bids", Model.MyBids.Select(b => b.Status))' />
@@ -15,15 +15,15 @@
             <article class="record-card" data-record data-status="@bid.Status">
                 <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("file")' /></span><span>@bid.Tender.Title<small>Bid #@bid.Id</small></span></div>
                 <dl class="record-facts">
-                    <div><dt>Total</dt><dd>@bid.TotalPrice.ToString("N2") @bid.Currency</dd></div>
-                    <div><dt>Status</dt><dd><partial name="_StatusBadge" model="bid.Status" /> @if (bid.AwardOutcome is string result) { <span class="badge bg-secondary">@result</span> }</dd></div>
-                    <div><dt>Submitted (UTC)</dt><dd>@(bid.SubmittedAt?.ToString("dd MMM yyyy HH:mm") ?? "—")</dd></div>
+                    <div><dt>@L.T("Total")</dt><dd>@bid.TotalPrice.ToString("N2") @bid.Currency</dd></div>
+                    <div><dt>@L.T("Status")</dt><dd><partial name="_StatusBadge" model="bid.Status" /> @if (bid.AwardOutcome is string result) { <span class="badge bg-secondary">@result</span> }</dd></div>
+                    <div><dt>@L.T("Submitted (UTC)")</dt><dd>@(bid.SubmittedAt?.ToString("dd MMM yyyy HH:mm", L.DisplayCulture) ?? "—")</dd></div>
                 </dl>
                 <div class="record-action bid-register-actions">
                     @foreach (var (panel, label, icon) in new[] { ("overview", "Bid summary", "eye"), ("prices", "Item prices", "inbox"), ("documents", "Bid documents", "file"), ("submission", "Bid submission status", "check") })
                     {
                         var caption = panel switch { "overview" => "Summary", "prices" => "Prices", "documents" => "Files", _ => "Submission" };
-                        <a data-workspace-dialog="details" class="record-icon-action bid-register-action" asp-action="Details" asp-route-id="@bid.Id" asp-route-panel="@panel" aria-label="@label: @bid.Tender.Title" data-tooltip="@label"><partial name="_Icon" model="icon" /><span>@caption</span></a>
+                        <a data-workspace-dialog="details" class="record-icon-action bid-register-action" asp-action="Details" asp-route-id="@bid.Id" asp-route-panel="@panel" aria-label="@L.T(label): @bid.Tender.Title" data-tooltip="@L.T(label)"><partial name="_Icon" model="icon" /><span>@L.T(caption)</span></a>
                     }
                 </div>
             </article>
@@ -33,8 +33,8 @@
     }
 </section>
 <section class="surface directory dept-directory mt-3" data-directory>
-    <div class="dept-directory-heading"><h2>Tenders waiting for your bid</h2><p>Find accepted invitations and prepare an offer.</p></div>
-    @if (Model.WaitingInvitations.Count == 0) { <div class="empty-state"><p>No open tenders are waiting for your bid.</p></div> }
+    <div class="dept-directory-heading"><h2>@L.T("Tenders waiting for your bid")</h2><p>@L.T("Find accepted invitations and prepare an offer.")</p></div>
+    @if (Model.WaitingInvitations.Count == 0) { <div class="empty-state"><p>@L.T("No open tenders are waiting for your bid.")</p></div> }
     else
     {
         <partial name="_ListFilters" model='@("Search tenders without a bid", Enumerable.Empty<string>())' />
@@ -44,8 +44,8 @@
         {
             <article class="record-card" data-record>
                 <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("briefcase")' /></span><span>@invitation.Tender.Title</span></div>
-                <dl class="record-facts"><div><dt>Closes (UTC)</dt><dd>@invitation.Tender.CloseDate.ToString("dd MMM yyyy HH:mm")</dd></div></dl>
-                <div class="record-action"><a data-workspace-dialog class="record-icon-action" asp-action="Create" asp-route-tenderId="@invitation.TenderId" aria-label="Create bid for @invitation.Tender.Title" data-tooltip="Create bid"><partial name="_Icon" model='@("plus")' /></a></div>
+                <dl class="record-facts"><div><dt>@L.T("Closes (UTC)")</dt><dd>@invitation.Tender.CloseDate.ToString("dd MMM yyyy HH:mm", L.DisplayCulture)</dd></div></dl>
+                <div class="record-action"><a data-workspace-dialog class="record-icon-action" asp-action="Create" asp-route-tenderId="@invitation.TenderId" aria-label="Create bid for @invitation.Tender.Title" data-tooltip="@L.T("Create bid")"><partial name="_Icon" model='@("plus")' /></a></div>
             </article>
         }
         </div>

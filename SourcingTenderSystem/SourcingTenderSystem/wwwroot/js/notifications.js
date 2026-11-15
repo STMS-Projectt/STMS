@@ -14,17 +14,17 @@
     async function loadRecent(panel) {
         const list = panel.querySelector("[data-recent-notifications]");
         if (!list) return;
-        list.textContent = "Loading notifications…";
+        list.textContent = window.stmsT("Loading notifications…");
         try {
             const response = await fetch(panel.dataset.recentUrl, { cache: "no-store" });
-            if (!response.ok || response.redirected) throw new Error("Unavailable");
+            if (!response.ok || response.redirected) throw new Error(window.stmsT("Unavailable"));
             const { items } = await response.json();
             if (panel.hidden) return;
             list.replaceChildren();
             if (!Array.isArray(items) || items.length === 0) {
                 const empty = document.createElement("p");
                 empty.className = "stms-notification-empty";
-                empty.textContent = "No notifications yet.";
+                empty.textContent = window.stmsT("No notifications yet.");
                 list.append(empty);
                 return;
             }
@@ -32,7 +32,7 @@
                 const row = document.createElement("article");
                 row.className = "stms-notification-item" + (item.isRead ? "" : " is-unread");
                 const title = document.createElement("strong");
-                title.textContent = item.title || "Notification";
+                title.textContent = item.title || window.stmsT("Notification");
                 const message = document.createElement("p");
                 message.textContent = item.message || "";
                 const time = document.createElement("time");
@@ -42,7 +42,7 @@
                 list.append(row);
             }
         } catch {
-            if (!panel.hidden) list.textContent = "Notifications could not be loaded. Open the full list to try again.";
+            if (!panel.hidden) list.textContent = window.stmsT("Notifications could not be loaded. Open the full list to try again.");
         }
     }
     function openMenu(menu) {

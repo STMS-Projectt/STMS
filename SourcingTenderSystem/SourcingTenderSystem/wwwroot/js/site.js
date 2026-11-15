@@ -125,7 +125,7 @@
                 currentPage = Math.min(currentPage, pages);
                 matched.forEach((row, index) => row.hidden = Math.floor(index / pageSize) + 1 !== currentPage);
                 pagination.hidden = pages <= 1;
-                pagination.querySelector("[data-page-status]").textContent = `Page ${currentPage} of ${pages}`;
+                pagination.querySelector("[data-page-status]").textContent = window.stmsFormat("Page {0} of {1}", currentPage, pages);
                 const options = pagination.querySelector("[data-page-options]");
                 options.replaceChildren();
                 for (let page = 1; page <= pages; page++) {
@@ -138,7 +138,7 @@
                     options.append(button);
                 }
             }
-            count.textContent = shown + (shown === 1 ? " record" : " records");
+            count.textContent = window.stmsFormat(shown === 1 ? "{0} record" : "{0} records", shown);
             empty.hidden = shown !== 0;
             results.hidden = shown === 0;
         };
@@ -169,7 +169,7 @@
         button.addEventListener("click", () => {
             const show = input.type === "password";
             input.type = show ? "text" : "password";
-            button.textContent = show ? "Hide" : "Show";
+            button.textContent = window.stmsT(show ? "Hide" : "Show");
             button.setAttribute("aria-pressed", String(show));
         });
     });

@@ -1,21 +1,21 @@
 @model UploadInput
-@{ ViewData["Title"] = "Add a document"; }
-<header class="page-heading admin-action-heading"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("upload")' /></span><div><p class="eyebrow">SUPPLIER APPLICATION</p><h1>Add a document</h1><p>Add one supporting PDF to your draft application.</p></div></header>
+@{ ViewData["Title"] = L.T("Add a document"); }
+<header class="page-heading admin-action-heading"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("upload")' /></span><div><p class="eyebrow">@L.T("SUPPLIER APPLICATION")</p><h1>@L.T("Add a document")</h1><p>@L.T("Add one supporting PDF to your draft application.")</p></div></header>
 <form asp-action="AddDocument" method="post" enctype="multipart/form-data" class="surface form-card application-form">
     <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
     <div class="form-grid">
         <div class="field"><label asp-for="DocumentType" class="form-label"></label>
-            <select asp-for="DocumentType" class="form-select"><option value="">Select a type</option>
+            <select asp-for="DocumentType" class="form-select"><option value="">@L.T("Select a type")</option>
                 @foreach (var type in SupplierFileStore.DocumentTypes) { <option value="@type">@type</option> }
             </select><span asp-validation-for="DocumentType" class="text-danger"></span>
         </div>
-        <div class="field"><label asp-for="ExpiryDate" class="form-label">Expiry date (optional)</label><input asp-for="ExpiryDate" class="form-control" /><span asp-validation-for="ExpiryDate" class="text-danger"></span></div>
+        <div class="field"><label asp-for="ExpiryDate" class="form-label">@L.T("Expiry date (optional)")</label><input asp-for="ExpiryDate" class="form-control" /><span asp-validation-for="ExpiryDate" class="text-danger"></span></div>
         <div class="field field-wide upload-zone application-dropzone">
             <span class="icon-tile tone-teal"><partial name="_Icon" model='@("file")' /></span><label asp-for="File" class="form-label d-block"></label>
             <input asp-for="File" type="file" accept=".pdf,application/pdf" class="form-control" aria-describedby="application-pdf-help" data-draft-document-file />
-            <p class="field-hint mb-0" id="application-pdf-help">PDF only · up to 10 MB</p><span asp-validation-for="File" class="text-danger"></span>
+            <p class="field-hint mb-0" id="application-pdf-help">@L.T("PDF only · up to 10 MB")</p><span asp-validation-for="File" class="text-danger"></span>
         </div>
     </div>
-    <div class="form-actions mt-3"><a asp-action="UploadDocuments" data-dialog-cancel class="btn btn-outline-secondary">Cancel</a><button type="submit" class="btn btn-primary">Add to draft</button></div>
+    <div class="form-actions mt-3"><a asp-action="UploadDocuments" data-dialog-cancel class="btn btn-outline-secondary">@L.T("Cancel")</a><button type="submit" class="btn btn-primary">@L.T("Add to draft")</button></div>
 </form>
 @section Scripts { <partial name="_ValidationScriptsPartial" /> }

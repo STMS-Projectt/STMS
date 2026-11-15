@@ -1,32 +1,32 @@
 @model Bid
 @{ var panel = Context.Request.Query["panel"].ToString(); ViewData["Title"] = panel == "items" ? "Quoted items" : "Submitted bid details"; }
-<a class="back-link" asp-action="Bids">Back to bids</a>
-<header class="page-heading stms-hero admin-record-hero"><div><p class="eyebrow">SUBMITTED BID #@Model.Id</p><h1>@(panel == "items" ? "Quoted items" : Model.SupplierProfile.CompanyName)</h1><p>@Model.Tender.Title</p></div><div class="record-action"><a data-workspace-dialog="details" class="record-icon-action" asp-action="Tender" asp-route-id="@Model.TenderId" asp-route-panel="overview" aria-label="View related tender" data-tooltip="View related tender"><partial name="_Icon" model='@("briefcase")' /></a></div></header>
+<a class="back-link" asp-action="Bids">@L.T("Back to bids")</a>
+<header class="page-heading stms-hero admin-record-hero"><div><p class="eyebrow">SUBMITTED BID #@Model.Id</p><h1>@(panel == "items" ? "Quoted items" : Model.SupplierProfile.CompanyName)</h1><p>@Model.Tender.Title</p></div><div class="record-action"><a data-workspace-dialog="details" class="record-icon-action" asp-action="Tender" asp-route-id="@Model.TenderId" asp-route-panel="overview" aria-label="@L.T("View related tender")" data-tooltip="@L.T("View related tender")"><partial name="_Icon" model='@("briefcase")' /></a></div></header>
 @if (panel != "items")
 {
-<section class="surface detail-card mb-3"><h2>Offer summary</h2>
+<section class="surface detail-card mb-3"><h2>@L.T("Offer summary")</h2>
     <dl class="detail-grid">
-        <div><dt>Status</dt><dd><partial name="_Status" model="Model.Status" /></dd></div>
-        <div><dt>Total price</dt><dd>@Model.TotalPrice.ToString("N2") @Model.Currency</dd></div>
-        <div><dt>Submitted (UTC)</dt><dd>@Model.SubmittedAt?.ToString("dd MMM yyyy HH:mm")</dd></div>
-        <div><dt>Submission round</dt><dd>@(Model.SubmittedRoundNumber?.ToString() ?? "—")</dd></div>
-        <div><dt>Delivery</dt><dd>@Model.DeliveryDays days</dd></div>
-        <div><dt>Validity</dt><dd>@Model.ValidityDays days</dd></div>
-        @if (!string.IsNullOrWhiteSpace(Model.ComplianceNotes)) { <div><dt>Compliance notes</dt><dd>@Model.ComplianceNotes</dd></div> }
-        @if (!string.IsNullOrWhiteSpace(Model.AwardOutcome)) { <div><dt>Award outcome</dt><dd>@Model.AwardOutcome</dd></div> }
+        <div><dt>@L.T("Status")</dt><dd><partial name="_Status" model="Model.Status" /></dd></div>
+        <div><dt>@L.T("Total price")</dt><dd>@Model.TotalPrice.ToString("N2") @Model.Currency</dd></div>
+        <div><dt>@L.T("Submitted (UTC)")</dt><dd>@Model.SubmittedAt?.ToString("dd MMM yyyy HH:mm", L.DisplayCulture)</dd></div>
+        <div><dt>@L.T("Submission round")</dt><dd>@(Model.SubmittedRoundNumber?.ToString() ?? "—")</dd></div>
+        <div><dt>@L.T("Delivery")</dt><dd>@Model.DeliveryDays days</dd></div>
+        <div><dt>@L.T("Validity")</dt><dd>@Model.ValidityDays days</dd></div>
+        @if (!string.IsNullOrWhiteSpace(Model.ComplianceNotes)) { <div><dt>@L.T("Compliance notes")</dt><dd>@Model.ComplianceNotes</dd></div> }
+        @if (!string.IsNullOrWhiteSpace(Model.AwardOutcome)) { <div><dt>@L.T("Award outcome")</dt><dd>@Model.AwardOutcome</dd></div> }
     </dl>
 </section>
 }
 @if (panel != "overview")
 {
-<section class="surface detail-card"><h2>Quoted items</h2>
-    @if (Model.BidItems.Count == 0) { <p class="subtle">No item breakdown was recorded.</p> }
+<section class="surface detail-card"><h2>@L.T("Quoted items")</h2>
+    @if (Model.BidItems.Count == 0) { <p class="subtle">@L.T("No item breakdown was recorded.")</p> }
     <div class="record-list record-list-inset">
     @foreach (var item in Model.BidItems.OrderBy(i => i.Id))
     {
         <article class="record-card"><div class="record-name">@item.PurchaseRequisitionItem.ItemName</div>
-            <dl class="record-facts"><div><dt>Quantity</dt><dd>@item.Quantity</dd></div><div><dt>Unit price</dt><dd>@item.UnitPrice.ToString("N2") @Model.Currency</dd></div>
-                @if (!string.IsNullOrWhiteSpace(item.Notes)) { <div><dt>Notes</dt><dd>@item.Notes</dd></div> }
+            <dl class="record-facts"><div><dt>@L.T("Quantity")</dt><dd>@item.Quantity</dd></div><div><dt>@L.T("Unit price")</dt><dd>@item.UnitPrice.ToString("N2") @Model.Currency</dd></div>
+                @if (!string.IsNullOrWhiteSpace(item.Notes)) { <div><dt>@L.T("Notes")</dt><dd>@item.Notes</dd></div> }
             </dl>
         </article>
     }

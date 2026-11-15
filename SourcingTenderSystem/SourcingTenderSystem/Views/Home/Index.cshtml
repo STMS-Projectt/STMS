@@ -2,16 +2,18 @@
     Layout = null;
 }
 <!doctype html>
-<html lang="en">
+<html lang="@L.Language" dir="@L.Direction">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Little Threads — Kidswear Supply</title>
+  <title>@L.T("Little Threads — Kidswear Supply")</title>
   <meta name="description" content="Little Threads connects verified children's clothing suppliers with retailers. Walk through our store and see how it works.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@@0,500;0,600;1,500&family=Inter:wght@@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="~/home/css/style.css" asp-append-version="true">
+  <partial name="_DisplayHead" />
+  <link rel="stylesheet" href="~/css/display-preferences.css" asp-append-version="true">
 
   <!-- three.js (ES modules). "<!script" opts out of the ASP.NET script tag helper, which would otherwise replace this import map with the app's static-assets map. -->
   <!script type="importmap">
@@ -23,7 +25,7 @@
   }
   </!script>
 </head>
-<body>
+<body class="stms-home">
 
   <!-- ================= LOADER ================= -->
   <div id="loader" aria-live="polite">
@@ -31,32 +33,33 @@
       <div class="brand-mark">L</div>
       <div class="loader-title serif">Little Threads</div>
       <div class="loader-bar"><span id="loaderBar"></span></div>
-      <div class="loader-text" id="loaderText">Opening the store…</div>
+      <div class="loader-text" id="loaderText">@L.T("Opening the store…")</div>
     </div>
   </div>
 
   <!-- ================= NAVBAR ================= -->
   <header>
     <nav class="navbar" id="navbar">
-      <a href="#home" class="logo" aria-label="Little Threads home">
+      <partial name="_DisplayPreferences" />
+      <a href="#home" class="logo" aria-label="@L.T("Little Threads home")">
         <span class="brand-mark">L</span>
         <span class="logo-text"><b>Little Threads</b><small>KIDSWEAR SUPPLY</small></span>
       </a>
-      <button class="burger" id="burger" aria-label="Open menu" aria-expanded="false"><span></span><span></span></button>
+      <button class="burger" id="burger" aria-label="@L.T("Open menu")" aria-expanded="false"><span></span><span></span></button>
       <div class="nav-links" id="navLinks">
-        <a href="#home" class="nav-link active" data-section="home">Home</a>
-        <a href="#about" class="nav-link" data-section="about">About</a>
-        <a href="#how-it-works" class="nav-link" data-section="how-it-works">How It Works</a>
-        <a href="#contact" class="nav-link" data-section="contact">Contact</a>
-        <a asp-controller="Account" asp-action="Login" class="btn btn-outline">Login</a>
-        <a asp-controller="SupplierRegistration" asp-action="Register" class="btn btn-dark">Supplier Registration</a>
+        <a href="#home" class="nav-link active" data-section="home">@L.T("Home")</a>
+        <a href="#about" class="nav-link" data-section="about">@L.T("About")</a>
+        <a href="#how-it-works" class="nav-link" data-section="how-it-works">@L.T("How It Works")</a>
+        <a href="#contact" class="nav-link" data-section="contact">@L.T("Contact")</a>
+        <a asp-controller="Account" asp-action="Login" class="btn btn-outline">@L.T("Login")</a>
+        <a asp-controller="SupplierRegistration" asp-action="Register" class="btn btn-dark">@L.T("Supplier Registration")</a>
       </div>
     </nav>
   </header>
 
   <main>
     <!-- ================= HOME: 3D WALK-THROUGH ================= -->
-    <section id="home" class="walk-track" aria-label="Walk through the Little Threads store">
+    <section id="home" class="walk-track" aria-label="@L.T("Walk through the Little Threads store")">
       <div class="stage" id="stage">
         <canvas id="gl"></canvas>
         <div class="vignette" id="vignette"></div>
@@ -66,12 +69,12 @@
         <div class="hero-fade" id="heroFade"></div>
         <div class="hero" id="hero">
           <div>
-            <div class="eyebrow">Wholesale children’s apparel</div>
-            <h1 class="serif">Step inside the <em>finest</em> kidswear supply.</h1>
+            <div class="eyebrow">@L.T("Wholesale children’s apparel")</div>
+            <h1 class="serif">@L.T("Step inside the") <em>@L.T("finest")</em> @L.T("kidswear supply.")</h1>
           </div>
           <div class="scroll-cue">
             <div class="mouse"><span id="wheel"></span></div>
-            SCROLL TO WALK IN
+            @L.T("SCROLL TO WALK IN")
           </div>
         </div>
 
@@ -80,8 +83,8 @@
 
         <!-- Video wall controls (shown in front of the screen at the end of the walk) -->
         <div class="video-ui" id="videoUI">
-          <button class="btn btn-gold btn-lg" id="videoPlay" aria-pressed="false"><span class="ico">▶</span> Play our story</button>
-          <button class="btn btn-outline-light" id="videoMute" hidden>Mute</button>
+          <button class="btn btn-gold btn-lg" id="videoPlay" aria-pressed="false"><span class="ico">▶</span> @L.T("Play our story")</button>
+          <button class="btn btn-outline-light" id="videoMute" hidden>@L.T("Mute")</button>
           <span class="video-note" id="videoNote"></span>
         </div>
 
@@ -94,15 +97,15 @@
     <section id="how-it-works" class="section hiw">
       <div class="container">
         <div class="section-head reveal">
-          <div class="eyebrow">The supplier journey</div>
-          <h2 class="serif">How it works</h2>
-          <p>Six simple steps from sign-up to your first payout.</p>
+          <div class="eyebrow">@L.T("The supplier journey")</div>
+          <h2 class="serif">@L.T("How it works")</h2>
+          <p>@L.T("Six simple steps from sign-up to your first payout.")</p>
         </div>
         <div class="steps" id="steps">
           <div class="steps-line"><span id="stepsLine"></span></div>
           <!-- step cards injected by main.js -->
         </div>
-        <div class="center reveal"><a asp-controller="SupplierRegistration" asp-action="Register" class="btn btn-gold btn-lg">Become a Supplier →</a></div>
+        <div class="center reveal"><a asp-controller="SupplierRegistration" asp-action="Register" class="btn btn-gold btn-lg">@L.T("Become a Supplier →")</a></div>
       </div>
     </section>
 
@@ -110,17 +113,17 @@
     <section id="about" class="section about" aria-labelledby="aboutTitle">
       <div class="container about-top">
         <div class="about-copy">
-          <div class="eyebrow">About us · Our mission</div>
-          <h2 class="serif reveal" id="aboutTitle">Dressing the next generation — with suppliers you can <em>trust.</em></h2>
-          <p class="reveal">Little Threads makes children’s apparel sourcing transparent, reliable and fair. We give verified manufacturers a trusted storefront, and give retailers quality, full size runs and on-time delivery they can count on.</p>
+          <div class="eyebrow">@L.T("About us · Our mission")</div>
+          <h2 class="serif reveal" id="aboutTitle">@L.T("Dressing the next generation — with suppliers you can") <em>@L.T("trust.")</em></h2>
+          <p class="reveal">@L.T("Little Threads makes children’s apparel sourcing transparent, reliable and fair. We give verified manufacturers a trusted storefront, and give retailers quality, full size runs and on-time delivery they can count on.")</p>
           <ul class="about-points reveal">
-            <li><svg class="i"><use href="#i-check"/></svg>Every supplier is verified before going live</li>
-            <li><svg class="i"><use href="#i-check"/></svg>Full size runs from newborn to 14 years</li>
-            <li><svg class="i"><use href="#i-check"/></svg>Quality-checked, packed and tracked by our team</li>
+            <li><svg class="i"><use href="#i-check"/></svg>@L.T("Every supplier is verified before going live")</li>
+            <li><svg class="i"><use href="#i-check"/></svg>@L.T("Full size runs from newborn to 14 years")</li>
+            <li><svg class="i"><use href="#i-check"/></svg>@L.T("Quality-checked, packed and tracked by our team")</li>
           </ul>
           <div class="about-cta reveal">
-            <a href="#contact" class="btn btn-gold btn-lg">Talk to our team →</a>
-            <a href="#how-it-works" class="btn btn-outline btn-lg">How it works</a>
+            <a href="#contact" class="btn btn-gold btn-lg">@L.T("Talk to our team →")</a>
+            <a href="#how-it-works" class="btn btn-outline btn-lg">@L.T("How it works")</a>
           </div>
         </div>
         <div class="about-collage reveal" aria-hidden="true">
@@ -128,31 +131,31 @@
           <figure class="ph ph-small"><img src="~/home/assets/about-team.jpg" alt="" loading="lazy"></figure>
           <div class="float-badge">
             <span class="fb-ico"><svg class="i"><use href="#i-shield"/></svg></span>
-            <div><b>Verified suppliers</b><span>Checked documents, quality &amp; capacity</span></div>
+            <div><b>@L.T("Verified suppliers")</b><span>@L.T("Checked documents, quality & capacity")</span></div>
           </div>
-          <div class="float-chip"><span class="dot"></span>Since 2026</div>
+          <div class="float-chip"><span class="dot"></span>@L.T("Since 2026")</div>
         </div>
       </div>
 
       <div class="container about-stats reveal">
-        <div><b class="serif" data-count="500" data-suffix="+">0</b><span>Verified suppliers</span></div>
-        <div><b class="serif" data-count="12" data-suffix="K">0</b><span>Products listed</span></div>
-        <div><b class="serif" data-count="98" data-suffix="%">0</b><span>On-time delivery</span></div>
-        <div><b class="serif" data-count="24" data-suffix="h">0</b><span>Average reply time</span></div>
+        <div><b class="serif" data-count="500" data-suffix="+">0</b><span>@L.T("Verified suppliers")</span></div>
+        <div><b class="serif" data-count="12" data-suffix="K">0</b><span>@L.T("Products listed")</span></div>
+        <div><b class="serif" data-count="98" data-suffix="%">0</b><span>@L.T("On-time delivery")</span></div>
+        <div><b class="serif" data-count="24" data-suffix="h">0</b><span>@L.T("Average reply time")</span></div>
       </div>
 
       <div class="container about-values">
         <article class="value-card reveal">
           <span class="v-ico"><svg class="i"><use href="#i-shield"/></svg></span><span class="v-num">01</span>
-          <h3>Verified suppliers only</h3><p>Every manufacturer is checked — documents, quality and capacity — before going live.</p>
+          <h3>@L.T("Verified suppliers only")</h3><p>@L.T("Every manufacturer is checked — documents, quality and capacity — before going live.")</p>
         </article>
         <article class="value-card reveal">
           <span class="v-ico"><svg class="i"><use href="#i-heart"/></svg></span><span class="v-num">02</span>
-          <h3>Made for little ones</h3><p>Soft, safe, certified fabrics and full size runs from newborn to 14 years.</p>
+          <h3>@L.T("Made for little ones")</h3><p>@L.T("Soft, safe, certified fabrics and full size runs from newborn to 14 years.")</p>
         </article>
         <article class="value-card reveal">
           <span class="v-ico"><svg class="i"><use href="#i-truck"/></svg></span><span class="v-num">03</span>
-          <h3>Checked, packed, tracked</h3><p>Our dispatch team quality-checks every order and ships it with live tracking.</p>
+          <h3>@L.T("Checked, packed, tracked")</h3><p>@L.T("Our dispatch team quality-checks every order and ships it with live tracking.")</p>
         </article>
       </div>
     </section>
@@ -161,64 +164,64 @@
     <section id="contact" class="section contact-sec" aria-labelledby="contactTitle">
       <div class="contact-banner">
         <div class="container banner-txt">
-          <div class="eyebrow light">Contact</div>
-          <h2 class="serif" id="contactTitle">Come say hello to the team.</h2>
-          <p>Whether you make children’s clothing or sell it, we’d love to hear from you.</p>
+          <div class="eyebrow light">@L.T("Contact")</div>
+          <h2 class="serif" id="contactTitle">@L.T("Come say hello to the team.")</h2>
+          <p>@L.T("Whether you make children’s clothing or sell it, we’d love to hear from you.")</p>
           <div class="quick">
-            <a href="tel:+0000000000"><svg class="i"><use href="#i-phone"/></svg>Call</a>
+            <a href="tel:+0000000000"><svg class="i"><use href="#i-phone"/></svg>@L.T("Call")</a>
             <a href="https://wa.me/0000000000" target="_blank" rel="noopener"><svg class="i"><use href="#i-wa"/></svg>WhatsApp</a>
-            <a href="mailto:hello@@littlethreads.com"><svg class="i"><use href="#i-mail"/></svg>Email</a>
+            <a href="mailto:hello@@littlethreads.com"><svg class="i"><use href="#i-mail"/></svg>@L.T("Email")</a>
           </div>
         </div>
       </div>
 
       <div class="container contact-card reveal">
         <form id="contactForm" novalidate>
-          <div class="eyebrow">Send a message</div>
-          <h3 class="serif">How can we help?</h3>
-          <fieldset class="topics" aria-label="Topic">
-            <label><input type="radio" name="topic" value="Becoming a supplier" checked><span>Becoming a supplier</span></label>
-            <label><input type="radio" name="topic" value="Buying wholesale"><span>Buying wholesale</span></label>
-            <label><input type="radio" name="topic" value="Partnership"><span>Partnership</span></label>
-            <label><input type="radio" name="topic" value="Other"><span>Other</span></label>
+          <div class="eyebrow">@L.T("Send a message")</div>
+          <h3 class="serif">@L.T("How can we help?")</h3>
+          <fieldset class="topics" aria-label="@L.T("Topic")">
+            <label><input type="radio" name="topic" value="Becoming a supplier" checked><span>@L.T("Becoming a supplier")</span></label>
+            <label><input type="radio" name="topic" value="Buying wholesale"><span>@L.T("Buying wholesale")</span></label>
+            <label><input type="radio" name="topic" value="Partnership"><span>@L.T("Partnership")</span></label>
+            <label><input type="radio" name="topic" value="Other"><span>@L.T("Other")</span></label>
           </fieldset>
           <div class="grid2">
-            <label class="fl"><span>Full name</span><input name="name" type="text" autocomplete="name" placeholder=" " required></label>
-            <label class="fl"><span>Email</span><input name="email" type="email" autocomplete="email" placeholder=" " required></label>
-            <label class="fl"><span>Company / Store</span><input name="company" type="text" autocomplete="organization" placeholder=" "></label>
-            <label class="fl"><span>Monthly order volume</span>
-              <select name="volume"><option>Less than 500 pieces</option><option selected>500 – 2,000 pieces</option><option>2,000 – 10,000 pieces</option><option>10,000+ pieces</option></select></label>
+            <label class="fl"><span>@L.T("Full name")</span><input name="name" type="text" autocomplete="name" placeholder="@L.T("")" required></label>
+            <label class="fl"><span>@L.T("Email")</span><input name="email" type="email" autocomplete="email" placeholder="@L.T("")" required></label>
+            <label class="fl"><span>@L.T("Company / Store")</span><input name="company" type="text" autocomplete="organization" placeholder="@L.T("")"></label>
+            <label class="fl"><span>@L.T("Monthly order volume")</span>
+              <select name="volume"><option value="Less than 500 pieces">@L.T("Less than 500 pieces")</option><option selected>500 – 2,000 pieces</option><option>2,000 – 10,000 pieces</option><option>10,000+ pieces</option></select></label>
           </div>
-          <label class="fl"><span>Message</span><textarea name="message" rows="4" placeholder=" " required></textarea></label>
+          <label class="fl"><span>@L.T("Message")</span><textarea name="message" rows="4" placeholder="@L.T("")" required></textarea></label>
           <div class="form-row">
-            <label class="consent"><input type="checkbox" name="consent" required><i aria-hidden="true"></i>I agree to be contacted.</label>
-            <button class="btn btn-gold btn-lg" type="submit">Send message →</button>
+            <label class="consent"><input type="checkbox" name="consent" required><i aria-hidden="true"></i>@L.T("I agree to be contacted.")</label>
+            <button class="btn btn-gold btn-lg" type="submit">@L.T("Send message →")</button>
           </div>
           <div class="form-note" id="formNote" role="status"></div>
         </form>
 
         <aside class="next">
-          <div class="eyebrow">What happens next</div>
+          <div class="eyebrow">@L.T("What happens next")</div>
           <ol class="next-steps">
-            <li><b>1</b><div><h4>We read your message</h4><p>The right team picks it up within hours.</p></div></li>
-            <li><b>2</b><div><h4>A short call</h4><p>We learn about your products or needs.</p></div></li>
-            <li><b>3</b><div><h4>You’re set up</h4><p>Onboarding or a tailored quote — fast.</p></div></li>
+            <li><b>1</b><div><h4>@L.T("We read your message")</h4><p>@L.T("The right team picks it up within hours.")</p></div></li>
+            <li><b>2</b><div><h4>@L.T("A short call")</h4><p>@L.T("We learn about your products or needs.")</p></div></li>
+            <li><b>3</b><div><h4>@L.T("You’re set up")</h4><p>@L.T("Onboarding or a tailored quote — fast.")</p></div></li>
           </ol>
           <div class="mapcard">
             <svg viewBox="0 0 340 150" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="340" height="150" fill="#EEF1F2"/><g stroke="#fff" stroke-width="10"><path d="M-10 40 L350 70"/><path d="M80 -10 L120 160"/><path d="M240 -10 L210 160"/><path d="M-10 120 L350 105"/></g><g stroke="#fff" stroke-width="4"><path d="M-10 90 L350 20"/><path d="M160 -10 L170 160"/></g><rect x="20" y="70" width="40" height="30" rx="4" fill="#d9f7ec"/><rect x="260" y="20" width="60" height="30" rx="4" fill="#d9f7ec"/><circle cx="168" cy="78" r="26" fill="rgba(8,118,108,.16)"/><path d="M168 92s-12-10-12-19a12 12 0 0 1 24 0c0 9-12 19-12 19Z" fill="#111e33"/><circle cx="168" cy="73" r="4.5" fill="#d9f7ec"/></svg>
-            <div class="addr"><div><b>Supply Hub</b><span>Main St. 12, Your City</span></div>
-              <a class="btn btn-outline" href="https://www.google.com/maps/search/?api=1&query=Main+St+12+Your+City" target="_blank" rel="noopener">Directions</a></div>
+            <div class="addr"><div><b>@L.T("Supply Hub")</b><span>Main St. 12, Your City</span></div>
+              <a class="btn btn-outline" href="https://www.google.com/maps/search/?api=1&query=Main+St+12+Your+City" target="_blank" rel="noopener">@L.T("Directions")</a></div>
           </div>
         </aside>
       </div>
 
       <div class="container faq">
-        <div><div class="eyebrow">FAQ</div><h3 class="serif">Quick answers before you write.</h3></div>
+        <div><div class="eyebrow">FAQ</div><h3 class="serif">@L.T("Quick answers before you write.")</h3></div>
         <div class="faq-list">
-          <details open><summary>How long does supplier verification take?<span></span></summary><p>Most suppliers are verified and live within 5 working days once their documents are complete.</p></details>
-          <details><summary>Is there a minimum order quantity?<span></span></summary><p>Each supplier sets their own MOQ per product. You can see it on every product page before you order.</p></details>
-          <details><summary>Which countries do you ship to?<span></span></summary><p>We currently ship across the region and are adding new destinations every quarter. Ask us about your location.</p></details>
-          <details><summary>How do suppliers get paid?<span></span></summary><p>Payouts are made securely after delivery is confirmed, with clear monthly sales reports.</p></details>
+          <details open><summary>@L.T("How long does supplier verification take?")<span></span></summary><p>@L.T("Most suppliers are verified and live within 5 working days once their documents are complete.")</p></details>
+          <details><summary>@L.T("Is there a minimum order quantity?")<span></span></summary><p>@L.T("Each supplier sets their own MOQ per product. You can see it on every product page before you order.")</p></details>
+          <details><summary>@L.T("Which countries do you ship to?")<span></span></summary><p>@L.T("We currently ship across the region and are adding new destinations every quarter. Ask us about your location.")</p></details>
+          <details><summary>@L.T("How do suppliers get paid?")<span></span></summary><p>@L.T("Payouts are made securely after delivery is confirmed, with clear monthly sales reports.")</p></details>
         </div>
       </div>
     </section>
@@ -228,26 +231,26 @@
   <footer class="site-footer">
     <div class="container ft-top">
       <div>
-        <div class="ft-big serif">Dressing the next generation, <em>together.</em></div>
-        <p>Get monthly kidswear trends, new suppliers and sourcing tips — straight to your inbox.</p>
+        <div class="ft-big serif">@L.T("Dressing the next generation,") <em>@L.T("together.")</em></div>
+        <p>@L.T("Get monthly kidswear trends, new suppliers and sourcing tips — straight to your inbox.")</p>
         <form class="ft-news" id="newsForm" novalidate>
-          <input type="email" name="email" placeholder="Enter your email" aria-label="Email address" required>
-          <button class="btn btn-dark btn-lg" type="submit">Subscribe</button>
+          <input type="email" name="email" placeholder="@L.T("Enter your email")" aria-label="@L.T("Email address")" required>
+          <button class="btn btn-dark btn-lg" type="submit">@L.T("Subscribe")</button>
         </form>
         <div class="ft-note" id="newsNote" role="status"></div>
       </div>
-      <nav class="ft-cols" aria-label="Footer">
-        <div><h5>Explore</h5><ul><li><a href="#home">Home</a></li><li><a href="#about">About</a></li><li><a href="#how-it-works">How It Works</a></li><li><a href="#contact">Contact</a></li></ul></div>
-        <div><h5>Suppliers</h5><ul><li><a asp-controller="SupplierRegistration" asp-action="Register">Registration</a></li><li><a asp-controller="Account" asp-action="Login">Login</a></li><li><a href="#">Guidelines</a></li><li><a href="#">Pricing</a></li></ul></div>
-        <div><h5>Departments</h5><ul><li><a href="#home">Girls &amp; Baby</a></li><li><a href="#home">Boys</a></li><li><a href="#home">Accessories</a></li><li><a href="#home">Our Team</a></li></ul></div>
+      <nav class="ft-cols" aria-label="@L.T("Footer")">
+        <div><h5>@L.T("Explore")</h5><ul><li><a href="#home">@L.T("Home")</a></li><li><a href="#about">@L.T("About")</a></li><li><a href="#how-it-works">@L.T("How It Works")</a></li><li><a href="#contact">@L.T("Contact")</a></li></ul></div>
+        <div><h5>@L.T("Suppliers")</h5><ul><li><a asp-controller="SupplierRegistration" asp-action="Register">@L.T("Registration")</a></li><li><a asp-controller="Account" asp-action="Login">@L.T("Login")</a></li><li><a href="#">@L.T("Guidelines")</a></li><li><a href="#">@L.T("Pricing")</a></li></ul></div>
+        <div><h5>@L.T("Departments")</h5><ul><li><a href="#home">@L.T("Girls & Baby")</a></li><li><a href="#home">@L.T("Boys")</a></li><li><a href="#home">@L.T("Accessories")</a></li><li><a href="#home">@L.T("Our Team")</a></li></ul></div>
       </nav>
     </div>
     <div class="container ft-mid">
       <a href="#home" class="logo"><span class="brand-mark">L</span><span class="logo-text"><b>Little Threads</b><small>KIDSWEAR SUPPLY</small></span></a>
       <div class="ft-contact">
-        <div><b>CALL</b><a href="tel:+0000000000">+000 000 0000</a></div>
-        <div><b>EMAIL</b><a href="mailto:hello@@littlethreads.com">hello@@littlethreads.com</a></div>
-        <div><b>VISIT</b><span>Main St. 12, Your City</span></div>
+        <div><b>@L.T("CALL")</b><a href="tel:+0000000000">+000 000 0000</a></div>
+        <div><b>@L.T("EMAIL")</b><a href="mailto:hello@@littlethreads.com">hello@@littlethreads.com</a></div>
+        <div><b>@L.T("VISIT")</b><span>Main St. 12, Your City</span></div>
       </div>
       <div class="ft-social">
         <a href="#" aria-label="Instagram"><svg class="i"><use href="#i-ig"/></svg></a>
@@ -257,7 +260,7 @@
       </div>
     </div>
     <div class="ft-marquee serif" aria-hidden="true"><span>Little Threads · Kidswear Supply · Little Threads · Kidswear Supply ·&nbsp;</span><span>Little Threads · Kidswear Supply · Little Threads · Kidswear Supply ·&nbsp;</span></div>
-    <div class="ft-strip"><div class="container"><span>© <span id="year"></span> Little Threads. All rights reserved.</span><span><a href="#">Privacy</a> · <a href="#">Terms</a> · <a href="#">Cookies</a></span><span>Made with care for little ones</span></div></div>
+    <div class="ft-strip"><div class="container"><span>© <span id="year"></span> @L.T("Little Threads. All rights reserved.")</span><span><a href="#">@L.T("Privacy")</a> · <a href="#">@L.T("Terms")</a> · <a href="#">@L.T("Cookies")</a></span><span>@L.T("Made with care for little ones")</span></div></div>
   </footer>
 
   <!-- icon sprite -->

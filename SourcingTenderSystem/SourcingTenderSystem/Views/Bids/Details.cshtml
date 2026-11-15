@@ -6,13 +6,13 @@
     var full = !labels.TryGetValue(panel, out var label);
     ViewData["Title"] = label ?? "Bid details";
 }
-<a class="back-link" asp-action="MyBids"><partial name="_Icon" model='@("back")' /> My bids</a>
+<a class="back-link" asp-action="MyBids"><partial name="_Icon" model='@("back")' /> @L.T("My bids")</a>
 <header class="page-heading stms-hero admin-record-hero" data-compact-panel="@(panel == "submission" ? "true" : null)"><div><p class="eyebrow">SUPPLIER BID #@bid.Id</p><h1>@(label ?? bid.Tender.Title)</h1><p>@(full ? "Offer details, item prices and supporting documents." : bid.Tender.Title)</p></div><partial name="_StatusBadge" model="bid.Status" /></header>
 <partial name="_Alerts" />
 
 @if (bid.Status == "Draft" && !Model.TenderIsOpen)
 {
-    <div class="alert alert-warning" role="alert">The tender is closed. This draft can no longer be changed or submitted.</div>
+    <div class="alert alert-warning" role="alert">@L.T("The tender is closed. This draft can no longer be changed or submitted.")</div>
 }
 
 @if (full || panel == "overview")
@@ -20,57 +20,57 @@
 <div class="dashboard-grid record-section">
     @* Tender information *@
     <section class="surface detail-card">
-            <h2>Tender</h2>
+            <h2>@L.T("Tender")</h2>
                 <dl class="row mb-0">
-                    <dt class="col-sm-4">Title</dt>
+                    <dt class="col-sm-4">@L.T("Title")</dt>
                     <dd class="col-sm-8">@bid.Tender.Title</dd>
-                    <dt class="col-sm-4">Description</dt>
+                    <dt class="col-sm-4">@L.T("Description")</dt>
                     <dd class="col-sm-8 record-terms">@bid.Tender.Description</dd>
-                    <dt class="col-sm-4">Closes (UTC)</dt>
+                    <dt class="col-sm-4">@L.T("Closes (UTC)")</dt>
                     <dd class="col-sm-8">@bid.Tender.CloseDate.ToString("yyyy-MM-dd HH:mm")</dd>
-                    <dt class="col-sm-4">Tender status</dt>
+                    <dt class="col-sm-4">@L.T("Tender status")</dt>
                     <dd class="col-sm-8">@bid.Tender.Status</dd>
                 </dl>
-            <details class="mt-2"><summary>Tender terms</summary><p class="record-terms mt-2 mb-0">@bid.Tender.Terms</p></details>
+            <details class="mt-2"><summary>@L.T("Tender terms")</summary><p class="record-terms mt-2 mb-0">@bid.Tender.Terms</p></details>
     </section>
 
     @* My bid information *@
     <section class="surface detail-card">
-            <h2>My bid</h2>
+            <h2>@L.T("My bid")</h2>
                 <dl class="row">
-                    <dt class="col-sm-5">Status</dt>
+                    <dt class="col-sm-5">@L.T("Status")</dt>
                     <dd class="col-sm-7"><partial name="_StatusBadge" model="bid.Status" /> @if (bid.AwardOutcome is string result) { <span class="badge bg-secondary">Result: @result</span> }</dd>
-                    <dt class="col-sm-5">Total price</dt>
+                    <dt class="col-sm-5">@L.T("Total price")</dt>
                     <dd class="col-sm-7">@bid.TotalPrice.ToString("N2") @bid.Currency</dd>
-                    <dt class="col-sm-5">Delivery</dt>
+                    <dt class="col-sm-5">@L.T("Delivery")</dt>
                     <dd class="col-sm-7">@bid.DeliveryDays days</dd>
-                    <dt class="col-sm-5">Offer validity</dt>
+                    <dt class="col-sm-5">@L.T("Offer validity")</dt>
                     <dd class="col-sm-7">@bid.ValidityDays days</dd>
-                    <dt class="col-sm-5">Submitted (UTC)</dt>
+                    <dt class="col-sm-5">@L.T("Submitted (UTC)")</dt>
                     <dd class="col-sm-7">@(bid.SubmittedAt?.ToString("yyyy-MM-dd HH:mm") ?? "—")</dd>
                     @if (bid.ComplianceNotes != null)
                     {
-                        <dt class="col-sm-5">Compliance notes</dt>
+                        <dt class="col-sm-5">@L.T("Compliance notes")</dt>
                         <dd class="col-sm-7">@bid.ComplianceNotes</dd>
                     }
                 </dl>
                 @if (Model.CanChange)
                 {
-                    <a data-workspace-dialog class="btn btn-sm btn-outline-primary" asp-action="Edit" asp-route-id="@bid.Id">Edit bid info</a>
+                    <a data-workspace-dialog class="btn btn-sm btn-outline-primary" asp-action="Edit" asp-route-id="@bid.Id">@L.T("Edit bid info")</a>
                 }
     </section>
 </div>
-<div class="record-panel-actions record-section"><a class="btn btn-outline-secondary" data-workspace-dialog="details" asp-controller="Clarifications" asp-action="Index" asp-route-kind="bid" asp-route-recordId="@bid.Id"><partial name="_Icon" model='@("mail")' /> Clarification history</a></div>
+<div class="record-panel-actions record-section"><a class="btn btn-outline-secondary" data-workspace-dialog="details" asp-controller="Clarifications" asp-action="Index" asp-route-kind="bid" asp-route-recordId="@bid.Id"><partial name="_Icon" model='@("mail")' /> @L.T("Clarification history")</a></div>
 }
 
 @* Requested items + my prices *@
 @if (full || panel == "prices")
 {
 <section class="surface detail-card record-section">
-<div class="record-section-heading"><div><h2>Requested items and my prices</h2><p>@(Model.Rows.Count - Model.MissingPrices) of @Model.Rows.Count items priced</p></div><span class="record-panel-label">@bid.TotalPrice.ToString("N2") @bid.Currency</span></div>
+<div class="record-section-heading"><div><h2>@L.T("Requested items and my prices")</h2><p>@(Model.Rows.Count - Model.MissingPrices) of @Model.Rows.Count items priced</p></div><span class="record-panel-label">@bid.TotalPrice.ToString("N2") @bid.Currency</span></div>
 @if (Model.Rows.Count == 0)
 {
-    <p class="text-muted">This tender has no requested items.</p>
+    <p class="text-muted">@L.T("This tender has no requested items.")</p>
 }
 else
 {
@@ -80,23 +80,23 @@ else
         <article class="record-card">
             <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("inbox")' /></span><span>@row.RequestedItem.ItemName<small>@row.RequestedItem.Specifications</small></span></div>
             <dl class="record-facts">
-                <div><dt>Quantity</dt><dd>@row.RequestedItem.Quantity @row.RequestedItem.Unit</dd></div>
-                <div><dt>Unit price</dt><dd>@(row.BidItem?.UnitPrice.ToString("N2") ?? "Not priced")</dd></div>
-                <div><dt>Line total</dt><dd>@((row.BidItem?.UnitPrice * row.BidItem?.Quantity)?.ToString("N2") ?? "—")</dd></div>
-                @if (!string.IsNullOrWhiteSpace(row.BidItem?.Notes)) { <div><dt>Notes</dt><dd>@row.BidItem.Notes</dd></div> }
+                <div><dt>@L.T("Quantity")</dt><dd>@row.RequestedItem.Quantity @row.RequestedItem.Unit</dd></div>
+                <div><dt>@L.T("Unit price")</dt><dd>@(row.BidItem?.UnitPrice.ToString("N2") ?? "Not priced")</dd></div>
+                <div><dt>@L.T("Line total")</dt><dd>@((row.BidItem?.UnitPrice * row.BidItem?.Quantity)?.ToString("N2") ?? "—")</dd></div>
+                @if (!string.IsNullOrWhiteSpace(row.BidItem?.Notes)) { <div><dt>@L.T("Notes")</dt><dd>@row.BidItem.Notes</dd></div> }
             </dl>
             @if (Model.CanChange)
             {
                 <div class="record-action">
                     @if (row.BidItem == null)
                     {
-                        <a data-workspace-dialog class="record-icon-action" asp-controller="BidItems" asp-action="Create" asp-route-bidId="@bid.Id" asp-route-purchaseRequisitionItemId="@row.RequestedItem.Id" aria-label="Add price for @row.RequestedItem.ItemName" data-tooltip="Add price"><partial name="_Icon" model='@("plus")' /></a>
+                        <a data-workspace-dialog class="record-icon-action" asp-controller="BidItems" asp-action="Create" asp-route-bidId="@bid.Id" asp-route-purchaseRequisitionItemId="@row.RequestedItem.Id" aria-label="Add price for @row.RequestedItem.ItemName" data-tooltip="@L.T("Add price")"><partial name="_Icon" model='@("plus")' /></a>
                     }
                     else
                     {
-                        <a data-workspace-dialog class="record-icon-action" asp-controller="BidItems" asp-action="Edit" asp-route-id="@row.BidItem.Id" aria-label="Edit price for @row.RequestedItem.ItemName" data-tooltip="Edit price"><partial name="_Icon" model='@("edit")' /></a>
-                        <form asp-controller="BidItems" asp-action="Delete" asp-route-id="@row.BidItem.Id" method="post" data-workspace-confirm="Delete the price for this item?" onsubmit="return window.stmsWorkspaceReady || confirm(this.dataset.workspaceConfirm);">
-                            <button type="submit" class="record-icon-action record-icon-danger" aria-label="Delete price for @row.RequestedItem.ItemName" data-tooltip="Delete price"><partial name="_Icon" model='@("close")' /></button>
+                        <a data-workspace-dialog class="record-icon-action" asp-controller="BidItems" asp-action="Edit" asp-route-id="@row.BidItem.Id" aria-label="Edit price for @row.RequestedItem.ItemName" data-tooltip="@L.T("Edit price")"><partial name="_Icon" model='@("edit")' /></a>
+                        <form asp-controller="BidItems" asp-action="Delete" asp-route-id="@row.BidItem.Id" method="post" data-workspace-confirm="@L.T("Delete the price for this item?")" onsubmit="return window.stmsWorkspaceReady || confirm(this.dataset.workspaceConfirm);">
+                            <button type="submit" class="record-icon-action record-icon-danger" aria-label="Delete price for @row.RequestedItem.ItemName" data-tooltip="@L.T("Delete price")"><partial name="_Icon" model='@("close")' /></button>
                         </form>
                     }
                 </div>
@@ -112,14 +112,14 @@ else
 @if (full || panel == "documents")
 {
 <section class="surface detail-card record-section">
-<div class="record-section-heading"><div><h2>Supporting documents</h2><p>@bid.BidDocuments.Count attached</p></div>
+<div class="record-section-heading"><div><h2>@L.T("Supporting documents")</h2><p>@bid.BidDocuments.Count attached</p></div>
 @if (Model.CanChange)
 {
-    <a data-workspace-dialog class="btn btn-primary" asp-controller="BidDocuments" asp-action="Upload" asp-route-bidId="@bid.Id"><partial name="_Icon" model='@("upload")' /> Upload document</a>
+    <a data-workspace-dialog class="btn btn-primary" asp-controller="BidDocuments" asp-action="Upload" asp-route-bidId="@bid.Id"><partial name="_Icon" model='@("upload")' /> @L.T("Upload document")</a>
 }</div>
 @if (bid.BidDocuments.Count == 0)
 {
-    <p class="text-muted">No documents uploaded.</p>
+    <p class="text-muted">@L.T("No documents uploaded.")</p>
 }
 else
 {
@@ -128,15 +128,15 @@ else
         {
             <article class="record-card">
                 <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("file")' /></span><span>@document.DocumentType<small>@document.FileName</small></span></div>
-                <dl class="record-facts"><div><dt>Uploaded (UTC)</dt><dd>@document.UploadedAt.ToString("dd MMM yyyy")</dd></div></dl>
+                <dl class="record-facts"><div><dt>@L.T("Uploaded (UTC)")</dt><dd>@document.UploadedAt.ToString("dd MMM yyyy", L.DisplayCulture)</dd></div></dl>
                 <div class="record-action">
-                    <a class="record-icon-action" asp-controller="BidDocuments" asp-action="Download" asp-route-id="@document.Id" aria-label="Download @document.FileName" data-tooltip="Download"><partial name="_Icon" model='@("download")' /></a>
-                    <a class="record-icon-action" asp-controller="BidDocuments" asp-action="Download" asp-route-id="@document.Id" asp-route-preview="true" target="_blank" rel="noopener" aria-label="Preview @document.FileName" data-tooltip="Preview PDF"><partial name="_Icon" model='@("eye")' /></a>
+                    <a class="record-icon-action" asp-controller="BidDocuments" asp-action="Download" asp-route-id="@document.Id" aria-label="Download @document.FileName" data-tooltip="@L.T("Download")"><partial name="_Icon" model='@("download")' /></a>
+                    <a class="record-icon-action" asp-controller="BidDocuments" asp-action="Download" asp-route-id="@document.Id" asp-route-preview="true" target="_blank" rel="noopener" aria-label="Preview @document.FileName" data-tooltip="@L.T("Preview PDF")"><partial name="_Icon" model='@("eye")' /></a>
                     @if (Model.CanChange)
                     {
                         <form asp-controller="BidDocuments" asp-action="Delete" asp-route-id="@document.Id" method="post"
-                              asp-antiforgery="true" class="d-inline" data-workspace-confirm="Delete this document?" onsubmit="return window.stmsWorkspaceReady || confirm(this.dataset.workspaceConfirm);">
-                            <button type="submit" class="record-icon-action record-icon-danger" aria-label="Remove @document.FileName" data-tooltip="Remove"><partial name="_Icon" model='@("trash")' /></button>
+                              asp-antiforgery="true" class="d-inline" data-workspace-confirm="@L.T("Delete this document?")" onsubmit="return window.stmsWorkspaceReady || confirm(this.dataset.workspaceConfirm);">
+                            <button type="submit" class="record-icon-action record-icon-danger" aria-label="Remove @document.FileName" data-tooltip="@L.T("Remove")"><partial name="_Icon" model='@("trash")' /></button>
                         </form>
                     }
                 </div>
@@ -151,10 +151,10 @@ else
 @if (full || panel == "submission")
 {
 <section class="surface detail-card record-section">
-<div class="record-section-heading"><div><h2>Submission status</h2><p>@(bid.SubmittedAt is DateTime submitted ? $"Submitted {submitted:dd MMM yyyy HH:mm} UTC" : Model.CanChange ? "Check that the bid is ready before sending it." : "This bid cannot be changed.")</p></div></div>
+<div class="record-section-heading"><div><h2>@L.T("Submission status")</h2><p>@(bid.SubmittedAt is DateTime submitted ? $"Submitted {submitted:dd MMM yyyy HH:mm} UTC" : Model.CanChange ? "Check that the bid is ready before sending it." : "This bid cannot be changed.")</p></div></div>
 @if (Model.CanChange)
 {
-    <ul class="application-checklist" aria-label="Before you submit">
+    <ul class="application-checklist" aria-label="@L.T("Before you submit")">
             <li>
                 <span>Prices: @(Model.Rows.Count - Model.MissingPrices) of @Model.Rows.Count items priced</span>
                 @if (Model.Rows.Count > 0 && Model.MissingPrices == 0)
@@ -163,7 +163,7 @@ else
                 }
                 else
                 {
-                    <span class="badge bg-danger">Missing</span>
+                    <span class="badge bg-danger">@L.T("Missing")</span>
                 }
             </li>
             <li>
@@ -174,7 +174,7 @@ else
                 }
                 else
                 {
-                    <span class="badge bg-danger">Missing</span>
+                    <span class="badge bg-danger">@L.T("Missing")</span>
                 }
             </li>
     </ul>
@@ -184,20 +184,20 @@ else
     @if (Model.CanSubmit)
     {
         <form asp-action="Submit" asp-route-id="@bid.Id" method="post" asp-antiforgery="true"
-              data-workspace-confirm="Submit this bid? You will not be able to change it after submitting." onsubmit="return window.stmsWorkspaceReady || confirm(this.dataset.workspaceConfirm);">
-            <button type="submit" class="btn btn-success">Submit bid</button>
+              data-workspace-confirm="@L.T("Submit this bid? You will not be able to change it after submitting.")" onsubmit="return window.stmsWorkspaceReady || confirm(this.dataset.workspaceConfirm);">
+            <button type="submit" class="btn btn-success">@L.T("Submit bid")</button>
         </form>
     }
     else if (Model.CanChange)
     {
-        <button type="button" class="btn btn-success" disabled>Submit bid</button>
+        <button type="button" class="btn btn-success" disabled>@L.T("Submit bid")</button>
     }
 
     @if (Model.CanWithdraw)
     {
         <form asp-action="Withdraw" asp-route-id="@bid.Id" method="post" asp-antiforgery="true"
-              data-workspace-confirm="Withdraw this bid? You will NOT be able to bid again on this tender." onsubmit="return window.stmsWorkspaceReady || confirm(this.dataset.workspaceConfirm);">
-            <button type="submit" class="btn btn-outline-danger">Withdraw bid</button>
+              data-workspace-confirm="@L.T("Withdraw this bid? You will NOT be able to bid again on this tender.")" onsubmit="return window.stmsWorkspaceReady || confirm(this.dataset.workspaceConfirm);">
+            <button type="submit" class="btn btn-outline-danger">@L.T("Withdraw bid")</button>
         </form>
     }
 

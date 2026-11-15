@@ -33,7 +33,7 @@
         };
         const decorate = (button, label) => {
             button.className = "dept-dock-button";
-            button.setAttribute("aria-label", label);
+            button.setAttribute("aria-label", window.stmsT(label));
             const ns = "http://www.w3.org/2000/svg";
             const icon = document.createElementNS(ns, "svg");
             icon.setAttribute("class", "icon");
@@ -43,7 +43,7 @@
             path.setAttribute("d", paths[label]);
             icon.append(path);
             const caption = document.createElement("span");
-            caption.textContent = label;
+            caption.textContent = window.stmsT(label);
             button.replaceChildren(icon, caption);
         };
         const menu = (label, node) => {
@@ -136,13 +136,13 @@
                 option.setAttribute("aria-pressed", String(select.value === option.dataset.value));
             });
             menus.forEach(menu => menu.querySelector(".dept-dock-button").classList.toggle("is-active", !!menu.querySelector('[aria-pressed="true"][data-status-choice]:not([data-status-choice=""]), [aria-pressed="true"][data-dept-select]:not([data-value=""])')));
-            directory.querySelector('[data-dept-search-open], .dept-dock-button[aria-label="Search"]')?.classList.toggle("is-active", !!directory.querySelector("[data-filter-search]")?.value);
+            (directory.querySelector('[data-dept-search-open]') || menus.find(menu => menu.querySelector('input[type=search]'))?.querySelector('.dept-dock-button'))?.classList.toggle("is-active", !!directory.querySelector("[data-filter-search]")?.value);
             const status = directory.querySelector('[data-status-choice]:not([data-status-choice=""])[aria-pressed="true"], .directory-status-options a[aria-current=page][href*="status="]');
             const searchValue = directory.querySelector('[data-filter-search]')?.value.trim();
             const options = [...directory.querySelectorAll('select[data-filter-sort], select[data-filter-department], select[data-filter-staff], select[data-activity-event], input[data-activity-date]')];
             const count = Number(!!status) + Number(!!searchValue) + options.filter(option => option.value).length;
             active.hidden = !count;
-            active.textContent = count === 1 ? "1 active filter" : `${count} active filters`;
+            active.textContent = count === 1 ? window.stmsT("1 active filter") : window.stmsFormat("{0} active filters", count);
         };
         directory.querySelector("[data-filter-reset]")?.addEventListener("click", () => { closeMenus(); queueMicrotask(sync); });
         const dialog = directory.querySelector("[data-dept-search-dialog]");

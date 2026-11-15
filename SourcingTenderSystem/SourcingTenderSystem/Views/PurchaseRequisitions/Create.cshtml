@@ -1,12 +1,12 @@
 @model RequisitionInput
-@{ ViewData["Title"] = "New purchase request"; }
-<a class="back-link" asp-controller="PurchaseRequisitions" asp-action="MyRequests" ><partial name="_Icon" model='@("back")' /> My Requests</a>
-<header class="page-heading stms-hero"><div><p class="eyebrow">PURCHASE REQUESTS</p><h1>New purchase request</h1><p>Start with the reason and target date. Add your item lines after saving.</p></div></header>
+@{ ViewData["Title"] = L.T("New purchase request"); }
+<a class="back-link" asp-controller="PurchaseRequisitions" asp-action="MyRequests" ><partial name="_Icon" model='@("back")' /> @L.T("My Requests")</a>
+<header class="page-heading stms-hero"><div><p class="eyebrow">@L.T("PURCHASE REQUESTS")</p><h1>@L.T("New purchase request")</h1><p>@L.T("Start with the reason and target date. Add your item lines after saving.")</p></div></header>
 <div class="form-shell">
     <form class="surface form-card" asp-action="Create"  method="post">
         <partial name="_Fields" model="Model" />
-        <div class="button-row"><button class="btn btn-primary" type="submit">Save draft</button><a class="btn btn-outline-secondary" asp-controller="PurchaseRequisitions" asp-action="MyRequests" >Cancel</a></div>
+        <div class="button-row"><button class="btn btn-primary" type="submit">@L.T("Save draft")</button><a class="btn btn-outline-secondary" asp-controller="PurchaseRequisitions" asp-action="MyRequests" >@L.T("Cancel")</a></div>
     </form>
-    <aside class="surface helper-card"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("file")' /></span><h2>Draft workflow</h2><p class="mb-0">Add one line per item with its quantity and specifications. You can edit your draft until you submit it.</p></aside>
+    <aside class="surface helper-card"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("file")' /></span><h2>@L.T("Draft workflow")</h2><p class="mb-0">@L.T("Add one line per item with its quantity and specifications. You can edit your draft until you submit it.")</p></aside>
 </div>
 @section Scripts { <partial name="_ValidationScriptsPartial" /> }

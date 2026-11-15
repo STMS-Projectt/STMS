@@ -1,83 +1,83 @@
 @model IReadOnlyList<SupplierProfile>
 @{
-    ViewData["Title"] = "Supplier Directory";
+    ViewData["Title"] = L.T("Supplier Directory");
     var counts = (Dictionary<string, int>)ViewBag.SupplierCounts;
     var metrics = new[] { ("Registered suppliers", counts.Values.Sum(), "supplier", "blue"), ("Approved", counts.GetValueOrDefault(SupplierStatus.Approved), "check", "teal"), ("Pending review", counts.GetValueOrDefault(SupplierStatus.Pending), "clock", "amber"), ("Suspended", counts.GetValueOrDefault(SupplierStatus.Suspended), "shield", "violet") };
 }
-<header class="page-heading stms-hero"><div><p class="eyebrow">@(User.IsInRole("Admin") ? "ADMINISTRATION" : "SOURCING WORKSPACE")</p><h1>Supplier Directory</h1><p>Track supplier applications and review supporting documents.</p></div></header>
+<header class="page-heading stms-hero"><div><p class="eyebrow">@L.T(User.IsInRole("Admin") ? "ADMINISTRATION" : "SOURCING WORKSPACE")</p><h1>@L.T("Supplier Directory")</h1><p>@L.T("Track supplier applications and review supporting documents.")</p></div></header>
 <partial name="_DesignMetrics" model="metrics" />
 <details class="surface dashboard-card supplier-health mb-3">
-    <summary><span class="icon-tile tone-teal"><partial name="_Icon" model='@("shield")' /></span><span><strong>Supplier health</strong><small>Registration status across all suppliers</small></span></summary>
-    <p class="subtle mt-2">All registered suppliers, regardless of the directory filter.</p>
+    <summary><span class="icon-tile tone-teal"><partial name="_Icon" model='@("shield")' /></span><span><strong>@L.T("Supplier health")</strong><small>@L.T("Registration status across all suppliers")</small></span></summary>
+    <p class="subtle mt-2">@L.T("All registered suppliers, regardless of the directory filter.")</p>
     @foreach (var status in SupplierStatus.All)
     {
-        <div class="stms-stat-row"><a asp-action="Index" asp-route-status="@status">@status</a><meter min="0" max="@Math.Max(1, counts.Values.Sum())" value="@counts.GetValueOrDefault(status)" aria-label="@status"></meter><strong>@counts.GetValueOrDefault(status)</strong></div>
+        <div class="stms-stat-row"><a asp-action="Index" asp-route-status="@status">@L.T(status)</a><meter min="0" max="@Math.Max(1, counts.Values.Sum())" value="@counts.GetValueOrDefault(status)" aria-label="@L.T(status)"></meter><strong>@counts.GetValueOrDefault(status)</strong></div>
     }
 </details>
-<section class="surface directory dept-directory" aria-label="Suppliers directory" data-directory>
-    <div class="dept-directory-heading"><h2>Registered suppliers</h2><p>Search the directory or filter applications by status.</p></div>
+<section class="surface directory dept-directory" aria-label="@L.T("Suppliers directory")" data-directory>
+    <div class="dept-directory-heading"><h2>@L.T("Registered suppliers")</h2><p>@L.T("Search the directory or filter applications by status.")</p></div>
     <div class="directory-filter-panel">
-    <nav class="directory-status-options" aria-label="Filter suppliers by status">
-    <a asp-action="Index" aria-current="@(string.IsNullOrEmpty((string?)ViewBag.Status) ? "page" : null)">All statuses</a>
+    <nav class="directory-status-options" aria-label="@L.T("Filter suppliers by status")">
+    <a asp-action="Index" aria-current="@(string.IsNullOrEmpty((string?)ViewBag.Status) ? "page" : null)">@L.T("All statuses")</a>
     @foreach (var status in SupplierStatus.All)
     {
-        <a asp-action="Index" asp-route-status="@status" aria-current="@(ViewBag.Status == status ? "page" : null)">@status</a>
+        <a asp-action="Index" asp-route-status="@status" aria-current="@(ViewBag.Status == status ? "page" : null)">@L.T(status)</a>
     }
 </nav>
     <div class="directory-toolbar dept-filters">
     <div class="directory-search" hidden="@(Model.Count == 0)">
-        <label class="search-box"><partial name="_Icon" model='@("search")' /><span class="visually-hidden">Search companies or tax numbers</span><input class="form-control" type="search" data-filter-search placeholder="Search companies or tax numbers"></label>
+        <label class="search-box"><partial name="_Icon" model='@("search")' /><span class="visually-hidden">@L.T("Search companies or tax numbers")</span><input class="form-control" type="search" data-filter-search placeholder="@L.T("Search companies or tax numbers")"></label>
         <partial name="_DirectoryVoice" />
     </div>
     @if (Model.Count > 0)
     {
-        <label>Sort by<select class="form-select" data-filter-sort><option value="">Default order</option><option value="name">Company (A–Z)</option><option value="recent">Newest first</option></select></label>
-        <button type="button" class="btn btn-outline-secondary" data-filter-reset>Reset</button>
+        <label>@L.T("Sort by")<select class="form-select" data-filter-sort><option value="">@L.T("Default order")</option><option value="name">@L.T("Company (A–Z)")</option><option value="recent">@L.T("Newest first")</option></select></label>
+        <button type="button" class="btn btn-outline-secondary" data-filter-reset>@L.T("Reset")</button>
     }
     <span class="result-count" data-result-count aria-live="polite">@Model.Count records</span>
 </div>
     </div>
     @if (Model.Count == 0)
     {
-        <div class="empty-state"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("supplier")' /></span><h2>No supplier applications</h2><p>Applications matching this status will appear here.</p></div>
+        <div class="empty-state"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("supplier")' /></span><h2>@L.T("No supplier applications")</h2><p>@L.T("Applications matching this status will appear here.")</p></div>
     }
     else
     {
-        <div class="dept-filter-menu" data-dept-menu data-dept-pagination aria-label="Suppliers pages" hidden>
-                <button type="button" class="dept-dock-button" aria-expanded="false" aria-haspopup="true" aria-label="Pages" title="Pages"><partial name="_Icon" model='@("file")' /><span>Pages</span></button>
-                <div class="dept-filter-popover" hidden><strong>Pages</strong><div data-page-options></div><span data-page-status aria-live="polite"></span></div>
+        <div class="dept-filter-menu" data-dept-menu data-dept-pagination aria-label="@L.T("Suppliers pages")" hidden>
+                <button type="button" class="dept-dock-button" aria-expanded="false" aria-haspopup="true" aria-label="@L.T("Pages")" title="@L.T("Pages")"><partial name="_Icon" model='@("file")' /><span>@L.T("Pages")</span></button>
+                <div class="dept-filter-popover" hidden><strong>@L.T("Pages")</strong><div data-page-options></div><span data-page-status aria-live="polite"></span></div>
             </div>
         <div class="record-list" data-record-list>
             @foreach (var item in Model)
             {
                 <article class="record-card" data-record data-sort-name="@item.CompanyName" data-sort-date="@item.CreatedAt.Ticks">
                     <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("supplier")' /></span><span>@item.CompanyName</span></div><dl class="record-facts">
-                    <div><dt class="record-field-icon" title="Tax number"><partial name="_Icon" model='@("file")' /><span class="visually-hidden">Tax number</span></dt><dd>@item.TaxNumber</dd></div>
-                    <div><dt class="visually-hidden">Status</dt><dd><partial name="_Status" model='@(item.Status)' />
-                        @if (item.Status == SupplierStatus.Pending) { <small>Application submitted · documents awaiting review</small> }
+                    <div><dt class="record-field-icon" title="@L.T("Tax number")"><partial name="_Icon" model='@("file")' /><span class="visually-hidden">@L.T("Tax number")</span></dt><dd>@item.TaxNumber</dd></div>
+                    <div><dt class="visually-hidden">@L.T("Status")</dt><dd><partial name="_Status" model='@(item.Status)' />
+                        @if (item.Status == SupplierStatus.Pending) { <small>@L.T("Application submitted · documents awaiting review")</small> }
                     </dd></div>
-                    <div><dt class="record-field-icon" title="Registered (UTC)"><partial name="_Icon" model='@("calendar")' /><span class="visually-hidden">Registered (UTC)</span></dt><dd>@item.CreatedAt.ToString("dd MMM yyyy")</dd></div>
-                    </dl><div class="record-action"><a data-workspace-dialog="details" class="record-icon-action" asp-action="Details" asp-route-id="@item.Id" asp-route-panel="overview" aria-label="Open application for @item.CompanyName" data-tooltip="Open application"><partial name="_Icon" model='@("eye")' /></a>
-                        <a data-workspace-dialog="details" class="record-icon-action" asp-action="Details" asp-route-id="@item.Id" asp-route-panel="documents" aria-label="View documents for @item.CompanyName" data-tooltip="Supporting documents"><partial name="_Icon" model='@("file")' /></a>
+                    <div><dt class="record-field-icon" title="@L.T("Registered (UTC)")"><partial name="_Icon" model='@("calendar")' /><span class="visually-hidden">@L.T("Registered (UTC)")</span></dt><dd>@item.CreatedAt.ToString("dd MMM yyyy", L.DisplayCulture)</dd></div>
+                    </dl><div class="record-action"><a data-workspace-dialog="details" class="record-icon-action" asp-action="Details" asp-route-id="@item.Id" asp-route-panel="overview" aria-label="Open application for @item.CompanyName" data-tooltip="@L.T("Open application")"><partial name="_Icon" model='@("eye")' /></a>
+                        <a data-workspace-dialog="details" class="record-icon-action" asp-action="Details" asp-route-id="@item.Id" asp-route-panel="documents" aria-label="View documents for @item.CompanyName" data-tooltip="@L.T("Supporting documents")"><partial name="_Icon" model='@("file")' /></a>
                         @if (User.IsInRole("SourcingOfficer") && item.Status is (SupplierStatus.Pending or SupplierStatus.Approved or SupplierStatus.Suspended))
                         {
-                            <a data-workspace-dialog class="record-icon-action" asp-controller="Clarifications" asp-action="Create" asp-route-kind="supplier" asp-route-recordId="@item.Id" aria-label="Request a document from @item.CompanyName" data-tooltip="Request a document"><partial name="_Icon" model='@("mail")' /></a>
+                            <a data-workspace-dialog class="record-icon-action" asp-controller="Clarifications" asp-action="Create" asp-route-kind="supplier" asp-route-recordId="@item.Id" aria-label="Request a document from @item.CompanyName" data-tooltip="@L.T("Request a document")"><partial name="_Icon" model='@("mail")' /></a>
                         }
                         @if (User.IsInRole("Admin"))
                         {
-                            <a data-workspace-dialog class="record-icon-action" asp-action="Categories" asp-route-id="@item.Id" aria-label="Edit categories for @item.CompanyName" data-tooltip="Edit categories"><partial name="_Icon" model='@("filter")' /></a>
-                            @if (item.Status == SupplierStatus.Pending) { <a data-workspace-dialog class="record-icon-action record-icon-danger" asp-action="Reject" asp-route-id="@item.Id" aria-label="Reject @item.CompanyName" data-tooltip="Reject supplier"><partial name="_Icon" model='@("close")' /></a> }
+                            <a data-workspace-dialog class="record-icon-action" asp-action="Categories" asp-route-id="@item.Id" aria-label="Edit categories for @item.CompanyName" data-tooltip="@L.T("Edit categories")"><partial name="_Icon" model='@("filter")' /></a>
+                            @if (item.Status == SupplierStatus.Pending) { <a data-workspace-dialog class="record-icon-action record-icon-danger" asp-action="Reject" asp-route-id="@item.Id" aria-label="Reject @item.CompanyName" data-tooltip="@L.T("Reject supplier")"><partial name="_Icon" model='@("close")' /></a> }
                         }
-                        @if (User.IsInRole("Admin") && item.Status == SupplierStatus.Approved) { <a data-workspace-dialog="details" class="record-icon-action record-icon-danger" asp-action="Suspend" asp-route-id="@item.Id" aria-label="Suspend supplier" data-tooltip="Suspend supplier" title="Suspend supplier"><partial name="_Icon" model='@("pause")' /></a> }
+                        @if (User.IsInRole("Admin") && item.Status == SupplierStatus.Approved) { <a data-workspace-dialog="details" class="record-icon-action record-icon-danger" asp-action="Suspend" asp-route-id="@item.Id" aria-label="@L.T("Suspend supplier")" data-tooltip="@L.T("Suspend supplier")" title="@L.T("Suspend supplier")"><partial name="_Icon" model='@("pause")' /></a> }
                         @if (item.Status is SupplierStatus.Pending or SupplierStatus.Suspended)
                         {
                             var label = item.Status == SupplierStatus.Suspended ? "Activate supplier" : "Approve supplier";
-                            <a data-workspace-dialog class="record-icon-action" asp-action="Approve" asp-route-id="@item.Id" aria-label="@label: @item.CompanyName" data-tooltip="@label"><partial name="_Icon" model='@("check")' /></a>
+                            <a data-workspace-dialog class="record-icon-action" asp-action="Approve" asp-route-id="@item.Id" aria-label="@L.T(label): @item.CompanyName" data-tooltip="@L.T(label)"><partial name="_Icon" model='@("check")' /></a>
                         }
                     </div>
                 </article>
             }
             </div>
-        <div data-filter-empty hidden><div class="empty-state"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("search")' /></span><h2>No matching records</h2><p>Try a different name or clear your search.</p><button type="button" class="btn btn-outline-secondary">Clear search</button></div></div>
+        <div data-filter-empty hidden><div class="empty-state"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("search")' /></span><h2>@L.T("No matching records")</h2><p>@L.T("Try a different name or clear your search.")</p><button type="button" class="btn btn-outline-secondary">@L.T("Clear search")</button></div></div>
     }
 </section>

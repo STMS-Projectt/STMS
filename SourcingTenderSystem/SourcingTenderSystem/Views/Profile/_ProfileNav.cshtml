@@ -3,7 +3,7 @@
 @{
     var onProfile = ViewContext.RouteData.Values["controller"]?.ToString() == "Profile";
 }
-<span class="nav-caption mt-3">MY ACCOUNT</span>
+<span class="nav-caption mt-3">@L.T("MY ACCOUNT")</span>
 <a class="side-link @(onProfile ? "is-current" : "")" aria-current="@(onProfile ? "page" : null)" asp-controller="Profile" asp-action="Index">
-    <partial name="_Icon" model='@("users")' /> My profile
+    <partial name="_Icon" model='@("users")' /> @L.T("My profile")
 </a>

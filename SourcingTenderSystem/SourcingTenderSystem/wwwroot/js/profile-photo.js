@@ -21,7 +21,7 @@
             else preview.removeAttribute("src");
             preview.hidden = !original;
             if (placeholder) placeholder.hidden = !!original;
-            status.textContent = "No photo selected.";
+            status.textContent = window.stmsT("No photo selected.");
             status.classList.remove("text-danger");
             cancel.hidden = true;
             save.disabled = true;
@@ -31,7 +31,7 @@
             if (!file) { reset(); return; }
             if (!(["image/png", "image/jpeg"].includes(file.type)) || file.size === 0 || file.size > 1024 * 1024) {
                 reset();
-                status.textContent = "Choose a JPEG or PNG image up to 1 MB.";
+                status.textContent = window.stmsT("Choose a JPEG or PNG image up to 1 MB.");
                 status.classList.add("text-danger");
                 return;
             }

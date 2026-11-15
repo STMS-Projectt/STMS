@@ -1,11 +1,11 @@
 @model IReadOnlyList<DepartmentAssignment>
-@{ ViewData["Title"] = "My Committee"; }
-<header class="page-heading stms-hero"><div><p class="eyebrow">EVALUATION COMMITTEE</p><h1>My Committee</h1><p>Tenders where you represent your department.</p></div></header>
-<section class="surface directory dept-directory" aria-label="Committee assignments" data-directory data-committee-directory>
-    <div class="dept-directory-heading"><span class="icon-tile tone-violet"><partial name="_Icon" model='@("users")' /></span><div><h2>Assigned tenders</h2><p>Find your assignments and open related purchase requests.</p></div></div>
+@{ ViewData["Title"] = L.T("My Committee"); }
+<header class="page-heading stms-hero"><div><p class="eyebrow">@L.T("EVALUATION COMMITTEE")</p><h1>@L.T("My Committee")</h1><p>@L.T("Tenders where you represent your department.")</p></div></header>
+<section class="surface directory dept-directory" aria-label="@L.T("Committee assignments")" data-directory data-committee-directory>
+    <div class="dept-directory-heading"><span class="icon-tile tone-violet"><partial name="_Icon" model='@("users")' /></span><div><h2>@L.T("Assigned tenders")</h2><p>@L.T("Find your assignments and open related purchase requests.")</p></div></div>
     @if (Model.Count == 0)
     {
-        <div class="empty-state"><span class="icon-tile tone-violet"><partial name="_Icon" model='@("users")' /></span><h2>No assignments yet</h2><p>Your tenders will appear here when you are assigned as the department representative.</p></div>
+        <div class="empty-state"><span class="icon-tile tone-violet"><partial name="_Icon" model='@("users")' /></span><h2>@L.T("No assignments yet")</h2><p>@L.T("Your tenders will appear here when you are assigned as the department representative.")</p></div>
     }
     else
     {
@@ -16,13 +16,13 @@
             {
                 <article class="record-card" data-record data-status="@assignment.Status">
                     <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("briefcase")' /></span><span>@assignment.Title<small>Tender #@assignment.TenderId</small></span></div>
-                    <dl class="record-facts"><div><dt>Status</dt><dd><partial name="_Status" model="assignment.Status" />@if (assignment.Status == "Under Evaluation") { <small>Open the evaluation to see your checklist and submission status.</small> }</dd></div>
-                        <div><dt class="record-field-icon" title="Purchase request"><partial name="_Icon" model='@("file")' /><span class="visually-hidden">Purchase request</span></dt><dd>PR-@assignment.RequestId</dd></div></dl>
+                    <dl class="record-facts"><div><dt>@L.T("Status")</dt><dd><partial name="_Status" model="assignment.Status" />@if (assignment.Status == "Under Evaluation") { <small>@L.T("Open the evaluation to see your checklist and submission status.")</small> }</dd></div>
+                        <div><dt class="record-field-icon" title="@L.T("Purchase request")"><partial name="_Icon" model='@("file")' /><span class="visually-hidden">@L.T("Purchase request")</span></dt><dd>PR-@assignment.RequestId</dd></div></dl>
                     <div class="record-action">
                         <partial name="_RequestActions" model="@( (assignment.RequestId, assignment.CanEditRequest) )" />
                         @if (assignment.Status == "Under Evaluation")
                         {
-                            <a class="record-icon-action" data-workspace-dialog="details" asp-controller="CommitteeReviews" asp-action="Details" asp-route-id="@assignment.TenderId" aria-label="Review bids for @assignment.Title" data-tooltip="Review bids"><partial name="_Icon" model='@("check")' /></a>
+                            <a class="record-icon-action" data-workspace-dialog="details" asp-controller="CommitteeReviews" asp-action="Details" asp-route-id="@assignment.TenderId" aria-label="Review bids for @assignment.Title" data-tooltip="@L.T("Review bids")"><partial name="_Icon" model='@("check")' /></a>
                         }
                     </div>
                 </article>
