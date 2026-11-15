@@ -3,7 +3,7 @@
     ViewData["Title"] = L.T("Supplier invitations");
     var rows = Model.ToList();
 }
-<header class="page-heading stms-hero admin-record-hero"><div><p class="eyebrow">@L.T("SUPPLIER OUTREACH")</p><h1>@L.T("Supplier invitations")</h1><p>@(ViewData["TenderTitle"] as string ?? "Track invitations and supplier responses.")</p></div>
+<header class="page-heading stms-hero admin-record-hero"><div><p class="eyebrow">@L.T("SUPPLIER OUTREACH")</p><h1>@L.T("Supplier invitations")</h1><p>@(ViewData["TenderTitle"] as string ?? L.T("Track invitations and supplier responses."))</p></div>
     <div class="button-row">
         @if (ViewData["TenderTitle"] is string) { <a class="btn btn-outline-secondary" asp-action="Index">@L.T("Show all")</a> }
         @if (ViewData["CanInvite"] is not false)
@@ -24,8 +24,8 @@
         {
             <article class="record-card" data-record data-status="@row.Status">
                 <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("mail")' /></span><span>@row.SupplierProfile.CompanyName<small>@row.Tender.Title · Invitation #@row.Id</small></span></div>
-                <dl class="record-facts"><div><dt>@L.T("Round")</dt><dd>@(row.RoundNumber?.ToString() ?? "Legacy")</dd></div><div><dt>@L.T("Status")</dt><dd><partial name="_Status" model="row.Status" /></dd></div><div><dt>@L.T("Sent (UTC)")</dt><dd>@row.SentAt.ToString("dd MMM yyyy HH:mm", L.DisplayCulture)</dd></div><div><dt>@L.T("Expires (UTC)")</dt><dd>@row.ExpiresAt.ToString("dd MMM yyyy HH:mm", L.DisplayCulture)</dd></div></dl>
-                <div class="record-action"><a class="record-icon-action" data-workspace-dialog="details" asp-action="Details" asp-route-id="@row.Id" aria-label="View invitation @row.Id" data-tooltip="@L.T("View invitation")"><partial name="_Icon" model='@("eye")' /></a></div>
+                <dl class="record-facts"><div><dt>@L.T("Round")</dt><dd>@(row.RoundNumber?.ToString() ?? L.T("Legacy"))</dd></div><div><dt>@L.T("Status")</dt><dd><partial name="_Status" model="row.Status" /></dd></div><div><dt>@L.T("Sent (UTC)")</dt><dd>@row.SentAt.ToString("dd MMM yyyy HH:mm", L.DisplayCulture)</dd></div><div><dt>@L.T("Expires (UTC)")</dt><dd>@row.ExpiresAt.ToString("dd MMM yyyy HH:mm", L.DisplayCulture)</dd></div></dl>
+                <div class="record-action"><a class="record-icon-action" data-workspace-dialog="details" asp-action="Details" asp-route-id="@row.Id" aria-label="@L.F("View invitation {0}", row.Id)" data-tooltip="@L.T("View invitation")"><partial name="_Icon" model='@("eye")' /></a></div>
             </article>
         }
         </div>

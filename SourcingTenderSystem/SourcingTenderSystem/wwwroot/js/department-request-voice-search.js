@@ -10,7 +10,7 @@
     const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!Recognition) {
         button.disabled = true;
-        button.title = 'Voice search is not supported in this browser';
+        button.title = window.stmsT('Voice search is not supported in this browser');
         status.textContent = button.title;
         return;
     }
@@ -20,22 +20,22 @@
     recognition.maxAlternatives = 1;
     recognition.onstart = () => {
         button.disabled = true;
-        status.textContent = 'Listening for a request title';
+        status.textContent = window.stmsT('Listening for a request title');
     };
     recognition.onresult = event => {
         search.value = event.results[0][0].transcript;
-        status.textContent = 'Searching for ' + search.value;
+        status.textContent = window.stmsFormat("Searching for {0}", search.value);
         if (form.isConnected) form.requestSubmit();
     };
     recognition.onerror = event => {
         status.textContent = event.error === 'not-allowed'
-            ? 'Microphone access was denied. Type a title to search.'
-            : 'Voice search failed. Try again or type a title.';
+            ? window.stmsT('Microphone access was denied. Type a title to search.')
+            : window.stmsT('Voice search failed. Try again or type a title.');
     };
     recognition.onend = () => { button.disabled = false; };
     button.addEventListener('click', () => {
         try { recognition.start(); }
-        catch { status.textContent = 'Could not start voice search.'; }
+        catch { status.textContent = window.stmsT('Could not start voice search.'); }
     });
     }
     const init = () => document.querySelectorAll('.request-filters').forEach(bind);

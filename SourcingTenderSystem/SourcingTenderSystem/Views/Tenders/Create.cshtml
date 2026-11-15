@@ -25,7 +25,7 @@
             <div class="mb-3">
                 <label asp-for="PurchaseRequisitionId" class="form-label"></label>
                 <select asp-for="PurchaseRequisitionId" asp-items="Model.PurchaseRequests" class="form-select">
-                    <option value="">-- Select an approved purchase request --</option>
+                    <option value="">@L.T("-- Select an approved purchase request --")</option>
                 </select>
                 <span asp-validation-for="PurchaseRequisitionId" class="text-danger"></span>
             </div>

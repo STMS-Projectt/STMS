@@ -21,7 +21,7 @@
 @if (trading && Model.NextInvitation is { } next)
 {
     <section class="surface detail-card vote-queue" aria-label="@L.T("Next invitation deadline")">
-        <div class="record-section-heading"><div><h2>@L.T("Next invitation to review")</h2><p>@next.Tender · Respond by <time datetime="@next.Deadline.ToString("O")">@next.Deadline.ToString("dd MMM yyyy · HH:mm") UTC</time></p></div>
+        <div class="record-section-heading"><div><h2>@L.T("Next invitation to review")</h2><p>@next.Tender · @L.T("Respond by") <time datetime="@next.Deadline.ToString("O")">@next.Deadline.ToString("dd MMM yyyy · HH:mm", L.DisplayCulture) UTC</time></p></div>
             <a data-workspace-dialog="details" class="btn btn-primary" asp-action="Invitations" asp-route-invitationId="@next.Id">@L.T("Review invitation")</a>
         </div>
     </section>
@@ -29,12 +29,12 @@
 <section class="metrics-grid stms-metrics" aria-label="@L.T("Supplier statistics")">
     <article class="surface metric">
         <span class="icon-tile tone-teal"><partial name="_Icon" model='@("shield")' /></span>
-        <strong>@(Model.ApplicationDraft ? "Draft" : Model.Status)</strong>
+        <strong>@L.T(Model.ApplicationDraft ? "Draft" : Model.Status)</strong>
         <span>@L.T("Application status")</span>
     </article>
     @if (trading)
     {
-        <article class="surface metric"><span class="icon-tile tone-blue"><partial name="_Icon" model='@("supplier")' /></span><strong>@Model.Invitations</strong><a class="text-link" asp-action="Invitations">Invitations · @Model.AwaitingResponse awaiting response</a></article>
+        <article class="surface metric"><span class="icon-tile tone-blue"><partial name="_Icon" model='@("supplier")' /></span><strong>@Model.Invitations</strong><a class="text-link" asp-action="Invitations">@L.F("Invitations · {0} awaiting response", Model.AwaitingResponse)</a></article>
         <article class="surface metric"><span class="icon-tile tone-violet"><partial name="_Icon" model='@("file")' /></span><strong>@Model.DraftBids</strong><a class="text-link" asp-controller="Bids" asp-action="MyBids">@L.T("Draft bids")</a></article>
         <article class="surface metric"><span class="icon-tile tone-amber"><partial name="_Icon" model='@("check")' /></span><strong>@Model.SentBids</strong><a class="text-link" asp-controller="Bids" asp-action="MyBids">@L.T("Bids submitted to date")</a></article>
     }

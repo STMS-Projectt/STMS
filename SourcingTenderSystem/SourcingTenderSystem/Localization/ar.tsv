@@ -216,7 +216,7 @@ Back to top|العودة للأعلى
 Open navigation|فتح التنقل
 Add a document|إضافة مستند
 Company information|معلومات الشركة
-Commercial registration|السجل التجاري
+Commercial Registration|السجل التجاري
 Phone|الهاتف
 Address|العنوان
 Request a document|طلب مستند
@@ -571,7 +571,7 @@ Awaiting my vote|بانتظار تصويتي
 Open decision|فتح القرار
 Award decision statistics|إحصاءات قرارات الترسية
 Evaluation reports|تقارير التقييم
-Awaiting committee decision|بانتظار قرار اللجنة
+Awaiting Committee Decision|بانتظار قرار اللجنة
 Awarded|تمت الترسية
 Cancelled|ملغى
 No evaluations to review|لا توجد تقييمات للمراجعة
@@ -1103,7 +1103,6 @@ Technical Proposal|العرض الفني
 Financial Proposal|العرض المالي
 Trade License|الرخصة التجارية
 Tax Certificate|الشهادة الضريبية
-Commercial Registration|السجل التجاري
 Other Document|مستند آخر
 Close bidding early|إغلاق التقديم مبكرًا
 Close bidding|إغلاق التقديم
@@ -1233,7 +1232,7 @@ Select a category.|اختر فئة.
 {0} months|{0} أشهر
 {0} · {1} requests · {2} tenders|{0} · {1} طلب · {2} عطاء
 {0} records|{0} سجلات
-{0} record|سجل واحد
+{0} record|عدد السجلات: {0}
 Page {0} of {1}|الصفحة {0} من {1}
 {0} active filters|{0} فلاتر نشطة
 1 active filter|فلتر نشط واحد
@@ -1244,7 +1243,6 @@ Step {0} of 3|الخطوة {0} من 3
 Completed|مكتملة
 Assigned employees|الموظفون المسندون
 Employee accounts|حسابات الموظفين
-Procurement activity|نشاط المشتريات
 {0}: {1} requests, {2} tenders|{0}: {1} طلب، {2} عطاء
 New requests and tenders · last {0} months (UTC)|الطلبات والعطاءات الجديدة · آخر {0} أشهر (UTC)
 Request #{0}|الطلب رقم {0}
@@ -1328,7 +1326,6 @@ This invitation is no longer available for a response.|لم تعد هذه الد
 Your criteria weights were saved.|حُفظت أوزان معاييرك.
 Your evaluation checklist was saved.|حُفظت قائمة تقييمك.
 Save valid scores for each selected criterion and every compliant bid before submitting.|احفظ درجات صالحة لكل معيار محدد ولكل عرض مطابق قبل الإرسال.
-No Camera was found. Connect a webcam and try again.|لم يُعثر على كاميرا. وصّل كاميرا وحاول مرة أخرى.
 No camera was found. Connect a webcam and try again.|لم يُعثر على كاميرا. وصّل كاميرا وحاول مرة أخرى.
 Could not verify your face. Try again or use your password.|تعذّر التحقق من وجهك. حاول مرة أخرى أو استخدم كلمة المرور.
 Set up a passkey|إعداد مفتاح مرور
@@ -1407,10 +1404,345 @@ Open for bidding|مفتوح للتقديم
 In review|قيد المراجعة
 Evaluation Closed|أُغلق التقييم
 Awaiting Manager Review|بانتظار مراجعة المدير
-Awaiting Committee Decision|بانتظار قرار اللجنة
 Total tenders|إجمالي العطاءات
 Closed tenders with bids|عطاءات مغلقة بها عروض
 Drafts|المسودات
 Returned for changes|مُعادة للتعديل
 Department dashboard|لوحة القسم
 {0} dashboard|لوحة {0}
+Invitation #{0}|الدعوة رقم {0}
+Submitted bid #{0}|العرض المقدّم رقم {0}
+Supplier bid #{0}|عرض المورد رقم {0}
+Clarification #{0}|الاستيضاح رقم {0}
+Purchase request · PR-{0}|طلب الشراء · PR-{0}
+Request PR-{0}|طلب الشراء PR-{0}
+-- Choose a type --|-- اختر نوعًا --
+-- Select Tender --|-- اختر العطاء --
+-- Select Suppliers --|-- اختر الموردين --
+-- Select an approved purchase request --|-- اختر طلب شراء معتمدًا --
+(fixed by the requesting department)|(يحدده القسم الطالب)
+Line total = unit price × {0}|إجمالي البند = سعر الوحدة × {0}
+Closes {0} (UTC)|يُغلق في {0} (UTC)
+Result: {0}|النتيجة: {0}
+Prices: {0} of {1} items priced|الأسعار: تم تسعير {0} من أصل {1} بندًا
+Documents: {0} uploaded (at least 1 required)|المستندات: تم رفع {0} (مطلوب مستند واحد على الأقل)
+OK|مكتمل
+Requested PDF: {0}|مستند PDF المطلوب: {0}
+Requested {0} (PDF)|المطلوب: {0} (PDF)
+Resolved {0} UTC|تم الحل في {0} UTC
+AI bid analysis · Tender #{0}|تحليل العروض بالذكاء الاصطناعي · العطاء رقم {0}
+Generated {0} · Model: {1} · {2} compliant bids compared|أُنشئ في {0} · النموذج: {1} · تمت مقارنة {2} عرضًا مستوفيًا للشروط
+qty {0}|الكمية {0}
+Weight {0}% · {1} points|الوزن {0}% · {1} نقطة
+AI assistant report for Tender #{0}. The committee’s scores and decision are final.|تقرير مساعد الذكاء الاصطناعي للعطاء رقم {0}. درجات اللجنة وقرارها هما المعتمدان.
+No active {0} criteria.|لا توجد معايير فعالة من نوع {0}.
+Earned {0}|المكتسب {0}
+Taxes: {0} · Extra costs: {1}|الضرائب: {0} · التكاليف الإضافية: {1}
+Taxes ({0})|الضرائب ({0})
+Extra costs ({0})|التكاليف الإضافية ({0})
+Submitted on {0} UTC. Your scores are read-only.|تم التقديم في {0} UTC. أصبحت درجاتك للعرض فقط.
+{0} points|{0} نقطة
+Generated {0} · {1} · {2} bids compared|أُنشئ في {0} · {1} · تمت مقارنة {2} عرضًا
+Scheduled deadline: {0} (UTC) · Tender status: {1}|موعد الإغلاق المحدد: {0} (UTC) · حالة العطاء: {1}
+Tender status: {0}. Compliance decisions are available after closing.|حالة العطاء: {0}. تتاح قرارات المطابقة بعد الإغلاق.
+Clarification: {0}|الاستيضاح: {0}
+Send to evaluation · Round {0} of {1}|إرسال للتقييم · الجولة {0} من {1}
+Bid #{0} history|سجل العرض رقم {0}
+Request a PDF for bid #{0}|طلب مستند PDF للعرض رقم {0}
+Set a new password for {0}.|تعيين كلمة مرور جديدة للموظف {0}.
+{0} / 4 submitted|قدّم {0} من أصل 4 أعضاء تقييماتهم
+Evidence and notes · {0}|الأدلة والملاحظات · {0}
+Document #{0}|المستند رقم {0}
+{0} of 4 approved|وافق {0} من أصل 4 أعضاء
+Cancelled by {0}. Reason: {1}|ألغاه {0}. السبب: {1}
+Evaluation committee has {0} of 4 seats assigned.|تم تعيين {0} من أصل 4 أعضاء في لجنة التقييم.
+Official decision · Tender #{0}|قرار رسمي · العطاء رقم {0}
+Eligible suppliers|الموردون المؤهلون
+Round {0}|الجولة {0}
+Category: {0}|الفئة: {0}
+Changes requested: {0}|التعديلات المطلوبة: {0}
+Purchase requests from everyone in {0}.|طلبات الشراء لجميع موظفي قسم {0}.
+Remove this line ({0} {1}) from the purchase request?|هل تريد حذف هذا البند ({0} {1}) من طلب الشراء؟
+Expires {0}|ينتهي في {0}
+≈ {0} USD (approx.)|≈ {0} دولار أمريكي (تقريبًا)
+Confirm your decision for {0}.|تأكيد قرارك بشأن {0}.
+Status will change from {0} to {1}. The supplier will be able to read the reason below.|ستتغير الحالة من {0} إلى {1}. سيتمكن المورد من قراءة السبب أدناه.
+Invitations · {0} awaiting response|الدعوات · {0} بانتظار الرد
+Legacy invitation|دعوة سابقة
+Legacy|سابق
+No {0} criteria yet.|لا توجد معايير من نوع {0} حتى الآن.
+Created by {0} · {1} UTC|أنشأه {0} · {1} UTC
+Open round {0}|فتح الجولة {0}
+Available to invite: {0}|المتاحون للدعوة: {0}
+Previously submitted: {0}|سبق لهم تقديم عروض: {0}
+{0} eligible|{0} مؤهل
+Not selected|غير محدد
+Committee progress|تقدم لجنة التقييم
+Committee votes|تصويت اللجنة
+Missing submissions: {0}|التقييمات غير المقدمة: {0}
+Unanimous approval required: {0} / 4|موافقة جميع الأعضاء مطلوبة: {0} / 4
+{0} documents|{0} مستندًا
+{0} on this page|{0} في هذه الصفحة
+Legacy report: no verified evaluation snapshot is available. It stays readable but cannot move to a further approval stage.|تقرير سابق: لا تتوفر نسخة موثقة من نتائج التقييم. يبقى متاحًا للقراءة، ولا يمكن نقله إلى مرحلة اعتماد لاحقة.
+This tender was cancelled by the Top Committee and returned by the sourcing manager. Create a NEW tender for the same purchase requisition #{0}. This cancelled tender and its history stay unchanged.|ألغت اللجنة العليا هذا العطاء وأعاده مدير التوريد. أنشئ عطاءً جديدًا لطلب الشراء نفسه رقم {0}. سيُحتفظ بالعطاء الملغى وسجله دون تغيير.
+Delivery in {0} days · Valid for {1} days|التسليم خلال {0} يومًا · صالح لمدة {1} يومًا
+One column per bid, sorted by total price (lowest first).|عمود لكل عرض، مرتب حسب السعر الإجمالي من الأقل إلى الأعلى.
+One column per bid, sorted by approximate USD total (lowest first).|عمود لكل عرض، مرتب حسب الإجمالي التقريبي بالدولار الأمريكي من الأقل إلى الأعلى.
+One column per bid, sorted by total price within each currency (lowest first).|عمود لكل عرض، مرتب حسب السعر الإجمالي داخل كل عملة من الأقل إلى الأعلى.
+Priority: {0} · Due {1}|الأولوية: {0} · الموعد المطلوب {1}
+KIDSWEAR SUPPLY|توريد ملابس الأطفال
+FAQ|الأسئلة الشائعة
+500 – 2,000 pieces|500 – 2,000 قطعة
+2,000 – 10,000 pieces|2,000 – 10,000 قطعة
+10,000+ pieces|أكثر من 10,000 قطعة
+Main St. 12, Your City|12 الشارع الرئيسي، مدينتك
+View {0}|عرض {0}
+Add price for {0}|إضافة سعر للبند {0}
+Edit price for {0}|تعديل سعر البند {0}
+Delete price for {0}|حذف سعر البند {0}
+Download {0}|تنزيل {0}
+Preview {0}|معاينة {0}
+Remove {0}|حذف {0}
+Create bid for {0}|إنشاء عرض للعطاء {0}
+View clarification: {0}|عرض الاستيضاح: {0}
+Review bid from {0}|مراجعة عرض {0}
+Review and compare offers for {0}|مراجعة ومقارنة عروض {0}
+View details for {0}|عرض تفاصيل {0}
+View invitation {0}|عرض الدعوة {0}
+Review bids for {0}|مراجعة عروض {0}
+Details for PR-{0}|تفاصيل طلب الشراء PR-{0}
+Edit PR-{0}|تعديل طلب الشراء PR-{0}
+Items for PR-{0}|بنود طلب الشراء PR-{0}
+QR code for PR-{0}|رمز QR لطلب الشراء PR-{0}
+Start a clarification for PR-{0}|بدء استيضاح لطلب الشراء PR-{0}
+View request PR-{0}|عرض طلب الشراء PR-{0}
+{0} unread|{0} غير مقروء
+Edit {0}|تعديل {0}
+Download {0} PDF|تنزيل {0} بصيغة PDF
+View tender {0}|عرض العطاء {0}
+Review request PR-{0}|مراجعة طلب الشراء PR-{0}
+Open application for {0}|فتح طلب تسجيل {0}
+View documents for {0}|عرض مستندات {0}
+Request a document from {0}|طلب مستند من {0}
+Edit categories for {0}|تعديل فئات {0}
+Reject {0}|رفض {0}
+View invitation for {0}|عرض دعوة {0}
+{0} criteria|معايير {0}
+Bidding rounds for {0}|جولات تقديم العروض للعطاء {0}
+QR code for {0}|رمز QR لـ {0}
+Edit tender {0}|تعديل العطاء {0}
+Delete tender {0}|حذف العطاء {0}
+Invitations for {0}|دعوات العطاء {0}
+Assign committee for {0}|تعيين لجنة للعطاء {0}
+Evaluation criteria for {0}|معايير تقييم العطاء {0}
+Record filters|فلاتر السجلات
+Committee members|أعضاء اللجنة
+Submitted bids|العروض المقدمة
+Replace enrolled face|استبدال الوجه المسجّل
+No description provided.|لم يُضف وصف.
+Review clarification requests and responses across the workspace.|راجع طلبات الاستيضاح والردود في مساحة العمل.
+conversations|محادثات
+Requested by {0}|مقدم الطلب: {0}
+Uploaded {0} (UTC)|رُفع في {0} (UTC)
+Set the proposed weights before publication.|حدد الأوزان المقترحة قبل النشر.
+Set the weights you will apply to every compliant bid.|حدد الأوزان التي ستطبقها على كل عرض مستوفٍ للشروط.
+Officer proposed {0}%|الوزن المقترح من موظف التوريد {0}%
+Account name|اسم الحساب
+Not set|غير محدد
+Fixed|ثابت
+Requester|مقدم الطلب
+Assign committee and start evaluation|تعيين اللجنة وبدء التقييم
+The committee includes three evaluation employees and the employee who created the purchase request.|تضم اللجنة ثلاثة موظفين للتقييم والموظف الذي أنشأ طلب الشراء.
+Open date (UTC)|تاريخ الفتح (UTC)
+Close date (UTC)|تاريخ الإغلاق (UTC)
+Proposed criteria|المعايير المقترحة
+Published criteria|المعايير المنشورة
+The proposed weights must total 100% before publication.|يجب أن يبلغ مجموع الأوزان المقترحة 100% قبل النشر.
+Reviewers can use these weights or save their own selection and weights.|يمكن للمراجعين اعتماد هذه الأوزان أو حفظ اختياراتهم وأوزانهم الخاصة.
+Select a tender and load its eligible suppliers.|اختر عطاءً لتحميل الموردين المؤهلين له.
+Assign a supply category to the purchase request before sending invitations.|عيّن فئة توريد لطلب الشراء قبل إرسال الدعوات.
+No approved suppliers in this category are eligible for a new invitation in this round.|لا يوجد موردون معتمدون في هذه الفئة مؤهلون لدعوة جديدة في هذه الجولة.
+No response yet|لم يصل رد بعد
+Track invitations and supplier responses.|تابع الدعوات وردود الموردين.
+Reopening is available only after a round closes.|تتاح إعادة الفتح بعد إغلاق الجولة فقط.
+All three rounds have been used.|استُنفدت الجولات الثلاث.
+The tender already has three eligible suppliers.|لدى العطاء ثلاثة موردين مؤهلين بالفعل.
+Bid minimum met. Complete compliance review before assignment.|اكتمل الحد الأدنى للعروض. أكمل مراجعة المطابقة قبل تعيين اللجنة.
+Evaluation is blocked because the bid minimum has not been met.|لا يمكن بدء التقييم لعدم اكتمال الحد الأدنى للعروض.
+Not closed|لم تُغلق
+Unknown|غير معروف
+{0} distinct eligible suppliers · {1} required · {2} rounds remaining|{0} موردين مؤهلين مختلفين · المطلوب {1} · الجولات المتبقية {2}
+{0} total|الإجمالي {0}
+{0} uploaded|تم رفع {0}
+Registered {0} (UTC)|تاريخ التسجيل {0} (UTC)
+{0}: {1} purchase requests|{0}: {1} طلب شراء
+Tender invitation · Round {0}|دعوة عطاء · الجولة {0}
+Round {0} requires {1} eligible supplier bids.|تتطلب الجولة {0} عروضًا من {1} موردين مؤهلين.
+Supplier documents|مستندات المورد
+Request QR code|رمز QR لطلب الشراء
+There are no eligible recipients for a new clarification at this stage.|لا يوجد مستلمون مؤهلون لاستلام استيضاح جديد في هذه المرحلة.
+No specifications provided.|لم تُضف مواصفات.
+Tender created from the approved request.|أُنشئ العطاء من طلب الشراء المعتمد.
+InviteSuppliers|إرسال دعوات الموردين
+DraftCriteriaChanged|تعديل معايير المسودة
+Publish|نشر
+Create|إنشاء
+Item added|إضافة بند
+Tender cancelled: handoff required|العطاء ملغى: يلزم إعادته للموظف
+Tender cancelled: create a new tender|العطاء ملغى: أنشئ عطاءً جديدًا
+Tender awarded to you|تمت ترسية العطاء عليكم
+Tender cancelled|تم إلغاء العطاء
+Bid not selected|لم يُختَر العرض
+conversation|محادثة
+Select a document type|اختر نوع المستند
+No attachment needed|لا يلزم إرفاق ملف
+Voice search is unavailable in this browser. You can type your search.|البحث الصوتي غير متاح في هذا المتصفح. يمكنك كتابة بحثك.
+Search terms added. Select Search to apply.|أُضيفت كلمات البحث. اضغط بحث لتطبيقها.
+Search updated.|تم تحديث البحث.
+Microphone permission denied. You can type your search.|لم يُسمح باستخدام الميكروفون. يمكنك كتابة بحثك.
+Voice search could not capture speech. Try again or type your search.|تعذّر التقاط الصوت. حاول مجددًا أو اكتب بحثك.
+No search terms captured.|لم تُلتقط كلمات للبحث.
+Stop listening|إيقاف الاستماع
+Could not start voice search. Try again or type your search.|تعذّر بدء البحث الصوتي. حاول مجددًا أو اكتب بحثك.
+Officer weights restored. Save to apply them.|استُعيدت أوزان موظف التوريد. احفظ لتطبيقها.
+Generating a suggestion…|جارٍ إعداد الاقتراح…
+Too many requests. Try again in a moment.|الطلبات كثيرة. حاول مجددًا بعد قليل.
+AI weights are unavailable. Set the weights manually.|اقتراح الأوزان غير متاح. أدخل الأوزان يدويًا.
+Your selections changed. Request a fresh suggestion to replace the current values.|تغيّرت اختياراتك. اطلب اقتراحًا جديدًا لاستبدال القيم الحالية.
+Suggestion ready. Review or edit the weights, then save.|الاقتراح جاهز. راجع الأوزان أو عدّلها، ثم احفظ.
+The AI request timed out. You can enter weights manually.|انتهت مهلة الطلب. يمكنك إدخال الأوزان يدويًا.
+Scroll to top of navigation|الانتقال إلى أعلى القائمة
+Scroll down navigation|التمرير لأسفل القائمة
+Choose a nonempty PDF no larger than 10 MB.|اختر ملف PDF غير فارغ لا يتجاوز 10 ميغابايت.
+No file selected.|لم يُحدد ملف.
+Drop one PDF at a time.|أفلت ملف PDF واحدًا في كل مرة.
+Voice search is not supported in this browser|البحث الصوتي غير مدعوم في هذا المتصفح
+Listening for a request title|جارٍ الاستماع إلى عنوان الطلب
+Searching for {0}|جارٍ البحث عن {0}
+Microphone access was denied. Type a title to search.|لم يُسمح باستخدام الميكروفون. اكتب عنوانًا للبحث.
+Voice search failed. Try again or type a title.|تعذّر البحث الصوتي. حاول مجددًا أو اكتب عنوانًا.
+Could not start voice search.|تعذّر بدء البحث الصوتي.
+Enter a valid Jordanian phone number, digits only (e.g. 0791234567 or +962791234567).|أدخل رقم هاتف أردنيًا صحيحًا، مثل 0791234567 أو +962791234567.
+Phone number|رقم الهاتف
+Please enter a new password.|أدخل كلمة مرور جديدة.
+The new password must be at least 6 characters.|يجب ألا تقل كلمة المرور الجديدة عن 6 أحرف.
+Please type the new password again.|أعد كتابة كلمة المرور الجديدة.
+The two new passwords do not match.|كلمتا المرور الجديدتان غير متطابقتين.
+Confirm new password|تأكيد كلمة المرور الجديدة
+Requesting department:|القسم الطالب:
+Supplier application #{0}|طلب تسجيل المورد رقم {0}
+No linked record|لا يوجد سجل مرتبط
+Set up at least one method before opening your workspace. You can add another in Account settings.|فعّل طريقة واحدة على الأقل قبل فتح مساحة عملك. يمكنك إضافة طريقة أخرى من إعدادات الحساب.
+Use one of your registered methods to continue.|استخدم إحدى طرقك المسجّلة للمتابعة.
+Eligible suppliers: {0} · Required: {1}.|الموردون المؤهلون: {0} · المطلوب: {1}.
+All bids checked ({0} not checked)|مراجعة جميع العروض (لم تُراجع {0} عروض)
+At least one compliant bid ({0} compliant)|عرض واحد مستوفٍ للشروط على الأقل ({0} مستوفٍ)
+{0} days|{0} يومًا
+Your supplier account is not approved (current status: {0}).|حساب المورد الخاص بك غير معتمد (الحالة الحالية: {0}).
+You can't create, edit or submit bids until your account is approved.|لا يمكنك إنشاء العروض أو تعديلها أو تقديمها حتى يُعتمد حسابك.
+Track requests, originating departments, and review decisions.|تابع طلبات الشراء وأقسامها وقرارات مراجعتها.
+Follow sourcing, invitations, committee assignments, and evaluation.|تابع التوريد والدعوات وتعيين اللجان والتقييم.
+Track invitations and supplier responses across tenders.|تابع الدعوات وردود الموردين في جميع العطاءات.
+Supplier bids|عروض الموردين
+Track bid and compliance status. Supplier drafts stay private.|تابع حالات العروض ومطابقتها. تبقى مسودات الموردين خاصة بهم.
+Review recorded workflow and account activity.|راجع سجل إجراءات العمل ونشاط الحسابات.
+Cancelled - Ready to Retender|ملغى - جاهز لإعادة الطرح
+CancellationHandoff|إعادة العطاء الملغى
+Returned to sourcing officer.|أُعيد إلى موظف التوريد.
+Top Committee Rejected|رفضت اللجنة العليا
+Top Committee Approved|وافقت اللجنة العليا
+Not specified|غير محدد
+Offer details, item prices and supporting documents.|تفاصيل العرض وأسعار البنود والمستندات الداعمة.
+{0} of {1} items priced|تم تسعير {0} من أصل {1} بندًا
+{0} attached|المرفقات: {0}
+Item prices|أسعار البنود
+Bid submission status|حالة تقديم العرض
+Quotation|عرض سعر
+Open notification|فتح الإشعار
+Mark as read|وضع علامة كمقروء
+Clarification answered|تم الرد على الاستيضاح
+Notification pages|صفحات الإشعارات
+Invitation pages|صفحات الدعوات
+Questions and responses involving your account.|الاستيضاحات والردود المتعلقة بحسابك.
+Top Committee Member|عضو اللجنة العليا
+Top|اللجنة العليا
+Evaluation|التقييم
+Approved and added|تم الاعتماد والإضافة
+Closed without adding|أُغلق دون إضافة
+Awaiting approval|بانتظار الاعتماد
+CloseEarly|إغلاق مبكر
+Reopen|إعادة فتح
+Highest normalized score|أعلى درجة بعد توحيد المقياس
+Workspace|مساحة العمل
+Access & organization|إدارة الصلاحيات والأقسام
+Procurement|المشتريات
+System|النظام
+Overview|نظرة عامة
+Evaluations & approvals|التقييمات والاعتمادات
+Tenders & committees|العطاءات واللجان
+Requesting department|القسم الطالب
+Winning supplier|المورد الفائز
+Winning supplier: {0}|المورد الفائز: {0}
+Winning supplier (AI brief)|المورد الفائز (ملخص بالذكاء الاصطناعي)
+Recommended by the evaluation committee|موصى به من لجنة التقييم
+This advisory brief explains the recommendation using the recorded scores and offer data. The committee decides the award.|يوضح هذا الملخص الاستشاري التوصية استنادًا إلى الدرجات المسجلة وبيانات العرض. وتتخذ اللجنة قرار الترسية.
+Preparing the AI brief. This can take up to a minute the first time.|جارٍ إعداد الملخص بالذكاء الاصطناعي. قد يستغرق ذلك دقيقة في المرة الأولى.
+The winner brief could not be loaded.|تعذّر تحميل ملخص المورد الفائز.
+AI unavailable — showing recorded facts only.|الذكاء الاصطناعي غير متاح. يُعرض ملخص البيانات المسجلة فقط.
+Winning offer|العرض الفائز
+Delivery in {0} days|التسليم خلال {0} يومًا
+Valid for {0} days|صلاحية العرض {0} يومًا
+Score {0:0.##} / 100|الدرجة {0:0.##} من 100
+The offer|تفاصيل العرض
+Why it won|أسباب التوصية بالعرض
+What sets it apart|ما يميز العرض
+Points to verify before voting|نقاط التحقق قبل التصويت
+Download English PDF summary|تنزيل الملخص بالإنجليزية (PDF)
+Download PDF summary|تنزيل الملخص (PDF)
+Print Arabic summary or save as PDF|طباعة الملخص العربي أو حفظه بصيغة PDF
+Generated {0} · {1}|أُعد في {0} · {1}
+Facts only|البيانات المسجلة فقط
+{0} compliant bids compared|عدد العروض المطابقة التي قورنت: {0}
+AI narrative is unavailable. Please try again later.|تعذّر إعداد شرح الذكاء الاصطناعي. حاول مرة أخرى لاحقًا.
+Weighted committee score: {0:0.##} / 100 (rank {1} of {2}).|درجة اللجنة الموزونة: {0:0.##} من 100 (الترتيب {1} من {2}).
+Technical score {0:0.##}, financial score {1:0.##}.|الدرجة الفنية {0:0.##} والدرجة المالية {1:0.##}.
+Covers {0} of {1} requested items.|يغطي {0} من أصل {1} بندًا مطلوبًا.
+Committee justification: {0}|مبررات اللجنة: {0}
+Lowest total price among the compliant bids.|أقل سعر إجمالي بين العروض المطابقة.
+Fastest or equal-fastest delivery ({0} days).|أسرع مدة تسليم أو مساوية للأسرع ({0} يومًا).
+Score difference from the best other offer: {0:0.##} points.|فرق الدرجة عن أفضل عرض آخر: {0:0.##} نقطة.
+This was the only compliant bid.|كان هذا العرض المطابق الوحيد.
+{0} has been registered since {1} and has {2} previous awards.|المورد {0} مسجّل منذ {1} وعدد العطاءات التي رست عليه سابقًا: {2}.
+Supply categories: {0}.|فئات التوريد: {0}.
+Address: {0}.|العنوان: {0}.
+Total {0:N2} {1}; delivery in {2} days; valid for {3} days; {4} priced lines and {5} supporting documents.|الإجمالي {0:N2} {1}؛ التسليم خلال {2} يومًا؛ صلاحية العرض {3} يومًا؛ عدد البنود المسعّرة {4} والمستندات الداعمة {5}.
+Could not prepare the winner brief PDF.|تعذّر تجهيز ملف PDF لملخص المورد الفائز.
+Winning supplier brief|ملخص المورد الفائز
+Print summary|طباعة الملخص
+Prepared for {0}|أُعدّ للمستخدم {0}
+Review queue|قائمة الطلبات قيد المراجعة
+All requests|جميع الطلبات
+Contact inbox|صندوق رسائل التواصل
+Read messages from the public contact form and publish a reply on the sender's private tracking page.|اقرأ رسائل نموذج التواصل وانشر الرد في صفحة المتابعة الخاصة بالمرسل.
+No contact messages yet.|لا توجد رسائل تواصل بعد.
+Your reply|ردّك
+Publish reply|نشر الرد
+Enter a reply of 1 to 4000 characters.|أدخل ردًا من حرف واحد إلى 4000 حرف.
+This message already has a reply.|تم الرد على هذه الرسالة مسبقًا.
+Reply published on the sender's private tracking page.|نُشر الرد في صفحة المتابعة الخاصة بالمرسل.
+Contact message status|متابعة رسالة التواصل
+Your message was received. Bookmark this private page to check for a reply. Anyone with the link can read the reply.|استلمنا رسالتك. احفظ رابط هذه الصفحة لمتابعة الرد. يمكن لأي شخص يملك الرابط قراءة الرد.
+Reply from the team|رد الفريق
+Back to home|العودة إلى الصفحة الرئيسية
+Agree to be contacted before sending.|وافق على التواصل قبل الإرسال.
+Select a valid topic.|اختر موضوعًا صالحًا.
+After sending, save the private link to read the reply.|بعد الإرسال، احفظ رابط المتابعة الخاص لقراءة الرد.
+Exactly 9 digits|9 أرقام بالضبط
+Enter exactly 9 digits for the tax number.|أدخل 9 أرقام بالضبط للرقم الضريبي.
+Enter exactly 9 digits for the commercial registration number.|أدخل 9 أرقام بالضبط لرقم السجل التجاري.
+Previous|السابق
+Next|التالي
+Jordanian dinar (JOD)|الدينار الأردني (JOD)
+Only bids in Jordanian dinars can be submitted. Contact the sourcing officer about this older draft.|يمكن تقديم العروض بالدينار الأردني فقط. تواصل مع موظف التوريد بشأن هذه المسودة القديمة.
+Older bids are shown in their original currencies. Prices are not compared across currencies.|تُعرض العروض القديمة بعملاتها الأصلية، ولا تُقارن الأسعار بين العملات المختلفة.
+Not comparable|غير قابل للمقارنة

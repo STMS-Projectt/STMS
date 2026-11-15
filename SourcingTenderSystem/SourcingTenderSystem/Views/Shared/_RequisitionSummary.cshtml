@@ -5,7 +5,7 @@
     <dt class="col-sm-3">@L.T("Created by")</dt><dd class="col-sm-9">@Model.CreatedByEmployeeProfile.FullName</dd>
     <dt class="col-sm-3">@L.T("Created at (UTC)")</dt><dd class="col-sm-9">@Model.CreatedAt.ToString("yyyy-MM-dd HH:mm")</dd>
     <dt class="col-sm-3">@L.T("Reason")</dt><dd class="col-sm-9" style="white-space: pre-wrap; overflow-wrap: anywhere">@Model.Reason</dd>
-    <dt class="col-sm-3">@L.T("Priority")</dt><dd class="col-sm-9">@Model.Priority</dd>
+    <dt class="col-sm-3">@L.T("Priority")</dt><dd class="col-sm-9">@L.T(Model.Priority)</dd>
     <dt class="col-sm-3">@L.T("Target date")</dt><dd class="col-sm-9">@Model.TargetDate.ToString("yyyy-MM-dd")</dd>
     <dt class="col-sm-3">@L.T("Status")</dt><dd class="col-sm-9"><strong>@L.T(Model.Status)</strong></dd>
     @if (!string.IsNullOrWhiteSpace(Model.ReviewNotes))

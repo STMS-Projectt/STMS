@@ -28,11 +28,36 @@
 [data-bs-theme=dark] :is(.form-control,.form-select)::placeholder { color: #b2c1ce; }
 [data-bs-theme=dark] .workspace .btn-primary { color: #fff; }
 [data-bs-theme=dark] .btn-outline-secondary { --bs-btn-color:#c5dbe8; --bs-btn-border-color:#5a7284; --bs-btn-hover-bg:#344d60; }
+[data-bs-theme=dark] .btn-outline-danger {
+    --bs-btn-color: #ffacb8;
+    --bs-btn-border-color: #a95b6b;
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: #8c263a;
+    --bs-btn-hover-border-color: #d88496;
+}
 [data-bs-theme=dark] :is(.directory,.card,.surface) { --bs-card-color: var(--bs-body-color); }
 [data-bs-theme=dark] :is(.brand-name,.serif,.step-card h3,.section-title,.nav-links a) { color: #e2ebf3; }
 [data-bs-theme=dark] .stms-home { --cream:#131f2b; --cream-2:#1b2d36; --muted:#a6becd; color: #dce8ef; }
 [data-bs-theme=dark] .stms-home :is(.glass,.navbar,.nav-links.open) { background: #22343e; border-color: #3d535d; }
 [data-bs-theme=dark] .stms-home :is(.btn-outline,.eyebrow) { color: #9ee7d0; }
+[data-bs-theme=dark] .stms-home :is(.hero h1 em,.about-copy h2 em,.ft-big em,.ft-cols h5) { color: #91dfcc; }
+[data-bs-theme=dark] .stms-home .hero-fade { background: linear-gradient(0deg, #131f2b, #131f2bed 45%, #131f2b00); }
+[data-bs-theme=dark] .stms-home .logo-text small { color: #91dfcc; }
+[data-bs-theme=dark] .stms-home .btn-gold:hover { background: #105b52; color: #fff; }
+[data-bs-theme=dark] .portal :is(.btn-primary,.btn-success) {
+    --bs-btn-hover-bg: #105b52;
+    --bs-btn-hover-border-color: #73cbb5;
+    --bs-btn-active-bg: #105b52;
+    --bs-btn-active-border-color: #73cbb5;
+}
+[data-bs-theme=dark] { scrollbar-color: #70b9a6 #182930; }
+[data-bs-theme=dark] :is(a,button,input,select,textarea,summary):focus-visible {
+    outline-color: #78d6bd;
+}
+[dir=rtl] :is(.record-name,.record-facts dd,.account-info-tile dd,.record-terms) { overflow-wrap: anywhere; }
+.record-qr .d-flex > div { flex: 1 1 220px; max-width: 100%; }
+.record-qr a.small { direction: ltr; unicode-bidi: isolate; overflow-wrap: anywhere; word-break: break-word; }
+.record-qr img { max-width: 100%; height: auto; }
 .report-display-controls { display: flex; justify-content: end; margin-bottom: 12px; }
 @media print {
     :root[data-bs-theme] { color-scheme: light; }

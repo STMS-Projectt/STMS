@@ -1,11 +1,11 @@
 @model CommitteeTender
 @{ ViewData["Title"] = L.T("Tender evaluation"); }
 <a class="back-link" asp-action="Assignments"><partial name="_Icon" model='@("back")' /> @L.T("My assignments")</a>
-<header class="page-heading stms-hero admin-record-hero"><div><p class="eyebrow">TENDER #@Model.Tender.Id</p><h1>@Model.Tender.Title</h1><p>@L.T("Open a compliant bid to review its details and score it.")</p></div><partial name="_Status" model="Model.Tender.Status" /></header>
+<header class="page-heading stms-hero admin-record-hero"><div><p class="eyebrow">@L.F("Tender #{0}", Model.Tender.Id)</p><h1>@Model.Tender.Title</h1><p>@L.T("Open a compliant bid to review its details and score it.")</p></div><partial name="_Status" model="Model.Tender.Status" /></header>
 @if (TempData["ReviewError"] is string error) { <div class="alert alert-warning" role="alert">@L.T(error)</div> }
 @if (ViewBag.Submission is EvaluationSubmission submission)
 {
-    <p class="alert alert-success">Submitted on @submission.SubmittedAt.ToString("yyyy-MM-dd HH:mm") UTC. Your scores are read-only.</p>
+    <p class="alert alert-success">@L.F("Submitted on {0} UTC. Your scores are read-only.", submission.SubmittedAt.ToString("yyyy-MM-dd HH:mm", L.DisplayCulture))</p>
 }
 else if (Model.Tender.Status == "Under Evaluation")
 {
@@ -39,10 +39,10 @@ else if (Model.Tender.Status == "Under Evaluation")
             @foreach (var bid in Model.Tender.Bids.OrderBy(b => b.SupplierProfile.CompanyName))
             {
                 <article class="record-card" data-record>
-                    <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("supplier")' /></span><span>@bid.SupplierProfile.CompanyName<small>Bid #@bid.Id</small></span></div>
+                    <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("supplier")' /></span><span>@bid.SupplierProfile.CompanyName<small>@L.F("Bid #{0}", bid.Id)</small></span></div>
                     <dl class="record-facts"><div><dt>@L.T("Quoted total")</dt><dd>@bid.TotalPrice.ToString("N2") @bid.Currency</dd></div>
                         <div><dt>@L.T("Criteria scored")</dt><dd>@Model.ReviewedCriteria.GetValueOrDefault(bid.Id) / @Model.Weights.Count</dd></div></dl>
-                    <div class="record-action"><a class="record-icon-action" data-workspace-dialog="details" asp-action="Bid" asp-route-id="@bid.Id" aria-label="Review bid from @bid.SupplierProfile.CompanyName" data-tooltip="@L.T("Review bid")"><partial name="_Icon" model='@("eye")' /></a></div>
+                    <div class="record-action"><a class="record-icon-action" data-workspace-dialog="details" asp-action="Bid" asp-route-id="@bid.Id" aria-label="@L.F("Review bid from {0}", bid.SupplierProfile.CompanyName)" data-tooltip="@L.T("Review bid")"><partial name="_Icon" model='@("eye")' /></a></div>
                 </article>
             }
         </div>
@@ -50,7 +50,7 @@ else if (Model.Tender.Status == "Under Evaluation")
     }
 </section>
 <details class="surface detail-card mb-3 review-disclosure">
-    <summary>@L.T("My evaluation criteria") <span class="record-panel-label">@Model.Weights.Count selected</span></summary>
+    <summary>@L.T("My evaluation criteria") <span class="record-panel-label">@L.F("{0} selected", Model.Weights.Count)</span></summary>
     <div class="record-section-heading">
         <div><p>@L.T("These weights apply to every compliant bid you review.")</p></div>
         @if (Model.CanEditWeights)
@@ -66,8 +66,8 @@ else if (Model.Tender.Status == "Under Evaluation")
             {
                 var used = Model.Weights.TryGetValue(criterion.Id, out var weight);
                 <article class="record-card">
-                    <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("check")' /></span><span>@criterion.Name<small>@criterion.Type · @criterion.MaxScore points</small></span></div>
-                    <dl class="record-facts"><div><dt>@L.T("Officer proposed")</dt><dd>@criterion.WeightPercent.ToString("0.##")%</dd></div><div><dt>@L.T("My weight")</dt><dd>@(used ? $"{weight:0.##}%" : "Not selected")</dd></div></dl>
+                    <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("check")' /></span><span>@criterion.Name<small>@L.T(criterion.Type) · @L.F("{0} points", criterion.MaxScore)</small></span></div>
+                    <dl class="record-facts"><div><dt>@L.T("Officer proposed")</dt><dd>@criterion.WeightPercent.ToString("0.##")%</dd></div><div><dt>@L.T("My weight")</dt><dd>@(used ? $"{weight:0.##}%" : L.T("Not selected"))</dd></div></dl>
                 </article>
             }
         </div>
@@ -87,7 +87,7 @@ else if (Model.Tender.Status == "Under Evaluation")
             if (!response.ok) throw new Error(response.status);
             body.innerHTML = await response.text();
         } catch {
-            body.innerHTML = '<div class="ai-box-state" role="status"><div><strong>The AI recommendation could not be loaded.</strong> <button type="button" class="btn btn-outline-secondary btn-sm ms-2" data-ai-retry>Try again</button></div></div>';
+            body.innerHTML = '<div class="ai-box-state" role="status"><div><strong>' + window.stmsT("The AI recommendation could not be loaded.") + '</strong> <button type="button" class="btn btn-outline-secondary btn-sm ms-2" data-ai-retry>' + window.stmsT("Try again") + '</button></div></div>';
         }
     };
     body.addEventListener("click", event => { if (event.target.closest("[data-ai-retry]")) load(); });

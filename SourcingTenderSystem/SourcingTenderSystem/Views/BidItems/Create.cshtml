@@ -17,7 +17,7 @@
             <dt class="col-sm-3">@L.T("Specifications")</dt>
             <dd class="col-sm-9">@item.Specifications</dd>
             <dt class="col-sm-3">@L.T("Quantity")</dt>
-            <dd class="col-sm-9">@item.Quantity @item.Unit <small class="text-muted">(fixed by the requesting department)</small></dd>
+            <dd class="col-sm-9">@item.Quantity @item.Unit <small class="text-muted">@L.T("(fixed by the requesting department)")</small></dd>
             <dt class="col-sm-3">@L.T("Currency")</dt>
             <dd class="col-sm-9">@bid.Currency</dd>
         </dl>
@@ -29,7 +29,7 @@
       method="post" asp-antiforgery="true" class="admin-form">
     <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
     <partial name="_BidItemFields" model="Model" />
-    <p class="form-text">Line total = unit price × @item.Quantity</p>
+    <p class="form-text">@L.F("Line total = unit price × {0}", item.Quantity)</p>
     <button type="submit" class="btn btn-primary">@L.T("Save price")</button>
     <a class="btn btn-outline-secondary" asp-controller="Bids" asp-action="Details" asp-route-id="@bid.Id">@L.T("Cancel")</a>
 </form>

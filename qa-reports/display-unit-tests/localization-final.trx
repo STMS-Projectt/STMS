@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="65934c66-9dca-40d4-b2fc-de092f9d951f" name="Wessam@DESKTOP-9BCNB94 2026-11-16 00:21:58" runUser="DESKTOP-9BCNB94\CodexSandboxOffline" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-11-16T00:21:58.7349608+03:00" queuing="2026-11-16T00:21:58.7349610+03:00" start="2026-11-16T00:21:58.0572926+03:00" finish="2026-11-16T00:21:58.7384752+03:00" />
+  <TestSettings name="default" id="d322f62a-0a7e-430e-b0f0-8a91c0d2bfa0">
+    <Deployment runDeploymentRoot="Wessam_DESKTOP-9BCNB94_2026-11-16_00_21_58" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="01b225c2-100f-4b80-a918-31007002a88a" testId="9dfd3977-d9d4-80f4-213c-97f7d2a4e26a" testName="DisplayLocalizationTests.Arabic_formats_messages_without_changing_business_values" computerName="DESKTOP-9BCNB94" duration="00:00:00.0164413" startTime="2026-11-16T00:21:58.5800005+03:00" endTime="2026-11-16T00:21:58.6027970+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="01b225c2-100f-4b80-a918-31007002a88a" />
+    <UnitTestResult executionId="376be514-9773-4a5f-b781-4b1c0c5d9a34" testId="aaedd83a-ff1e-8a30-95e8-e6dfaf60dfcb" testName="DisplayLocalizationTests.Literal_ui_keys_have_Arabic_translations" computerName="DESKTOP-9BCNB94" duration="00:00:00.0170667" startTime="2026-11-16T00:21:58.6151123+03:00" endTime="2026-11-16T00:21:58.6200291+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="376be514-9773-4a5f-b781-4b1c0c5d9a34" />
+    <UnitTestResult executionId="68af9941-c435-4477-9ce5-92a06f2ef8ce" testId="db3a58de-d0c2-98ce-325c-efcc6c48c3eb" testName="DisplayLocalizationTests.Arabic_rendering_does_not_translate_route_or_filter_keys" computerName="DESKTOP-9BCNB94" duration="00:00:00.0079312" startTime="2026-11-16T00:21:58.6206356+03:00" endTime="2026-11-16T00:21:58.6280540+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="68af9941-c435-4477-9ce5-92a06f2ef8ce" />
+    <UnitTestResult executionId="e8a1a197-dcf0-43cf-bed3-b669e6d4ab3a" testId="fb94cb51-e7e6-1765-0bbf-d9ce72dda3be" testName="DisplayLocalizationTests.Translations_preserve_format_placeholders_and_have_unique_keys" computerName="DESKTOP-9BCNB94" duration="00:00:00.0145928" startTime="2026-11-16T00:21:58.6282053+03:00" endTime="2026-11-16T00:21:58.6427329+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e8a1a197-dcf0-43cf-bed3-b669e6d4ab3a" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="DisplayLocalizationTests.Literal_ui_keys_have_Arabic_translations" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\displayaudit\net10.0\sourcingtendersystem.securitytests.dll" id="aaedd83a-ff1e-8a30-95e8-e6dfaf60dfcb">
+      <Execution id="376be514-9773-4a5f-b781-4b1c0c5d9a34" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\DisplayAudit\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="DisplayLocalizationTests" name="Literal_ui_keys_have_Arabic_translations" />
+    </UnitTest>
+    <UnitTest name="DisplayLocalizationTests.Arabic_formats_messages_without_changing_business_values" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\displayaudit\net10.0\sourcingtendersystem.securitytests.dll" id="9dfd3977-d9d4-80f4-213c-97f7d2a4e26a">
+      <Execution id="01b225c2-100f-4b80-a918-31007002a88a" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\DisplayAudit\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="DisplayLocalizationTests" name="Arabic_formats_messages_without_changing_business_values" />
+    </UnitTest>
+    <UnitTest name="DisplayLocalizationTests.Translations_preserve_format_placeholders_and_have_unique_keys" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\displayaudit\net10.0\sourcingtendersystem.securitytests.dll" id="fb94cb51-e7e6-1765-0bbf-d9ce72dda3be">
+      <Execution id="e8a1a197-dcf0-43cf-bed3-b669e6d4ab3a" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\DisplayAudit\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="DisplayLocalizationTests" name="Translations_preserve_format_placeholders_and_have_unique_keys" />
+    </UnitTest>
+    <UnitTest name="DisplayLocalizationTests.Arabic_rendering_does_not_translate_route_or_filter_keys" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\displayaudit\net10.0\sourcingtendersystem.securitytests.dll" id="db3a58de-d0c2-98ce-325c-efcc6c48c3eb">
+      <Execution id="68af9941-c435-4477-9ce5-92a06f2ef8ce" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\DisplayAudit\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="DisplayLocalizationTests" name="Arabic_rendering_does_not_translate_route_or_filter_keys" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="9dfd3977-d9d4-80f4-213c-97f7d2a4e26a" executionId="01b225c2-100f-4b80-a918-31007002a88a" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="aaedd83a-ff1e-8a30-95e8-e6dfaf60dfcb" executionId="376be514-9773-4a5f-b781-4b1c0c5d9a34" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="db3a58de-d0c2-98ce-325c-efcc6c48c3eb" executionId="68af9941-c435-4477-9ce5-92a06f2ef8ce" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="fb94cb51-e7e6-1765-0bbf-d9ce72dda3be" executionId="e8a1a197-dcf0-43cf-bed3-b669e6d4ab3a" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Completed">
+    <Counters total="4" executed="4" passed="4" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v3.1.4+50e68bbb8b (64-bit .NET 10.0.14)&#xD;
+[xUnit.net 00:00:00.08]   Discovering: SourcingTenderSystem.SecurityTests&#xD;
+[xUnit.net 00:00:00.13]   Discovered:  SourcingTenderSystem.SecurityTests&#xD;
+[xUnit.net 00:00:00.15]   Starting:    SourcingTenderSystem.SecurityTests&#xD;
+[xUnit.net 00:00:00.24]   Finished:    SourcingTenderSystem.SecurityTests&#xD;
+</StdOut>
+    </Output>
+  </ResultSummary>
+</TestRun>

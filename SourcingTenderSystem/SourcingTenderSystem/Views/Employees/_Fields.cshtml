@@ -7,5 +7,5 @@
 <section class="form-section"><h2>@L.T("Access and assignment")</h2><div class="form-grid mt-3"><div class="field "><label asp-for="DepartmentId" class="form-label"></label>
     <select asp-for="DepartmentId" class="form-select" asp-items="ViewBag.Departments"><option value="">@L.T("Select a department")</option></select>
     <span asp-validation-for="DepartmentId" class="text-danger"></span></div><div class="field "><label asp-for="Role" class="form-label"></label>
-    <select asp-for="Role" class="form-select" asp-items="ViewBag.Roles"><option value="">@L.T("Select a role")</option></select>
+    <select asp-for="Role" class="form-select" asp-items="@(((IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)ViewBag.Roles).Select(x => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem(L.T(x.Text), x.Value ?? x.Text, x.Selected)))"><option value="">@L.T("Select a role")</option></select>
     <span asp-validation-for="Role" class="text-danger"></span></div><div class="toggle-row field-wide"><div class="form-check form-switch mb-0"><input class="form-check-input" asp-for="IsActive"><label class="form-check-label" asp-for="IsActive">@L.T("Active")</label></div></div></div></section>

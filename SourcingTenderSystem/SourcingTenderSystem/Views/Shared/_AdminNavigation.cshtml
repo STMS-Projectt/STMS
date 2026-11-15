@@ -16,7 +16,7 @@
         ("PROCUREMENT", new[] { ("Categories", "Index", "Supply categories", "filter"), ("AdminOperations", "Requests", "Purchase requests", "file"),
             ("AdminOperations", "Tenders", "Tenders", "briefcase"), ("AdminOperations", "Invitations", "Invitations", "mail"),
             ("AdminOperations", "Bids", "Supplier bids", "inbox"), ("EvaluationWorkflow", "Index", "Evaluations & approvals", "check") }),
-        ("SYSTEM", new[] { ("AdminOperations", "Activity", "Activity log", "clock") })
+        ("SYSTEM", new[] { ("ContactInbox", "Index", "Contact inbox", "mail"), ("AdminOperations", "Activity", "Activity log", "clock") })
     };
 }
 <aside class="sidebar" id="workspace-nav" aria-label="@L.T("Administration")">
@@ -24,7 +24,7 @@
     <nav class="side-nav" aria-label="@L.T("Administration pages")">
         @foreach (var (group, entries) in groups)
         {
-            <span class="nav-caption">@group</span>
+            <span class="nav-caption">@L.T(group)</span>
             @foreach (var (target, route, label, icon) in entries)
             {
                 var current = target == controller && (target != "AdminOperations" || route == activeAction);

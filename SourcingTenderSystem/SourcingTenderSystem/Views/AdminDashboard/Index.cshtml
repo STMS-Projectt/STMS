@@ -31,7 +31,7 @@
             ("Suppliers", total, "supplier", "amber", "Suppliers", "Index"),
             ("Active employees", Model.ActiveEmployees, "users", "violet", "Employees", "Index") })
         {
-            <a class="metric surface admin-metric-link" asp-controller="@item.Item5" asp-action="@item.Item6" aria-label="View @item.Item1">
+            <a class="metric surface admin-metric-link" asp-controller="@item.Item5" asp-action="@item.Item6" aria-label="@L.F("View {0}", L.T(item.Item1))">
                 <span class="icon-tile tone-@item.Item4"><partial name="_Icon" model="item.Item3" /></span>
                 <strong data-count="@item.Item2">@item.Item2</strong><span>@L.T(item.Item1)</span>
                 <span class="admin-metric-arrow" aria-hidden="true"><partial name="_Icon" model='@("arrow")' /></span>
@@ -99,7 +99,7 @@
     @if (Model.Tenders == 0) { <p class="subtle mb-0">@L.T("Tender statistics will appear once a tender is created.")</p> }
     @foreach (var row in tenderCounts)
     {
-        <div class="stms-stat-row"><a asp-controller="AdminOperations" asp-action="Tenders" asp-route-status="@row.Key">@L.T(row.Key)</a><meter min="0" max="@Model.Tenders" value="@row.Value" aria-label="@row.Key"></meter><strong>@row.Value</strong></div>
+        <div class="stms-stat-row"><a asp-controller="AdminOperations" asp-action="Tenders" asp-route-status="@row.Key">@L.T(row.Key)</a><meter min="0" max="@Model.Tenders" value="@row.Value" aria-label="@L.T(row.Key)"></meter><strong>@row.Value</strong></div>
     }
 </section>
 </div>

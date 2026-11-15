@@ -2,7 +2,6 @@ using SourcingTenderSystem.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SourcingTenderSystem.Data;
 using SourcingTenderSystem.Models;
@@ -17,9 +16,6 @@ public class BidsController : Controller
 {
     private readonly ApplicationDbContext _context;
     private readonly UserManager<IdentityUser> _userManager;
-
-    // Fixed list of currencies the supplier can choose from
-    private static readonly string[] Currencies = { "JOD", "USD", "EUR" };
 
     public BidsController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
     {
@@ -96,9 +92,7 @@ public class BidsController : Controller
             return RedirectToAction(nameof(MyBids));
         }
 
-        ViewBag.Tender = tender;
-        ViewBag.Currencies = GetCurrencyList();
-        return View(new BidFormViewModel());
+        ViewBag.Tender = tender;        return View(new BidFormViewModel());
     }
 
     // POST: /Bids/Create?tenderId=5
@@ -127,17 +121,9 @@ public class BidsController : Controller
             return RedirectToAction(nameof(MyBids));
         }
 
-        // The currency must be one of our fixed list
-        if (!Currencies.Contains(model.Currency))
-        {
-            ModelState.AddModelError(nameof(model.Currency), "Please choose a currency from the list.");
-        }
-
         if (!ModelState.IsValid)
         {
-            ViewBag.Tender = tender;
-            ViewBag.Currencies = GetCurrencyList();
-            return View(model);
+            ViewBag.Tender = tender;            return View(model);
         }
 
         // Sensitive values come from the server, not from the form
@@ -145,7 +131,7 @@ public class BidsController : Controller
         {
             TenderId = tender.Id,
             SupplierProfileId = supplier.Id,
-            Currency = model.Currency,
+            Currency = Bid.JordanianDinar,
             DeliveryDays = model.DeliveryDays,
             ValidityDays = model.ValidityDays,
             Status = "Draft",
@@ -195,14 +181,11 @@ public class BidsController : Controller
         // Copy the current values into the form
         var model = new BidFormViewModel
         {
-            Currency = bid.Currency,
             DeliveryDays = bid.DeliveryDays,
             ValidityDays = bid.ValidityDays
         };
 
-        ViewBag.Bid = bid;
-        ViewBag.Currencies = GetCurrencyList();
-        return View(model);
+        ViewBag.Bid = bid;        return View(model);
     }
 
     // POST: /Bids/Edit/5
@@ -232,20 +215,12 @@ public class BidsController : Controller
             return RedirectToAction(nameof(Details), new { id = bid.Id });
         }
 
-        if (!Currencies.Contains(model.Currency))
-        {
-            ModelState.AddModelError(nameof(model.Currency), "Please choose a currency from the list.");
-        }
-
         if (!ModelState.IsValid)
         {
-            ViewBag.Bid = bid;
-            ViewBag.Currencies = GetCurrencyList();
-            return View(model);
+            ViewBag.Bid = bid;            return View(model);
         }
 
-        // Only the 3 allowed fields change. EF is already tracking "bid", so SaveChangesAsync is enough.
-        bid.Currency = model.Currency;
+        // The currency on an existing bid never changes when schedule details are edited.
         bid.DeliveryDays = model.DeliveryDays;
         bid.ValidityDays = model.ValidityDays;
         await _context.SaveChangesAsync();
@@ -293,7 +268,7 @@ public class BidsController : Controller
         // Which buttons to show
         model.CanChange = bid.Status == "Draft" && model.TenderIsOpen &&
             await HasAcceptedInvitationAsync(supplier.Id, bid.Tender);
-        model.CanSubmit = model.CanChange
+        model.CanSubmit = model.CanChange && bid.Currency == Bid.JordanianDinar
                           && requestedItems.Count > 0
                           && model.MissingPrices == 0
                           && bid.BidDocuments.Count > 0;
@@ -332,6 +307,12 @@ public class BidsController : Controller
         if (bid.Status != "Draft")
         {
             TempData["Error"] = "Only a draft bid can be submitted.";
+            return RedirectToAction(nameof(Details), new { id = bid.Id });
+        }
+
+        if (bid.Currency != Bid.JordanianDinar)
+        {
+            TempData["Error"] = "Only bids in Jordanian dinars can be submitted. Contact the sourcing officer about this older draft.";
             return RedirectToAction(nameof(Details), new { id = bid.Id });
         }
 
@@ -509,16 +490,5 @@ public class BidsController : Controller
             }
         }
         return missing;
-    }
-
-    // Currency list for the dropdown
-    private List<SelectListItem> GetCurrencyList()
-    {
-        var list = new List<SelectListItem>();
-        foreach (var currency in Currencies)
-        {
-            list.Add(new SelectListItem { Value = currency, Text = currency });
-        }
-        return list;
     }
 }

@@ -6,11 +6,11 @@
 }
 <header class="page-heading stms-hero clarification-hero">
     <div><p class="eyebrow">@L.T("TRANSACTION COMMUNICATION")</p><h1>@L.T(ViewData["Title"]?.ToString())</h1>
-    <p>@(Model.Route?.Title ?? (User.IsInRole(SourcingTenderSystem.Security.Roles.Admin) ? "Review clarification requests and responses across the workspace." : "Questions and responses involving your account."))</p></div>
+    <p>@(Model.Route?.Title ?? L.T(User.IsInRole(SourcingTenderSystem.Security.Roles.Admin) ? "Review clarification requests and responses across the workspace." : "Questions and responses involving your account."))</p></div>
     <div class="clarification-hero-side">
-        <div class="clarification-hero-total"><strong>@Model.Rows.Count</strong><span>@(Model.Rows.Count == 1 ? "conversation" : "conversations")</span></div>
+        <div class="clarification-hero-total"><strong>@Model.Rows.Count</strong><span>@L.T(Model.Rows.Count == 1 ? "conversation" : "conversations")</span></div>
         <div class="button-row">
-        @if (Model.RecordId.HasValue) { <a class="btn btn-outline-secondary" asp-action="Index">@L.T("All clarifications")</a> }
+        @if (Model.RecordId.HasValue) { <a class="btn btn-outline-secondary" data-workspace-page asp-action="Index" asp-route-kind="" asp-route-recordId="">@L.T("All clarifications")</a> }
         @if (Model.Route is not null && Model.Kind != "request") { <a data-workspace-dialog class="btn btn-primary" asp-action="Create" asp-route-kind="@Model.Kind" asp-route-recordId="@Model.RecordId"><partial name="_Icon" model='@("plus")' /> @L.T("New clarification")</a> }
         </div>
     </div>
@@ -22,7 +22,7 @@
     <div><span class="icon-tile tone-teal"><partial name="_Icon" model='@("check")' /></span><strong>@resolved</strong><span>@L.T("Resolved")</span></div>
 </div>
 @if (Model.RecordId.HasValue && Model.Route == null)
-{ <p class="subtle">@(Model.Kind == "request" ? "Only the request author and the responsible sourcing officer can start a clarification. Submit drafts for review first; an officer may need to take review." : "There are no eligible recipients for a new clarification at this stage.")</p> }
+{ <p class="subtle">@L.T(Model.Kind == "request" ? "Only the request author and the responsible sourcing officer can start a clarification. Submit drafts for review first; an officer may need to take review." : "There are no eligible recipients for a new clarification at this stage.")</p> }
 @if (TempData["ClarificationError"] is string error)
 { <div class="alert alert-warning" role="alert">@L.T(error)</div> }
 <section class="surface directory dept-directory clarification-directory" data-directory>
@@ -38,9 +38,9 @@ else
         <div class="record-list clarification-records" data-record-list>
             @foreach (var row in Model.Rows)
             {
-                var reference = row.PurchaseRequisitionId is int requestId ? $"Request #{requestId}" :
-                    row.BidId is int bidId ? $"Bid #{bidId}" : row.TenderId is int tenderId ? $"Tender #{tenderId}" :
-                    row.SupplierApplicationId is int supplierId ? $"Supplier application #{supplierId}" : "No linked record";
+                var reference = row.PurchaseRequisitionId is int requestId ? L.F("Request #{0}", requestId) :
+                    row.BidId is int bidId ? L.F("Bid #{0}", bidId) : row.TenderId is int tenderId ? L.F("Tender #{0}", tenderId) :
+                    row.SupplierApplicationId is int supplierId ? L.F("Supplier application #{0}", supplierId) : L.T("No linked record");
                 <article class="record-card clarification-record" data-record data-status="@row.Status">
                     <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("mail")' /></span><span>@row.Subject<small>#@row.Id · @row.CreatedAt.ToString("dd MMM yyyy HH:mm", L.DisplayCulture) UTC</small></span></div>
                     <dl class="record-facts">
@@ -48,10 +48,10 @@ else
                         <div><dt class="record-field-icon" title="@L.T("From")"><partial name="_Icon" model='@("users")' /><span class="visually-hidden">@L.T("From")</span></dt><dd>@(row.SenderEmployeeProfile?.FullName ?? row.SenderSupplierProfile?.CompanyName ?? "—")</dd></div>
                         <div><dt class="record-field-icon" title="@L.T("To")"><partial name="_Icon" model='@("arrow")' /><span class="visually-hidden">@L.T("To")</span></dt><dd>@(row.ReceiverEmployeeProfile?.FullName ?? row.ReceiverSupplierProfile?.CompanyName ?? "—")</dd></div>
                         <div><dt class="visually-hidden">@L.T("Status")</dt><dd><partial name="_ClarificationStatus" model="row.Status" />
-                            <small>@(row.AnsweredAt is DateTime answered ? $"Last reply {answered:dd MMM yyyy HH:mm} UTC" : "No reply yet")</small>
+                            <small>@(row.AnsweredAt is DateTime answered ? L.F("Last reply {0} UTC", answered.ToString("dd MMM yyyy HH:mm", L.DisplayCulture)) : L.T("No reply yet"))</small>
                         </dd></div>
                     </dl>
-                    <div class="record-action"><a data-workspace-dialog="details" class="record-icon-action" asp-action="Details" asp-route-id="@row.Id" aria-label="View clarification: @row.Subject" data-tooltip="@L.T("View details")"><partial name="_Icon" model='@("eye")' /></a></div>
+                    <div class="record-action"><a data-workspace-dialog="details" class="record-icon-action" asp-action="Details" asp-route-id="@row.Id" aria-label="@L.F("View clarification: {0}", row.Subject)" data-tooltip="@L.T("View details")"><partial name="_Icon" model='@("eye")' /></a></div>
                 </article>
             }
         </div>

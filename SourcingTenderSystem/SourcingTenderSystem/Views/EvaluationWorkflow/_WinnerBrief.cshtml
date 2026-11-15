@@ -1,0 +1,35 @@
+@model WinnerBrief
+@{
+    var win = Model.Winner;
+    var output = Model.Output;
+}
+@if (!Model.AiGenerated)
+{
+    <div class="alert alert-warning" role="status"><strong>@L.T("AI unavailable — showing recorded facts only.")</strong> @L.T(Model.Notice) @if (ViewData["WinnerPrint"] is not true) { <button type="button" class="btn btn-outline-secondary btn-sm ms-2" data-winner-retry>@L.T("Try again")</button> }</div>
+}
+<div class="ai-pick">
+    <p class="ai-label">@L.T("Winning offer")</p>
+    <h3>@win.Supplier</h3>
+    <p class="ai-pick-meta">@win.TotalPrice.ToString("N2") @win.Currency · @L.F("Delivery in {0} days", win.DeliveryDays) · @L.F("Valid for {0} days", win.ValidityDays) @if (win.Total is decimal total) { <text> · @L.F("Score {0:0.##} / 100", total)</text> }</p>
+    <p class="ai-headline">@output.SupplierDescription</p>
+</div>
+<h3 class="h6 mt-3">@L.T("The offer")</h3>
+<p>@output.OfferSummary</p>
+<h3 class="h6 mt-3">@L.T("Why it won")</h3>
+<ul class="ai-reasons">@foreach (var reason in output.WhyWon) { <li>@reason</li> }</ul>
+<h3 class="h6 mt-3">@L.T("What sets it apart")</h3>
+<ul class="ai-reasons">@foreach (var item in output.Differentiators) { <li>@item</li> }</ul>
+@if (output.PointsToVerify.Count > 0)
+{
+    <h3 class="h6 mt-3">@L.T("Points to verify before voting")</h3>
+    <ul class="ai-reasons">@foreach (var item in output.PointsToVerify) { <li>@item</li> }</ul>
+}
+@if (ViewData["WinnerPrint"] is not true)
+{
+<div class="ai-actions">
+    @if (L.Arabic) { <a class="btn btn-outline-secondary" asp-action="PrintWinnerBrief" asp-route-id="@Model.Input.TenderId" target="_blank" rel="noopener">@L.T("Print Arabic summary or save as PDF")</a> }
+    <a class="btn btn-primary" asp-action="DownloadWinnerBrief" asp-route-id="@Model.Input.TenderId"><partial name="_Icon" model='@("download")' /> @L.T(L.Arabic ? "Download English PDF summary" : "Download PDF summary")</a>
+</div>
+}
+<div class="ai-actions"><span class="subtle small">@(Model.AiGenerated ? L.F("Generated {0} · {1}", Model.GeneratedAtUtc.ToLocalTime().ToString("g", L.DisplayCulture), Model.Model) : L.T("Facts only")) · @L.F("{0} compliant bids compared", Model.Input.Bids.Count)</span>
+</div>

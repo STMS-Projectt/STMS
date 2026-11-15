@@ -254,3 +254,44 @@
     .auth-shell .auth-aside { display: none; }
     .auth-shell .auth-panel { padding: clamp(19px, 5vw, 28px); }
 }
+
+/* Align record fields independently of the number of actions in each card. */
+.tender-register, .clarification-records { container-type: inline-size; }
+:is(.tender-register, .clarification-records) .record-card {
+    display:grid; grid-template-columns:minmax(0,1fr); align-items:start; gap:.75rem;
+}
+:is(.tender-register, .clarification-records) .record-card .record-facts {
+    grid-template-columns:repeat(2,minmax(0,1fr)); align-items:start;
+}
+:is(.tender-register, .clarification-records) .record-card .record-facts > div { min-inline-size:0; }
+:is(.tender-register, .clarification-records) .record-card .record-action { justify-content:flex-end; flex-wrap:wrap; }
+.clarification-record .record-facts > div:has(.record-field-icon) { align-items:flex-start; }
+.clarification-record .record-field-icon { flex:none; }
+@container (min-width: 64rem) {
+    .clarification-records .clarification-record {
+        grid-template-columns:minmax(0,1fr) minmax(0,2.7fr) 3rem;
+        align-items:start;
+    }
+    .clarification-records .clarification-record .record-facts {
+        grid-template-columns:repeat(3,minmax(0,1fr)) minmax(0,1.25fr);
+    }
+    .tender-register .record-card {
+        grid-template-columns:minmax(0,1fr) minmax(0,2.55fr) 9.25rem;
+        align-items:start;
+    }
+    .tender-register .record-card .record-facts { grid-template-columns:repeat(4,minmax(0,1fr)); }
+}
+@container (max-width: 21rem) {
+    .clarification-records .clarification-record .record-facts { grid-template-columns:minmax(0,1fr); }
+}
+.sourcing-request-decision .sourcing-request-decisions { grid-template-columns:minmax(0,1fr); }
+.sourcing-request-decisions > div, .sourcing-request-communication .button-row {
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,10rem),1fr)); gap:.5rem;
+}
+.sourcing-request-decisions .btn:first-child { grid-column:auto; }
+.sourcing-request-decisions .btn, .sourcing-request-communication :is(a.btn,form .btn) {
+    display:flex; align-items:center; justify-content:center; gap:.4rem;
+    min-block-size:2.75rem; block-size:100%; inline-size:100%; white-space:normal;
+}
+.sourcing-request-decisions .review-alternatives { padding-block-start:.625rem; }
+.contact-message-body { white-space:pre-wrap; overflow-wrap:anywhere; }

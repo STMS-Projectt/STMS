@@ -25,7 +25,7 @@
     <nav class="side-nav" aria-label="@L.T("Sourcing pages")">
         @foreach (var (group, entries) in groups)
         {
-            <span class="nav-caption">@group</span>
+            <span class="nav-caption">@L.T(group)</span>
             @foreach (var (target, route, label, icon) in entries)
             {
                 var current = controller == target && currentAction == route;

@@ -21,7 +21,7 @@
         }
         @if (manager || top)
         {
-            <a class="side-link @(controller == "EvaluationWorkflow" ? "is-current" : "")" aria-current="@(controller == "EvaluationWorkflow" ? "page" : null)" asp-controller="EvaluationWorkflow" asp-action="Index"><partial name="_Icon" model='@("check")' /> @(top ? "Award decisions" : "Evaluation reports")</a>
+            <a class="side-link @(controller == "EvaluationWorkflow" ? "is-current" : "")" aria-current="@(controller == "EvaluationWorkflow" ? "page" : null)" asp-controller="EvaluationWorkflow" asp-action="Index"><partial name="_Icon" model='@("check")' /> @L.T(top ? "Award decisions" : "Evaluation reports")</a>
         }
     </nav>
     <div class="side-bottom"><partial name="_LoginPartial" /></div>

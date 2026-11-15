@@ -29,6 +29,6 @@ else
     }
     <div class="ai-actions">
         <a class="btn btn-primary" asp-action="AiReport" asp-route-id="@Model.TenderId"><partial name="_Icon" model='@("download")' /> @L.T("Download full AI report")</a>
-        <span class="subtle small">Generated @analysis.GeneratedAtUtc.ToLocalTime().ToString("g") · @analysis.Model · @analysis.Input.Bids.Count bids compared</span>
+        <span class="subtle small">@L.F("Generated {0} · {1} · {2} bids compared", analysis.GeneratedAtUtc.ToLocalTime().ToString("g", L.DisplayCulture), analysis.Model, analysis.Input.Bids.Count)</span>
     </div>
 }

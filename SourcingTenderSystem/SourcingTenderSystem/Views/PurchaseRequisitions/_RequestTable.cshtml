@@ -11,7 +11,7 @@
                 <td class="@(request.Priority is "High" or "Urgent" ? "priority-high" : "")">@L.T(request.Priority)</td>
                 <td class="text-nowrap">@request.TargetDate.ToString("dd MMM yyyy", L.DisplayCulture)</td>
                 <td><partial name="_RequestStatus" model="request.Status" /></td>
-                <td><a class="table-action" asp-action="Details" asp-route-id="@request.Id" aria-label="View request PR-@request.Id">@L.T("View") <partial name="_Icon" model='@("arrow")' /></a></td>
+                <td><a class="table-action" asp-action="Details" asp-route-id="@request.Id" aria-label="@L.F("View request PR-{0}", request.Id)">@L.T("View") <partial name="_Icon" model='@("arrow")' /></a></td>
             </tr>
         }
         </tbody>

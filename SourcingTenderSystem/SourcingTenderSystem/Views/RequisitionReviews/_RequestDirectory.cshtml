@@ -13,7 +13,7 @@
                 <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("file")' /></span><span>@request.Title<small>PR-@request.Id · @request.CreatedByEmployeeProfile.FullName</small></span></div>
                 <dl class="record-facts"><div><dt>@L.T("Department")</dt><dd>@request.Department.Name</dd></div><div><dt>@L.T("Priority")</dt><dd>@L.T(request.Priority)</dd></div><div><dt>@L.T("Target date")</dt><dd>@request.TargetDate.ToString("dd MMM yyyy", L.DisplayCulture)</dd></div><div><dt>@L.T("Status")</dt><dd><partial name="_Status" model="request.Status" /></dd></div></dl>
                 <div class="record-action">
-                    @if (request.Status != "Draft") { <a class="record-icon-action" data-workspace-dialog="details" asp-action="Details" asp-route-id="@request.Id" aria-label="View request PR-@request.Id" data-tooltip="@L.T("View request")"><partial name="_Icon" model='@("eye")' /></a> }
+                    @if (request.Status != "Draft") { <a class="record-icon-action" data-workspace-dialog="details" asp-action="Details" asp-route-id="@request.Id" aria-label="@L.F("View request PR-{0}", request.Id)" data-tooltip="@L.T("View request")"><partial name="_Icon" model='@("eye")' /></a> }
                     @if (TenderRules.CanCreate(request)) { <a class="record-icon-action" data-workspace-dialog asp-controller="Tenders" asp-action="Create" asp-route-purchaseRequisitionId="@request.Id" aria-label="@L.T("Create tender")" data-tooltip="@L.T("Create tender")"><partial name="_Icon" model='@("plus")' /></a> }
                 </div>
             </article>

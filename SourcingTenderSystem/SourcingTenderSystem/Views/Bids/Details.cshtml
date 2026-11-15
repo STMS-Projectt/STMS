@@ -7,7 +7,11 @@
     ViewData["Title"] = label ?? "Bid details";
 }
 <a class="back-link" asp-action="MyBids"><partial name="_Icon" model='@("back")' /> @L.T("My bids")</a>
-<header class="page-heading stms-hero admin-record-hero" data-compact-panel="@(panel == "submission" ? "true" : null)"><div><p class="eyebrow">SUPPLIER BID #@bid.Id</p><h1>@(label ?? bid.Tender.Title)</h1><p>@(full ? "Offer details, item prices and supporting documents." : bid.Tender.Title)</p></div><partial name="_StatusBadge" model="bid.Status" /></header>
+<header class="page-heading stms-hero admin-record-hero" data-compact-panel="@(panel == "submission" ? "true" : null)"><div><p class="eyebrow">@L.F("Supplier bid #{0}", bid.Id)</p><h1>@(label is null ? bid.Tender.Title : L.T(label))</h1><p>@(full ? L.T("Offer details, item prices and supporting documents.") : bid.Tender.Title)</p></div><partial name="_StatusBadge" model="bid.Status" /></header>
+@if (bid.Status == "Draft" && bid.Currency != Bid.JordanianDinar)
+{
+    <p class="alert alert-warning">@L.T("Only bids in Jordanian dinars can be submitted. Contact the sourcing officer about this older draft.")</p>
+}
 <partial name="_Alerts" />
 
 @if (bid.Status == "Draft" && !Model.TenderIsOpen)
@@ -39,7 +43,7 @@
             <h2>@L.T("My bid")</h2>
                 <dl class="row">
                     <dt class="col-sm-5">@L.T("Status")</dt>
-                    <dd class="col-sm-7"><partial name="_StatusBadge" model="bid.Status" /> @if (bid.AwardOutcome is string result) { <span class="badge bg-secondary">Result: @result</span> }</dd>
+                    <dd class="col-sm-7"><partial name="_StatusBadge" model="bid.Status" /> @if (bid.AwardOutcome is string result) { <span class="badge bg-secondary">@L.F("Result: {0}", L.T(result))</span> }</dd>
                     <dt class="col-sm-5">@L.T("Total price")</dt>
                     <dd class="col-sm-7">@bid.TotalPrice.ToString("N2") @bid.Currency</dd>
                     <dt class="col-sm-5">@L.T("Delivery")</dt>
@@ -67,7 +71,7 @@
 @if (full || panel == "prices")
 {
 <section class="surface detail-card record-section">
-<div class="record-section-heading"><div><h2>@L.T("Requested items and my prices")</h2><p>@(Model.Rows.Count - Model.MissingPrices) of @Model.Rows.Count items priced</p></div><span class="record-panel-label">@bid.TotalPrice.ToString("N2") @bid.Currency</span></div>
+<div class="record-section-heading"><div><h2>@L.T("Requested items and my prices")</h2><p>@L.F("{0} of {1} items priced", Model.Rows.Count - Model.MissingPrices, Model.Rows.Count)</p></div><span class="record-panel-label">@bid.TotalPrice.ToString("N2") @bid.Currency</span></div>
 @if (Model.Rows.Count == 0)
 {
     <p class="text-muted">@L.T("This tender has no requested items.")</p>
@@ -90,13 +94,13 @@ else
                 <div class="record-action">
                     @if (row.BidItem == null)
                     {
-                        <a data-workspace-dialog class="record-icon-action" asp-controller="BidItems" asp-action="Create" asp-route-bidId="@bid.Id" asp-route-purchaseRequisitionItemId="@row.RequestedItem.Id" aria-label="Add price for @row.RequestedItem.ItemName" data-tooltip="@L.T("Add price")"><partial name="_Icon" model='@("plus")' /></a>
+                        <a data-workspace-dialog class="record-icon-action" asp-controller="BidItems" asp-action="Create" asp-route-bidId="@bid.Id" asp-route-purchaseRequisitionItemId="@row.RequestedItem.Id" aria-label="@L.F("Add price for {0}", row.RequestedItem.ItemName)" data-tooltip="@L.T("Add price")"><partial name="_Icon" model='@("plus")' /></a>
                     }
                     else
                     {
-                        <a data-workspace-dialog class="record-icon-action" asp-controller="BidItems" asp-action="Edit" asp-route-id="@row.BidItem.Id" aria-label="Edit price for @row.RequestedItem.ItemName" data-tooltip="@L.T("Edit price")"><partial name="_Icon" model='@("edit")' /></a>
+                        <a data-workspace-dialog class="record-icon-action" asp-controller="BidItems" asp-action="Edit" asp-route-id="@row.BidItem.Id" aria-label="@L.F("Edit price for {0}", row.RequestedItem.ItemName)" data-tooltip="@L.T("Edit price")"><partial name="_Icon" model='@("edit")' /></a>
                         <form asp-controller="BidItems" asp-action="Delete" asp-route-id="@row.BidItem.Id" method="post" data-workspace-confirm="@L.T("Delete the price for this item?")" onsubmit="return window.stmsWorkspaceReady || confirm(this.dataset.workspaceConfirm);">
-                            <button type="submit" class="record-icon-action record-icon-danger" aria-label="Delete price for @row.RequestedItem.ItemName" data-tooltip="@L.T("Delete price")"><partial name="_Icon" model='@("close")' /></button>
+                            <button type="submit" class="record-icon-action record-icon-danger" aria-label="@L.F("Delete price for {0}", row.RequestedItem.ItemName)" data-tooltip="@L.T("Delete price")"><partial name="_Icon" model='@("close")' /></button>
                         </form>
                     }
                 </div>
@@ -112,7 +116,7 @@ else
 @if (full || panel == "documents")
 {
 <section class="surface detail-card record-section">
-<div class="record-section-heading"><div><h2>@L.T("Supporting documents")</h2><p>@bid.BidDocuments.Count attached</p></div>
+<div class="record-section-heading"><div><h2>@L.T("Supporting documents")</h2><p>@L.F("{0} attached", bid.BidDocuments.Count)</p></div>
 @if (Model.CanChange)
 {
     <a data-workspace-dialog class="btn btn-primary" asp-controller="BidDocuments" asp-action="Upload" asp-route-bidId="@bid.Id"><partial name="_Icon" model='@("upload")' /> @L.T("Upload document")</a>
@@ -127,16 +131,16 @@ else
         @foreach (var document in bid.BidDocuments)
         {
             <article class="record-card">
-                <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("file")' /></span><span>@document.DocumentType<small>@document.FileName</small></span></div>
+                <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("file")' /></span><span>@L.T(document.DocumentType)<small>@document.FileName</small></span></div>
                 <dl class="record-facts"><div><dt>@L.T("Uploaded (UTC)")</dt><dd>@document.UploadedAt.ToString("dd MMM yyyy", L.DisplayCulture)</dd></div></dl>
                 <div class="record-action">
-                    <a class="record-icon-action" asp-controller="BidDocuments" asp-action="Download" asp-route-id="@document.Id" aria-label="Download @document.FileName" data-tooltip="@L.T("Download")"><partial name="_Icon" model='@("download")' /></a>
-                    <a class="record-icon-action" asp-controller="BidDocuments" asp-action="Download" asp-route-id="@document.Id" asp-route-preview="true" target="_blank" rel="noopener" aria-label="Preview @document.FileName" data-tooltip="@L.T("Preview PDF")"><partial name="_Icon" model='@("eye")' /></a>
+                    <a class="record-icon-action" asp-controller="BidDocuments" asp-action="Download" asp-route-id="@document.Id" aria-label="@L.F("Download {0}", document.FileName)" data-tooltip="@L.T("Download")"><partial name="_Icon" model='@("download")' /></a>
+                    <a class="record-icon-action" asp-controller="BidDocuments" asp-action="Download" asp-route-id="@document.Id" asp-route-preview="true" target="_blank" rel="noopener" aria-label="@L.F("Preview {0}", document.FileName)" data-tooltip="@L.T("Preview PDF")"><partial name="_Icon" model='@("eye")' /></a>
                     @if (Model.CanChange)
                     {
                         <form asp-controller="BidDocuments" asp-action="Delete" asp-route-id="@document.Id" method="post"
                               asp-antiforgery="true" class="d-inline" data-workspace-confirm="@L.T("Delete this document?")" onsubmit="return window.stmsWorkspaceReady || confirm(this.dataset.workspaceConfirm);">
-                            <button type="submit" class="record-icon-action record-icon-danger" aria-label="Remove @document.FileName" data-tooltip="@L.T("Remove")"><partial name="_Icon" model='@("trash")' /></button>
+                            <button type="submit" class="record-icon-action record-icon-danger" aria-label="@L.F("Remove {0}", document.FileName)" data-tooltip="@L.T("Remove")"><partial name="_Icon" model='@("trash")' /></button>
                         </form>
                     }
                 </div>
@@ -156,10 +160,10 @@ else
 {
     <ul class="application-checklist" aria-label="@L.T("Before you submit")">
             <li>
-                <span>Prices: @(Model.Rows.Count - Model.MissingPrices) of @Model.Rows.Count items priced</span>
+                <span>@L.F("Prices: {0} of {1} items priced", Model.Rows.Count - Model.MissingPrices, Model.Rows.Count)</span>
                 @if (Model.Rows.Count > 0 && Model.MissingPrices == 0)
                 {
-                    <span class="badge bg-success">OK</span>
+                    <span class="badge bg-success">@L.T("OK")</span>
                 }
                 else
                 {
@@ -167,10 +171,10 @@ else
                 }
             </li>
             <li>
-                <span>Documents: @bid.BidDocuments.Count uploaded (at least 1 required)</span>
+                <span>@L.F("Documents: {0} uploaded (at least 1 required)", bid.BidDocuments.Count)</span>
                 @if (bid.BidDocuments.Count > 0)
                 {
-                    <span class="badge bg-success">OK</span>
+                    <span class="badge bg-success">@L.T("OK")</span>
                 }
                 else
                 {

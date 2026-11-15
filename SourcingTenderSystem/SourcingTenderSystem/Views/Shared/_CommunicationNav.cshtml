@@ -11,6 +11,6 @@
     <a class="side-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Clarifications" ? "is-current" : "")" aria-current="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Clarifications" ? "page" : null)" asp-controller="Clarifications" asp-action="Index"><partial name="_Icon" model='@("file")' /> @L.T("Clarifications")</a>
     @if (!Model && actor != null)
     {
-        <a class="side-link" asp-controller="Notifications" asp-action="Index"><partial name="_Icon" model='@("clock")' /> @L.T("Notifications") <span class="badge bg-light text-dark" data-notification-count="@Url.Action("Unread", "Notifications")" aria-label="@unread unread" hidden="@(unread == 0)">@(unread > 99 ? "99+" : unread.ToString())</span></a>
+        <a class="side-link" asp-controller="Notifications" asp-action="Index"><partial name="_Icon" model='@("clock")' /> @L.T("Notifications") <span class="badge bg-light text-dark" data-notification-count="@Url.Action("Unread", "Notifications")" aria-label="@L.F("{0} unread", unread)" hidden="@(unread == 0)">@(unread > 99 ? "99+" : unread.ToString())</span></a>
     }
 }

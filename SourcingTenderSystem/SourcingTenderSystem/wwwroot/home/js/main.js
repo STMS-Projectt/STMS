@@ -245,35 +245,7 @@ function countUp(el) {
   })(t0);
 }
 
-/* ---------------- contact form ---------------- */
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const form = $('#contactForm'), note = $('#formNote');
-form.addEventListener('submit', async e => {
-  e.preventDefault();
-  let ok = true;
-  $$('.fl, .consent', form).forEach(f => f.classList.remove('invalid'));
-  for (const name of ['name', 'email', 'message']) {
-    const input = form.elements[name];
-    const bad = !input.value.trim() || (name === 'email' && !EMAIL_RE.test(input.value.trim()));
-    if (bad) { ok = false; input.closest('.fl').classList.add('invalid'); }
-  }
-  if (!form.elements.consent.checked) { ok = false; form.querySelector('.consent').classList.add('invalid'); }
-  if (!ok) { note.textContent = t('Please add your name, a valid email, a message and tick the consent box.'); note.className = 'form-note err'; return; }
-
-  const data = Object.fromEntries(new FormData(form));
-  const btn = form.querySelector('button[type="submit"]'); btn.disabled = true; btn.textContent = t('Sending…');
-  try {
-    // TODO: connect to your backend, e.g.
-    // await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
-    await new Promise(r => setTimeout(r, 700));
-    console.log('Contact form', data);
-    form.reset();
-    note.textContent = t('Thank you! We’ll get back to you within one business day.'); note.className = 'form-note ok';
-  } catch {
-    note.textContent = t('Something went wrong — please try again.'); note.className = 'form-note err';
-  } finally { btn.disabled = false; btn.textContent = t('Send message →'); }
-});
-form.addEventListener('input', e => { const f = e.target.closest('.fl, .consent'); if (f) f.classList.remove('invalid'); });
 
 /* ---------------- newsletter ---------------- */
 const news = $('#newsForm'), newsNote = $('#newsNote');

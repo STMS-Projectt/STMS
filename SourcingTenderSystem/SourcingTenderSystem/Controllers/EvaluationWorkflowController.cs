@@ -10,7 +10,7 @@ using SourcingTenderSystem.ViewModels;
 namespace SourcingTenderSystem.Controllers;
 
 [Authorize(Roles = Roles.Admin + "," + Roles.SourcingOfficer + "," + Roles.SourcingManager + "," + Roles.TopCommittee)]
-public sealed class EvaluationWorkflowController(ApplicationDbContext db, SupplierFileStore files, ExchangeRates rates) : RequisitionBaseController(db)
+public sealed class EvaluationWorkflowController(ApplicationDbContext db, SupplierFileStore files) : RequisitionBaseController(db)
 {
     private const string Officer = "Pending Officer Approval";
     private const string Manager = "Pending Manager Approval";
@@ -167,6 +167,112 @@ public sealed class EvaluationWorkflowController(ApplicationDbContext db, Suppli
             ("Approval notes", decision.Comments ?? "-")
         };
         return await pdf.Decision(this, id, lines);
+    }
+
+    // ------------------------------------------------------------ Winner brief (AI, advisory only)
+
+    /// <summary>Dialog shell: the AI brief itself is loaded by <see cref="WinnerBrief"/> so the dialog opens at once.</summary>
+    [HttpGet, Authorize(Roles = Roles.TopCommittee + "," + Roles.Admin)]
+    public async Task<IActionResult> Winner(int id)
+    {
+        var employee = await CurrentEmployeeAsync();
+        if (employee is null) return Forbid();
+        var tender = await Visible(employee.Id).AsNoTracking().Include(t => t.EvaluationReport)
+            .ThenInclude(r => r!.RecommendedBid).ThenInclude(b => b.SupplierProfile).SingleOrDefaultAsync(t => t.Id == id);
+        if (tender?.EvaluationReport is not { ResultsSnapshot: not null } report || !HasWinner(report.Status)) return NotFound();
+        return View(tender);
+    }
+
+    [HttpGet, Authorize(Roles = Roles.TopCommittee + "," + Roles.Admin)]
+    public async Task<IActionResult> WinnerBrief(int id, [FromServices] WinnerAiBriefing briefing, CancellationToken cancellationToken)
+    {
+        var employee = await CurrentEmployeeAsync();
+        if (employee is null) return Forbid();
+        var input = await WinnerInputAsync(id, employee.Id);
+        if (input is null) return NotFound();
+        return PartialView("_WinnerBrief", await briefing.GetOrCreateAsync(input, cancellationToken));
+    }
+
+    [HttpGet, Authorize(Roles = Roles.TopCommittee + "," + Roles.Admin)]
+    public async Task<IActionResult> PrintWinnerBrief(int id, [FromServices] WinnerAiBriefing briefing, CancellationToken cancellationToken)
+    {
+        var employee = await CurrentEmployeeAsync();
+        if (employee is null) return Forbid();
+        var input = await WinnerInputAsync(id, employee.Id);
+        if (input is null) return NotFound();
+        Response.Headers.CacheControl = "private, no-store";
+        return View(await briefing.GetOrCreateAsync(input, cancellationToken));
+    }
+
+    [HttpGet, Authorize(Roles = Roles.TopCommittee + "," + Roles.Admin)]
+    public async Task<IActionResult> DownloadWinnerBrief(int id, [FromServices] WinnerAiBriefing briefing,
+        [FromServices] ProtectedPdf pdf, [FromServices] ILogger<EvaluationWorkflowController> logger, CancellationToken cancellationToken)
+    {
+        var employee = await CurrentEmployeeAsync();
+        if (employee is null) return Forbid();
+        var input = await WinnerInputAsync(id, employee.Id);
+        if (input is null) return NotFound();
+        var brief = await briefing.GetOrCreateAsync(input, cancellationToken, language: "en");
+        try
+        {
+            using var document = WinnerBriefPdf.Build(brief);
+            pdf.AddWatermark(document, User, DateTime.UtcNow);
+            var bytes = await pdf.Render(document, null);
+            Response.Headers.CacheControl = "private, no-store";
+            return File(bytes, "application/pdf", $"winner-brief-tender-{id}.pdf");
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "Could not build the winner brief PDF for tender {TenderId}", id);
+            return StatusCode(422, new UiText().T("Could not prepare the winner brief PDF."));
+        }
+    }
+
+    private static bool HasWinner(string status) => status is Top or Approved;
+
+    private async Task<WinnerBriefInput?> WinnerInputAsync(int id, int employeeId)
+    {
+        var tender = await Visible(employeeId).AsNoTracking().AsSplitQuery()
+            .Include(t => t.PurchaseRequisition).ThenInclude(r => r.Items)
+            .Include(t => t.EvaluationCriteria)
+            .Include(t => t.EvaluationReport)
+            .SingleOrDefaultAsync(t => t.Id == id);
+        if (tender?.EvaluationReport is not { ResultsSnapshot: not null } report || !HasWinner(report.Status)) return null;
+        var bids = await Db.Bids.AsNoTracking().AsSplitQuery()
+            .Where(b => b.TenderId == id && b.SubmittedAt != null && b.Status == "Compliant")
+            .Include(b => b.SupplierProfile).ThenInclude(s => s.Categories)
+            .Include(b => b.BidItems).ThenInclude(i => i.PurchaseRequisitionItem)
+            .Include(b => b.BidDocuments)
+            .OrderBy(b => b.Id).ToListAsync();
+        var winner = bids.FirstOrDefault(b => b.Id == report.RecommendedBidId);
+        if (winner is null) return null;
+        var scores = (string.IsNullOrWhiteSpace(report.SupplierComparison) ? null
+            : System.Text.Json.JsonSerializer.Deserialize<List<SupplierEvaluationResult>>(report.SupplierComparison)) ?? [];
+        var ranked = scores.Where(r => r.Total != null && bids.Any(b => b.Id == r.BidId))
+            .OrderByDescending(r => r.Total).ThenBy(r => r.BidId).Select(r => r.BidId).ToList();
+        var previousAwards = await Db.Bids.CountAsync(b => b.SupplierProfileId == winner.SupplierProfileId &&
+            b.TenderId != id && b.AwardOutcome == "Awarded");
+        var items = tender.PurchaseRequisition.Items.OrderBy(i => i.Id).ToList();
+        var supplier = winner.SupplierProfile;
+        return new WinnerBriefInput(tender.Id, tender.Title, tender.Description, report.Status, report.Summary,
+            winner.Id,
+            new WinnerSupplierProfile(supplier.CompanyName, supplier.Address,
+                supplier.Categories.Select(c => c.Name).OrderBy(n => n).ToList(), supplier.CreatedAt, previousAwards),
+            items.Select(i => new AiRequestedItem(i.Id, i.ItemName, i.Quantity, i.Unit, i.Specifications)).ToList(),
+            tender.EvaluationCriteria.OrderBy(c => c.Type).ThenBy(c => c.Id)
+                .Select(c => new AiCriterion(c.Name, c.Type, c.WeightPercent, c.MaxScore)).ToList(),
+            bids.Select(b =>
+            {
+                var row = scores.FirstOrDefault(r => r.BidId == b.Id);
+                var rank = ranked.IndexOf(b.Id);
+                return new WinnerBriefBid(b.Id, b.SupplierProfile.CompanyName, b.TotalPrice, b.Currency,
+                    b.DeliveryDays, b.ValidityDays, row?.Technical, row?.Financial, row?.Total,
+                    rank < 0 ? bids.Count : rank + 1,
+                    items.Count(i => b.BidItems.Any(l => l.PurchaseRequisitionItemId == i.Id && l.Quantity > 0)),
+                    b.BidItems.OrderBy(l => l.Id).Select(l => new AiBidLine(l.PurchaseRequisitionItemId,
+                        l.PurchaseRequisitionItem.ItemName, l.Quantity, l.UnitPrice, l.Notes)).ToList(),
+                    b.BidDocuments.OrderBy(d => d.Id).Select(d => $"{d.DocumentType}: {d.FileName}").ToList());
+            }).ToList());
     }
 
     [HttpGet, Authorize(Roles = Roles.TopCommittee)]
@@ -346,12 +452,8 @@ public sealed class EvaluationWorkflowController(ApplicationDbContext db, Suppli
     {
         var bidders = await Db.Bids.AsNoTracking().Where(b => b.TenderId == tender.Id && b.SubmittedAt != null)
             .Include(b => b.SupplierProfile).Include(b => b.BidDocuments).AsSplitQuery().ToListAsync();
-        var rateDate = ExchangeRates.ReferenceDate(tender.CloseDate, DateTime.UtcNow);
-        var usd = new Dictionary<int, UsdConversion?>();
-        foreach (var b in bidders) usd[b.Id] = await rates.ConvertAsync(b.TotalPrice, b.Currency, rateDate);
         return bidders.Select(b =>
         {
-            var fx = usd[b.Id];
             var rows = scores.Where(s => s.BidId == b.Id).ToList();
             var eligible = b.Status == "Compliant";
             var technical = eligible ? EvaluationRules.WeightedByReviewer(tender.EvaluationCriteria.Where(c => c.Type == "Technical"), rows, weights) : (decimal?)null;
@@ -360,7 +462,7 @@ public sealed class EvaluationWorkflowController(ApplicationDbContext db, Suppli
                 technical is decimal t ? EvaluationRules.Round(t) : null,
                 financial is decimal f ? EvaluationRules.Round(f) : null,
                 technical + financial is decimal total ? EvaluationRules.Round(total) : null,
-                b.BidDocuments.Select(d => d.Id).ToList(), fx?.Rate, fx?.UsdAmount, fx?.EffectiveDate, fx?.Source);
+                b.BidDocuments.Select(d => d.Id).ToList());
         }).OrderByDescending(r => r.Total).ThenBy(r => r.BidId).ToList();
     }
 

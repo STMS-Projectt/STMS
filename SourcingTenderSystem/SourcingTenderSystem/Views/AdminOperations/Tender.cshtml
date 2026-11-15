@@ -7,7 +7,7 @@
     ViewData["Title"] = label ?? "Tender details";
 }
 <a class="back-link" asp-action="Tenders"><partial name="_Icon" model='@("back")' /> @L.T("Tenders")</a>
-<header class="page-heading stms-hero admin-record-hero"><div><p class="eyebrow">TENDER #@tender.Id</p><h1>@(label ?? tender.Title)</h1><p>@(full ? $"{tender.Status} · {tender.PurchaseRequisition.Department.Name}" : tender.Title)</p></div>
+<header class="page-heading stms-hero admin-record-hero"><div><p class="eyebrow">@L.F("Tender #{0}", tender.Id)</p><h1>@(label is null ? tender.Title : L.T(label))</h1><p>@(full ? $"{L.T(tender.Status)} · {tender.PurchaseRequisition.Department.Name}" : tender.Title)</p></div>
 @if (full || panel == "overview")
 {
 <div class="record-action">
@@ -30,7 +30,7 @@
 {
 <section class="surface detail-card mb-3"><h2>@L.T("Committee")</h2>
 @if (tender.CommitteeMembers.Count == 0) { <p class="subtle mb-0">@L.T("No members assigned.")</p> }
-else { <ul class="mb-0">@foreach (var member in tender.CommitteeMembers.OrderBy(m => m.CommitteeType).ThenBy(m => m.MemberRole)) { <li>@member.EmployeeProfile.FullName · @member.MemberRole · @member.CommitteeType</li> }</ul> }
+else { <ul class="mb-0">@foreach (var member in tender.CommitteeMembers.OrderBy(m => m.CommitteeType).ThenBy(m => m.MemberRole)) { <li>@member.EmployeeProfile.FullName · @L.T(member.MemberRole) · @L.T(member.CommitteeType)</li> }</ul> }
 </section>
 }
 @if (full || panel is "invitations" or "bids")
@@ -39,7 +39,7 @@ else { <ul class="mb-0">@foreach (var member in tender.CommitteeMembers.OrderBy(
 @foreach (var (key, title, records) in new[] { ("invitations", "Invitations", Model.Invitations), ("bids", "Submitted bids", Model.Bids) })
 {
     if (!full && panel != key) continue;
-    <section class="surface directory"><div class="directory-toolbar"><h2 class="mb-0">@title</h2></div>
+    <section class="surface directory"><div class="directory-toolbar"><h2 class="mb-0">@L.T(title)</h2></div>
     @if (records.Count == 0) { <div class="empty-state">@L.T("No records yet.")</div> }
     else
     {

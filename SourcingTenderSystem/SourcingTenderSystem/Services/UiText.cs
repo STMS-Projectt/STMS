@@ -26,12 +26,29 @@ public sealed class UiText
     private static readonly Lazy<string> Client = new(() => JsonSerializer.Serialize(
         Catalog.Value.ToDictionary(pair => pair.Key.ToLowerInvariant(), pair => pair.Value)));
     private static readonly CultureInfo ArabicDisplay = CultureInfo.GetCultureInfo("ar-JO");
-    public bool Arabic => CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ar";
+    private readonly string? language;
+    public UiText() { }
+    internal UiText(string language) => this.language = language;
+    public bool Arabic => (language ?? CultureInfo.CurrentUICulture.TwoLetterISOLanguageName) == "ar";
     public CultureInfo DisplayCulture => Arabic ? ArabicDisplay : CultureInfo.CurrentCulture;
     public string Language => Arabic ? "ar" : "en";
     public string Direction => Arabic ? "rtl" : "ltr";
     public string T(string? text) => text is null ? "" : Arabic ? Catalog.Value.GetValueOrDefault(text, text) : text;
     public string F(string format, params object?[] args) => string.Format(CultureInfo.CurrentCulture, T(format), args);
+    // Only call for system-owned messages. User-entered titles, notes and filenames stay verbatim.
+    public string SystemMessage(string? text)
+    {
+        if (string.IsNullOrEmpty(text) || !Arabic) return text ?? "";
+        if (Catalog.Value.TryGetValue(text, out var translated)) return translated;
+        foreach (var format in new[] { "Tender invitation · Round {0}", "Round {0} requires {1} eligible supplier bids." })
+        {
+            var pattern = string.Concat(Regex.Split(format, @"(\{\d+\})")
+                .Select(part => part.StartsWith('{') ? @"(\d+)" : Regex.Escape(part)));
+            var match = Regex.Match(text, "^" + pattern + "$", RegexOptions.CultureInvariant);
+            if (match.Success) return F(format, match.Groups.Values.Skip(1).Select(g => (object)g.Value).ToArray());
+        }
+        return text;
+    }
     public string Error(string text)
     {
         if (!Arabic) return text;

@@ -15,7 +15,7 @@
         <h2 class="h5 card-title">@tender.Title</h2>
         <p class="card-text">@tender.Description</p>
         <p class="card-text mb-0">
-            <small class="text-muted">Scheduled deadline: @tender.CloseDate.ToString("yyyy-MM-dd HH:mm") (UTC) · Tender status: @tender.Status</small>
+            <small class="text-muted">@L.F("Scheduled deadline: {0} (UTC) · Tender status: {1}", tender.CloseDate.ToString("yyyy-MM-dd HH:mm", L.DisplayCulture), L.T(tender.Status))</small>
         </p>
     </div>
 </div>
@@ -33,7 +33,7 @@
 }
 @if (!Model.TenderIsClosed)
 {
-    <div class="alert alert-info" role="status">Tender status: @tender.Status. Compliance decisions are available after closing.</div>
+    <div class="alert alert-info" role="status">@L.F("Tender status: {0}. Compliance decisions are available after closing.", L.T(tender.Status))</div>
 }
 else if (Model.Bids.Count > 0)
 {
@@ -46,9 +46,7 @@ else if (Model.Bids.Count > 0)
 }
 @if (Model.MixedCurrencies)
 {
-    <div class="alert alert-warning" role="alert">The bids use different currencies. @(Model.UsdOrdered
-        ? "They are ordered by an approximate USD equivalent at one reference date (the tender closing date). This is a reference only and does not select a winner."
-        : "An exchange rate is unavailable for at least one bid, so bids are grouped by currency and not ranked across currencies.")</div>
+    <div class="alert alert-warning" role="alert">@L.T("Older bids are shown in their original currencies. Prices are not compared across currencies.")</div>
 }
 
 @if (tender.Status is "Draft" or "Published" or "Open")
@@ -61,7 +59,7 @@ else if (Model.Bids.Count == 0)
 }
 else
 {
-    <p class="text-muted">One column per bid, sorted by total price (lowest first@(Model.MixedCurrencies ? (Model.UsdOrdered ? ", approximate USD" : " within each currency") : "")).</p>
+    <p class="text-muted">@L.T(Model.MixedCurrencies ? "One column per bid, sorted by total price within each currency (lowest first)." : "One column per bid, sorted by total price (lowest first).")</p>
 
     @* Side-by-side table: rows = information, columns = bids *@
     <div class="table-responsive mb-4">
@@ -87,22 +85,21 @@ else
                     <th scope="row">@L.T("Total price")</th>
                     @foreach (var bid in Model.Bids)
                     {
-                        var fx = Model.UsdReferences.GetValueOrDefault(bid.Id);
-                        <td>@if (Model.MixedCurrencies) { <partial name="_UsdReference" model="@(new UsdReferenceView(bid.TotalPrice, bid.Currency, fx?.UsdAmount, fx?.Rate, fx?.EffectiveDate, fx?.Source))" /> } else { <strong>@bid.TotalPrice.ToString("N2") @bid.Currency</strong> }</td>
+                        <td><strong>@bid.TotalPrice.ToString("N2") @bid.Currency</strong></td>
                     }
                 </tr>
                 <tr>
                     <th scope="row">@L.T("Delivery")</th>
                     @foreach (var bid in Model.Bids)
                     {
-                        <td>@bid.DeliveryDays days</td>
+                        <td>@L.F("{0} days", bid.DeliveryDays)</td>
                     }
                 </tr>
                 <tr>
                     <th scope="row">@L.T("Offer validity")</th>
                     @foreach (var bid in Model.Bids)
                     {
-                        <td>@bid.ValidityDays days</td>
+                        <td>@L.F("{0} days", bid.ValidityDays)</td>
                     }
                 </tr>
                 <tr>
@@ -158,7 +155,7 @@ else
                                     @foreach (var document in bid.BidDocuments)
                                     {
                                         <li>
-                                            <a asp-controller="BidDocuments" asp-action="Download" asp-route-id="@document.Id">@document.DocumentType</a>
+                                            <a asp-controller="BidDocuments" asp-action="Download" asp-route-id="@document.Id">@L.T(document.DocumentType)</a>
                                             <small class="text-muted">@document.FileName</small>
                                         </li>
                                     }
@@ -184,7 +181,7 @@ else
                             <td>
                                 @if (bid.Status == "Pending Clarification" && bid.ComplianceClarification is { } clarification)
                                 {
-                                    <a data-workspace-dialog="details" asp-controller="Clarifications" asp-action="Details" asp-route-id="@clarification.Id">Clarification: @clarification.Status</a>
+                                    <a data-workspace-dialog="details" asp-controller="Clarifications" asp-action="Details" asp-route-id="@clarification.Id">@L.F("Clarification: {0}", L.T(clarification.Status))</a>
                                 }
                                 @if (bid.Status == "Submitted" || bid.Status == "Pending Clarification" && bid.ComplianceClarification?.Status == "Resolved")
                                 {
@@ -216,8 +213,8 @@ else
 @if (Model.TenderIsClosed)
 {
     <div class="card mb-3">
-        <div class="card-header">Send to evaluation · Round @tender.Counter of @TenderRules.MaxRounds</div>
-        <p class="px-3 pt-3">Eligible suppliers: @ViewBag.EligibleSuppliers · Required: @TenderRules.Minimum(tender).
+        <div class="card-header">@L.F("Send to evaluation · Round {0} of {1}", tender.Counter, TenderRules.MaxRounds)</div>
+        <p class="px-3 pt-3">@L.F("Eligible suppliers: {0} · Required: {1}.", ViewBag.EligibleSuppliers, TenderRules.Minimum(tender))
         @if (!TenderRules.CanEvaluate(tender, (int)ViewBag.EligibleSuppliers))
         {
             <span>@L.T("The bid minimum has not been met.")</span>
@@ -227,24 +224,24 @@ else
             <li class="list-group-item">
                 @if (Model.SubmittedCount == 0)
                 {
-                    <span class="badge bg-success">OK</span>
+                    <span class="badge bg-success">@L.T("OK")</span>
                 }
                 else
                 {
                     <span class="badge bg-danger">@L.T("Missing")</span>
                 }
-                All bids checked (@Model.SubmittedCount not checked)
+                @L.F("All bids checked ({0} not checked)", Model.SubmittedCount)
             </li>
             <li class="list-group-item">
                 @if (Model.CompliantCount > 0)
                 {
-                    <span class="badge bg-success">OK</span>
+                    <span class="badge bg-success">@L.T("OK")</span>
                 }
                 else
                 {
                     <span class="badge bg-danger">@L.T("Missing")</span>
                 }
-                At least one compliant bid (@Model.CompliantCount compliant)
+                @L.F("At least one compliant bid ({0} compliant)", Model.CompliantCount)
             </li>
         </ul>
         <div class="card-body">
@@ -271,10 +268,10 @@ else
         <a class="btn btn-outline-secondary" asp-controller="Clarifications" asp-action="Index" asp-route-kind="tender" asp-route-recordId="@tender.Id">@L.T("Tender history")</a>
         @foreach (var bid in Model.Bids)
         {
-            <a data-workspace-dialog="details" class="btn btn-outline-secondary" asp-controller="Clarifications" asp-action="Index" asp-route-kind="bid" asp-route-recordId="@bid.Id">Bid #@bid.Id history</a>
+            <a data-workspace-dialog="details" class="btn btn-outline-secondary" asp-controller="Clarifications" asp-action="Index" asp-route-kind="bid" asp-route-recordId="@bid.Id">@L.F("Bid #{0} history", bid.Id)</a>
             @if (ViewData["CanRequestBidDocuments"] is true && bid.SubmittedAt.HasValue && bid.Status is ("Submitted" or "Pending Clarification"))
             {
-                <a data-workspace-dialog class="btn btn-outline-secondary" asp-controller="Clarifications" asp-action="Create" asp-route-kind="bid" asp-route-recordId="@bid.Id"><partial name="_Icon" model='@("file")' /> Request a PDF for bid #@bid.Id</a>
+                <a data-workspace-dialog class="btn btn-outline-secondary" asp-controller="Clarifications" asp-action="Create" asp-route-kind="bid" asp-route-recordId="@bid.Id"><partial name="_Icon" model='@("file")' /> @L.F("Request a PDF for bid #{0}", bid.Id)</a>
             }
         }
     </div>

@@ -2,7 +2,7 @@
 @model CommitteeWeights
 @{ ViewData["Title"] = L.T("Select evaluation criteria"); }
 <a class="back-link" asp-action="Details" asp-route-id="@Model.TenderId"><partial name="_Icon" model='@("back")' /> @L.T("Tender evaluation")</a>
-<header class="page-heading admin-action-heading"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("filter")' /></span><div><p class="eyebrow">TENDER #@Model.TenderId</p><h1>@L.T("Select evaluation criteria")</h1><p>@Model.Title · Set the weights you will apply to every compliant bid.</p></div></header>
+<header class="page-heading admin-action-heading"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("filter")' /></span><div><p class="eyebrow">@L.F("Tender #{0}", Model.TenderId)</p><h1>@L.T("Select evaluation criteria")</h1><p>@Model.Title · @L.T("Set the weights you will apply to every compliant bid.")</p></div></header>
 @if (ViewBag.WeightError is string error) { <div class="alert alert-warning" role="alert">@L.T(error)</div> }
 @if (Model.Criteria.Count == 0)
 {
@@ -20,7 +20,7 @@ else
                 <div class="weight-plan-row" data-weight-row data-criterion="@criterion.Id" data-proposed="@criterion.WeightPercent.ToString(CultureInfo.InvariantCulture)">
                     <input type="hidden" name="weights[@i].CriterionId" value="@criterion.Id" />
                     <label class="weight-choice"><input type="checkbox" name="weights[@i].Selected" value="true" checked="@selected" data-weight-choice />
-                        <span><strong>@criterion.Name</strong><small>@criterion.Type · @criterion.MaxScore points · Officer proposed @criterion.WeightPercent.ToString("0.##")%</small></span>
+                        <span><strong>@criterion.Name</strong><small>@L.T(criterion.Type) · @L.F("{0} points", criterion.MaxScore) · @L.F("Officer proposed {0}%", criterion.WeightPercent.ToString("0.##"))</small></span>
                     </label>
                     <label class="field weight-value"><span>@L.T("My weight (%)")</span><input type="number" min="0.01" max="100" step=".01" inputmode="decimal" name="weights[@i].WeightPercent" value="@((selected ? weight : criterion.WeightPercent).ToString(CultureInfo.InvariantCulture))" class="form-control" data-weight-value /></label>
                 </div>

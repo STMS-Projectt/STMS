@@ -1,0 +1,90 @@
+import assert from 'node:assert/strict';
+
+export async function verifyPortalFixes({go,wait,ev,click,login,logout,capture,viewport,language,test,call}){
+  const q=JSON.stringify, signed='!!document.querySelector("form[action*=Logout]")';
+  const samePage=(path,extra='true')=>wait(`location.pathname.startsWith(${q(path)}) && document.readyState==="complete" && (${extra})`,path);
+  const as=async role=>{
+    if(await ev(signed))await logout();
+    await login(role);await wait(signed,role+' signed in');
+  };
+  const post=async (selector,values)=>ev(`(async()=>{const f=document.querySelector(${q(selector)}), data=new FormData(f);for(const [k,v] of Object.entries(${q(values)}))data.set(k,v);const r=await fetch(f.action,{method:"POST",body:data});return {status:r.status,path:new URL(r.url).pathname,search:new URL(r.url).search,html:(new DOMParser()).parseFromString(await r.text(),"text/html").body.textContent};})()`);
+  await test('Portal-contact-save-reply-and-private-receipt',async()=>{
+    await go('/#contact');
+    assert.equal(await ev('document.querySelectorAll("#contactForm [name=company],#contactForm [name=volume]").length'),0);
+    const fields={Name:'Portal QA visitor',Email:'portal-contact@example.test',Topic:'Other',Message:'Portal QA public message'};
+    const invalid=await post('#contactForm',fields);
+    assert.equal(invalid.status,400);
+    const stored=await post('#contactForm',{...fields,Consent:'true'});
+    assert.equal(stored.status,200);
+    assert.equal(stored.path,'/Home/ContactStatus');
+    assert.match(stored.html,/Awaiting response/);
+    assert(!stored.html.includes(fields.Email));
+    const receipt=stored.path+stored.search;
+    assert.equal(await ev('fetch("/Home/ContactStatus?receipt=00000000-0000-0000-0000-000000000000").then(r=>r.status)'),404);
+    await as('DepartmentSmoke');
+    await go('/ContactInbox');
+    assert.equal(await ev('location.pathname'),'/Account/AccessDenied');
+    await logout();
+    await as('Admin');await go('/ContactInbox');
+    await wait('document.querySelector("#main").innerText.includes("Portal QA public message")','stored message visible');
+    await capture('contact-inbox');
+    await ev('document.querySelector("#main textarea[name=Reply]").value="Portal QA published reply"');
+    await click('#main form button[type=submit]');
+    await wait('document.querySelector("#main").innerText.includes("Reply published on the sender")','admin reply saved');
+    await logout();
+    await go(receipt);
+    assert.match(await ev('document.querySelector("#main").innerText'),/Portal QA published reply/);
+    await capture('contact-receipt-replied');
+  });
+  await test('Portal-request-and-tender-navigation-and-alignment',async()=>{
+    await call('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:'reduce'}]});
+    const layout=async (selector,expectedWidth)=>{
+      await ev('new Promise(r=>setTimeout(r,400))');
+      const grids=await ev(`[...document.querySelectorAll(${q(selector)})].filter(x=>!x.hidden).map(card=>[...card.querySelectorAll('.record-facts > div')].map(d=>Math.round(d.getBoundingClientRect().left)))`);
+      assert(grids.length>=2);
+      assert.deepEqual(grids[0],grids[1]);
+      assert.equal(new Set(grids[0]).size,expectedWidth);
+    };
+    await as('DepartmentSmoke'); await go('/PurchaseRequisitions/Details/1');
+    await click('#main a[href*="/Clarifications/StartRequest/"]');
+    await samePage('/Clarifications/StartRequest/','!!document.querySelector("#main input[name=Subject]") && !document.querySelector("#workspace-dialog").open');
+    await as('SourcingOfficer'); await go('/RequisitionReviews/Pending');
+    await click('#main a[href*="/RequisitionReviews/Details/"]');
+    await wait('!!document.querySelector("#workspace-dialog[open] .sourcing-request-decisions")','decision modal');
+    const widths=await ev('[...document.querySelectorAll("#workspace-dialog .sourcing-request-decisions button")].map(x=>x.getBoundingClientRect().width)');
+    assert(widths.length===4 && Math.max(...widths)-Math.min(...widths)<=1);
+    await capture('officer-review-buttons');
+    await click('#workspace-dialog a[href*="kind=request"]');
+    await samePage('/Clarifications','location.search.includes("kind=request") && !document.querySelector("#workspace-dialog").open');
+    await layout('.clarification-record',4);
+    await capture('clarifications-aligned-desktop');
+    await viewport(390);
+    assert(await ev('document.documentElement.scrollWidth<=innerWidth'));
+    await capture('clarifications-mobile');
+    await viewport(1440);
+    await go('/Tenders');
+    await layout('.tender-register .record-card',4);
+    await capture('officer-tenders-aligned');
+    await go('/Tenders/Details/1');
+    await ev('document.querySelector("#main .action-disclosure").open=true');
+    await click('#main a[href*="kind=tender"][href*="/Clarifications"]');
+    await samePage('/Clarifications','location.search.includes("kind=tender") && !document.querySelector("#workspace-dialog").open');
+    await click('#main a[data-workspace-page][href="/Clarifications"]');
+    await samePage('/Clarifications','location.search==="" && !document.querySelector("#workspace-dialog").open');
+    await logout();
+  });
+  await test('Portal-supplier-full-validation',async()=>{
+    if(await ev(signed))await logout();
+    await go('/SupplierRegistration/Register');
+    const f='#main form:has([name=TaxNumber])';
+    const base={CompanyName:'Portal QA Supplier',Address:'Amman',Email:'portal-supplier@example.test',Password:'Synthetic-Browser!2046',ConfirmPassword:'Synthetic-Browser!2046',CategoryIds:'1'};
+    const bad=await post(f,{...base,TaxNumber:'12A345678',CommercialRegNo:'1234567890',ContactPhone:'0000'});
+    assert.equal(bad.path,'/SupplierRegistration/Register');
+    assert.match(bad.html,/Enter exactly 9 digits for the tax number/);
+    assert.match(bad.html,/Enter exactly 9 digits for the commercial registration number/);
+    assert.match(bad.html,/Enter a valid Jordanian phone number/);
+    assert(await ev(`(()=>{const f=document.querySelector(${q(f)});return [["TaxNumber","12345678"],["CommercialRegNo","12345678x"],["ContactPhone","0000"]].every(([k,v])=>{const i=f.elements[k];i.value=v;return i.validity.patternMismatch;})})()`));
+    const accepted=await post(f,{...base,TaxNumber:'١٢٣٤٥٦٧٨٩',CommercialRegNo:'987654321',ContactPhone:'+962791234567'});
+    assert.equal(accepted.path,'/SupplierRegistration/UploadDocuments');
+  });
+}

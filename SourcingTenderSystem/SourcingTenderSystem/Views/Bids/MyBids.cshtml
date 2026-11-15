@@ -13,7 +13,7 @@
         @foreach (var bid in Model.MyBids)
         {
             <article class="record-card" data-record data-status="@bid.Status">
-                <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("file")' /></span><span>@bid.Tender.Title<small>Bid #@bid.Id</small></span></div>
+                <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("file")' /></span><span>@bid.Tender.Title<small>@L.F("Bid #{0}", bid.Id)</small></span></div>
                 <dl class="record-facts">
                     <div><dt>@L.T("Total")</dt><dd>@bid.TotalPrice.ToString("N2") @bid.Currency</dd></div>
                     <div><dt>@L.T("Status")</dt><dd><partial name="_StatusBadge" model="bid.Status" /> @if (bid.AwardOutcome is string result) { <span class="badge bg-secondary">@result</span> }</dd></div>
@@ -45,7 +45,7 @@
             <article class="record-card" data-record>
                 <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("briefcase")' /></span><span>@invitation.Tender.Title</span></div>
                 <dl class="record-facts"><div><dt>@L.T("Closes (UTC)")</dt><dd>@invitation.Tender.CloseDate.ToString("dd MMM yyyy HH:mm", L.DisplayCulture)</dd></div></dl>
-                <div class="record-action"><a data-workspace-dialog class="record-icon-action" asp-action="Create" asp-route-tenderId="@invitation.TenderId" aria-label="Create bid for @invitation.Tender.Title" data-tooltip="@L.T("Create bid")"><partial name="_Icon" model='@("plus")' /></a></div>
+                <div class="record-action"><a data-workspace-dialog class="record-icon-action" asp-action="Create" asp-route-tenderId="@invitation.TenderId" aria-label="@L.F("Create bid for {0}", invitation.Tender.Title)" data-tooltip="@L.T("Create bid")"><partial name="_Icon" model='@("plus")' /></a></div>
             </article>
         }
         </div>

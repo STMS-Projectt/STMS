@@ -11,7 +11,8 @@ public class Bid
     public int TenderId { get; set; }
     public int SupplierProfileId { get; set; }
     public decimal TotalPrice { get; set; }
-    public string Currency { get; set; } = string.Empty;
+    public const string JordanianDinar = "JOD";
+    public string Currency { get; set; } = JordanianDinar;
     public int DeliveryDays { get; set; }
     public int ValidityDays { get; set; }
     public string Status { get; set; } = string.Empty;

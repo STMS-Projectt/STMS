@@ -1,18 +1,18 @@
 @using System.Globalization
 @model Tender
 @{ ViewData["Title"] = L.T("Evaluation criteria"); var draft = Model.Status == "Draft"; var total = Model.EvaluationCriteria.Sum(c => c.WeightPercent); }
-<header class="page-heading admin-action-heading"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("filter")' /></span><div><p class="eyebrow">TENDER #@Model.Id</p><h1>@L.T("Evaluation criteria")</h1><p>@Model.Title · Set the proposed weights before publication.</p></div></header>
+<header class="page-heading admin-action-heading"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("filter")' /></span><div><p class="eyebrow">@L.F("Tender #{0}", Model.Id)</p><h1>@L.T("Evaluation criteria")</h1><p>@Model.Title · @L.T("Set the proposed weights before publication.")</p></div></header>
 @if (TempData["Error"] is string error) { <p class="alert alert-warning" role="alert">@L.T(error)</p> }
 <section class="surface detail-card record-section">
-    <div class="record-section-heading"><div><h2>@(draft ? "Proposed criteria" : "Published criteria")</h2><p>@(draft ? "The proposed weights must total 100% before publication." : "Reviewers can use these weights or save their own selection and weights.")</p></div><span class="record-panel-label">@total.ToString("0.##") / 100%</span></div>
+    <div class="record-section-heading"><div><h2>@L.T(draft ? "Proposed criteria" : "Published criteria")</h2><p>@L.T(draft ? "The proposed weights must total 100% before publication." : "Reviewers can use these weights or save their own selection and weights.")</p></div><span class="record-panel-label">@total.ToString("0.##") / 100%</span></div>
     @if (Model.EvaluationCriteria.Count == 0) { <p class="subtle mb-0">@L.T("No criteria have been added.")</p> }
     <div class="checklist-columns">
     @foreach (var (type, icon) in new[] { ("Technical", "briefcase"), ("Financial", "chart") })
     {
         var criteria = Model.EvaluationCriteria.Where(c => c.Type == type).OrderBy(c => c.Id).ToList();
-        <section class="criterion-category" aria-label="@type criteria">
-            <div class="record-section-heading"><h3 class="h6 mb-0"><partial name="_Icon" model="icon" /> @type</h3><span class="record-panel-label">@criteria.Sum(c => c.WeightPercent).ToString("0.##")%</span></div>
-            @if (criteria.Count == 0) { <p class="subtle mb-0">No @type.ToLowerInvariant() criteria yet.</p> }
+        <section class="criterion-category" aria-label="@L.F("{0} criteria", L.T(type))">
+            <div class="record-section-heading"><h3 class="h6 mb-0"><partial name="_Icon" model="icon" /> @L.T(type)</h3><span class="record-panel-label">@criteria.Sum(c => c.WeightPercent).ToString("0.##")%</span></div>
+            @if (criteria.Count == 0) { <p class="subtle mb-0">@L.F("No {0} criteria yet.", L.T(type))</p> }
             @foreach (var criterion in criteria)
             {
         <div class="weight-officer-criterion">
@@ -25,7 +25,7 @@
                         <input type="hidden" name="edit" value="@criterion.Id" />
                         <div class="form-grid">
                             <label class="field">@L.T("Criterion name")<input class="form-control" name="Name" maxlength="120" value="@criterion.Name" required /></label>
-                            <label class="field">@L.T("Type")<select class="form-select" name="Type"><option selected="@(criterion.Type == "Technical")">@L.T("Technical")</option><option selected="@(criterion.Type == "Financial")">@L.T("Financial")</option></select></label>
+                            <label class="field">@L.T("Type")<select class="form-select" name="Type"><option value="Technical" selected="@(criterion.Type == "Technical")">@L.T("Technical")</option><option value="Financial" selected="@(criterion.Type == "Financial")">@L.T("Financial")</option></select></label>
                             <input type="hidden" name="MaxScore" value="@criterion.MaxScore" />
                             <label class="field">@L.T("Proposed weight (%)")<input class="form-control" name="WeightPercent" type="number" min=".01" max="100" step=".01" value="@criterion.WeightPercent.ToString(CultureInfo.InvariantCulture)" required /></label>
                         </div>

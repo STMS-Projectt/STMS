@@ -23,7 +23,7 @@
         const count = panel.querySelector("[data-result-count]");
         const dock = document.createElement("div");
         dock.className = "directory-filter-panel dept-filter-dock";
-        dock.setAttribute("aria-label", "Record filters");
+        dock.setAttribute("aria-label", window.stmsT("Record filters"));
         const paths = {
             Status: "M4 7h16 M7 12h10 M10 17h4",
             More: "M5 12h.01 M12 12h.01 M19 12h.01",

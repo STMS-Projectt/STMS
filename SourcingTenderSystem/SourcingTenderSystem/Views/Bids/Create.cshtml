@@ -9,7 +9,7 @@
     <div class="card-body">
         <h2 class="h5 card-title">@tender.Title</h2>
         <p class="card-text">@tender.Description</p>
-        <p class="card-text mb-0"><small class="text-muted">Closes @tender.CloseDate.ToString("yyyy-MM-dd HH:mm") (UTC)</small></p>
+        <p class="card-text mb-0"><small class="text-muted">@L.F("Closes {0} (UTC)", tender.CloseDate.ToString("yyyy-MM-dd HH:mm", L.DisplayCulture))</small></p>
     </div>
 </div>
 

@@ -58,11 +58,11 @@
         <div class="record-list" data-record-list>
             @foreach (var item in Model)
             {
-                <article class="record-card" data-record data-sort-name="@item.FullName" data-status="@L.T(item.IsActive ? "active" : "inactive")" data-department="@(item.DepartmentId?.ToString() ?? "unassigned")">
+                <article class="record-card" data-record data-sort-name="@item.FullName" data-status="@(item.IsActive ? "active" : "inactive")" data-department="@(item.DepartmentId?.ToString() ?? "unassigned")">
                     <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("users")' /></span><span>@item.FullName<small>@item.User.Email</small></span></div><dl class="record-facts">
-                    <div><dt class="record-field-icon" title="@L.T("Department")"><partial name="_Icon" model='@("building")' /><span class="visually-hidden">@L.T("Department")</span></dt><dd>@(item.Department?.Name ?? "Unassigned")</dd></div>
-                    <div><dt class="visually-hidden">@L.T("Status")</dt><dd><partial name="_Status" model='@L.T(item.IsActive ? "Active" : "Inactive")' /></dd></div>
-                    </dl><div class="record-action"><a data-workspace-dialog="details" class="record-icon-action" asp-action="Details" asp-route-id="@item.Id" aria-label="View details for @item.FullName" data-tooltip="@L.T("View details")"><partial name="_Icon" model='@("eye")' /></a>
+                    <div><dt class="record-field-icon" title="@L.T("Department")"><partial name="_Icon" model='@("building")' /><span class="visually-hidden">@L.T("Department")</span></dt><dd>@(item.Department?.Name ?? L.T("Unassigned"))</dd></div>
+                    <div><dt class="visually-hidden">@L.T("Status")</dt><dd><partial name="_Status" model='@(item.IsActive ? "Active" : "Inactive")' /></dd></div>
+                    </dl><div class="record-action"><a data-workspace-dialog="details" class="record-icon-action" asp-action="Details" asp-route-id="@item.Id" aria-label="@L.F("View details for {0}", item.FullName)" data-tooltip="@L.T("View details")"><partial name="_Icon" model='@("eye")' /></a>
                         <a data-workspace-dialog="details" class="record-icon-action" asp-action="Edit" asp-route-id="@item.Id" aria-label="@L.T("Edit employee")" data-tooltip="@L.T("Edit employee")" title="@L.T("Edit employee")"><partial name="_Icon" model='@("edit")' /></a>
                         @if (item.IsActive) { <a data-workspace-dialog="details" class="record-icon-action record-icon-danger" asp-action="Deactivate" asp-route-id="@item.Id" aria-label="@L.T("Deactivate employee")" data-tooltip="@L.T("Deactivate employee")" title="@L.T("Deactivate employee")"><partial name="_Icon" model='@("pause")' /></a> }
                     </div>

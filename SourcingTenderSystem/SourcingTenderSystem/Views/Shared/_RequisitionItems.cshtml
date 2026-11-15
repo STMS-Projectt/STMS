@@ -18,8 +18,8 @@ else
                 @if (canEdit)
                 {
                     <div class="record-action">
-                        <a class="record-icon-action" data-workspace-dialog asp-controller="RequisitionItems" asp-action="Edit" asp-route-id="@item.Id" aria-label="Edit @item.ItemName" data-tooltip="@L.T("Edit item")"><partial name="_Icon" model='@("edit")' /></a>
-                        <a class="record-icon-action record-icon-danger" data-workspace-dialog asp-controller="RequisitionItems" asp-action="Delete" asp-route-id="@item.Id" aria-label="Remove @item.ItemName" data-tooltip="@L.T("Remove item")"><partial name="_Icon" model='@("trash")' /></a>
+                        <a class="record-icon-action" data-workspace-dialog asp-controller="RequisitionItems" asp-action="Edit" asp-route-id="@item.Id" aria-label="@L.F("Edit {0}", item.ItemName)" data-tooltip="@L.T("Edit item")"><partial name="_Icon" model='@("edit")' /></a>
+                        <a class="record-icon-action record-icon-danger" data-workspace-dialog asp-controller="RequisitionItems" asp-action="Delete" asp-route-id="@item.Id" aria-label="@L.F("Remove {0}", item.ItemName)" data-tooltip="@L.T("Remove item")"><partial name="_Icon" model='@("trash")' /></a>
                     </div>
                 }
             </article>

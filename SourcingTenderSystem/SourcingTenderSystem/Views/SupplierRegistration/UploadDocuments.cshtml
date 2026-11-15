@@ -19,11 +19,11 @@
                 @foreach (var document in Model.SupplierDocuments.OrderByDescending(d => d.UploadedAt))
                 {
                     <article class="record-card">
-                        <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("file")' /></span><span>@document.DocumentType<small>@(document.FileName ?? "PDF")</small></span></div>
+                        <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("file")' /></span><span>@L.T(document.DocumentType)<small>@(document.FileName ?? "PDF")</small></span></div>
                         <dl class="record-facts"><div><dt>@L.T("Expiry date")</dt><dd>@(document.ExpiryDate?.ToString("dd MMM yyyy", L.DisplayCulture) ?? "No expiry date")</dd></div></dl>
                         <div class="record-action">
-                            <a class="record-icon-action" asp-action="DownloadDocument" asp-route-id="@document.Id" aria-label="Download @document.DocumentType" data-tooltip="@L.T("Download")"><partial name="_Icon" model='@("download")' /></a>
-                            <form asp-action="RemoveDocument" asp-route-id="@document.Id" method="post" data-workspace-confirm="@L.T("Remove this document from your draft?")" onsubmit="return window.stmsWorkspaceReady || confirm(this.dataset.workspaceConfirm);"><button type="submit" class="record-icon-action record-icon-danger" aria-label="Remove @document.DocumentType" data-tooltip="@L.T("Remove from draft")"><partial name="_Icon" model='@("trash")' /></button></form>
+                            <a class="record-icon-action" asp-action="DownloadDocument" asp-route-id="@document.Id" aria-label="@L.F("Download {0}", L.T(document.DocumentType))" data-tooltip="@L.T("Download")"><partial name="_Icon" model='@("download")' /></a>
+                            <form asp-action="RemoveDocument" asp-route-id="@document.Id" method="post" data-workspace-confirm="@L.T("Remove this document from your draft?")" onsubmit="return window.stmsWorkspaceReady || confirm(this.dataset.workspaceConfirm);"><button type="submit" class="record-icon-action record-icon-danger" aria-label="@L.F("Remove {0}", L.T(document.DocumentType))" data-tooltip="@L.T("Remove from draft")"><partial name="_Icon" model='@("trash")' /></button></form>
                         </div>
                     </article>
                 }

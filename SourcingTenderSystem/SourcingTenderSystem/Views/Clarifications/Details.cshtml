@@ -7,14 +7,14 @@
     var requested = row.RequestedDocumentType != null;
 }
 <a class="back-link" asp-action="Index" asp-route-kind="@kind" asp-route-recordId="@record"><partial name="_Icon" model='@("back")' /> @L.T("Transaction history")</a>
-<header class="page-heading stms-hero admin-record-hero"><div><p class="eyebrow">CLARIFICATION #@row.Id</p><h1>@row.Subject</h1>
+<header class="page-heading stms-hero admin-record-hero"><div><p class="eyebrow">@L.F("Clarification #{0}", row.Id)</p><h1>@row.Subject</h1>
 <p>@(row.PurchaseRequisition?.Title ?? row.Tender?.Title ?? row.Bid?.Tender.Title ?? row.SupplierApplication?.CompanyName) · @kind #@record</p></div><partial name="_ClarificationStatus" model="row.Status" /></header>
 @if (TempData["ClarificationError"] is string error) { <div class="alert alert-warning" role="alert">@L.T(error)</div> }
 <div class="stack clarification-conversation">
     <section class="surface detail-card"><h2>@L.T("Question")</h2>
         <p class="subtle">@(row.SenderEmployeeProfile?.FullName ?? row.SenderSupplierProfile?.CompanyName) → @(row.ReceiverEmployeeProfile?.FullName ?? row.ReceiverSupplierProfile?.CompanyName) · @row.CreatedAt.ToString("dd MMM yyyy HH:mm", L.DisplayCulture) UTC</p>
         <p class="mb-0" style="white-space:pre-wrap;overflow-wrap:anywhere">@row.Description</p>
-        @if (requested) { <p class="record-panel-label mt-3 mb-0"><partial name="_Icon" model='@("file")' /> Requested PDF: @row.RequestedDocumentType</p> }
+        @if (requested) { <p class="record-panel-label mt-3 mb-0"><partial name="_Icon" model='@("file")' /> @L.F("Requested PDF: {0}", L.T(row.RequestedDocumentType))</p> }
     </section>
     @if (row.Response is not null)
     {
@@ -24,8 +24,8 @@
     {
         <section class="surface detail-card"><h2>@L.T("Supporting document")</h2>
             <div class="record-list record-list-inset"><article class="record-card">
-                <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("file")' /></span><span>@row.AttachmentName<small>@row.RequestedDocumentType</small></span></div>
-                <dl class="record-facts"><div><dt>@L.T("Review status")</dt><dd>@(row.AttachmentAddedAt.HasValue ? "Approved and added" : row.Status == "Resolved" ? "Closed without adding" : "Awaiting approval")</dd></div>
+                <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("file")' /></span><span>@row.AttachmentName<small>@L.T(row.RequestedDocumentType)</small></span></div>
+                <dl class="record-facts"><div><dt>@L.T("Review status")</dt><dd>@L.T(row.AttachmentAddedAt.HasValue ? "Approved and added" : row.Status == "Resolved" ? "Closed without adding" : "Awaiting approval")</dd></div>
                     @if (row.AttachmentExpiryDate.HasValue) { <div><dt>@L.T("Expires")</dt><dd>@row.AttachmentExpiryDate.Value.ToString("dd MMM yyyy", L.DisplayCulture)</dd></div> }
                 </dl>
                 <div class="record-action">
@@ -46,7 +46,7 @@
             @if (requested)
             {
                 <div class="form-grid mb-3">
-                    <label class="field">Requested @row.RequestedDocumentType (PDF)<input class="form-control" name="attachment" type="file" accept=".pdf,application/pdf" required /></label>
+                    <label class="field">@L.F("Requested {0} (PDF)", L.T(row.RequestedDocumentType))<input class="form-control" name="attachment" type="file" accept=".pdf,application/pdf" required /></label>
                     @if (row.SupplierApplicationId.HasValue) { <label class="field">@L.T("Expiry date (optional)")<input class="form-control" name="expiryDate" type="date" /></label> }
                 </div><p class="field-hint">@L.T("Up to 10 MB. The sourcing officer will review the file before adding it.")</p>
             }
@@ -57,5 +57,5 @@
     }
     @if (Model.CanResolve)
     { <form asp-action="Resolve" asp-route-id="@row.Id" method="post" data-workspace-confirm="@(row.AttachmentName != null ? "Close this clarification without adding the file?" : null)" onsubmit="return !this.dataset.workspaceConfirm || window.stmsWorkspaceReady || confirm(this.dataset.workspaceConfirm);"><button class="btn btn-outline-secondary" type="submit">@(row.AttachmentName != null ? "Resolve without adding" : "Mark as resolved")</button></form> }
-    @if (row.ResolvedAt.HasValue) { <p class="subtle">Resolved @row.ResolvedAt.Value.ToString("dd MMM yyyy HH:mm", L.DisplayCulture) UTC</p> }
+    @if (row.ResolvedAt.HasValue) { <p class="subtle">@L.F("Resolved {0} UTC", row.ResolvedAt.Value.ToString("dd MMM yyyy HH:mm", L.DisplayCulture))</p> }
 </div>

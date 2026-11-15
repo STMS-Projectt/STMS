@@ -37,7 +37,7 @@
             const atEnd = canScroll && remaining <= 3;
             scrollControl.hidden = !canScroll;
             scrollControl.classList.toggle("is-at-end", atEnd);
-            scrollControl.setAttribute("aria-label", atEnd ? "Scroll to top of navigation" : "Scroll down navigation");
+            scrollControl.setAttribute("aria-label", atEnd ? window.stmsT("Scroll to top of navigation") : window.stmsT("Scroll down navigation"));
             scrollControl.title = atEnd ? "Back to top of navigation" : "More navigation items";
         };
         scrollControl.addEventListener("click", () => {
@@ -55,7 +55,7 @@
             scrim.hidden = !open;
             document.body.classList.toggle("nav-open", open);
             toggle.setAttribute("aria-expanded", String(open));
-            toggle.setAttribute("aria-label", open ? "Close navigation" : "Open navigation");
+            toggle.setAttribute("aria-label", open ? window.stmsT("Close navigation") : window.stmsT("Open navigation"));
             requestAnimationFrame(updateNavScroll);
             if (focus) (open ? nav.querySelector(".side-link") : toggle)?.focus();
         };
@@ -182,8 +182,8 @@
             const selected = Array.from(input.files);
             const file = selected[0];
             const error = (input.multiple && selected.length > 5) || selected.some(file => file.size === 0 || file.size > 10485760 || !/\.pdf$/i.test(file.name));
-            input.setCustomValidity(error ? "Choose a nonempty PDF no larger than 10 MB." : "");
-            status.textContent = error ? input.validationMessage : selected.length ? selected.map(file => file.name).join(", ") : "No file selected.";
+            input.setCustomValidity(error ? window.stmsT("Choose a nonempty PDF no larger than 10 MB.") : "");
+            status.textContent = error ? input.validationMessage : selected.length ? selected.map(file => file.name).join(", ") : window.stmsT("No file selected.");
         };
         input.addEventListener("change", sync);
         zone.addEventListener("dragover", event => { event.preventDefault(); zone.classList.add("is-dragging"); });
@@ -192,7 +192,7 @@
             event.preventDefault();
             zone.classList.remove("is-dragging");
             if (event.dataTransfer.files.length === 1 || (input.multiple && event.dataTransfer.files.length <= 5)) { input.files = event.dataTransfer.files; sync(); }
-            else { status.textContent = "Drop one PDF at a time."; }
+            else { status.textContent = window.stmsT("Drop one PDF at a time."); }
         });
     });
     };

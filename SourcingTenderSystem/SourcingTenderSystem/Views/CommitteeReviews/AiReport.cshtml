@@ -4,7 +4,7 @@
     var input = Model.Input;
     var output = Model.Output;
     var best = Model.RecommendedBid;
-    string Supplier(int bidId) => input.Bids.Single(b => b.BidId == bidId).Supplier;
+
 }
 <!DOCTYPE html>
 <html lang="@L.Language" dir="@L.Direction">
@@ -13,7 +13,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <partial name="_DisplayHead" />
 <link rel="stylesheet" href="~/css/display-preferences.css" asp-append-version="true">
-<title>AI bid analysis · Tender #@input.TenderId</title>
+<title>@L.F("AI bid analysis · Tender #{0}", input.TenderId)</title>
 <style>
     :root {--ink:light-dark(#17243a, #c4cfe3);--muted:light-dark(#56657a, #c1c9d4);--line:light-dark(#e2e8f0, #2d4059);--brand:light-dark(#08766c, #146a63);--brand-soft:light-dark(#eef8f6, #15302b);--warn:light-dark(#7a4b00, #f3d8ae);--warn-soft:light-dark(#fff4dc, #332a15);--good:light-dark(#0b6b3a, #b4eed0);--bad:light-dark(#a82f41, #e2b2b9)}
     * {box-sizing:border-box}
@@ -55,9 +55,9 @@
 <body>
 <main>
     <div class="report-display-controls"><partial name="_DisplayPreferences" /></div>
-    <p class="eyebrow">AI bid analysis · Tender #@input.TenderId</p>
+    <p class="eyebrow">@L.F("AI bid analysis · Tender #{0}", input.TenderId)</p>
     <h1>@input.Title</h1>
-    <p class="meta">Generated @Model.GeneratedAtUtc.ToLocalTime().ToString("f") · Model: @Model.Model · @input.Bids.Count compliant bids compared</p>
+    <p class="meta">@L.F("Generated {0} · Model: {1} · {2} compliant bids compared", Model.GeneratedAtUtc.ToLocalTime().ToString("f", L.DisplayCulture), Model.Model, input.Bids.Count)</p>
 
     <div class="disclaimer">
         <strong>@L.T("Advisory only.")</strong> @L.T("This report was produced by an AI assistant to support the evaluation committee. It does not score the bids and does not replace the committee's judgement or decision. Check every point against the bid documents before relying on it.")
@@ -66,7 +66,7 @@
     <section class="pick">
         <p class="eyebrow">@L.T("Recommended offer")</p>
         <p class="name">@best.Supplier</p>
-        <p class="meta">@best.TotalPrice.ToString("N2") @best.Currency · Delivery in @best.DeliveryDays days · Valid for @best.ValidityDays days</p>
+        <p class="meta">@best.TotalPrice.ToString("N2") @best.Currency · @L.F("Delivery in {0} days · Valid for {1} days", best.DeliveryDays, best.ValidityDays)</p>
         <p><strong>@output.Headline</strong></p>
         @if (!string.IsNullOrWhiteSpace(output.Summary)) { <p>@output.Summary</p> }
         @if (output.WhyChosen.Count > 0)
@@ -89,12 +89,12 @@
                 <tr class="@(f.BidId == best.BidId ? "is-best" : "")">
                     <td>#@assessment.OverallRank</td>
                     <td><strong>@f.Supplier</strong>@if (f.BidId == best.BidId) { <span class="tag">@L.T("AI pick")</span> }</td>
-                    <td class="num @(f.PriceRank == 1 ? "best-cell" : "")">@f.TotalPrice.ToString("N2") @f.Currency@if (f.UsdEquivalent is decimal usd) { <br /><span class="muted">≈ @usd.ToString("N2") USD</span> }</td>
-                    <td class="num">@(!f.PriceComparable ? "Not comparable (no exchange rate)" : f.PriceGapPercent == 0 ? "Lowest" : $"+{f.PriceGapPercent}%")</td>
+                    <td class="num @(f.PriceRank == 1 ? "best-cell" : "")">@f.TotalPrice.ToString("N2") @f.Currency</td>
+                    <td class="num">@(!f.PriceComparable ? L.T("Not comparable") : f.PriceGapPercent == 0 ? "Lowest" : $"+{f.PriceGapPercent}%")</td>
                     <td class="num @(f.DeliveryRank == 1 ? "best-cell" : "")">@f.DeliveryDays days</td>
                     <td class="num">@f.ValidityDays days</td>
                     <td>@f.ItemsCovered / @f.ItemsRequested</td>
-                    <td>@(f.QuantityShortfalls.Count == 0 ? "None" : string.Join("; ", f.QuantityShortfalls))</td>
+                    <td>@(f.QuantityShortfalls.Count == 0 ? L.T("None") : string.Join("; ", f.QuantityShortfalls))</td>
                     <td class="num">@f.DocumentCount</td>
                 </tr>
             }
@@ -126,7 +126,7 @@
                         {
                             var line = prices[i];
                             if (line is null) { <td class="num muted">@L.T("Not offered")</td> }
-                            else { <td class="num @(line.UnitPrice == lowest ? "best-cell" : "")">@line.UnitPrice.ToString("N2") @input.Bids[i].Currency@if (line.Quantity != item.Quantity) { <br /><span class="muted">qty @line.Quantity</span> }</td> }
+                            else { <td class="num @(line.UnitPrice == lowest ? "best-cell" : "")">@line.UnitPrice.ToString("N2") @input.Bids[i].Currency@if (line.Quantity != item.Quantity) { <br /><span class="muted">@L.F("qty {0}", line.Quantity)</span> }</td> }
                         }
                     </tr>
                 }
@@ -179,10 +179,10 @@
     <section>
         <h2>@L.T("Evaluation criteria considered")</h2>
         @if (input.Criteria.Count == 0) { <p class="muted">@L.T("No criteria had been set when this analysis was produced.")</p> }
-        else { <ul>@foreach (var c in input.Criteria) { <li><strong>@c.Name</strong> · @c.Type · @c.WeightPercent% weight · @c.MaxScore points</li> }</ul> }
+        else { <ul>@foreach (var c in input.Criteria) { <li><strong>@c.Name</strong> · @L.T(c.Type) · @L.F("Weight {0}% · {1} points", c.WeightPercent, c.MaxScore)</li> }</ul> }
     </section>
 
-    <footer>Sourcing Desk · AI assistant report for Tender #@input.TenderId · Supplier text was treated as data only. The committee's scores and decision are final.</footer>
+    <footer>@L.T("Sourcing Desk") · @L.F("AI assistant report for Tender #{0}. The committee’s scores and decision are final.", input.TenderId)</footer>
 </main>
 </body>
 </html>

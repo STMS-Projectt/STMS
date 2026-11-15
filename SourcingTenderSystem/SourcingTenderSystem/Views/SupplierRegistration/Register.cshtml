@@ -8,8 +8,8 @@
         <section class="form-section"><div class="application-section-heading"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("building")' /></span><div><h2>@L.T("Company information")</h2><p>@L.T("Use the details on your official registration.")</p></div></div><div class="form-grid mt-3">
             <div class="field field-wide"><label asp-for="CompanyName" class="form-label"></label><input asp-for="CompanyName" class="form-control" autocomplete="organization" placeholder="@L.T("Registered company name")">
     <span asp-validation-for="CompanyName" class="text-danger"></span></div>
-            <div class="field"><label asp-for="TaxNumber" class="form-label"></label><input asp-for="TaxNumber" class="form-control" placeholder="@L.T("Company tax number")"><span asp-validation-for="TaxNumber" class="text-danger"></span></div>
-            <div class="field"><label asp-for="CommercialRegNo" class="form-label"></label><input asp-for="CommercialRegNo" class="form-control" placeholder="@L.T("Commercial registration number")"><span asp-validation-for="CommercialRegNo" class="text-danger"></span></div>
+            <div class="field"><label asp-for="TaxNumber" class="form-label"></label><input asp-for="TaxNumber" aria-describedby="tax-number-hint" class="form-control" inputmode="numeric" maxlength="9" minlength="9" pattern="[0-9٠-٩۰-۹]{9}" placeholder="@L.T("Company tax number")"><small id="tax-number-hint" class="field-hint">@L.T("Exactly 9 digits")</small><span asp-validation-for="TaxNumber" class="text-danger"></span></div>
+            <div class="field"><label asp-for="CommercialRegNo" class="form-label"></label><input asp-for="CommercialRegNo" aria-describedby="registration-number-hint" class="form-control" inputmode="numeric" maxlength="9" minlength="9" pattern="[0-9٠-٩۰-۹]{9}" placeholder="@L.T("Commercial registration number")"><small id="registration-number-hint" class="field-hint">@L.T("Exactly 9 digits")</small><span asp-validation-for="CommercialRegNo" class="text-danger"></span></div>
         </div></section>
         <section class="form-section"><div class="application-section-heading"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("filter")' /></span><div><h2>@L.T("What you supply")</h2><p>@L.T("Choose the categories that match your business.")</p></div></div>
             <fieldset class="field field-wide application-categories" data-category-selection>
@@ -29,7 +29,7 @@
             </fieldset>
         </section>
         <section class="form-section"><div class="application-section-heading"><span class="icon-tile tone-blue"><partial name="_Icon" model='@("mail")' /></span><div><h2>@L.T("Company contact")</h2><p>@L.T("Enter the contact details the sourcing team can use.")</p></div></div><div class="form-grid mt-3">
-            <div class="field"><label asp-for="ContactPhone" class="form-label"></label><input asp-for="ContactPhone" class="form-control" type="tel" autocomplete="tel" placeholder="e.g. +962 79 000 0000">
+            <div class="field"><label asp-for="ContactPhone" class="form-label"></label><input asp-for="ContactPhone" class="form-control" maxlength="13" pattern="(\+962|00962|0)(7[789][0-9]{7}|[2356][0-9]{7})" type="tel" autocomplete="tel" placeholder="0791234567">
     <span asp-validation-for="ContactPhone" class="text-danger"></span></div>
             <div class="field"><label asp-for="Address" class="form-label"></label><input asp-for="Address" class="form-control" autocomplete="street-address" placeholder="@L.T("Company address")">
     <span asp-validation-for="Address" class="text-danger"></span></div>

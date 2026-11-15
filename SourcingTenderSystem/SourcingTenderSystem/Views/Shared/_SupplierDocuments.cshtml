@@ -1,6 +1,6 @@
 @model ICollection<SupplierDocument>
 <section class="surface detail-card">
-    <div class="card-heading"><div><h2>@L.T("Supporting documents")</h2><p>@Model.Count uploaded</p></div></div>
+    <div class="card-heading"><div><h2>@L.T("Supporting documents")</h2><p>@L.F("{0} uploaded", Model.Count)</p></div></div>
     @if (Model.Count == 0)
     {
         <p class="subtle mb-0">@L.T("No documents have been uploaded yet.")</p>
@@ -11,8 +11,8 @@
         @foreach (var document in Model.OrderByDescending(x => x.UploadedAt))
         {
             <li><div><span class="icon-tile tone-blue"><partial name="_Icon" model='@("file")' /></span>
-                <span><strong>@document.DocumentType</strong><small>@(document.FileName ?? "PDF") · Uploaded @document.UploadedAt.ToString("dd MMM yyyy", L.DisplayCulture) (UTC)@if (document.ExpiryDate is DateTime expires) { <text> · Expires @expires.ToString("dd MMM yyyy", L.DisplayCulture)</text> }</small></span></div>
-                <div class="record-action"><a class="record-icon-action" asp-action="DownloadDocument" asp-route-id="@document.Id" aria-label="Download @document.DocumentType PDF" data-tooltip="@L.T("Download PDF")"><partial name="_Icon" model='@("download")' /></a></div>
+                <span><strong>@L.T(document.DocumentType)</strong><small>@(document.FileName ?? "PDF") · @L.F("Uploaded {0} (UTC)", document.UploadedAt.ToString("dd MMM yyyy", L.DisplayCulture))@if (document.ExpiryDate is DateTime expires) { <text> · @L.F("Expires {0}", expires.ToString("dd MMM yyyy", L.DisplayCulture))</text> }</small></span></div>
+                <div class="record-action"><a class="record-icon-action" asp-action="DownloadDocument" asp-route-id="@document.Id" aria-label="@L.F("Download {0} PDF", L.T(document.DocumentType))" data-tooltip="@L.T("Download PDF")"><partial name="_Icon" model='@("download")' /></a></div>
             </li>
         }
         </ul>

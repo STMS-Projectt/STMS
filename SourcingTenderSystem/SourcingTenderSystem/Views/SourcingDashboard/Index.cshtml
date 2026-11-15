@@ -44,9 +44,9 @@
                 <div class="admin-chart-plot" role="group" aria-label="@L.T("Monthly request and tender counts")">
                     @foreach (var point in trend)
                     {
-                        var month = point.Month.ToString("MMM yy");
+                        var month = point.Month.ToString("MMM yy", L.DisplayCulture);
                         var heights = FormattableString.Invariant($"--requests:{100 * point.Requests / trendMax:F3}%;--tenders:{100 * point.Tenders / trendMax:F3}%");
-                        <div class="admin-chart-month" style="@heights" tabindex="0" aria-label="@month: @point.Requests requests, @point.Tenders tenders">
+                        <div class="admin-chart-month" style="@heights" tabindex="0" aria-label="@L.F("{0}: {1} requests, {2} tenders", month, point.Requests, point.Tenders)">
                             <div class="admin-chart-bars" aria-hidden="true"><i></i><i></i></div>
                             <span class="admin-chart-label" aria-hidden="true">@month</span>
                             <span class="admin-chart-popup" aria-hidden="true">@month · @point.Requests requests · @point.Tenders tenders</span>
@@ -57,7 +57,7 @@
         }
     </section>
         <section class="surface dashboard-card department-status-card">
-            <div class="card-heading"><div><h2>@L.T("Tender pipeline")</h2><p>@L.T("Current distribution by status")</p></div><span class="department-status-total">@Model.Tenders total</span></div>
+            <div class="card-heading"><div><h2>@L.T("Tender pipeline")</h2><p>@L.T("Current distribution by status")</p></div><span class="department-status-total">@L.F("{0} total", Model.Tenders)</span></div>
             @if (Model.Tenders == 0) { <p class="admin-chart-empty">@L.T("Tender statuses will appear once the first tender is created.")</p> }
             else
             {
@@ -86,9 +86,9 @@
                     {
                         <article class="sourcing-queue-row record-card">
                             <span class="icon-tile tone-blue"><partial name="_Icon" model='@("file")' /></span>
-                            <div><strong>@request.Title</strong><small>PR-@request.Id · @request.Department · @request.Priority priority · Due @request.TargetDate.ToString("dd MMM")</small></div>
-                            <span class="status-pill status-waiting"><span aria-hidden="true"></span>@request.Status</span>
-                            <div class="record-action"><a class="record-icon-action" data-workspace-dialog="details" asp-controller="RequisitionReviews" asp-action="Details" asp-route-id="@request.Id" aria-label="Review request PR-@request.Id" data-tooltip="@L.T("Review request")"><partial name="_Icon" model='@("eye")' /></a></div>
+                            <div><strong>@request.Title</strong><small>PR-@request.Id · @request.Department · @L.F("Priority: {0} · Due {1}", L.T(request.Priority), request.TargetDate.ToString("dd MMM", L.DisplayCulture))</small></div>
+                            <span class="status-pill status-waiting"><span aria-hidden="true"></span>@L.T(request.Status)</span>
+                            <div class="record-action"><a class="record-icon-action" data-workspace-dialog="details" asp-controller="RequisitionReviews" asp-action="Details" asp-route-id="@request.Id" aria-label="@L.F("Review request PR-{0}", request.Id)" data-tooltip="@L.T("Review request")"><partial name="_Icon" model='@("eye")' /></a></div>
                         </article>
                     }
                 </div>

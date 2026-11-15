@@ -28,13 +28,13 @@ else if (information)
     <section class="surface detail-card account-fields account-panel account-information-panel">
         <div class="account-info-intro"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("shield")' /></span><div><p class="eyebrow">@L.T("ACCOUNT OVERVIEW")</p><h2>@L.T("Account information")</h2><p>@L.T("Details managed by your organization.")</p></div></div>
         <dl class="account-info-grid">
-            <div class="account-info-tile"><span class="icon-tile tone-blue"><partial name="_Icon" model='@("users")' /></span><dt>@(Model.Supplier is null ? "Account name" : "Company")</dt><dd>@Model.DisplayName</dd></div>
+            <div class="account-info-tile"><span class="icon-tile tone-blue"><partial name="_Icon" model='@("users")' /></span><dt>@L.T(Model.Supplier is null ? "Account name" : "Company")</dt><dd>@Model.DisplayName</dd></div>
             <div class="account-info-tile"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("mail")' /></span><dt>@L.T("Sign-in email")</dt><dd>@Model.Email</dd></div>
-            @if (Model.Roles.Count > 0) { <div class="account-info-tile"><span class="icon-tile tone-blue"><partial name="_Icon" model='@("shield")' /></span><dt>@L.T("Access roles")</dt><dd>@string.Join(", ", Model.Roles)</dd></div> }
+            @if (Model.Roles.Count > 0) { <div class="account-info-tile"><span class="icon-tile tone-blue"><partial name="_Icon" model='@("shield")' /></span><dt>@L.T("Access roles")</dt><dd>@string.Join("، ", Model.Roles.Select(L.T))</dd></div> }
             @if (Model.Employee is { } employee)
             {
-                <div class="account-info-tile"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("building")' /></span><dt>@L.T("Department")</dt><dd>@(employee.Department?.Name ?? "Unassigned")</dd></div>
-                <div class="account-info-tile"><span class="icon-tile tone-blue"><partial name="_Icon" model='@("briefcase")' /></span><dt>@L.T("Job title")</dt><dd>@(employee.JobTitle ?? "Not set")</dd></div>
+                <div class="account-info-tile"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("building")' /></span><dt>@L.T("Department")</dt><dd>@(employee.Department?.Name ?? L.T("Unassigned"))</dd></div>
+                <div class="account-info-tile"><span class="icon-tile tone-blue"><partial name="_Icon" model='@("briefcase")' /></span><dt>@L.T("Job title")</dt><dd>@(employee.JobTitle ?? L.T("Not set"))</dd></div>
             }
             @if (Model.Supplier is { } supplier)
             {

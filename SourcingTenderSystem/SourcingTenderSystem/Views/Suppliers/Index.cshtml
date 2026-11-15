@@ -34,7 +34,7 @@
         <label>@L.T("Sort by")<select class="form-select" data-filter-sort><option value="">@L.T("Default order")</option><option value="name">@L.T("Company (A–Z)")</option><option value="recent">@L.T("Newest first")</option></select></label>
         <button type="button" class="btn btn-outline-secondary" data-filter-reset>@L.T("Reset")</button>
     }
-    <span class="result-count" data-result-count aria-live="polite">@Model.Count records</span>
+    <span class="result-count" data-result-count aria-live="polite">@L.F("{0} records", Model.Count)</span>
 </div>
     </div>
     @if (Model.Count == 0)
@@ -57,16 +57,16 @@
                         @if (item.Status == SupplierStatus.Pending) { <small>@L.T("Application submitted · documents awaiting review")</small> }
                     </dd></div>
                     <div><dt class="record-field-icon" title="@L.T("Registered (UTC)")"><partial name="_Icon" model='@("calendar")' /><span class="visually-hidden">@L.T("Registered (UTC)")</span></dt><dd>@item.CreatedAt.ToString("dd MMM yyyy", L.DisplayCulture)</dd></div>
-                    </dl><div class="record-action"><a data-workspace-dialog="details" class="record-icon-action" asp-action="Details" asp-route-id="@item.Id" asp-route-panel="overview" aria-label="Open application for @item.CompanyName" data-tooltip="@L.T("Open application")"><partial name="_Icon" model='@("eye")' /></a>
-                        <a data-workspace-dialog="details" class="record-icon-action" asp-action="Details" asp-route-id="@item.Id" asp-route-panel="documents" aria-label="View documents for @item.CompanyName" data-tooltip="@L.T("Supporting documents")"><partial name="_Icon" model='@("file")' /></a>
+                    </dl><div class="record-action"><a data-workspace-dialog="details" class="record-icon-action" asp-action="Details" asp-route-id="@item.Id" asp-route-panel="overview" aria-label="@L.F("Open application for {0}", item.CompanyName)" data-tooltip="@L.T("Open application")"><partial name="_Icon" model='@("eye")' /></a>
+                        <a data-workspace-dialog="details" class="record-icon-action" asp-action="Details" asp-route-id="@item.Id" asp-route-panel="documents" aria-label="@L.F("View documents for {0}", item.CompanyName)" data-tooltip="@L.T("Supporting documents")"><partial name="_Icon" model='@("file")' /></a>
                         @if (User.IsInRole("SourcingOfficer") && item.Status is (SupplierStatus.Pending or SupplierStatus.Approved or SupplierStatus.Suspended))
                         {
-                            <a data-workspace-dialog class="record-icon-action" asp-controller="Clarifications" asp-action="Create" asp-route-kind="supplier" asp-route-recordId="@item.Id" aria-label="Request a document from @item.CompanyName" data-tooltip="@L.T("Request a document")"><partial name="_Icon" model='@("mail")' /></a>
+                            <a data-workspace-dialog class="record-icon-action" asp-controller="Clarifications" asp-action="Create" asp-route-kind="supplier" asp-route-recordId="@item.Id" aria-label="@L.F("Request a document from {0}", item.CompanyName)" data-tooltip="@L.T("Request a document")"><partial name="_Icon" model='@("mail")' /></a>
                         }
                         @if (User.IsInRole("Admin"))
                         {
-                            <a data-workspace-dialog class="record-icon-action" asp-action="Categories" asp-route-id="@item.Id" aria-label="Edit categories for @item.CompanyName" data-tooltip="@L.T("Edit categories")"><partial name="_Icon" model='@("filter")' /></a>
-                            @if (item.Status == SupplierStatus.Pending) { <a data-workspace-dialog class="record-icon-action record-icon-danger" asp-action="Reject" asp-route-id="@item.Id" aria-label="Reject @item.CompanyName" data-tooltip="@L.T("Reject supplier")"><partial name="_Icon" model='@("close")' /></a> }
+                            <a data-workspace-dialog class="record-icon-action" asp-action="Categories" asp-route-id="@item.Id" aria-label="@L.F("Edit categories for {0}", item.CompanyName)" data-tooltip="@L.T("Edit categories")"><partial name="_Icon" model='@("filter")' /></a>
+                            @if (item.Status == SupplierStatus.Pending) { <a data-workspace-dialog class="record-icon-action record-icon-danger" asp-action="Reject" asp-route-id="@item.Id" aria-label="@L.F("Reject {0}", item.CompanyName)" data-tooltip="@L.T("Reject supplier")"><partial name="_Icon" model='@("close")' /></a> }
                         }
                         @if (User.IsInRole("Admin") && item.Status == SupplierStatus.Approved) { <a data-workspace-dialog="details" class="record-icon-action record-icon-danger" asp-action="Suspend" asp-route-id="@item.Id" aria-label="@L.T("Suspend supplier")" data-tooltip="@L.T("Suspend supplier")" title="@L.T("Suspend supplier")"><partial name="_Icon" model='@("pause")' /></a> }
                         @if (item.Status is SupplierStatus.Pending or SupplierStatus.Suspended)

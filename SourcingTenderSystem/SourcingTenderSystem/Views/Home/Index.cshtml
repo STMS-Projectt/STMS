@@ -1,3 +1,4 @@
+@model ContactInput
 @{
     Layout = null;
 }
@@ -43,7 +44,7 @@
       <partial name="_DisplayPreferences" />
       <a href="#home" class="logo" aria-label="@L.T("Little Threads home")">
         <span class="brand-mark">L</span>
-        <span class="logo-text"><b>Little Threads</b><small>KIDSWEAR SUPPLY</small></span>
+        <span class="logo-text"><b>Little Threads</b><small>@L.T("KIDSWEAR SUPPLY")</small></span>
       </a>
       <button class="burger" id="burger" aria-label="@L.T("Open menu")" aria-expanded="false"><span></span><span></span></button>
       <div class="nav-links" id="navLinks">
@@ -176,28 +177,26 @@
       </div>
 
       <div class="container contact-card reveal">
-        <form id="contactForm" novalidate>
+        <form id="contactForm" asp-controller="Home" asp-action="Contact" asp-fragment="contact" method="post">
+          <div asp-validation-summary="All" class="form-note err" role="alert"></div>
           <div class="eyebrow">@L.T("Send a message")</div>
           <h3 class="serif">@L.T("How can we help?")</h3>
           <fieldset class="topics" aria-label="@L.T("Topic")">
-            <label><input type="radio" name="topic" value="Becoming a supplier" checked><span>@L.T("Becoming a supplier")</span></label>
-            <label><input type="radio" name="topic" value="Buying wholesale"><span>@L.T("Buying wholesale")</span></label>
-            <label><input type="radio" name="topic" value="Partnership"><span>@L.T("Partnership")</span></label>
-            <label><input type="radio" name="topic" value="Other"><span>@L.T("Other")</span></label>
+            <label><input type="radio" asp-for="Topic" id="contact-topic-1" value="Becoming a supplier"><span>@L.T("Becoming a supplier")</span></label>
+            <label><input type="radio" asp-for="Topic" id="contact-topic-2" value="Buying wholesale"><span>@L.T("Buying wholesale")</span></label>
+            <label><input type="radio" asp-for="Topic" id="contact-topic-3" value="Partnership"><span>@L.T("Partnership")</span></label>
+            <label><input type="radio" asp-for="Topic" id="contact-topic-4" value="Other"><span>@L.T("Other")</span></label>
           </fieldset>
           <div class="grid2">
-            <label class="fl"><span>@L.T("Full name")</span><input name="name" type="text" autocomplete="name" placeholder="@L.T("")" required></label>
-            <label class="fl"><span>@L.T("Email")</span><input name="email" type="email" autocomplete="email" placeholder="@L.T("")" required></label>
-            <label class="fl"><span>@L.T("Company / Store")</span><input name="company" type="text" autocomplete="organization" placeholder="@L.T("")"></label>
-            <label class="fl"><span>@L.T("Monthly order volume")</span>
-              <select name="volume"><option value="Less than 500 pieces">@L.T("Less than 500 pieces")</option><option selected>500 – 2,000 pieces</option><option>2,000 – 10,000 pieces</option><option>10,000+ pieces</option></select></label>
+            <label class="fl"><span>@L.T("Full name")</span><input asp-for="Name" maxlength="100" type="text" autocomplete="name" placeholder="@L.T("")" required></label>
+            <label class="fl"><span>@L.T("Email")</span><input asp-for="Email" maxlength="254" type="email" autocomplete="email" required></label>
           </div>
-          <label class="fl"><span>@L.T("Message")</span><textarea name="message" rows="4" placeholder="@L.T("")" required></textarea></label>
+          <label class="fl"><span>@L.T("Message")</span><textarea asp-for="Message" maxlength="4000" rows="4" placeholder="@L.T("")" required></textarea></label>
           <div class="form-row">
-            <label class="consent"><input type="checkbox" name="consent" required><i aria-hidden="true"></i>@L.T("I agree to be contacted.")</label>
+            <label class="consent"><input asp-for="Consent" type="checkbox" required><i aria-hidden="true"></i>@L.T("I agree to be contacted.")</label>
             <button class="btn btn-gold btn-lg" type="submit">@L.T("Send message →")</button>
           </div>
-          <div class="form-note" id="formNote" role="status"></div>
+          <p class="form-note">@L.T("After sending, save the private link to read the reply.")</p>
         </form>
 
         <aside class="next">
@@ -209,14 +208,14 @@
           </ol>
           <div class="mapcard">
             <svg viewBox="0 0 340 150" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="340" height="150" fill="#EEF1F2"/><g stroke="#fff" stroke-width="10"><path d="M-10 40 L350 70"/><path d="M80 -10 L120 160"/><path d="M240 -10 L210 160"/><path d="M-10 120 L350 105"/></g><g stroke="#fff" stroke-width="4"><path d="M-10 90 L350 20"/><path d="M160 -10 L170 160"/></g><rect x="20" y="70" width="40" height="30" rx="4" fill="#d9f7ec"/><rect x="260" y="20" width="60" height="30" rx="4" fill="#d9f7ec"/><circle cx="168" cy="78" r="26" fill="rgba(8,118,108,.16)"/><path d="M168 92s-12-10-12-19a12 12 0 0 1 24 0c0 9-12 19-12 19Z" fill="#111e33"/><circle cx="168" cy="73" r="4.5" fill="#d9f7ec"/></svg>
-            <div class="addr"><div><b>@L.T("Supply Hub")</b><span>Main St. 12, Your City</span></div>
+            <div class="addr"><div><b>@L.T("Supply Hub")</b><span>@L.T("Main St. 12, Your City")</span></div>
               <a class="btn btn-outline" href="https://www.google.com/maps/search/?api=1&query=Main+St+12+Your+City" target="_blank" rel="noopener">@L.T("Directions")</a></div>
           </div>
         </aside>
       </div>
 
       <div class="container faq">
-        <div><div class="eyebrow">FAQ</div><h3 class="serif">@L.T("Quick answers before you write.")</h3></div>
+        <div><div class="eyebrow">@L.T("FAQ")</div><h3 class="serif">@L.T("Quick answers before you write.")</h3></div>
         <div class="faq-list">
           <details open><summary>@L.T("How long does supplier verification take?")<span></span></summary><p>@L.T("Most suppliers are verified and live within 5 working days once their documents are complete.")</p></details>
           <details><summary>@L.T("Is there a minimum order quantity?")<span></span></summary><p>@L.T("Each supplier sets their own MOQ per product. You can see it on every product page before you order.")</p></details>
@@ -246,11 +245,11 @@
       </nav>
     </div>
     <div class="container ft-mid">
-      <a href="#home" class="logo"><span class="brand-mark">L</span><span class="logo-text"><b>Little Threads</b><small>KIDSWEAR SUPPLY</small></span></a>
+      <a href="#home" class="logo"><span class="brand-mark">L</span><span class="logo-text"><b>Little Threads</b><small>@L.T("KIDSWEAR SUPPLY")</small></span></a>
       <div class="ft-contact">
         <div><b>@L.T("CALL")</b><a href="tel:+0000000000">+000 000 0000</a></div>
         <div><b>@L.T("EMAIL")</b><a href="mailto:hello@@littlethreads.com">hello@@littlethreads.com</a></div>
-        <div><b>@L.T("VISIT")</b><span>Main St. 12, Your City</span></div>
+        <div><b>@L.T("VISIT")</b><span>@L.T("Main St. 12, Your City")</span></div>
       </div>
       <div class="ft-social">
         <a href="#" aria-label="Instagram"><svg class="i"><use href="#i-ig"/></svg></a>

@@ -8,7 +8,7 @@
     decimal Earned(CommitteeScoreRow row) => row.Score.GetValueOrDefault() * row.WeightPercent / row.Criterion.MaxScore;
 }
 <a class="back-link" asp-action="Details" asp-route-id="@Model.Bid.TenderId"><partial name="_Icon" model='@("back")' /> @L.T("Tender evaluation")</a>
-<header class="page-heading stms-hero admin-record-hero"><div><p class="eyebrow">BID #@Model.Bid.Id · @Model.Bid.Tender.Title</p><h1>@Model.Bid.SupplierProfile.CompanyName</h1><p>@Model.Bid.TotalPrice.ToString("N2") @Model.Bid.Currency · Delivery in @Model.Bid.DeliveryDays days</p></div></header>
+<header class="page-heading stms-hero admin-record-hero"><div><p class="eyebrow">@L.F("Bid #{0}", Model.Bid.Id) · @Model.Bid.Tender.Title</p><h1>@Model.Bid.SupplierProfile.CompanyName</h1><p>@Model.Bid.TotalPrice.ToString("N2") @Model.Bid.Currency · Delivery in @Model.Bid.DeliveryDays days</p></div></header>
 @if (TempData["ReviewError"] is string error) { <div class="alert alert-warning" role="alert">@L.T(error)</div> }
 <div class="review-workspace">
 <aside class="review-references" aria-label="@L.T("Bid reference materials")">
@@ -36,7 +36,7 @@
             @foreach (var doc in Model.Bid.BidDocuments)
             {
                 <article class="record-card"><div class="record-name"><span class="avatar"><partial name="_Icon" model='@("file")' /></span><span>@doc.FileName<small>@L.T(doc.DocumentType)</small></span></div>
-                    <div class="record-action"><a class="record-icon-action" asp-controller="BidDocuments" asp-action="Download" asp-route-id="@doc.Id" aria-label="Download @doc.FileName" data-tooltip="@L.T("Download")"><partial name="_Icon" model='@("download")' /></a></div>
+                    <div class="record-action"><a class="record-icon-action" asp-controller="BidDocuments" asp-action="Download" asp-route-id="@doc.Id" aria-label="@L.F("Download {0}", doc.FileName)" data-tooltip="@L.T("Download")"><partial name="_Icon" model='@("download")' /></a></div>
                 </article>
             }
         </div>
@@ -61,9 +61,9 @@
                     var rows = entries.Where(e => e.row.Criterion.Type == kind).ToList();
                     var possible = rows.Sum(e => e.row.WeightPercent);
                     <fieldset class="checklist-group" data-checklist-group>
-                        <legend><span class="icon-tile tone-teal"><partial name="_Icon" model="icon" /></span>@kind</legend>
+                        <legend><span class="icon-tile tone-teal"><partial name="_Icon" model="icon" /></span>@L.T(kind)</legend>
                         <p class="checklist-subtotal"><output data-checklist-subtotal>@Percent(rows.Sum(e => Earned(e.row))) / @Percent(possible)</output></p>
-                        @if (rows.Count == 0) { <p class="subtle mb-0">No active @kind.ToLowerInvariant() criteria.</p> }
+                        @if (rows.Count == 0) { <p class="subtle mb-0">@L.F("No active {0} criteria.", L.T(kind))</p> }
                         @foreach (var (row, index) in rows)
                         {
                             <div class="checklist-entry">
@@ -76,9 +76,9 @@
                                 </label>
                                 @if (locked)
                                 {
-                                    @if (row.Score.HasValue) { <p class="field-hint mb-0">Earned @Percent(Earned(row))</p> }
+                                    @if (row.Score.HasValue) { <p class="field-hint mb-0">@L.F("Earned {0}", Percent(Earned(row)))</p> }
                                     @if (!string.IsNullOrWhiteSpace(row.Notes)) { <p class="field-hint mb-0">@row.Notes</p> }
-                                    @if (row.Taxes.HasValue) { <p class="field-hint mb-0">Taxes: @row.Taxes · Extra costs: @row.Extras</p> }
+                                    @if (row.Taxes.HasValue) { <p class="field-hint mb-0">@L.F("Taxes: {0} · Extra costs: {1}", row.Taxes, row.Extras)</p> }
                                 }
                                 else
                                 {
@@ -87,8 +87,8 @@
                                         <div class="form-grid mt-2">
                                             @if (kind == "Financial")
                                             {
-                                                <label class="field">Taxes (@Model.Bid.Currency)<input class="form-control" name="checks[@index].Taxes" type="number" min="0" step=".01" value="@((row.Taxes ?? 0).ToString(CultureInfo.InvariantCulture))" /></label>
-                                                <label class="field">Extra costs (@Model.Bid.Currency)<input class="form-control" name="checks[@index].Extras" type="number" min="0" step=".01" value="@((row.Extras ?? 0).ToString(CultureInfo.InvariantCulture))" /></label>
+                                                <label class="field">@L.F("Taxes ({0})", Model.Bid.Currency)<input class="form-control" name="checks[@index].Taxes" type="number" min="0" step=".01" value="@((row.Taxes ?? 0).ToString(CultureInfo.InvariantCulture))" /></label>
+                                                <label class="field">@L.F("Extra costs ({0})", Model.Bid.Currency)<input class="form-control" name="checks[@index].Extras" type="number" min="0" step=".01" value="@((row.Extras ?? 0).ToString(CultureInfo.InvariantCulture))" /></label>
                                             }
                                             <label class="field field-wide">@L.T("Notes")<textarea class="form-control" name="checks[@index].Notes" rows="2" maxlength="1000">@row.Notes</textarea></label>
                                         </div>

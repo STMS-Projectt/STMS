@@ -13,8 +13,8 @@
 
     <div class="mb-3">
         <label asp-for="DocumentType" class="form-label"></label>
-        <select asp-for="DocumentType" asp-items="ViewBag.DocumentTypes" class="form-select">
-            <option value="">-- Choose a type --</option>
+        <select asp-for="DocumentType" asp-items="@(((IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)ViewBag.DocumentTypes).Select(x => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem(L.T(x.Text), x.Value ?? x.Text, x.Selected)))" class="form-select">
+            <option value="">@L.T("-- Choose a type --")</option>
         </select>
         <span asp-validation-for="DocumentType" class="text-danger"></span>
     </div>

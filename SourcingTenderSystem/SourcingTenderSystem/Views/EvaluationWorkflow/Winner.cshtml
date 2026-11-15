@@ -1,0 +1,37 @@
+﻿@model Tender
+@{
+    var report = Model.EvaluationReport!;
+    ViewData["Title"] = "Winning supplier";
+}
+<a class="back-link" asp-action="Index"><partial name="_Icon" model='@("back")' /> @L.T("Evaluations")</a>
+<header class="page-heading stms-hero admin-record-hero"><div><p class="eyebrow">@L.F("Tender #{0}", Model.Id)</p><h1>@L.T("Winning supplier")</h1><p>@Model.Title</p></div><partial name="_Status" model="@report.Status" /></header>
+<section class="surface detail-card ai-box mb-3" data-winner-box data-winner-url="@Url.Action("WinnerBrief", new { id = Model.Id })">
+    <div class="ai-box-head"><h2 class="mb-0">@report.RecommendedBid.SupplierProfile.CompanyName</h2><span class="record-panel-label">@L.T("Recommended by the evaluation committee")</span></div>
+    <p class="ai-note">@L.T("This advisory brief explains the recommendation using the recorded scores and offer data. The committee decides the award.")</p>
+    <div data-winner-body aria-live="polite">
+        <div class="ai-box-state" role="status"><span class="spinner-border spinner-border-sm" aria-hidden="true"></span> @L.T("Preparing the AI brief. This can take up to a minute the first time.")</div>
+    </div>
+</section>
+<template data-winner-error><div class="ai-box-state" role="status"><div><strong>@L.T("The winner brief could not be loaded.")</strong> <button type="button" class="btn btn-outline-secondary btn-sm ms-2" data-winner-retry>@L.T("Try again")</button></div></div></template>
+@section Scripts {
+<script>
+(() => {
+    const box = (document.querySelector("#workspace-dialog[open] [data-dialog-content]") || document.querySelector("#main"))?.querySelector("[data-winner-box]");
+    if (!box) return;
+    const body = box.querySelector("[data-winner-body]");
+    const loading = body.innerHTML;
+    const load = async () => {
+        body.innerHTML = loading;
+        try {
+            const response = await fetch(box.dataset.winnerUrl, { headers: { "X-Requested-With": "fetch" } });
+            if (!response.ok) throw new Error(response.status);
+            body.innerHTML = await response.text();
+        } catch {
+            body.replaceChildren(box.nextElementSibling.content.cloneNode(true));
+        }
+    };
+    body.addEventListener("click", event => { if (event.target.closest("[data-winner-retry]")) load(); });
+    load();
+})();
+</script>
+}

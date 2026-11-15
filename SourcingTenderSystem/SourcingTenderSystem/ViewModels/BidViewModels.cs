@@ -10,10 +10,6 @@ namespace SourcingTenderSystem.ViewModels;
 // TenderId, SupplierProfileId, Status, TotalPrice and dates are set in the controller, never from the form.
 public class BidFormViewModel
 {
-    [Required(ErrorMessage = "Please choose a currency.")]
-    [StringLength(3)]
-    public string Currency { get; set; } = "JOD";
-
     [Required(ErrorMessage = "Delivery days are required.")]
     [Range(1, 3650, ErrorMessage = "Delivery days must be between 1 and 3650.")]
     [Display(Name = "Delivery (days)")]
@@ -110,8 +106,6 @@ public class ComplianceReviewViewModel
 
     public bool TenderIsClosed { get; set; }      // the check buttons work only while the tender is "Closed"
     public bool MixedCurrencies { get; set; }     // the bids don't all use the same currency
-    public Dictionary<int, SourcingTenderSystem.Services.UsdConversion?> UsdReferences { get; set; } = new();  // only for mixed currencies
-    public bool UsdOrdered { get; set; }          // mixed currencies ordered by approximate USD (reference only)
     public int SubmittedCount { get; set; }
     public int CompliantCount { get; set; }
     public bool CanSendToEvaluation { get; set; }

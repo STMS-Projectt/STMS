@@ -12,15 +12,15 @@ else
         @foreach (var item in Model)
         {
             var action = item.Link is not null ? "Open notification" : "Mark as read";
-            <article class="record-card" data-record data-status="@L.T(item.IsRead ? "Read" : "Unread")">
-                <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("mail")' /></span><span>@item.Title<small>@item.CreatedAt.ToString("dd MMM yyyy HH:mm", L.DisplayCulture) UTC</small></span></div>
-                <dl class="record-facts"><div><dt class="visually-hidden">@L.T("Message")</dt><dd>@item.Message</dd></div>
+            <article class="record-card" data-record data-status="@(item.IsRead ? "Read" : "Unread")">
+                <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("mail")' /></span><span>@L.SystemMessage(item.Title)<small>@item.CreatedAt.ToString("dd MMM yyyy HH:mm", L.DisplayCulture) UTC</small></span></div>
+                <dl class="record-facts"><div><dt class="visually-hidden">@L.T("Message")</dt><dd>@L.T(item.Message)</dd></div>
                     <div><dt class="visually-hidden">@L.T("Status")</dt><dd><span class="status-pill @(item.IsRead ? "status-positive" : "status-waiting")">@L.T(item.IsRead ? "Read" : "Unread")</span></dd></div></dl>
                 <div class="record-action">
                     @if (item.Link is not null || !item.IsRead)
                     {
                         <form asp-action="Read" asp-route-id="@item.Id" method="post" data-workspace-dialog="@(item.Link is not null ? "details" : null)">
-                            <button class="record-icon-action" type="submit" aria-label="@(action): @item.Title" data-tooltip="@action"><partial name="_Icon" model='@(item.Link is not null ? "eye" : "check")' /></button>
+                            <button class="record-icon-action" type="submit" aria-label="@L.T(action): @L.SystemMessage(item.Title)" data-tooltip="@L.T(action)"><partial name="_Icon" model='@(item.Link is not null ? "eye" : "check")' /></button>
                         </form>
                     }
                 </div>

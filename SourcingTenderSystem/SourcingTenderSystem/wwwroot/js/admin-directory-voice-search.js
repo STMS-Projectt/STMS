@@ -15,7 +15,7 @@
             const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (!Recognition) {
                 button.disabled = true;
-                status.textContent = "Voice search is unavailable in this browser. You can type your search.";
+                status.textContent = window.stmsT("Voice search is unavailable in this browser. You can type your search.");
                 return;
             }
             let recognition;
@@ -41,18 +41,18 @@
                         input.value = event.results[0][0].transcript.trim();
                         input.dispatchEvent(new Event("input", { bubbles: true }));
                         status.textContent = input.form
-                            ? "Search terms added. Select Search to apply."
-                            : "Search updated.";
+                            ? window.stmsT("Search terms added. Select Search to apply.")
+                            : window.stmsT("Search updated.");
                     };
                     recognition.onerror = event => {
                         outcome = true;
                         status.textContent = ["not-allowed", "service-not-allowed"].includes(event.error)
-                            ? "Microphone permission denied. You can type your search."
-                            : "Voice search could not capture speech. Try again or type your search.";
+                            ? window.stmsT("Microphone permission denied. You can type your search.")
+                            : window.stmsT("Voice search could not capture speech. Try again or type your search.");
                     };
                     recognition.onend = () => {
                         idle();
-                        if (!outcome) status.textContent = "No search terms captured.";
+                        if (!outcome) status.textContent = window.stmsT("No search terms captured.");
                         if (active?.button === button) active = null;
                     };
                     outcome = false;
@@ -60,12 +60,12 @@
                     active = { button, recognition };
                     listening = true;
                     button.classList.add("is-listening");
-                    button.setAttribute("aria-label", "Stop listening");
-                    button.title = "Stop listening";
+                    button.setAttribute("aria-label", window.stmsT("Stop listening"));
+                    button.title = window.stmsT("Stop listening");
                     status.textContent = window.stmsT("Listening…");
                 } catch {
                     idle();
-                    status.textContent = "Could not start voice search. Try again or type your search.";
+                    status.textContent = window.stmsT("Could not start voice search. Try again or type your search.");
                 }
             });
         });

@@ -7,7 +7,7 @@
 }
 <a class="back-link" asp-action="MyRequests"><partial name="_Icon" model='@("back")' /> @L.T("My Requests")</a>
 <header class="page-heading stms-hero admin-record-hero">
-    <div><p class="eyebrow">PURCHASE REQUEST · PR-@Model.Id</p><h1>@Model.Title</h1><p>@Model.Department.Name · Requested by @Model.CreatedByEmployeeProfile.FullName</p></div>
+    <div><p class="eyebrow">@L.F("Purchase request · PR-{0}", Model.Id)</p><h1>@Model.Title</h1><p>@Model.Department.Name · @L.F("Requested by {0}", Model.CreatedByEmployeeProfile.FullName)</p></div>
     <partial name="_RequestStatus" model="Model.Status" />
 </header>
 @if (!overviewOnly) { <partial name="_RecordQr" model='@(Url.Action("Details", new { id = Model.Id })!)' /> }
@@ -29,7 +29,7 @@
         @if (canEdit && !overviewOnly) { <a class="btn btn-outline-secondary" data-workspace-dialog asp-action="Edit" asp-route-id="@Model.Id"><partial name="_Icon" model='@("edit")' /> @L.T("Edit request")</a> }
     </div>
     <dl class="request-meta">
-        <div><dt>@L.T("Priority") <span lang="ar" dir="rtl">الأولوية</span></dt><dd>@Model.Priority</dd></div>
+        <div><dt>@L.T("Priority")</dt><dd>@L.T(Model.Priority)</dd></div>
         <div><dt>@L.T("Target date")</dt><dd>@Model.TargetDate.ToString("dd MMM yyyy", L.DisplayCulture)</dd></div>
         <div><dt>@L.T("Created")</dt><dd>@Model.CreatedAt.ToString("dd MMM yyyy", L.DisplayCulture)</dd></div>
     </dl>
@@ -55,9 +55,9 @@
 <div class="button-row mb-3">
     @if (ViewData["ClarificationRequestIds"] is ISet<int> startable && startable.Contains(Model.Id))
     {
-        <a class="btn btn-outline-secondary" data-workspace-dialog asp-controller="Clarifications" asp-action="StartRequest" asp-route-id="@Model.Id"><partial name="_Icon" model='@("mail")' /> @L.T("Start a clarification")</a>
+        <a data-workspace-page class="btn btn-outline-secondary" asp-controller="Clarifications" asp-action="StartRequest" asp-route-id="@Model.Id"><partial name="_Icon" model='@("mail")' /> @L.T("Start a clarification")</a>
     }
-    <a class="btn btn-outline-secondary" data-workspace-dialog="details" asp-controller="Clarifications" asp-action="Index" asp-route-kind="request" asp-route-recordId="@Model.Id">@L.T("Clarification history")</a>
+    <a data-workspace-page class="btn btn-outline-secondary" asp-controller="Clarifications" asp-action="Index" asp-route-kind="request" asp-route-recordId="@Model.Id">@L.T("Clarification history")</a>
 </div>
 
 <partial name="_TenderHistory" model="Model.Tenders" />

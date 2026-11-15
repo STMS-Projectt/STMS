@@ -17,10 +17,10 @@ else
         {
             var tender = invitation.Tender;
             var status = invitation.Status == "Pending" && invitation.ExpiresAt <= Model.Now ? "Expired" : invitation.Status;
-            <article class="record-card" data-record data-status="@status">
-                <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("mail")' /></span><span>@tender.Title<small>TENDER #@tender.Id · Round @(invitation.RoundNumber?.ToString() ?? "Legacy")</small></span></div>
+            <article class="record-card" data-record data-tender-id="@tender.Id" data-status="@status">
+                <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("mail")' /></span><span>@tender.Title<small>@L.F("Tender #{0}", tender.Id) · @L.F("Round {0}", invitation.RoundNumber?.ToString() ?? L.T("Legacy"))</small></span></div>
                 <dl class="record-facts"><div><dt>@L.T("Status")</dt><dd><partial name="_Status" model="status" /></dd></div><div><dt>@L.T("Expires (UTC)")</dt><dd>@invitation.ExpiresAt.ToString("dd MMM yyyy HH:mm", L.DisplayCulture)</dd></div></dl>
-                <div class="record-action"><a data-workspace-dialog="details" class="record-icon-action" asp-action="Invitations" asp-route-invitationId="@invitation.Id" aria-label="View invitation for @tender.Title" data-tooltip="@L.T("View invitation")"><partial name="_Icon" model='@("eye")' /></a></div>
+                <div class="record-action"><a data-workspace-dialog="details" class="record-icon-action" asp-action="Invitations" asp-route-invitationId="@invitation.Id" aria-label="@L.F("View invitation for {0}", tender.Title)" data-tooltip="@L.T("View invitation")"><partial name="_Icon" model='@("eye")' /></a></div>
             </article>
         }
     </div>

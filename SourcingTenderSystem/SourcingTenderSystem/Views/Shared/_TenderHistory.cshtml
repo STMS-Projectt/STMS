@@ -6,11 +6,11 @@
     @foreach (var tender in Model.OrderByDescending(t => t.Id))
     {
         <article class="record-card">
-            <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("briefcase")' /></span><span>@tender.Title<small>Tender #@tender.Id</small></span></div>
+            <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("briefcase")' /></span><span>@tender.Title<small>@L.F("Tender #{0}", tender.Id)</small></span></div>
             <dl class="record-facts"><div><dt class="visually-hidden">@L.T("Status")</dt><dd><partial name="_Status" model="tender.Status" /></dd></div></dl>
             @if (User.IsInRole(Roles.Admin) || User.IsInRole(Roles.SourcingOfficer))
             {
-                <div class="record-action"><a class="record-icon-action" data-workspace-dialog="details" asp-controller='@(User.IsInRole(Roles.Admin) ? "AdminOperations" : "Tenders")' asp-action='@L.T(User.IsInRole(Roles.Admin) ? "Tender" : "Details")' asp-route-id="@tender.Id" aria-label="View tender @tender.Title" data-tooltip="@L.T("View tender")"><partial name="_Icon" model='@("eye")' /></a></div>
+                <div class="record-action"><a class="record-icon-action" data-workspace-dialog="details" asp-controller='@(User.IsInRole(Roles.Admin) ? "AdminOperations" : "Tenders")' asp-action='@(User.IsInRole(Roles.Admin) ? "Tender" : "Details")' asp-route-id="@tender.Id" aria-label="@L.F("View tender {0}", tender.Title)" data-tooltip="@L.T("View tender")"><partial name="_Icon" model='@("eye")' /></a></div>
             }
         </article>
     }

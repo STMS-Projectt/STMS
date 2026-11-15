@@ -42,12 +42,12 @@
                     <div class="admin-chart-plot" role="group" aria-label="@L.T("Monthly purchase request counts")">
                         @foreach (var (month, count) in Model.Trend)
                         {
-                            var label = month.ToString("MMM yy");
+                            var label = month.ToString("MMM yy", L.DisplayCulture);
                             var height = FormattableString.Invariant($"--requests:{100d * count / (4d * step):F3}%");
-                            <div class="admin-chart-month" style="@height" tabindex="0" aria-label="@L.T(label): @count purchase requests">
+                            <div class="admin-chart-month" style="@height" tabindex="0" aria-label="@L.F("{0}: {1} purchase requests", label, count)">
                                 <div class="admin-chart-bars" aria-hidden="true"><i></i></div>
                                 <span class="admin-chart-label" aria-hidden="true">@label</span>
-                                <span class="admin-chart-popup" aria-hidden="true">@label · @count requests</span>
+                                <span class="admin-chart-popup" aria-hidden="true">@L.F("{0}: {1} purchase requests", label, count)</span>
                             </div>
                         }
                     </div>
@@ -55,7 +55,7 @@
             }
         </section>
         <section class="surface dashboard-card department-status-card">
-            <div class="card-heading"><div><h2>@L.T("Requests by status")</h2><p>@L.T("Select a status to view matching requests.")</p></div><span class="department-status-total">@Model.Total total</span></div>
+            <div class="card-heading"><div><h2>@L.T("Requests by status")</h2><p>@L.T("Select a status to view matching requests.")</p></div><span class="department-status-total">@L.F("{0} total", Model.Total)</span></div>
             <div class="department-status-list">
                 @foreach (var (status, icon, tone) in stages)
                 {
@@ -79,7 +79,7 @@
                 {
                     <article class="record-card">
                         <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("file")' /></span><span>@request.Title<small>PR-@request.Id</small>
-                            @if (request.Status == "Returned" && !string.IsNullOrWhiteSpace(request.ReviewNotes)) { <small class="request-return-preview">Changes requested: @request.ReviewNotes</small> }
+                            @if (request.Status == "Returned" && !string.IsNullOrWhiteSpace(request.ReviewNotes)) { <small class="request-return-preview">@L.F("Changes requested: {0}", request.ReviewNotes)</small> }
                         </span></div>
                         <dl class="record-facts"><div><dt>@L.T("Target date")</dt><dd>@request.TargetDate.ToString("dd MMM yyyy", L.DisplayCulture)</dd></div><div><dt>@L.T("Status")</dt><dd><partial name="_RequestStatus" model="request.Status" /></dd></div></dl>
                         <div class="record-action"><partial name="_RequestActions" model="@( (request.Id, editable.Contains(request.Id)) )" />

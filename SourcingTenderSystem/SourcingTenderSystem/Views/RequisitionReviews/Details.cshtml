@@ -8,7 +8,7 @@
 <a class="back-link" asp-action="Pending"><partial name="_Icon" model='@("back")' /> @L.T("Back to pending requests")</a>
 <header class="page-heading stms-hero admin-record-hero sourcing-request-hero">
     <span class="icon-tile tone-teal"><partial name="_Icon" model='@("file")' /></span>
-    <div><p class="eyebrow">PURCHASE REQUEST · PR-@request.Id</p><h1>@request.Title</h1><p>@request.Department.Name · @request.CreatedByEmployeeProfile.FullName</p></div>
+    <div><p class="eyebrow">@L.F("Purchase request · PR-{0}", request.Id)</p><h1>@request.Title</h1><p>@request.Department.Name · @request.CreatedByEmployeeProfile.FullName</p></div>
     <partial name="_Status" model="request.Status" />
 </header>
 
@@ -20,7 +20,7 @@
                 <div><dt><partial name="_Icon" model='@("warning")' /> @L.T("Priority")</dt><dd>@L.T(request.Priority)</dd></div>
                 <div><dt><partial name="_Icon" model='@("calendar")' /> @L.T("Target date")</dt><dd>@request.TargetDate.ToString("dd MMM yyyy", L.DisplayCulture)</dd></div>
                 <div><dt><partial name="_Icon" model='@("clock")' /> @L.T("Created (UTC)")</dt><dd>@request.CreatedAt.ToString("dd MMM yyyy HH:mm", L.DisplayCulture)</dd></div>
-                <div><dt><partial name="_Icon" model='@("users")' /> @L.T("Assigned reviewer")</dt><dd>@(request.ReviewedByEmployeeProfile?.FullName ?? "Unassigned")</dd></div>
+                <div><dt><partial name="_Icon" model='@("users")' /> @L.T("Assigned reviewer")</dt><dd>@(request.ReviewedByEmployeeProfile?.FullName ?? L.T("Unassigned"))</dd></div>
             </dl>
             <div class="sourcing-request-reason"><h3>@L.T("Reason for purchase")</h3><p class="request-prose mb-0">@request.Reason</p></div>
             @if (!string.IsNullOrWhiteSpace(request.ReviewNotes))
@@ -39,7 +39,7 @@
                 {
                     <li>
                         <div class="sourcing-request-item-heading"><span class="icon-tile tone-blue"><partial name="_Icon" model='@("inbox")' /></span><h3>@item.ItemName</h3><span class="department-status-count">@item.Quantity @item.Unit</span></div>
-                        <p class="request-prose mb-0">@(string.IsNullOrWhiteSpace(item.Specifications) ? "No specifications provided." : item.Specifications)</p>
+                        <p class="request-prose mb-0">@(string.IsNullOrWhiteSpace(item.Specifications) ? L.T("No specifications provided.") : item.Specifications)</p>
                     </li>
                 }
                 </ul>
@@ -77,8 +77,8 @@
         <section class="surface detail-card sourcing-request-communication">
             <h2>@L.T("Clarifications")</h2>
             <div class="button-row">
-                <a class="btn btn-outline-secondary" asp-controller="Clarifications" asp-action="StartRequest" asp-route-id="@request.Id"><partial name="_Icon" model='@("mail")' /> @L.T("Start a clarification")</a>
-                <a class="btn btn-outline-secondary" asp-controller="Clarifications" asp-action="Index" asp-route-kind="request" asp-route-recordId="@request.Id">@L.T("View history")</a>
+                <a data-workspace-page class="btn btn-outline-secondary" asp-controller="Clarifications" asp-action="StartRequest" asp-route-id="@request.Id"><partial name="_Icon" model='@("mail")' /> @L.T("Start a clarification")</a>
+                <a data-workspace-page class="btn btn-outline-secondary" asp-controller="Clarifications" asp-action="Index" asp-route-kind="request" asp-route-recordId="@request.Id"><partial name="_Icon" model='@("clock")' /> @L.T("View history")</a>
                 @if (request.ReviewedByEmployeeProfileId == null && pending)
                 {
                     <form asp-controller="Clarifications" asp-action="ClaimRequest" asp-route-id="@request.Id" method="post"><button class="btn btn-outline-primary" type="submit">@L.T("Take review")</button></form>

@@ -15,14 +15,14 @@
             @foreach (var assignment in Model)
             {
                 <article class="record-card" data-record data-status="@assignment.Status">
-                    <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("briefcase")' /></span><span>@assignment.Title<small>Tender #@assignment.TenderId</small></span></div>
+                    <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("briefcase")' /></span><span>@assignment.Title<small>@L.F("Tender #{0}", assignment.TenderId)</small></span></div>
                     <dl class="record-facts"><div><dt>@L.T("Status")</dt><dd><partial name="_Status" model="assignment.Status" />@if (assignment.Status == "Under Evaluation") { <small>@L.T("Open the evaluation to see your checklist and submission status.")</small> }</dd></div>
                         <div><dt class="record-field-icon" title="@L.T("Purchase request")"><partial name="_Icon" model='@("file")' /><span class="visually-hidden">@L.T("Purchase request")</span></dt><dd>PR-@assignment.RequestId</dd></div></dl>
                     <div class="record-action">
                         <partial name="_RequestActions" model="@( (assignment.RequestId, assignment.CanEditRequest) )" />
                         @if (assignment.Status == "Under Evaluation")
                         {
-                            <a class="record-icon-action" data-workspace-dialog="details" asp-controller="CommitteeReviews" asp-action="Details" asp-route-id="@assignment.TenderId" aria-label="Review bids for @assignment.Title" data-tooltip="@L.T("Review bids")"><partial name="_Icon" model='@("check")' /></a>
+                            <a class="record-icon-action" data-workspace-dialog="details" asp-controller="CommitteeReviews" asp-action="Details" asp-route-id="@assignment.TenderId" aria-label="@L.F("Review bids for {0}", assignment.Title)" data-tooltip="@L.T("Review bids")"><partial name="_Icon" model='@("check")' /></a>
                         }
                     </div>
                 </article>

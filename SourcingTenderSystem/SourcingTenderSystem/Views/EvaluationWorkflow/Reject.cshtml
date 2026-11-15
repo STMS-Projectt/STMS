@@ -1,6 +1,6 @@
 @model Tender
 @{ ViewData["Title"] = "Reject recommendation"; }
-<header class="page-heading admin-action-heading"><span class="icon-tile tone-amber"><partial name="_Icon" model='@("shield")' /></span><div><p class="eyebrow">OFFICIAL DECISION · TENDER #@Model.Id</p><h1>@L.T("Reject and cancel tender")</h1><p>@Model.Title</p></div></header>
+<header class="page-heading admin-action-heading"><span class="icon-tile tone-amber"><partial name="_Icon" model='@("shield")' /></span><div><p class="eyebrow">@L.F("Official decision · Tender #{0}", Model.Id)</p><h1>@L.T("Reject and cancel tender")</h1><p>@Model.Title</p></div></header>
 <form asp-action="Approve" asp-route-id="@Model.Id" method="post" class="admin-form">
     <input type="hidden" name="expectedStage" value="Pending Top Committee" />
     <input type="hidden" name="vote" value="reject" />

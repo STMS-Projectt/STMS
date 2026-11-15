@@ -14,8 +14,8 @@
 }
             <article class="surface detail-card supplier-invitation-body">
                 <header class="card-heading admin-record-hero">
-                    <div><p class="eyebrow">TENDER #@tender.Id · @tender.Status · @(invitation.RoundNumber is int number ? $"Round {number}" : "Legacy invitation")</p><h1>@tender.Title</h1></div>
-                    <span class="status-pill @(invitation.Status == "Accepted" ? "status-positive" : expired || invitation.Status == "Declined" ? "status-neutral" : "status-waiting")"><span aria-hidden="true"></span>@(expired ? "Expired" : invitation.Status)</span>
+                    <div><p class="eyebrow">@L.F("Tender #{0}", tender.Id) · @L.T(tender.Status) · @(invitation.RoundNumber is int number ? L.F("Round {0}", number) : L.T("Legacy invitation"))</p><h1>@tender.Title</h1></div>
+                    <span class="status-pill @(invitation.Status == "Accepted" ? "status-positive" : expired || invitation.Status == "Declined" ? "status-neutral" : "status-waiting")"><span aria-hidden="true"></span>@L.T(expired ? "Expired" : invitation.Status)</span>
                 </header>
                 <dl class="detail-grid">
                     <div><dt>@L.T("Invitation expires (UTC)")</dt><dd>@invitation.ExpiresAt.ToString("dd MMM yyyy HH:mm", L.DisplayCulture)</dd></div>

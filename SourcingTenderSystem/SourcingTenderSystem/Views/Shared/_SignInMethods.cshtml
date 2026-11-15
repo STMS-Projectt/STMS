@@ -14,7 +14,7 @@
         <section class="surface detail-card face-setup mb-3" aria-labelledby="face-setup-title">
             <div class="card-heading">
                 <span class="icon-tile tone-blue"><partial name="_Icon" model='@("face")' /></span>
-                <span class="status-pill @faceState.Item2" data-face-badge><span></span>@faceState.Item1</span>
+                <span class="status-pill @faceState.Item2" data-face-badge><span></span>@L.T(faceState.Item1)</span>
             </div>
             <h2 id="face-setup-title">@L.T("Face Recognition Setup")</h2>
             <p class="subtle">@L.T("Register your face to enable camera-based sign-in.")</p>
@@ -39,7 +39,7 @@
                         </label>
                         <p class="field-hint" data-face-show="idle failed">@L.T("Your password is required before a face reference is created or replaced.")</p>
                         <div class="button-row mt-3">
-                            <button type="button" class="btn btn-primary" data-face-start data-face-show="idle failed"><partial name="_Icon" model='@("camera")' /> @(reference ? "Replace enrolled face" : "Set up face recognition")</button>
+                            <button type="button" class="btn btn-primary" data-face-start data-face-show="idle failed"><partial name="_Icon" model='@("camera")' /> @L.T(reference ? "Replace enrolled face" : "Set up face recognition")</button>
                             <button type="button" class="btn btn-primary" data-face-capture data-face-show="ready" hidden><partial name="_Icon" model='@("face")' /> @L.T("Capture face")</button>
                             <button type="button" class="btn btn-primary" data-face-save data-face-show="captured" hidden><partial name="_Icon" model='@("check")' /> @L.T("Save face")</button>
                             <button type="button" class="btn btn-outline-secondary" data-face-retry data-face-show="captured" hidden>@L.T("Try again")</button>

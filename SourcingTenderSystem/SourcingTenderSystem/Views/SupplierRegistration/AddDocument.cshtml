@@ -6,7 +6,7 @@
     <div class="form-grid">
         <div class="field"><label asp-for="DocumentType" class="form-label"></label>
             <select asp-for="DocumentType" class="form-select"><option value="">@L.T("Select a type")</option>
-                @foreach (var type in SupplierFileStore.DocumentTypes) { <option value="@type">@type</option> }
+                @foreach (var type in SupplierFileStore.DocumentTypes) { <option value="@type">@L.T(type)</option> }
             </select><span asp-validation-for="DocumentType" class="text-danger"></span>
         </div>
         <div class="field"><label asp-for="ExpiryDate" class="form-label">@L.T("Expiry date (optional)")</label><input asp-for="ExpiryDate" class="form-control" /><span asp-validation-for="ExpiryDate" class="text-danger"></span></div>

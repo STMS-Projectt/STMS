@@ -41,6 +41,12 @@
                     {
                         <a data-workspace-dialog="details" class="record-icon-action" asp-action="Details" asp-route-id="@tender.Id" asp-route-panel="@panel" aria-label="@L.T(label): @tender.Title" data-tooltip="@L.T(label)"><partial name="_Icon" model="icon" /></a>
                     }
+                    @if ((top || User.IsInRole("Admin")) && tender.EvaluationReport is { ResultsSnapshot: not null } report &&
+                        report.Status is "Pending Top Committee" or "Awarded")
+                    {
+                        <a data-workspace-dialog="details" class="record-icon-action" asp-action="Winner" asp-route-id="@tender.Id" aria-label="@L.F("Winning supplier: {0}", tender.Title)" data-tooltip="@L.T("Winning supplier (AI brief)")" title="@L.T("Winning supplier (AI brief)")"><partial name="_Icon" model='@("trophy")' /></a>
+                    }
+
                     @if (User.IsInRole("SourcingOfficer"))
                     {
                         <a data-workspace-dialog="details" class="record-icon-action" asp-controller="Tenders" asp-action="Details" asp-route-id="@tender.Id" aria-label="@L.T("View related tender")" data-tooltip="@L.T("View tender")"><partial name="_Icon" model='@("briefcase")' /></a>

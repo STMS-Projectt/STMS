@@ -18,15 +18,15 @@
             <span asp-validation-for="TenderId" class="text-danger"></span>
         </div>
         <fieldset class="mb-3">
-            <legend class="form-label">Eligible suppliers @if (ViewData["RoundNumber"] is int round) { <span>· Round @round</span> }</legend>
-            @if (ViewData["CategoryName"] is string categoryName) { <p class="field-hint">Category: @categoryName</p> }
+            <legend class="form-label">@L.T("Eligible suppliers") @if (ViewData["RoundNumber"] is int round) { <span>· @L.F("Round {0}", round)</span> }</legend>
+            @if (ViewData["CategoryName"] is string categoryName) { <p class="field-hint">@L.F("Category: {0}", categoryName)</p> }
             @if (ViewData["TenderUnavailable"] is true)
             {
                 <p class="callout callout-warning">@L.T("This tender is not open for bidding. Select an open tender to send invitations.")</p>
             }
             else if (suppliers.Count == 0)
             {
-                <p class="subtle mb-0">@(Model.TenderId == 0 ? "Select a tender and load its eligible suppliers." : ViewData["CategoryName"] is null ? "Assign a supply category to the purchase request before sending invitations." : "No approved suppliers in this category are eligible for a new invitation in this round.")</p>
+                <p class="subtle mb-0">@L.T(Model.TenderId == 0 ? "Select a tender and load its eligible suppliers." : ViewData["CategoryName"] is null ? "Assign a supply category to the purchase request before sending invitations." : "No approved suppliers in this category are eligible for a new invitation in this round.")</p>
             }
             else
             {

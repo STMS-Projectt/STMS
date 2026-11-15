@@ -1,7 +1,7 @@
 @model Bid
 @{ var panel = Context.Request.Query["panel"].ToString(); ViewData["Title"] = panel == "items" ? "Quoted items" : "Submitted bid details"; }
 <a class="back-link" asp-action="Bids">@L.T("Back to bids")</a>
-<header class="page-heading stms-hero admin-record-hero"><div><p class="eyebrow">SUBMITTED BID #@Model.Id</p><h1>@(panel == "items" ? "Quoted items" : Model.SupplierProfile.CompanyName)</h1><p>@Model.Tender.Title</p></div><div class="record-action"><a data-workspace-dialog="details" class="record-icon-action" asp-action="Tender" asp-route-id="@Model.TenderId" asp-route-panel="overview" aria-label="@L.T("View related tender")" data-tooltip="@L.T("View related tender")"><partial name="_Icon" model='@("briefcase")' /></a></div></header>
+<header class="page-heading stms-hero admin-record-hero"><div><p class="eyebrow">@L.F("Submitted bid #{0}", Model.Id)</p><h1>@(panel == "items" ? L.T("Quoted items") : Model.SupplierProfile.CompanyName)</h1><p>@Model.Tender.Title</p></div><div class="record-action"><a data-workspace-dialog="details" class="record-icon-action" asp-action="Tender" asp-route-id="@Model.TenderId" asp-route-panel="overview" aria-label="@L.T("View related tender")" data-tooltip="@L.T("View related tender")"><partial name="_Icon" model='@("briefcase")' /></a></div></header>
 @if (panel != "items")
 {
 <section class="surface detail-card mb-3"><h2>@L.T("Offer summary")</h2>
@@ -10,10 +10,10 @@
         <div><dt>@L.T("Total price")</dt><dd>@Model.TotalPrice.ToString("N2") @Model.Currency</dd></div>
         <div><dt>@L.T("Submitted (UTC)")</dt><dd>@Model.SubmittedAt?.ToString("dd MMM yyyy HH:mm", L.DisplayCulture)</dd></div>
         <div><dt>@L.T("Submission round")</dt><dd>@(Model.SubmittedRoundNumber?.ToString() ?? "—")</dd></div>
-        <div><dt>@L.T("Delivery")</dt><dd>@Model.DeliveryDays days</dd></div>
-        <div><dt>@L.T("Validity")</dt><dd>@Model.ValidityDays days</dd></div>
+        <div><dt>@L.T("Delivery")</dt><dd>@L.F("{0} days", Model.DeliveryDays)</dd></div>
+        <div><dt>@L.T("Validity")</dt><dd>@L.F("{0} days", Model.ValidityDays)</dd></div>
         @if (!string.IsNullOrWhiteSpace(Model.ComplianceNotes)) { <div><dt>@L.T("Compliance notes")</dt><dd>@Model.ComplianceNotes</dd></div> }
-        @if (!string.IsNullOrWhiteSpace(Model.AwardOutcome)) { <div><dt>@L.T("Award outcome")</dt><dd>@Model.AwardOutcome</dd></div> }
+        @if (!string.IsNullOrWhiteSpace(Model.AwardOutcome)) { <div><dt>@L.T("Award outcome")</dt><dd>@L.T(Model.AwardOutcome)</dd></div> }
     </dl>
 </section>
 }

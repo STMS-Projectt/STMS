@@ -48,7 +48,7 @@
             form.querySelector("[data-reset-weights]").addEventListener("click", () => {
                 for (const row of rows) { row.selected.checked = true; row.weight.value = row.proposed; }
                 revision++;
-                status.textContent = "Officer weights restored. Save to apply them.";
+                status.textContent = window.stmsT("Officer weights restored. Save to apply them.");
                 sync();
             });
             suggestion.addEventListener("click", async () => {
@@ -57,17 +57,17 @@
                 data.append("__RequestVerificationToken", form.elements.__RequestVerificationToken.value);
                 for (const row of chosen()) data.append("criterionIds", row.id);
                 busy = true;
-                status.textContent = "Generating a suggestion…";
+                status.textContent = window.stmsT("Generating a suggestion…");
                 sync();
                 try {
                     const res = await fetch(form.dataset.aiUrl, { method: "POST", body: data, signal: AbortSignal.timeout(35000) });
                     const result = await res.json().catch(() => ({}));
-                    if (!res.ok) throw new Error(result.message || (res.status === 429 ? "Too many requests. Try again in a moment." : "AI weights are unavailable. Set the weights manually."));
-                    if (version !== revision) { status.textContent = "Your selections changed. Request a fresh suggestion to replace the current values."; return; }
+                    if (!res.ok) throw new Error(result.message || (res.status === 429 ? window.stmsT("Too many requests. Try again in a moment.") : window.stmsT("AI weights are unavailable. Set the weights manually.")));
+                    if (version !== revision) { status.textContent = window.stmsT("Your selections changed. Request a fresh suggestion to replace the current values."); return; }
                     for (const row of chosen()) row.weight.value = result[row.id];
-                    status.textContent = "Suggestion ready. Review or edit the weights, then save.";
+                    status.textContent = window.stmsT("Suggestion ready. Review or edit the weights, then save.");
                 } catch (error) {
-                    status.textContent = error.name === "TimeoutError" ? "The AI request timed out. You can enter weights manually." : error.message;
+                    status.textContent = error.name === "TimeoutError" ? window.stmsT("The AI request timed out. You can enter weights manually.") : window.stmsT(error.message);
                 } finally {
                     busy = false;
                     sync();

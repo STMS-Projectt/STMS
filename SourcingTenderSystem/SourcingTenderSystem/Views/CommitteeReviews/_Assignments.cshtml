@@ -12,12 +12,12 @@
             {
                 var action = row.Status == "Under Evaluation" ? "Review bids" : "View evaluation history";
                 <article class="record-card" data-record data-status="@row.Status">
-                    <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("briefcase")' /></span><span>@row.Title<small>Tender #@row.Id</small></span></div>
+                    <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("briefcase")' /></span><span>@row.Title<small>@L.F("Tender #{0}", row.Id)</small></span></div>
                     <dl class="record-facts">
-                        <div><dt class="record-field-icon" title="@L.T("Committee seat")"><partial name="_Icon" model='@("users")' /><span class="visually-hidden">@L.T("Committee seat")</span></dt><dd>@row.Seat</dd></div>
+                        <div><dt class="record-field-icon" title="@L.T("Committee seat")"><partial name="_Icon" model='@("users")' /><span class="visually-hidden">@L.T("Committee seat")</span></dt><dd>@L.T(row.Seat)</dd></div>
                         <div><dt class="visually-hidden">@L.T("Status")</dt><dd><partial name="_Status" model="row.Status" /></dd></div>
                     </dl>
-                    <div class="record-action"><a class="record-icon-action" data-workspace-dialog="details" asp-action="Details" asp-route-id="@row.Id" aria-label="@action: @row.Title" data-tooltip="@action"><partial name="_Icon" model='@("eye")' /></a></div>
+                    <div class="record-action"><a class="record-icon-action" data-workspace-dialog="details" asp-action="Details" asp-route-id="@row.Id" aria-label="@L.T(action): @row.Title" data-tooltip="@L.T(action)"><partial name="_Icon" model='@("eye")' /></a></div>
                 </article>
             }
         </div>

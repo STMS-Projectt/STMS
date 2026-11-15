@@ -1,10 +1,8 @@
 @model BidFormViewModel
-@* Shared fields for Create and Edit. ViewBag.Currencies comes from the controller. *@
-<div class="mb-3">
-    <label asp-for="Currency" class="form-label"></label>
-    <select asp-for="Currency" asp-items="ViewBag.Currencies" class="form-select"></select>
-    <span asp-validation-for="Currency" class="text-danger"></span>
-</div>
+@{
+    var currency = (ViewBag.Bid as Bid)?.Currency ?? Bid.JordanianDinar;
+}
+<p class="field-hint mb-3">@L.T("Currency"): <strong>@(currency == Bid.JordanianDinar ? L.T("Jordanian dinar (JOD)") : currency)</strong></p>
 <div class="mb-3">
     <label asp-for="DeliveryDays" class="form-label"></label>
     <input asp-for="DeliveryDays" class="form-control" />

@@ -50,11 +50,11 @@
         <div class="record-list" data-record-list>
             @foreach (var item in Model)
             {
-                <article class="record-card" data-record data-status="@L.T(item.IsActive ? "active" : "inactive")" data-staff="@item.EmployeeCount">
+                <article class="record-card" data-record data-status="@(item.IsActive ? "active" : "inactive")" data-staff="@item.EmployeeCount">
                     <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("building")' /></span><span>@item.Name @if (!string.IsNullOrWhiteSpace(item.Description)) { <small class="dept-description">@item.Description</small> }</span></div><dl class="record-facts">
-                    <div><dt class="visually-hidden">@L.T("Status")</dt><dd><partial name="_Status" model='@L.T(item.IsActive ? "Active" : "Inactive")' /></dd></div>
+                    <div><dt class="visually-hidden">@L.T("Status")</dt><dd><partial name="_Status" model='@(item.IsActive ? "Active" : "Inactive")' /></dd></div>
                     <div><dt class="record-field-icon" title="@L.T("Employees")"><partial name="_Icon" model='@("users")' /><span class="visually-hidden">@L.T("Employees")</span></dt><dd><strong class="dept-staff-count">@item.EmployeeCount</strong></dd></div>
-                    </dl><div class="record-action"><a data-workspace-dialog="details" class="record-icon-action" asp-action="Details" asp-route-id="@item.Id" aria-label="View details for @item.Name" data-tooltip="@L.T("View details")"><partial name="_Icon" model='@("eye")' /></a></div>
+                    </dl><div class="record-action"><a data-workspace-dialog="details" class="record-icon-action" asp-action="Details" asp-route-id="@item.Id" aria-label="@L.F("View details for {0}", item.Name)" data-tooltip="@L.T("View details")"><partial name="_Icon" model='@("eye")' /></a></div>
                 </article>
             }
             </div>
