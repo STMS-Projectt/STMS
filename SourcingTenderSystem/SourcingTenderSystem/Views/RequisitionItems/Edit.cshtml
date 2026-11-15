@@ -1,7 +1,7 @@
 @model RequisitionItemInput
 @{ ViewData["Title"] = "Edit item"; }
 <a class="back-link" asp-controller="PurchaseRequisitions" asp-action="Details" asp-route-id="@ViewBag.RequestId"><partial name="_Icon" model='@("back")' /> Request details</a>
-<header class="page-heading"><div><p class="eyebrow">PURCHASE REQUESTS</p><h1>Edit item</h1><p>Update the quantity, unit, or specifications for this line.</p></div></header>
+<header class="page-heading stms-hero"><div><p class="eyebrow">PURCHASE REQUESTS</p><h1>Edit item</h1><p>Update the quantity, unit, or specifications for this line.</p></div></header>
 <div class="form-shell">
     <form class="surface form-card" asp-action="Edit" asp-route-id="@ViewBag.ItemId" method="post">
         <partial name="_Fields" model="Model" />

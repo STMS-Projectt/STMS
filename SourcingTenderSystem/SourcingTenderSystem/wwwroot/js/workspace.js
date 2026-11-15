@@ -21,12 +21,13 @@
     let dialogUrl;
     let dialogTrigger;
     const admin = frame.dataset.workspaceFrame === "admin";
+    const department = frame.dataset.workspaceFrame === "department";
     const back = dialog.querySelector("[data-dialog-back]");
     const dialogTitle = dialog.querySelector("#workspace-dialog-title");
     const previousDialogs = [];
     let refreshOnClose = false;
     const showPrevious = () => {
-        if (sending || !previousDialogs.length) return;
+        if (sending || loadingDialog || !previousDialogs.length) return;
         navigate(previousDialogs.pop(), "dialog");
     };
     back.addEventListener("click", showPrevious);
@@ -110,6 +111,18 @@
         controller = request;
         progress.hidden = false;
         status.textContent = "Loading…";
+        function showDialogError(message) {
+            loadingDialog = false;
+            setDialogLoading(false);
+            dialogTitle.textContent = "Could not open this record";
+            back.hidden = previousDialogs.length === 0;
+            const alert = document.createElement("p");
+            alert.className = "alert alert-warning mb-0";
+            alert.setAttribute("role", "alert");
+            alert.textContent = message;
+            content.replaceChildren(alert);
+            dialogTitle.focus({ preventScroll: true });
+        }
         if (mode === "dialog") {
             loadingDialog = true;
             dialogTitle.textContent = "Loading…";
@@ -120,11 +133,19 @@
         try {
             const result = await load(url, request.signal);
             if (request.signal.aborted) return;
-            if (!sameWorkspace(result)) { location.assign(result.res.url || url); return; }
+            if (!sameWorkspace(result)) {
+                if (mode === "dialog" && department && !result.res.redirected)
+                    showDialogError("This record is unavailable or you no longer have permission to open it.");
+                else location.assign(result.res.url || url);
+                return;
+            }
             await install(result, mode, updateHistory);
             status.textContent = "Content loaded";
         } catch (error) {
-            if (error.name !== "AbortError" && !request.signal.aborted) location.assign(url);
+            if (error.name !== "AbortError" && !request.signal.aborted) {
+                if (mode === "dialog" && department) showDialogError("The record could not be loaded. Go back or close this window and try again.");
+                else location.assign(url);
+            }
         } finally {
             if (controller === request) progress.hidden = true;
         }
@@ -152,7 +173,8 @@
         if (!link || event.defaultPrevented || event.button || event.ctrlKey || event.metaKey ||
             event.shiftKey || event.altKey || link.target || link.hasAttribute("download") ||
             link.hasAttribute("data-full-page") || !link.closest("#main, #workspace-nav, #workspace-dialog, .stms-topbar")) return;
-        if (link.closest("#workspace-dialog") && (link.hasAttribute("data-dialog-cancel") || /^(cancel|back(?: to .+)?)$/i.test(link.textContent.trim()))) {
+        const insideDialog = dialog.contains(link);
+        if (insideDialog && (link.hasAttribute("data-dialog-cancel") || (department && link.classList.contains("back-link")) || /^(cancel|back(?: to .+)?)$/i.test(link.textContent.trim()))) {
             event.preventDefault();
             if (!sending) previousDialogs.length ? showPrevious() : dialog.close();
             return;
@@ -161,10 +183,11 @@
         if (sending) { event.preventDefault(); return; }
         if (!supported(url) || url.hash) return;
         event.preventDefault();
-        const mode = link.hasAttribute("data-workspace-dialog") ? "dialog" : "page";
+        const mode = !link.hasAttribute("data-workspace-page") &&
+            (link.hasAttribute("data-workspace-dialog") || (department && insideDialog)) ? "dialog" : "page";
         if (mode === "dialog") {
             if (!dialog.open) { previousDialogs.length = 0; dialogUrl = null; }
-            if (admin && dialog.open && dialogUrl) previousDialogs.push(dialogUrl);
+            if ((admin || department) && dialog.open && dialogUrl && dialogUrl.href !== url.href) previousDialogs.push(dialogUrl);
             else if (!dialog.open) dialogTrigger = link;
         }
         if (document.body.classList.contains("nav-open")) document.querySelector("[data-nav-close]")?.click();
@@ -205,7 +228,7 @@
         if (sending) return;
         if (method === "get") {
             url.search = new URLSearchParams(data);
-            navigate(url);
+            navigate(url, dialog.contains(form) ? "dialog" : "page");
             return;
         }
         const inDialog = dialog.contains(form);
@@ -242,10 +265,20 @@
                 const origin = await load(location.href, request.signal);
                 if (sameWorkspace(origin)) await install(origin, "page", false);
                 await install(nextForm, "dialog");
-            } else if (admin && inDialog && result.res.redirected && result.main.querySelector(".admin-record-hero")) {
+            } else if (inDialog && result.res.redirected && (department || (admin && result.main.querySelector(".admin-record-hero")))) {
                 refreshOnClose = true;
-                if (previousDialogs.at(-1)?.href === result.res.url) previousDialogs.pop();
-                await install(result, "dialog");
+                const prior = previousDialogs.at(-1);
+                const destination = new URL(result.res.url);
+                if (department && prior?.searchParams.get("panel") === "items" && prior.pathname === destination.pathname) {
+                    const refreshed = await load(prior, request.signal);
+                    if (sameWorkspace(refreshed)) {
+                        previousDialogs.pop();
+                        await install(refreshed, "dialog");
+                    } else await install(result, "dialog");
+                } else {
+                    if (prior?.href === result.res.url) previousDialogs.pop();
+                    await install(result, "dialog");
+                }
             } else {
                 await install(result, inDialog && !result.res.redirected ? "dialog" : "page");
             }

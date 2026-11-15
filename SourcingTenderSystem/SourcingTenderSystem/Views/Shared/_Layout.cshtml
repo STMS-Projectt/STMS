@@ -159,6 +159,7 @@
         <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
         <script src="~/js/site.js" asp-append-version="true"></script>
         <script src="~/js/admin-directory-voice-search.js" asp-append-version="true" defer></script>
+        @if (admin || department) { <script src="~/js/departments.js" asp-append-version="true" defer></script> }
         @if (signedIn) { <script src="~/js/notifications.js" asp-append-version="true" defer></script> }
         @if (workspace)
         {

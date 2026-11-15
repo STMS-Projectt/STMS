@@ -1,0 +1,9 @@
+@model (int Id, bool CanEdit)
+<a class="record-icon-action" data-workspace-dialog="details" asp-controller="PurchaseRequisitions" asp-action="Details" asp-route-id="@Model.Id" asp-route-panel="overview" aria-label="Details for PR-@Model.Id" data-tooltip="Details"><partial name="_Icon" model='@("eye")' /></a>
+@if (Model.CanEdit)
+{
+    <a class="record-icon-action" data-workspace-dialog asp-controller="PurchaseRequisitions" asp-action="Edit" asp-route-id="@Model.Id" aria-label="Edit PR-@Model.Id" data-tooltip="Edit"><partial name="_Icon" model='@("edit")' /></a>
+}
+<a class="record-icon-action" data-workspace-dialog asp-controller="PurchaseRequisitions" asp-action="Details" asp-route-id="@Model.Id" asp-route-panel="items" aria-label="Items for PR-@Model.Id" data-tooltip="Items"><partial name="_Icon" model='@("inbox")' /></a>
+<a class="record-icon-action" data-workspace-dialog asp-controller="PurchaseRequisitions" asp-action="Details" asp-route-id="@Model.Id" asp-route-panel="qr" aria-label="QR code for PR-@Model.Id" data-tooltip="QR code"><partial name="_Icon" model='@("qr")' /></a>
+<a class="record-icon-action" data-workspace-page asp-controller="Clarifications" asp-action="StartRequest" asp-route-id="@Model.Id" aria-label="Start a clarification for PR-@Model.Id" data-tooltip="Clarification"><partial name="_Icon" model='@("mail")' /></a>

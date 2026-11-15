@@ -50,7 +50,7 @@ function bind(root) {
     // Release the camera when the page changes, the component is removed (AJAX navigation) or a dialog closes.
     const lifecycle = new AbortController();
     const observer = new MutationObserver(() => {
-        if (!root.isConnected || root.closest("[hidden]")) { if (stream) reset(""); }
+        if (!root.isConnected || root.closest("[hidden]")) { if (stream || request) reset(""); }
         if (!root.isConnected) { lifecycle.abort(); observer.disconnect(); }
     });
     observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["hidden", "open"] });
@@ -60,11 +60,28 @@ function bind(root) {
     function cameraError(error) {
         if (error.name === "NotAllowedError" || error.name === "SecurityError")
             return "Camera permission was denied. Allow camera access for this site in your browser settings, then try again.";
-        if (error.name === "NotFoundError" || error.name === "OverconstrainedError") return "No camera was found. Connect a webcam and try again.";
-        if (error.name === "NotReadableError") return "The camera is in use by another application. Close it and try again.";
+        if (error.name === "NotFoundError" || error.name === "DevicesNotFoundError")
+            return "Your browser could not find a webcam. Check your device’s Camera app and camera access settings, then try again.";
+        if (error.name === "OverconstrainedError" || error.name === "ConstraintNotSatisfiedError")
+            return "The selected camera does not support this capture mode. Select a different webcam in your browser settings and try again.";
+        if (error.name === "NotReadableError")
+            return "The browser found a camera but could not start it. Close other apps or tabs using it, then try again.";
         if (error.name === "NotSupportedError" || error.name === "AbortError" || error.name === "TypeError")
             return "The camera could not be opened in this browser. Allow camera access over HTTPS, or sign in with your password or passkey.";
         return error.message || "The camera could not be started.";
+    }
+
+    async function openCamera(signal) {
+        const media = navigator.mediaDevices;
+        try {
+            return await media.getUserMedia({
+                audio: false, video: { facingMode: { ideal: "user" }, width: { ideal: 640 }, height: { ideal: 480 } }
+            });
+        } catch (error) {
+            const canRetry = ["NotFoundError", "OverconstrainedError", "DevicesNotFoundError", "ConstraintNotSatisfiedError"].includes(error.name);
+            if (signal.aborted || !canRetry) throw error;
+            return await media.getUserMedia({ audio: false, video: true });
+        }
     }
 
     async function send(url, data, signal) {
@@ -107,11 +124,12 @@ function bind(root) {
         setState("starting", "Waiting for camera permission… Allow access in the browser prompt.", "info");
         try {
             if (!window.isSecureContext || !navigator.mediaDevices?.getUserMedia) throw new Error("Camera access requires HTTPS (or localhost) and a current browser.");
-            const opened = await navigator.mediaDevices.getUserMedia({ audio: false, video: { facingMode: "user", width: { ideal: 640 }, height: { ideal: 480 } } });
+            const opened = await openCamera(current.signal);
             if (current.signal.aborted) { opened.getTracks().forEach(track => track.stop()); return; }
             stream = opened;
             video.srcObject = stream;
             await video.play();
+            if (current.signal.aborted) return;
             setState("starting", "Camera ready. Preparing the challenge…", "info");
             const body = mode === "login" ? { email: email.value.trim(), returnUrl: root.dataset.returnUrl } : { enroll: true, password: password?.value };
             const result = await send(root.dataset.start, body, current.signal);

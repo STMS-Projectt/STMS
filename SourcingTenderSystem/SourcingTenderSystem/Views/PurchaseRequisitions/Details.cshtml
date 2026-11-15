@@ -3,13 +3,14 @@
     ViewData["Title"] = "Request details";
     bool canEdit = ViewBag.CanEdit == true;
     bool returned = Model.Status == "Returned";
+    bool overviewOnly = ViewBag.OverviewOnly == true;
 }
 <a class="back-link" asp-action="MyRequests"><partial name="_Icon" model='@("back")' /> My Requests</a>
-<header class="page-heading">
+<header class="page-heading stms-hero admin-record-hero">
     <div><p class="eyebrow">PURCHASE REQUEST · PR-@Model.Id</p><h1>@Model.Title</h1><p>@Model.Department.Name · Requested by @Model.CreatedByEmployeeProfile.FullName</p></div>
     <partial name="_RequestStatus" model="Model.Status" />
 </header>
-<partial name="_RecordQr" model='@(Url.Action("Details", new { id = Model.Id })!)' />
+@if (!overviewOnly) { <partial name="_RecordQr" model='@(Url.Action("Details", new { id = Model.Id })!)' /> }
 @if (TempData["RequestError"] is string error)
 {
     <div class="alert alert-danger" role="alert">@error</div>
@@ -25,7 +26,7 @@
 }
 <section class="surface detail-card request-section">
     <div class="card-heading"><h2>Request overview</h2>
-        @if (canEdit) { <a data-workspace-dialog class="btn btn-outline-secondary" asp-action="Edit" asp-route-id="@Model.Id">Edit request</a> }
+        @if (canEdit && !overviewOnly) { <a class="btn btn-outline-secondary" asp-action="Edit" asp-route-id="@Model.Id">Edit request</a> }
     </div>
     <dl class="request-meta">
         <div><dt>Priority <span lang="ar" dir="rtl">الأولوية</span></dt><dd>@Model.Priority</dd></div>
@@ -34,10 +35,19 @@
     </dl>
     <h3>Reason for purchase</h3><p class="request-prose mb-0">@Model.Reason</p>
 </section>
+@if (overviewOnly)
+{
+    <div class="button-row mt-3">
+        <a class="btn btn-outline-secondary" data-workspace-page asp-controller="Clarifications" asp-action="StartRequest" asp-route-id="@Model.Id" aria-label="Start a clarification" title="Start a clarification"><partial name="_Icon" model='@("mail")' /></a>
+        <a class="btn btn-outline-secondary" data-workspace-page asp-controller="Clarifications" asp-action="Index" asp-route-kind="request" asp-route-recordId="@Model.Id">Clarification history</a>
+    </div>
+}
+@if (!overviewOnly)
+{
 <section class="surface directory request-section">
     <div class="directory-toolbar">
         <div><h2 class="mb-0">Requested items</h2><span class="result-count">@Model.Items.Count line item(s)</span></div>
-        @if (canEdit) { <a data-workspace-dialog class="btn btn-outline-secondary" asp-controller="RequisitionItems" asp-action="Create" asp-route-requestId="@Model.Id"><partial name="_Icon" model='@("plus")' /> Add item</a> }
+        @if (canEdit) { <a class="btn btn-outline-secondary" asp-controller="RequisitionItems" asp-action="Create" asp-route-requestId="@Model.Id"><partial name="_Icon" model='@("plus")' /> Add item</a> }
     </div>
     @if (Model.Items.Count == 0)
     {
@@ -54,8 +64,8 @@
                     <tr><td><strong>@item.ItemName</strong></td><td>@item.Quantity @item.Unit</td><td class="request-prose">@item.Specifications</td>
                     @if (canEdit)
                     {
-                        <td><a data-workspace-dialog class="table-action" asp-controller="RequisitionItems" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
-                            <a data-workspace-dialog class="table-action text-danger ms-2" asp-controller="RequisitionItems" asp-action="Delete" asp-route-id="@item.Id">Remove</a></td>
+                        <td><a class="table-action" asp-controller="RequisitionItems" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                            <a class="table-action text-danger ms-2" asp-controller="RequisitionItems" asp-action="Delete" asp-route-id="@item.Id">Remove</a></td>
                     }
                     </tr>
                 }
@@ -72,6 +82,7 @@
     </form>
 }
 
-<div class="mb-3"><a class="btn btn-outline-secondary" asp-controller="Clarifications" asp-action="Index" asp-route-kind="request" asp-route-recordId="@Model.Id">Clarification history</a></div>
+<div class="button-row mb-3"><a class="btn btn-outline-secondary" data-workspace-page asp-controller="Clarifications" asp-action="StartRequest" asp-route-id="@Model.Id" aria-label="Start a clarification" title="Start a clarification"><partial name="_Icon" model='@("mail")' /></a><a class="btn btn-outline-secondary" data-workspace-page asp-controller="Clarifications" asp-action="Index" asp-route-kind="request" asp-route-recordId="@Model.Id">Clarification history</a></div>
 
 <partial name="_TenderHistory" model="Model.Tenders" />
+}

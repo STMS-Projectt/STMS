@@ -2,139 +2,31 @@
   {
     "Id": 1,
     "Title": "Phase 6 Award",
-    "Status": "Awarded",
+    "Status": "Draft",
     "PurchaseRequisitionId": 2,
-    "Bids": [
-      {
-        "Status": "Compliant",
-        "AwardOutcome": "Awarded",
-        "SubmittedAt": "2026-11-14T21:38:33.1910236",
-        "SubmittedRoundNumber": 1
-      },
-      {
-        "Status": "Compliant",
-        "AwardOutcome": "Unsuccessful",
-        "SubmittedAt": "2026-11-14T21:38:35.7627089",
-        "SubmittedRoundNumber": 1
-      },
-      {
-        "Status": "Compliant",
-        "AwardOutcome": "Unsuccessful",
-        "SubmittedAt": "2026-11-14T21:38:38.2955787",
-        "SubmittedRoundNumber": 1
-      }
-    ],
-    "Invitations": [
-      {
-        "RoundNumber": 1,
-        "Status": "Accepted",
-        "SentAt": "2026-11-14T21:38:30.1391699"
-      },
-      {
-        "RoundNumber": 1,
-        "Status": "Accepted",
-        "SentAt": "2026-11-14T21:38:30.1391699"
-      },
-      {
-        "RoundNumber": 1,
-        "Status": "Accepted",
-        "SentAt": "2026-11-14T21:38:30.1391699"
-      }
-    ],
-    "Rounds": 1,
-    "Submissions": 4,
+    "Bids": [],
+    "Invitations": [],
+    "Rounds": 0,
+    "Submissions": 0,
     "Audit": [
       "Create",
-      "DraftCriteriaChanged",
-      "InviteSuppliers",
-      "Publish",
-      "CloseEarly",
-      "ComplianceDecision",
-      "ComplianceDecision",
-      "ComplianceDecision",
-      "AssignCommittee",
-      "EvaluationSubmitted",
-      "EvaluationSubmitted",
-      "EvaluationSubmitted",
-      "EvaluationSubmitted",
-      "EvaluationReportPrepared",
-      "Pending Manager Approval",
-      "Pending Top Committee",
-      "Top Committee Approved",
-      "Top Committee Approved",
-      "Top Committee Approved",
-      "Top Committee Approved"
+      "DraftCriteriaChanged"
     ],
-    "Votes": 4,
-    "Notifications": [
-      "Tender awarded to you",
-      "Bid not selected",
-      "Bid not selected"
-    ]
+    "Votes": 0,
+    "Notifications": []
   },
   {
     "Id": 2,
     "Title": "Phase 6 Rounds",
-    "Status": "Under Evaluation",
+    "Status": "Draft",
     "PurchaseRequisitionId": 3,
-    "Bids": [
-      {
-        "Status": "Compliant",
-        "AwardOutcome": null,
-        "SubmittedAt": "2026-11-14T21:39:15.5505468",
-        "SubmittedRoundNumber": 1
-      },
-      {
-        "Status": "Compliant",
-        "AwardOutcome": null,
-        "SubmittedAt": "2026-11-14T21:39:18.1253576",
-        "SubmittedRoundNumber": 1
-      }
-    ],
-    "Invitations": [
-      {
-        "RoundNumber": 1,
-        "Status": "Accepted",
-        "SentAt": "2026-11-14T21:39:12.847381"
-      },
-      {
-        "RoundNumber": 1,
-        "Status": "Accepted",
-        "SentAt": "2026-11-14T21:39:12.847381"
-      },
-      {
-        "RoundNumber": 1,
-        "Status": "Pending",
-        "SentAt": "2026-11-14T21:39:12.847381"
-      },
-      {
-        "RoundNumber": 2,
-        "Status": "Pending",
-        "SentAt": "2026-11-14T21:39:19.9683813"
-      },
-      {
-        "RoundNumber": 3,
-        "Status": "Pending",
-        "SentAt": "2026-11-14T21:39:21.7271859"
-      }
-    ],
-    "Rounds": 3,
+    "Bids": [],
+    "Invitations": [],
+    "Rounds": 0,
     "Submissions": 0,
     "Audit": [
       "Create",
-      "DraftCriteriaChanged",
-      "InviteSuppliers",
-      "Publish",
-      "CloseEarly",
-      "Reopen",
-      "InviteSuppliers",
-      "CloseEarly",
-      "Reopen",
-      "InviteSuppliers",
-      "CloseEarly",
-      "ComplianceDecision",
-      "ComplianceDecision",
-      "AssignCommittee"
+      "DraftCriteriaChanged"
     ],
     "Votes": 0,
     "Notifications": []
@@ -142,59 +34,15 @@
   {
     "Id": 3,
     "Title": "Phase 6 Rounds 1",
-    "Status": "Under Evaluation",
+    "Status": "Draft",
     "PurchaseRequisitionId": 4,
-    "Bids": [
-      {
-        "Status": "Compliant",
-        "AwardOutcome": null,
-        "SubmittedAt": "2026-11-14T21:39:31.6916835",
-        "SubmittedRoundNumber": 1
-      }
-    ],
-    "Invitations": [
-      {
-        "RoundNumber": 1,
-        "Status": "Accepted",
-        "SentAt": "2026-11-14T21:39:28.9067936"
-      },
-      {
-        "RoundNumber": 1,
-        "Status": "Pending",
-        "SentAt": "2026-11-14T21:39:28.9067936"
-      },
-      {
-        "RoundNumber": 1,
-        "Status": "Pending",
-        "SentAt": "2026-11-14T21:39:28.9067936"
-      },
-      {
-        "RoundNumber": 2,
-        "Status": "Pending",
-        "SentAt": "2026-11-14T21:39:33.5295682"
-      },
-      {
-        "RoundNumber": 3,
-        "Status": "Pending",
-        "SentAt": "2026-11-14T21:39:35.4136192"
-      }
-    ],
-    "Rounds": 3,
+    "Bids": [],
+    "Invitations": [],
+    "Rounds": 0,
     "Submissions": 0,
     "Audit": [
       "Create",
-      "DraftCriteriaChanged",
-      "InviteSuppliers",
-      "Publish",
-      "CloseEarly",
-      "Reopen",
-      "InviteSuppliers",
-      "CloseEarly",
-      "Reopen",
-      "InviteSuppliers",
-      "CloseEarly",
-      "ComplianceDecision",
-      "AssignCommittee"
+      "DraftCriteriaChanged"
     ],
     "Votes": 0,
     "Notifications": []
@@ -202,50 +50,15 @@
   {
     "Id": 4,
     "Title": "Phase 6 Rounds 0",
-    "Status": "Closed",
+    "Status": "Draft",
     "PurchaseRequisitionId": 5,
     "Bids": [],
-    "Invitations": [
-      {
-        "RoundNumber": 1,
-        "Status": "Pending",
-        "SentAt": "2026-11-14T21:39:42.0098083"
-      },
-      {
-        "RoundNumber": 1,
-        "Status": "Pending",
-        "SentAt": "2026-11-14T21:39:42.0098083"
-      },
-      {
-        "RoundNumber": 1,
-        "Status": "Pending",
-        "SentAt": "2026-11-14T21:39:42.0098083"
-      },
-      {
-        "RoundNumber": 2,
-        "Status": "Pending",
-        "SentAt": "2026-11-14T21:39:44.1317481"
-      },
-      {
-        "RoundNumber": 3,
-        "Status": "Pending",
-        "SentAt": "2026-11-14T21:39:45.958801"
-      }
-    ],
-    "Rounds": 3,
+    "Invitations": [],
+    "Rounds": 0,
     "Submissions": 0,
     "Audit": [
       "Create",
-      "DraftCriteriaChanged",
-      "InviteSuppliers",
-      "Publish",
-      "CloseEarly",
-      "Reopen",
-      "InviteSuppliers",
-      "CloseEarly",
-      "Reopen",
-      "InviteSuppliers",
-      "CloseEarly"
+      "DraftCriteriaChanged"
     ],
     "Votes": 0,
     "Notifications": []
@@ -253,77 +66,6 @@
   {
     "Id": 5,
     "Title": "Phase 6 Cancel",
-    "Status": "Cancelled",
-    "PurchaseRequisitionId": 6,
-    "Bids": [
-      {
-        "Status": "Compliant",
-        "AwardOutcome": "Cancelled",
-        "SubmittedAt": "2026-11-14T21:39:54.4740138",
-        "SubmittedRoundNumber": 1
-      },
-      {
-        "Status": "Compliant",
-        "AwardOutcome": "Cancelled",
-        "SubmittedAt": "2026-11-14T21:39:56.9787536",
-        "SubmittedRoundNumber": 1
-      },
-      {
-        "Status": "Compliant",
-        "AwardOutcome": "Cancelled",
-        "SubmittedAt": "2026-11-14T21:39:59.4786473",
-        "SubmittedRoundNumber": 1
-      }
-    ],
-    "Invitations": [
-      {
-        "RoundNumber": 1,
-        "Status": "Accepted",
-        "SentAt": "2026-11-14T21:39:51.6929668"
-      },
-      {
-        "RoundNumber": 1,
-        "Status": "Accepted",
-        "SentAt": "2026-11-14T21:39:51.6929668"
-      },
-      {
-        "RoundNumber": 1,
-        "Status": "Accepted",
-        "SentAt": "2026-11-14T21:39:51.6929668"
-      }
-    ],
-    "Rounds": 1,
-    "Submissions": 4,
-    "Audit": [
-      "Create",
-      "DraftCriteriaChanged",
-      "InviteSuppliers",
-      "Publish",
-      "CloseEarly",
-      "ComplianceDecision",
-      "ComplianceDecision",
-      "ComplianceDecision",
-      "AssignCommittee",
-      "EvaluationSubmitted",
-      "EvaluationSubmitted",
-      "EvaluationSubmitted",
-      "EvaluationSubmitted",
-      "EvaluationReportPrepared",
-      "Pending Manager Approval",
-      "Pending Top Committee",
-      "Top Committee Rejected",
-      "CancellationHandoff"
-    ],
-    "Votes": 1,
-    "Notifications": [
-      "Tender cancelled",
-      "Tender cancelled",
-      "Tender cancelled"
-    ]
-  },
-  {
-    "Id": 6,
-    "Title": "Phase 6 Replacement",
     "Status": "Draft",
     "PurchaseRequisitionId": 6,
     "Bids": [],
@@ -331,7 +73,8 @@
     "Rounds": 0,
     "Submissions": 0,
     "Audit": [
-      "Create"
+      "Create",
+      "DraftCriteriaChanged"
     ],
     "Votes": 0,
     "Notifications": []

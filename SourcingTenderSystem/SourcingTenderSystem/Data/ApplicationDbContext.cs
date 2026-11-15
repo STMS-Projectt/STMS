@@ -12,6 +12,7 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser>
     }
 
     public DbSet<Department> Departments => Set<Department>();
+    public DbSet<Category> Categories => Set<Category>();
     public DbSet<EmployeeProfile> EmployeeProfiles => Set<EmployeeProfile>();
     public DbSet<SupplierProfile> SupplierProfiles => Set<SupplierProfile>();
     public DbSet<SupplierDocument> SupplierDocuments => Set<SupplierDocument>();
@@ -37,6 +38,11 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        modelBuilder.Entity<Category>().HasIndex(x => x.Name).IsUnique();
+        modelBuilder.Entity<Category>().HasMany(x => x.Suppliers).WithMany(x => x.Categories)
+            .UsingEntity("SupplierCategories");
+        modelBuilder.Entity<PurchaseRequisition>().HasOne(x => x.Category).WithMany()
+            .HasForeignKey(x => x.CategoryId).OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<EmployeeProfile>()
             .HasOne(x => x.User)

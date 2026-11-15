@@ -1,11 +1,12 @@
 @model RequisitionInput
 @{ ViewData["Title"] = "Edit purchase request"; }
 <a class="back-link" asp-controller="PurchaseRequisitions" asp-action="Details" asp-route-id="@ViewBag.RequestId"><partial name="_Icon" model='@("back")' /> Request details</a>
-<header class="page-heading"><div><p class="eyebrow">PURCHASE REQUESTS</p><h1>Edit purchase request</h1><p>Update the request information before sending it for review.</p></div></header>
-<div class="form-shell">
-    <form class="surface form-card" asp-action="Edit" asp-route-id="@ViewBag.RequestId" method="post">
-        <partial name="_Fields" model="Model" />
-        <div class="button-row"><button class="btn btn-primary" type="submit">Save changes</button><a class="btn btn-outline-secondary" asp-controller="PurchaseRequisitions" asp-action="Details" asp-route-id="@ViewBag.RequestId">Cancel</a></div>
+<header class="page-heading admin-action-heading request-editor-heading"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("edit")' /></span><div><p class="eyebrow">PURCHASE REQUEST · PR-@ViewBag.RequestId</p><h1>Edit purchase request</h1><p>Update the request information before sending it for review.</p></div></header>
+<div class="form-shell request-editor-shell">
+    <form class="surface form-card request-editor-card" asp-action="Edit" asp-route-id="@ViewBag.RequestId" method="post">
+        <h2>Request information</h2>
+        <div class="request-editor-fields"><partial name="_Fields" model="Model" /></div>
+        <div class="form-actions request-editor-actions"><button class="btn btn-primary" type="submit">Save changes</button><a data-dialog-cancel class="btn btn-outline-secondary" asp-controller="PurchaseRequisitions" asp-action="Details" asp-route-id="@ViewBag.RequestId">Cancel</a></div>
     </form>
     <aside class="surface helper-card"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("file")' /></span><h2>Review notes</h2><p class="mb-0">If this request was returned, check the review notes on the request details page.</p></aside>
 </div>

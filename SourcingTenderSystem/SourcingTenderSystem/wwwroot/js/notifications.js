@@ -1,11 +1,11 @@
 (() => {
     let checking = false;
-    const menus = [...document.querySelectorAll("[data-header-menu-toggle]")].map(button => ({
+    const menus = () => [...document.querySelectorAll("[data-header-menu-toggle]")].map(button => ({
         button,
         panel: document.getElementById(button.getAttribute("aria-controls"))
     })).filter(menu => menu.panel);
     const closeMenus = (restoreFocus = false) => {
-        for (const menu of menus) {
+        for (const menu of menus()) {
             if (!menu.panel.hidden && restoreFocus) menu.button.focus();
             menu.panel.hidden = true;
             menu.button.setAttribute("aria-expanded", "false");
@@ -53,23 +53,13 @@
             if (menu.button.dataset.headerMenuToggle === "notifications") loadRecent(menu.panel);
         }
     }
-    for (const menu of menus) {
-        menu.button.addEventListener("click", () => {
+    document.addEventListener("click", event => {
+        const trigger = event.target.closest("[data-header-menu-toggle]");
+        const menu = menus().find(item => item.button === trigger);
+        if (menu) {
             if (menu.panel.hidden) openMenu(menu);
             else closeMenus();
-        });
-    }
-    const profile = menus.find(menu => menu.button.dataset.headerMenuToggle === "profile");
-    if (profile) {
-        const wrap = profile.button.closest(".bar-profile");
-        const hover = matchMedia("(hover: hover) and (pointer: fine)");
-        wrap?.addEventListener("mouseenter", () => { if (hover.matches) openMenu(profile); });
-        wrap?.addEventListener("mouseleave", () => {
-            if (hover.matches && !wrap.contains(document.activeElement)) closeMenus();
-        });
-    }
-    document.addEventListener("click", event => {
-        if (!event.target.closest(".stms-header-menu,.stms-header-menu-wrap,.bar-profile")) closeMenus();
+        } else if (!event.target.closest(".stms-header-menu")) closeMenus();
     });
     document.addEventListener("keydown", event => { if (event.key === "Escape") closeMenus(true); });
     document.addEventListener("workspace:load", () => closeMenus());

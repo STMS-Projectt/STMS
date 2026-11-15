@@ -45,9 +45,7 @@
         </section>
     </div>
     <div class="bar-profile">
-        <partial name="_ProfileAvatar" />
-        <span><strong title="@displayName">@(displayName ?? User.Identity?.Name)</strong><span class="stms-profile-role">@Model</span><small class="visually-hidden">@User.Identity?.Name</small></span>
-        <button class="stms-profile-toggle" type="button" data-header-menu-toggle="profile" aria-label="Open account menu" aria-controls="stms-profile-menu" aria-expanded="false" title="Account menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg></button>
+<button class="stms-profile-toggle" type="button" data-header-menu-toggle="profile" aria-label="Open account menu" aria-controls="stms-profile-menu" aria-expanded="false" title="Account menu"><partial name="_ProfileAvatar" view-data='@(new ViewDataDictionary(ViewData) { ["AvatarDecoration"] = true })' /><span><strong title="@displayName">@(displayName ?? User.Identity?.Name)</strong><span class="stms-profile-role">@Model</span><small class="visually-hidden">@User.Identity?.Name</small></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg></button>
         <div class="stms-header-menu stms-profile-menu" id="stms-profile-menu" hidden>
             <a class="stms-profile-menu-item" asp-controller="Profile" asp-action="Index"><partial name="_Icon" model='@("users")' /> Profile</a>
             <form asp-controller="Account" asp-action="Logout" method="post"><button class="stms-profile-menu-item stms-logout-item" type="submit"><partial name="_Icon" model='@("logout")' /> Logout</button></form>

@@ -6,7 +6,7 @@
 <a class="back-link" asp-action="Index" asp-route-kind="@Model.Kind" asp-route-recordId="@Model.RecordId"><partial name="_Icon" model='@("back")' /> Clarification history</a>
 <header class="page-heading"><div><p class="eyebrow">TRANSACTION COMMUNICATION</p><h1>New clarification</h1><p>@route.Title</p></div></header>
 <div class="form-shell">
-    <form class="surface form-card" asp-action="Create" method="post">
+    <form class="surface form-card" asp-action="Create" asp-controller="Clarifications" asp-route-id="" method="post">
         <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
         <input asp-for="Kind" type="hidden" /><input asp-for="RecordId" type="hidden" />
         <div class="stack">
@@ -19,5 +19,5 @@
             <div><button class="btn btn-primary" type="submit">Send clarification</button></div>
         </div>
     </form>
-    <aside class="surface helper-card"><h2>Who can see this?</h2><p class="mb-0">Only you and the selected participant can read the question and response. The recipient receives an in-app notification.</p></aside>
+    <aside class="surface helper-card"><h2>Who can see this?</h2><p class="mb-0">The participants and administrators can read this conversation. The recipient receives an in-app notification.</p></aside>
 </div>

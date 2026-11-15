@@ -36,7 +36,8 @@
 
         const targets = [...main.querySelectorAll(
             ".admin-overview, .admin-analytics .section-heading, .admin-analytics .metric, " +
-            ".admin-chart-grid .dashboard-card, .admin-secondary .dashboard-card, .admin-total-card"
+            ".admin-chart-grid .dashboard-card, .admin-secondary .dashboard-card, .admin-total-card, " +
+            ".department-recent .record-card, .department-status-row"
         )];
         targets.forEach((element, index) => {
             element.classList.add("admin-reveal");

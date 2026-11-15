@@ -43,6 +43,10 @@
     }
     else
     {
+        <div class="dept-filter-menu" data-dept-menu data-dept-pagination aria-label="Suppliers pages" hidden>
+                <button type="button" class="dept-dock-button" aria-expanded="false" aria-haspopup="true" aria-label="Pages" title="Pages"><partial name="_Icon" model='@("file")' /><span>Pages</span></button>
+                <div class="dept-filter-popover" hidden><strong>Pages</strong><div data-page-options></div><span data-page-status aria-live="polite"></span></div>
+            </div>
         <div class="record-list" data-record-list>
             @foreach (var item in Model)
             {
@@ -53,6 +57,11 @@
                     <div><dt class="record-field-icon" title="Registered (UTC)"><partial name="_Icon" model='@("calendar")' /><span class="visually-hidden">Registered (UTC)</span></dt><dd>@item.CreatedAt.ToString("dd MMM yyyy")</dd></div>
                     </dl><div class="record-action"><a data-workspace-dialog="details" class="record-icon-action" asp-action="Details" asp-route-id="@item.Id" aria-label="Open application for @item.CompanyName" data-tooltip="Open application"><partial name="_Icon" model='@("eye")' /></a>
                         @if (item.Status == SupplierStatus.Approved) { <a data-workspace-dialog="details" class="record-icon-action record-icon-danger" asp-action="Suspend" asp-route-id="@item.Id" aria-label="Suspend supplier" data-tooltip="Suspend supplier" title="Suspend supplier"><partial name="_Icon" model='@("pause")' /></a> }
+                        @if (item.Status is SupplierStatus.Pending or SupplierStatus.Suspended)
+                        {
+                            var label = item.Status == SupplierStatus.Suspended ? "Activate supplier" : "Approve supplier";
+                            <a data-workspace-dialog class="record-icon-action" asp-action="Approve" asp-route-id="@item.Id" aria-label="@label: @item.CompanyName" data-tooltip="@label"><partial name="_Icon" model='@("check")' /></a>
+                        }
                     </div>
                 </article>
             }

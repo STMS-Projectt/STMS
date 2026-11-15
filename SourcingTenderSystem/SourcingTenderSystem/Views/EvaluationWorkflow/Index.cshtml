@@ -8,6 +8,10 @@
     {
         <div class="dept-directory-heading"><h2>Evaluation register</h2><p>Find a tender by name or stage.</p></div>
         <partial name="_ListFilters" model='@("Search evaluations", Model.Select(t => t.EvaluationReport?.Status ?? t.Status))' />
+        <div class="dept-filter-menu" data-dept-menu data-dept-pagination aria-label="EvaluationWorkflow pages" hidden>
+                <button type="button" class="dept-dock-button" aria-expanded="false" aria-haspopup="true" aria-label="Pages" title="Pages"><partial name="_Icon" model='@("file")' /><span>Pages</span></button>
+                <div class="dept-filter-popover" hidden><strong>Pages</strong><div data-page-options></div><span data-page-status aria-live="polite"></span></div>
+            </div>
         <div class="record-list" data-record-list>
         @foreach (var tender in Model)
         {

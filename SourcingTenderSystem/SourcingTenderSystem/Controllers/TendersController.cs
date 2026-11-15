@@ -75,6 +75,7 @@ public class TendersController : Controller
             .Select(p => p.CompanyName).OrderBy(n => n).ToListAsync();
         var currentInvitations = TenderRules.CurrentInvitations(_context, tender);
         ViewBag.InvitableSuppliers = await _context.SupplierProfiles.Where(p => p.Status == SupplierStatus.Approved &&
+            p.Categories.Any(c => _context.PurchaseRequisitions.Any(r => r.Id == tender.PurchaseRequisitionId && r.CategoryId == c.Id)) &&
             !submitted.Contains(p.Id) && !currentInvitations.Any(i => i.SupplierProfileId == p.Id))
             .Select(p => p.CompanyName).OrderBy(n => n).ToListAsync();
 

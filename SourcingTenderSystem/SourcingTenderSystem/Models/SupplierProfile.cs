@@ -20,6 +20,7 @@ public class SupplierProfile
     public DateTime CreatedAt { get; set; }
 
     public IdentityUser User { get; set; } = null!;
+    public ICollection<Category> Categories { get; set; } = new List<Category>();
     public ICollection<SupplierDocument> SupplierDocuments { get; set; } = new List<SupplierDocument>();
     public ICollection<Invitation> Invitations { get; set; } = new List<Invitation>();
     public ICollection<Bid> Bids { get; set; } = new List<Bid>();

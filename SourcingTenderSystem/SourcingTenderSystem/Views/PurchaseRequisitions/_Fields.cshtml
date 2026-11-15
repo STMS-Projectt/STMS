@@ -1,6 +1,15 @@
 @model RequisitionInput
 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 <div class="mb-3">
+    <label asp-for="CategoryId" class="form-label">Category</label>
+    <select asp-for="CategoryId" class="form-select" required>
+        <option value="">Select a category</option>
+        @foreach (var category in (IEnumerable<Category>)ViewBag.Categories)
+        { <option value="@category.Id">@category.Name</option> }
+    </select>
+    <span asp-validation-for="CategoryId" class="text-danger"></span>
+</div>
+<div class="mb-3">
     <label asp-for="Title" class="form-label"></label>
     <input asp-for="Title" class="form-control" />
     <span asp-validation-for="Title" class="text-danger"></span>

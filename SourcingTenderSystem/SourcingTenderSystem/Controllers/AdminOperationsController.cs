@@ -41,10 +41,23 @@ public sealed class AdminOperationsController(ApplicationDbContext db) : Control
     [HttpGet]
     public async Task<IActionResult> RequestDetails(int id)
     {
-        var request = await db.PurchaseRequisitions.AsNoTracking().AsSplitQuery().Include(r => r.Department)
+        var request = await db.PurchaseRequisitions.AsNoTracking().AsSplitQuery().Include(r => r.Department).Include(r => r.Category)
             .Include(r => r.CreatedByEmployeeProfile).Include(r => r.ReviewedByEmployeeProfile)
             .Include(r => r.Items).Include(r => r.Tenders).SingleOrDefaultAsync(r => r.Id == id);
-        return request is null ? NotFound() : View("Request", request);
+        if (request is null) return NotFound();
+        if (request.CategoryId == null)
+            ViewBag.Categories = await db.Categories.AsNoTracking().OrderBy(c => c.Name).ToListAsync();
+        return View("Request", request);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> AssignRequestCategory(int id, int categoryId)
+    {
+        if (!await db.Categories.AnyAsync(c => c.Id == categoryId)) return BadRequest("Select a valid category.");
+        var updated = await db.PurchaseRequisitions.Where(r => r.Id == id && r.CategoryId == null)
+            .ExecuteUpdateAsync(set => set.SetProperty(r => r.CategoryId, (int?)categoryId));
+        if (updated == 0) return Conflict("This request is missing or already categorized.");
+        return RedirectToAction(nameof(RequestDetails), new { id });
     }
 
     [HttpGet]

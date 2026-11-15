@@ -42,7 +42,8 @@ public sealed class BrowserReleaseTests(ITestOutputHelper output)
             var users = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
             var roles = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
             var department = new Department { Name="Browser QA", IsActive=true };
-            db.Add(department);
+            var category = new Category { Name = "Browser supplies" };
+            db.AddRange(department, category);
             await db.SaveChangesAsync();
             foreach (var role in new[] { "Admin", "RequestingDepartment", "SourcingOfficer", "Supplier",
                 "SourcingManager", "TechnicalCommittee", "FinancialCommittee", "TopCommittee" })
@@ -52,7 +53,7 @@ public sealed class BrowserReleaseTests(ITestOutputHelper output)
                 Assert.True((await users.CreateAsync(user, "Synthetic-Browser!2046")).Succeeded);
                 Assert.True((await users.AddToRoleAsync(user, role)).Succeeded);
                 if(role=="Supplier") db.Add(new SupplierProfile { UserId=user.Id, CompanyName="Browser supplier", Status="Approved",
-                    TaxNumber="BROWSER", Address="Test", ContactPhone="000", CommercialRegNo="BROWSER", CreatedAt=DateTime.UtcNow });
+                    TaxNumber="BROWSER", Address="Test", ContactPhone="000", CommercialRegNo="BROWSER", CreatedAt=DateTime.UtcNow, Categories=[category] });
                 else db.Add(new EmployeeProfile { UserId=user.Id, FullName=role, JobTitle=role, IsActive=true, DepartmentId=department.Id });
             }
             var fallback = new IdentityUser { UserName="DepartmentSmoke@example.test", Email="DepartmentSmoke@example.test" };
@@ -66,7 +67,7 @@ public sealed class BrowserReleaseTests(ITestOutputHelper output)
                 Assert.True((await users.CreateAsync(u, "Synthetic-Browser!2046")).Succeeded);
                 Assert.True((await users.AddToRoleAsync(u,pair.Item2)).Succeeded);
                 if (pair.Item2=="Supplier") db.Add(new SupplierProfile { UserId=u.Id,CompanyName=pair.Item1,TaxNumber=pair.Item1,
-                    CommercialRegNo=pair.Item1,ContactPhone="000",Address="Synthetic",Status="Approved",CreatedAt=DateTime.UtcNow });
+                    CommercialRegNo=pair.Item1,ContactPhone="000",Address="Synthetic",Status="Approved",CreatedAt=DateTime.UtcNow, Categories=[category] });
                 else db.Add(new EmployeeProfile { UserId=u.Id,FullName=pair.Item1,JobTitle="Member",IsActive=true });
             }
             await db.SaveChangesAsync();

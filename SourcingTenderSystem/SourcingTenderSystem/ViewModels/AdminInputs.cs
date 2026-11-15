@@ -35,6 +35,7 @@ public sealed class CreateEmployeeInput : EmployeeInput
 
 public sealed class RegistrationInput
 {
+    public List<int> CategoryIds { get; set; } = [];
     [Required, StringLength(200), Display(Name = "Company name")] public string CompanyName { get; set; } = "";
     [Required, StringLength(100), Display(Name = "Tax number")] public string TaxNumber { get; set; } = "";
     [Required, StringLength(100), Display(Name = "Commercial registration number")] public string CommercialRegNo { get; set; } = "";

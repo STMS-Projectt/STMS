@@ -1,0 +1,14 @@
+@model IReadOnlyList<Category>
+@{ ViewData["Title"] = "Supply categories"; }
+<header class="page-heading stms-hero"><div><p class="eyebrow">ADMINISTRATION</p><h1>Supply categories</h1><p>Manage the categories that connect purchase requests to eligible suppliers.</p></div></header>
+@if (TempData["Error"] is string error) { <p class="alert alert-warning">@error</p> }
+<section class="surface detail-card mb-3">
+    <form asp-action="Create" method="post">
+        <label class="form-label" for="category-name">New category</label>
+        <div class="d-flex flex-wrap gap-2"><input class="form-control w-auto" id="category-name" name="name" maxlength="120" required /><button class="btn btn-primary">Add category</button></div>
+    </form>
+</section>
+<section class="surface detail-card"><h2>Available categories</h2>
+    @if (Model.Count == 0) { <p>Add the first category to enable supplier registration and new purchase requests.</p> }
+    else { <ul class="mb-0">@foreach (var category in Model) { <li>@category.Name</li> }</ul> }
+</section>

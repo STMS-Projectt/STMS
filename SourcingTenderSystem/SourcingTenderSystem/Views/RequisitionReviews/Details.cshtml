@@ -30,6 +30,13 @@
 <a asp-action="Pending">Back to pending requests</a>
 @section Scripts { <partial name="_ValidationScriptsPartial" /> }
 
-<div class="mb-3"><a class="btn btn-outline-secondary" asp-controller="Clarifications" asp-action="Index" asp-route-kind="request" asp-route-recordId="@request.Id">Clarification history</a></div>
+<div class="button-row mb-3">
+    <a class="btn btn-outline-secondary" asp-controller="Clarifications" asp-action="StartRequest" asp-route-id="@request.Id" aria-label="Start a clarification" title="Start a clarification"><partial name="_Icon" model='@("mail")' /></a>
+    <a class="btn btn-outline-secondary" asp-controller="Clarifications" asp-action="Index" asp-route-kind="request" asp-route-recordId="@request.Id">Clarification history</a>
+    @if (request.ReviewedByEmployeeProfileId == null && request.Status is ("Submitted" or "Under Review"))
+    {
+        <form asp-controller="Clarifications" asp-action="ClaimRequest" asp-route-id="@request.Id" method="post"><button class="btn btn-outline-primary" type="submit">Take review</button></form>
+    }
+</div>
 
 <partial name="_RecordQr" model='@(Url.Action("Details", new { id = request.Id })!)' />

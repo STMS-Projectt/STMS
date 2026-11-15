@@ -82,6 +82,16 @@ public sealed partial class BiddingRoundTests
             await db.Database.ExecuteSqlInterpolatedAsync($"DELETE dbo.Bids WHERE TenderId={seed.Tender} AND Id<>{seed.Bid}");
             await db.Database.MigrateAsync();
             await db.Database.ExecuteSqlRawAsync("INSERT dbo.AspNetUserPasskeys(UserId, CredentialId, Data) VALUES ('officer', 0x01, '{{}}'), ('bidder', 0x02, '{{}}')");
+            var category = new Category { Name = "IT" };
+            var unrelated = new SupplierProfile { UserId = "officer", CompanyName = "Unrelated approved supplier",
+                TaxNumber = "QA-OTHER", CommercialRegNo = "QA-OTHER", Address = "Synthetic", ContactPhone = "000",
+                Status = "Approved", CreatedAt = DateTime.UtcNow, Categories = [new Category { Name = "Furniture" }] };
+            db.AddRange(category, unrelated);
+            var categorizedTender = await db.Tenders.Include(t => t.PurchaseRequisition).SingleAsync(t => t.Id == seed.Tender);
+            categorizedTender.PurchaseRequisition.Category = category;
+            foreach (var id in new[] { seed.Submitted, seed.Bidder, seed.NewSupplier })
+                (await db.SupplierProfiles.FindAsync(id))!.Categories.Add(category);
+            await db.SaveChangesAsync();
             db.ChangeTracker.Clear();
             Assert.Equal(1, (await db.Bids.FindAsync(seed.Bid))!.SubmittedRoundNumber);
             Assert.Equal("Declined", (await db.Invitations.FindAsync(seed.Invitation))!.Status);
@@ -109,9 +119,12 @@ public sealed partial class BiddingRoundTests
             var inviteForm = await officer.GetStringAsync($"/Invitations/Create?tenderId={seed.Tender}");
             Assert.DoesNotContain(">Submitted</span>", inviteForm);
             Assert.Contains("Round 2", inviteForm);
+            Assert.DoesNotContain(unrelated.CompanyName, inviteForm);
             Assert.Equal(1, await db.AuditLogs.CountAsync(a => a.EntityId == seed.Tender && a.Action == "Reopen"));
 
             var inviteUrl = "/Invitations/Create";
+            var wrongCategory = await Invite(officer, officerToken, inviteUrl, seed.Tender, unrelated.Id, deadline);
+            Assert.Contains("belong to the purchase request category", await wrongCategory.Content.ReadAsStringAsync());
             var invalid = await Invite(officer, officerToken, inviteUrl, seed.Tender, seed.Submitted, deadline);
             Assert.Equal(HttpStatusCode.OK, invalid.StatusCode);
             Assert.Contains("already submitted", await invalid.Content.ReadAsStringAsync());

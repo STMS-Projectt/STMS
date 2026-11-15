@@ -1,28 +1,52 @@
 @model DepartmentRequestList
-@{ ViewData["Title"] = "My Requests"; }
-<header class="page-heading">
+@{
+    ViewData["Title"] = "My Requests";
+    var editable = (ISet<int>)ViewBag.EditableRequestIds;
+}
+<header class="page-heading stms-hero">
     <div><p class="eyebrow">REQUEST TRACKER</p><h1>My Requests</h1><p>Purchase requests from everyone in @Model.Department.</p></div>
-    <a data-workspace-dialog class="btn btn-primary" asp-action="Create"><partial name="_Icon" model='@("plus")' /> New request</a>
+    <a class="btn btn-primary" asp-action="Create"><partial name="_Icon" model='@("plus")' /> New request</a>
 </header>
-<section class="surface directory" aria-label="Department requests">
-    <form class="directory-toolbar request-filters" asp-action="MyRequests" method="get" role="search">
-        <label class="search-box">
-            <span class="visually-hidden">Search by request title</span><partial name="_Icon" model='@("search")' />
-            <input class="form-control" name="q" value="@Model.Query" placeholder="Search request titles" />
-        </label>
-        <label><span class="visually-hidden">Status</span>
-            <select class="form-select" name="status">
-                <option value="">All statuses</option>
-                @foreach (var status in Model.Statuses) { <option value="@status" selected="@(status == Model.Status)">@status</option> }
-            </select>
-        </label>
-        <button class="btn btn-outline-secondary" type="submit">Filter</button>
-        <button class="btn btn-outline-secondary" type="button" data-request-voice-search hidden>Voice search</button>
-        <span class="visually-hidden" data-request-voice-status role="status" aria-live="polite"></span>
-        @if (Model.Status != null || !string.IsNullOrEmpty(Model.Query)) { <a class="text-link" asp-action="MyRequests">Clear filters</a> }
-        <span class="result-count">@Model.Requests.Count request(s)</span>
-    </form>
-    @if (Model.Requests.Count > 0) { <partial name="_RequestTable" model="Model.Requests" /> }
+<section class="surface directory dept-directory" aria-label="Department requests" data-directory>
+    <div class="dept-directory-heading"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("file")' /></span><div><h2>Purchase requests</h2><p>Find requests and manage the drafts you own.</p></div></div>
+    <div class="directory-filter-panel">
+        <nav class="directory-status-options" aria-label="Filter by status">
+            <a asp-action="MyRequests" asp-route-q="@Model.Query" aria-current="@(Model.Status is null ? "page" : null)">All statuses</a>
+            @foreach (var status in Model.Statuses)
+            {
+                <a asp-action="MyRequests" asp-route-q="@Model.Query" asp-route-status="@status" aria-current="@(Model.Status == status ? "page" : null)">@status</a>
+            }
+        </nav>
+        <form class="directory-toolbar request-filters" asp-action="MyRequests" method="get" role="search">
+            @if (Model.Status != null) { <input type="hidden" name="status" value="@Model.Status" /> }
+            <div class="directory-search">
+                <label class="search-box"><partial name="_Icon" model='@("search")' /><span class="visually-hidden">Search request titles</span><input class="form-control" type="search" data-filter-search data-filter-submit-only name="q" value="@Model.Query" placeholder="Search request titles" /></label>
+                <partial name="_DirectoryVoice" />
+            </div>
+            <span class="result-count" data-result-count aria-live="polite">@Model.Requests.Count records</span>
+            <button class="btn btn-primary" type="submit">Search</button>
+        </form>
+        @if (Model.Status != null || !string.IsNullOrEmpty(Model.Query)) { <a class="dept-dock-button" data-directory-clear asp-action="MyRequests" aria-label="Clear filters" title="Clear filters"><partial name="_Icon" model='@("refresh")' /><span>Reset</span></a> }
+    </div>
+    @if (Model.Requests.Count > 0)
+    {
+        <partial name="_DirectoryPages" model='@("Request pages")' />
+        <div class="record-list" data-record-list>
+            @foreach (var request in Model.Requests)
+            {
+                <article class="record-card" data-record>
+                    <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("file")' /></span><span>@request.Title<small>PR-@request.Id · @request.CreatedByEmployeeProfile.FullName</small></span></div>
+                    <dl class="record-facts">
+                        <div><dt class="record-field-icon" title="Target date"><partial name="_Icon" model='@("calendar")' /><span class="visually-hidden">Target date</span></dt><dd>@request.TargetDate.ToString("dd MMM yyyy")</dd></div>
+                        <div><dt>Priority</dt><dd>@request.Priority</dd></div>
+                        <div><dt class="visually-hidden">Status</dt><dd><partial name="_RequestStatus" model="request.Status" /></dd></div>
+                    </dl>
+                    <div class="record-action"><partial name="_RequestActions" model="@( (request.Id, editable.Contains(request.Id)) )" /></div>
+                </article>
+            }
+        </div>
+        <partial name="_ListFilterEmpty" />
+    }
     else
     {
         <div class="empty-state">
@@ -30,8 +54,7 @@
             @if (Model.Status != null || !string.IsNullOrEmpty(Model.Query))
             { <h2>No matching requests</h2><p>Try a different title or status.</p> }
             else
-            { <h2>No purchase requests yet</h2><p>Start a draft when your department needs to buy something.</p><a data-workspace-dialog class="btn btn-primary" asp-action="Create">Create a draft</a> }
+            { <h2>No purchase requests yet</h2><p>Start a draft when your department needs to buy something.</p><a class="btn btn-primary" asp-action="Create">Create a draft</a> }
         </div>
     }
 </section>
-@section Scripts { <script src="~/js/department-request-voice-search.js" asp-append-version="true" defer></script> }

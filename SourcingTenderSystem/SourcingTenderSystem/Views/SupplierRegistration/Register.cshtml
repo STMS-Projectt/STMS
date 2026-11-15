@@ -8,6 +8,15 @@
         <section class="form-section"><h2>Company information</h2><div class="form-grid mt-3">
             <div class="field field-wide"><label asp-for="CompanyName" class="form-label"></label><input asp-for="CompanyName" class="form-control" autocomplete="organization" placeholder="Registered company name">
     <span asp-validation-for="CompanyName" class="text-danger"></span></div>
+            <fieldset class="field field-wide">
+                <legend class="form-label">Supply categories</legend>
+                <p class="field-hint">Choose all categories your company supplies.</p>
+                @foreach (var category in (IEnumerable<Category>)ViewBag.Categories)
+                {
+                    <label class="form-check"><input class="form-check-input" type="checkbox" name="CategoryIds" value="@category.Id" checked="@Model.CategoryIds.Contains(category.Id)" /> @category.Name</label>
+                }
+                <span asp-validation-for="CategoryIds" class="text-danger"></span>
+            </fieldset>
             <div class="field"><label asp-for="TaxNumber" class="form-label"></label><input asp-for="TaxNumber" class="form-control" placeholder="Company tax number">
     <span asp-validation-for="TaxNumber" class="text-danger"></span></div>
             <div class="field"><label asp-for="CommercialRegNo" class="form-label"></label><input asp-for="CommercialRegNo" class="form-control" placeholder="Commercial registration number">

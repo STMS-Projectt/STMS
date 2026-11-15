@@ -16,13 +16,23 @@ public sealed class SupplierRegistrationController(ApplicationDbContext db, User
 {
     [AllowAnonymous, HttpGet]
     public async Task<IActionResult> Register() => User.Identity?.IsAuthenticated == true
-        ? await ResumeApplication() : View(new RegistrationInput());
+        ? await ResumeApplication() : await RegistrationView(new RegistrationInput());
+
+    private async Task<IActionResult> RegistrationView(RegistrationInput input)
+    {
+        ViewBag.Categories = await db.Categories.AsNoTracking().OrderBy(c => c.Name).ToListAsync();
+        return View("Register", input);
+    }
 
     [AllowAnonymous, HttpPost]
     public async Task<IActionResult> Register(RegistrationInput input)
     {
         if (User.Identity?.IsAuthenticated == true) return await ResumeApplication();
-        if (!ModelState.IsValid) return View(input);
+        var ids = input.CategoryIds.Distinct().ToArray();
+        var categories = await db.Categories.Where(c => ids.Contains(c.Id)).ToListAsync();
+        if (ids.Length == 0 || categories.Count != ids.Length)
+            ModelState.AddModelError(nameof(input.CategoryIds), "Select at least one valid category.");
+        if (!ModelState.IsValid) return await RegistrationView(input);
 
         await using var transaction = await db.Database.BeginTransactionAsync();
         var email = input.Email.Trim();
@@ -31,20 +41,21 @@ public sealed class SupplierRegistrationController(ApplicationDbContext db, User
         if (!result.Succeeded)
         {
             foreach (var error in result.Errors) ModelState.AddModelError("", error.Description);
-            return View(input);
+            return await RegistrationView(input);
         }
 
         db.SupplierProfiles.Add(new SupplierProfile
         {
             UserId = user.Id, CompanyName = input.CompanyName.Trim(), TaxNumber = input.TaxNumber.Trim(),
             CommercialRegNo = input.CommercialRegNo.Trim(), ContactPhone = input.ContactPhone.Trim(),
-            Address = input.Address.Trim(), Status = SupplierStatus.Pending, CreatedAt = DateTime.UtcNow
+            Address = input.Address.Trim(), Status = SupplierStatus.Pending, CreatedAt = DateTime.UtcNow,
+            Categories = categories
         });
         try { await db.SaveChangesAsync(); }
         catch (DbUpdateException ex) when (ex.InnerException is SqlException { Number: 2601 or 2627 })
         {
             ModelState.AddModelError(nameof(input.TaxNumber), "This tax number is already registered.");
-            return View(input);
+            return await RegistrationView(input);
         }
 
         await transaction.CommitAsync();

@@ -37,13 +37,13 @@ export async function lifecycle(b) {
  }
  async function request(title){
    await as('DepartmentSmoke','/PurchaseRequisitions/MyRequests');
-   await modal('#main a[data-workspace-dialog][href*=Create]','input[name=Title]');
-   await fields({Title:title,Reason:'Synthetic purchase',TargetDate:iso(14400).slice(0,10)},dialog);
-   await submit(dialog+'form');await words(title);await closed();
+   await click('#main a[href*="/PurchaseRequisitions/Create"]'); await has('#main input[name=Title]');
+   await fields({CategoryId:1,Title:title,Reason:'Synthetic purchase',TargetDate:iso(14400).slice(0,10)},'#main ');
+   await submit('#main form');await words(title);await closed();
    for(const name of ['Monitor','Cable']){
-     await modal('a[href*="/RequisitionItems/Create"]','input[name=ItemName]');
-     await fields({ItemName:name,Quantity:2,Unit:'each',Specifications:'Synthetic specification'},dialog);
-     await submit(dialog+'form');await closed();await words(name);
+     await click('a[href*="/RequisitionItems/Create"]'); await has('#main input[name=ItemName]');
+     await fields({ItemName:name,Quantity:2,Unit:'each',Specifications:'Synthetic specification'},'#main ');
+     await submit('#main form');await closed();await words(name);
    }
    const id=await idFrom();
    await submit('form[action*="/Submit/"]');await words('Under Review');
@@ -66,9 +66,9 @@ export async function lifecycle(b) {
    await submit(dialog+'form');await words('Quality');await closed();
    await go('/Tenders/Details/'+id);
    await modal('#main a[href*="/Invitations/Create"]','input[name=selectedSuppliers]');
-   assert.equal(await ev('document.querySelector("#workspace-dialog select[name=TenderId]").value'),String(id));
+   assert.equal(await ev('document.querySelector("#workspace-dialog input[type=hidden][name=TenderId]").value'),String(id));
    await ev('document.querySelectorAll("#workspace-dialog input[name=selectedSuppliers]").forEach(i=>i.checked=true)');
-   await fields({ExpiresAt:iso(90)},dialog);await submit(dialog+'form');await closed();
+   await fields({ExpiresAt:iso(90)},dialog);await click(dialog+'[data-send-invitations]');await closed();
    await go('/Tenders/Details/'+id);
    await submit('form[action*="/Publish/"]');await wait('document.querySelector("#main .badge")?.textContent.trim()==="Open"','published Open');
  }
@@ -173,7 +173,7 @@ export async function lifecycle(b) {
      await modal('#main a[href*="/Invitations/Create"]','input[name=selectedSuppliers]');
      assert.equal(await ev('document.querySelectorAll("#workspace-dialog input[name=selectedSuppliers]").length'),3-count);
      await click(dialog+'input[name=selectedSuppliers]');await fields({ExpiresAt:iso(90)},dialog);
-     await submit(dialog+'form');await closed();
+     await click(dialog+'[data-send-invitations]');await closed();
      await review(id);
    }
    await go('/Tenders/Details/'+id);await words(count?'Bid minimum met':'Evaluation is blocked');await words('All three rounds have been used');

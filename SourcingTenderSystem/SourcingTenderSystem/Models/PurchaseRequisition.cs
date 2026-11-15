@@ -14,6 +14,8 @@ public class PurchaseRequisition
     public DateTime TargetDate { get; set; }
     public string Status { get; set; } = string.Empty;
     public int DepartmentId { get; set; }
+    public int? CategoryId { get; set; }
+    public Category? Category { get; set; }
     public int CreatedByEmployeeProfileId { get; set; }
     public int? ReviewedByEmployeeProfileId { get; set; }
     public string? ReviewNotes { get; set; }

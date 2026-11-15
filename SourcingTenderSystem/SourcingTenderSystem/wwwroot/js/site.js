@@ -107,7 +107,7 @@
                     ? [...rows].sort((a, b) => Number(b.dataset.staff) - Number(a.dataset.staff)) : rows;
                 (cards || rows[0]?.parentElement)?.append(...ordered);
             }
-            const words = search.value.toLocaleLowerCase().trim().split(/\s+/).filter(Boolean);
+            const words = search.hasAttribute("data-filter-submit-only") ? [] : search.value.toLocaleLowerCase().trim().split(/\s+/).filter(Boolean);
             const matched = [];
             const displayRows = pagination && cards ? [...cards.querySelectorAll("[data-record]")] : rows;
             for (const row of displayRows) {
@@ -126,8 +126,17 @@
                 matched.forEach((row, index) => row.hidden = Math.floor(index / pageSize) + 1 !== currentPage);
                 pagination.hidden = pages <= 1;
                 pagination.querySelector("[data-page-status]").textContent = `Page ${currentPage} of ${pages}`;
-                pagination.querySelector("[data-page-prev]").disabled = currentPage === 1;
-                pagination.querySelector("[data-page-next]").disabled = currentPage === pages;
+                const options = pagination.querySelector("[data-page-options]");
+                options.replaceChildren();
+                for (let page = 1; page <= pages; page++) {
+                    const button = document.createElement("button");
+                    button.type = "button";
+                    button.textContent = String(page);
+                    button.setAttribute("aria-label", `Go to page ${page} of ${pages}`);
+                    button.setAttribute("aria-current", page === currentPage ? "page" : "false");
+                    button.addEventListener("click", () => { currentPage = page; apply(); pagination.querySelector(".dept-filter-popover").hidden = true; pagination.querySelector(".dept-dock-button").setAttribute("aria-expanded", "false"); });
+                    options.append(button);
+                }
             }
             count.textContent = shown + (shown === 1 ? " record" : " records");
             empty.hidden = shown !== 0;
@@ -148,8 +157,6 @@
             apply();
         }));
         for (const select of [department, staff, sort]) select?.addEventListener("change", () => { currentPage = 1; apply(); });
-        pagination?.querySelector("[data-page-prev]").addEventListener("click", () => { currentPage--; apply(); });
-        pagination?.querySelector("[data-page-next]").addEventListener("click", () => { currentPage++; apply(); });
         empty.querySelector("button").addEventListener("click", reset);
         directory.querySelector("[data-filter-reset]")?.addEventListener("click", reset);
         apply();

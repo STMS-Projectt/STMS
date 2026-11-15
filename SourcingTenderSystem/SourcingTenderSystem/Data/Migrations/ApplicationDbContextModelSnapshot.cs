@@ -409,6 +409,27 @@ namespace SourcingTenderSystem.Data.Migrations
                     b.ToTable("BidItems");
                 });
 
+            modelBuilder.Entity("SourcingTenderSystem.Models.Category", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Categories");
+                });
+
             modelBuilder.Entity("SourcingTenderSystem.Models.ClarificationRequest", b =>
                 {
                     b.Property<int>("Id")
@@ -789,6 +810,9 @@ namespace SourcingTenderSystem.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("CategoryId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -824,6 +848,8 @@ namespace SourcingTenderSystem.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
 
                     b.HasIndex("CreatedByEmployeeProfileId");
 
@@ -1161,6 +1187,21 @@ namespace SourcingTenderSystem.Data.Migrations
                         {
                             t.HasCheckConstraint("CK_TenderRounds_Number", "[Number] BETWEEN 1 AND 3");
                         });
+                });
+
+            modelBuilder.Entity("SupplierCategories", b =>
+                {
+                    b.Property<int>("CategoriesId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SuppliersId")
+                        .HasColumnType("int");
+
+                    b.HasKey("CategoriesId", "SuppliersId");
+
+                    b.HasIndex("SuppliersId");
+
+                    b.ToTable("SupplierCategories");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -1544,6 +1585,11 @@ namespace SourcingTenderSystem.Data.Migrations
 
             modelBuilder.Entity("SourcingTenderSystem.Models.PurchaseRequisition", b =>
                 {
+                    b.HasOne("SourcingTenderSystem.Models.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("SourcingTenderSystem.Models.EmployeeProfile", "CreatedByEmployeeProfile")
                         .WithMany("CreatedPurchaseRequisitions")
                         .HasForeignKey("CreatedByEmployeeProfileId")
@@ -1560,6 +1606,8 @@ namespace SourcingTenderSystem.Data.Migrations
                         .WithMany("ReviewedPurchaseRequisitions")
                         .HasForeignKey("ReviewedByEmployeeProfileId")
                         .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Category");
 
                     b.Navigation("CreatedByEmployeeProfile");
 
@@ -1708,6 +1756,21 @@ namespace SourcingTenderSystem.Data.Migrations
                     b.Navigation("Officer");
 
                     b.Navigation("Tender");
+                });
+
+            modelBuilder.Entity("SupplierCategories", b =>
+                {
+                    b.HasOne("SourcingTenderSystem.Models.Category", null)
+                        .WithMany()
+                        .HasForeignKey("CategoriesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SourcingTenderSystem.Models.SupplierProfile", null)
+                        .WithMany()
+                        .HasForeignKey("SuppliersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("SourcingTenderSystem.Models.Bid", b =>

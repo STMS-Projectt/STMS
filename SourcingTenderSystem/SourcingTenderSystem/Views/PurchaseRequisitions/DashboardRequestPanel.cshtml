@@ -1,0 +1,28 @@
+@model PurchaseRequisition
+@{
+    var items = (string?)ViewData["RequestPanel"] == "items";
+    ViewData["Title"] = items ? "Requested items" : "Request QR code";
+}
+<a class="back-link" asp-action="Details" asp-route-id="@Model.Id">Back to request</a>
+<header class="page-heading stms-hero admin-record-hero">
+    <div><p class="eyebrow">PURCHASE REQUEST · PR-@Model.Id</p><h1>@ViewData["Title"]</h1><p>@Model.Title</p></div>
+    @if (items && ViewBag.CanEdit == true)
+    {
+        <a class="btn btn-primary" asp-controller="RequisitionItems" asp-action="Create" asp-route-requestId="@Model.Id"><partial name="_Icon" model='@("plus")' /> Add item</a>
+    }
+</header>
+@if (items)
+{
+    <section class="surface detail-card"><partial name="_RequisitionItems" model="Model.Items" /></section>
+    @if (ViewBag.CanEdit == true && Model.Items.Count > 0)
+    {
+        <form asp-action="Submit" asp-route-id="@Model.Id" method="post" class="surface detail-card request-submit mt-3">
+            <div><h2>Ready for review?</h2><p class="subtle mb-0">Send this purchase request and its items to the sourcing officer.</p></div>
+            <button type="submit" class="btn btn-primary">Submit for review</button>
+        </form>
+    }
+}
+else
+{
+    <partial name="_RecordQr" model='@(Url.Action("Details", new { id = Model.Id })!)' />
+}

@@ -62,9 +62,10 @@
     }
     @if (Model.Page > 1 || Model.HasNext)
     {
-        <nav class="directory-toolbar" aria-label="Record pages"><span>Page @Model.Page</span><div class="button-row">
-            @if (Model.Page > 1) { <a class="btn btn-outline-secondary" asp-action="@Model.Action" asp-route-q="@Model.Query" asp-route-status="@Model.Status" asp-route-page="@(Model.Page - 1)">Previous</a> }
-            @if (Model.HasNext) { <a class="btn btn-outline-secondary" asp-action="@Model.Action" asp-route-q="@Model.Query" asp-route-page="@(Model.Page + 1)">Next</a> }
-        </div></nav>
+        <nav class="directory-toolbar" data-register-pages aria-label="Record pages">
+            @if (Model.Page > 1) { <a class="btn btn-outline-secondary" asp-action="@Model.Action" asp-route-q="@Model.Query" asp-route-status="@Model.Status" asp-route-page="@(Model.Page - 1)" aria-label="Previous page">@(Model.Page - 1)</a> }
+            <span aria-current="page" aria-label="Current page">@Model.Page</span>
+            @if (Model.HasNext) { <a class="btn btn-outline-secondary" asp-action="@Model.Action" asp-route-q="@Model.Query" asp-route-page="@(Model.Page + 1)" aria-label="Next page">@(Model.Page + 1)</a> }
+        </nav>
     }
 </section>

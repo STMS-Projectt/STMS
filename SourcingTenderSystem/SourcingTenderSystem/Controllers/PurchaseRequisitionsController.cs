@@ -29,7 +29,16 @@ public class PurchaseRequisitionsController : RequisitionBaseController
             .Select(g => new { Status = g.Key, Count = g.Count() })
             .ToDictionaryAsync(x => x.Status, x => x.Count);
         var recent = await RequestRows(requests).Take(5).ToListAsync();
-        return View(new DepartmentDashboard(employee!.Department!.Name, counts, recent));
+        ViewBag.EditableRequestIds = recent.Where(r => Owns(r, employee!) && CanEdit(r)).Select(r => r.Id).ToHashSet();
+        var now = DateTime.UtcNow;
+        var first = new DateTime(now.Year, now.Month, 1, 0, 0, 0, DateTimeKind.Utc).AddMonths(-5);
+        var monthly = await requests.Where(r => r.CreatedAt >= first && r.CreatedAt < first.AddMonths(6))
+            .GroupBy(r => new { r.CreatedAt.Year, r.CreatedAt.Month })
+            .Select(g => new { g.Key.Year, g.Key.Month, Count = g.Count() })
+            .ToDictionaryAsync(g => (g.Year, g.Month), g => g.Count);
+        var trend = Enumerable.Range(0, 6).Select(first.AddMonths)
+            .Select(month => (month, monthly.GetValueOrDefault((month.Year, month.Month)))).ToArray();
+        return View(new DepartmentDashboard(employee!.Department!.Name, counts, recent, trend));
     }
 
     [HttpGet]
@@ -42,8 +51,9 @@ public class PurchaseRequisitionsController : RequisitionBaseController
         q = q?.Trim();
         if (status != null) requests = requests.Where(x => x.Status == status);
         if (!string.IsNullOrEmpty(q)) requests = requests.Where(x => x.Title.Contains(q));
-        return View("Index", new DepartmentRequestList(employee!.Department!.Name, Statuses,
-            status, q, await RequestRows(requests).ToListAsync()));
+        var rows = await RequestRows(requests).ToListAsync();
+        ViewBag.EditableRequestIds = rows.Where(r => Owns(r, employee!) && CanEdit(r)).Select(r => r.Id).ToHashSet();
+        return View("Index", new DepartmentRequestList(employee!.Department!.Name, Statuses, status, q, rows));
     }
 
     [HttpGet]
@@ -56,7 +66,9 @@ public class PurchaseRequisitionsController : RequisitionBaseController
                 t.CommitteeMembers.Any(m => m.EmployeeProfileId == employee.Id &&
                     m.CommitteeType == "Evaluation" && m.MemberRole == "Department Representative"))
             .OrderByDescending(t => t.CreatedAt)
-            .Select(t => new DepartmentAssignment(t.Id, t.Title, t.Status, t.PurchaseRequisitionId))
+            .Select(t => new DepartmentAssignment(t.Id, t.Title, t.Status, t.PurchaseRequisitionId,
+                t.PurchaseRequisition.CreatedByEmployeeProfileId == employee!.Id &&
+                (t.PurchaseRequisition.Status == "Draft" || t.PurchaseRequisition.Status == "Returned")))
             .ToListAsync();
         return View(assignments);
     }
@@ -70,7 +82,7 @@ public class PurchaseRequisitionsController : RequisitionBaseController
     public async Task<IActionResult> Create()
     {
         if (!HasDepartment(await CurrentEmployeeAsync())) return Forbid();
-        return View(new RequisitionInput());
+        return await CategoryForm("Create", new RequisitionInput());
     }
 
     [HttpPost]
@@ -79,13 +91,14 @@ public class PurchaseRequisitionsController : RequisitionBaseController
         var employee = await CurrentEmployeeAsync();
         if (!HasDepartment(employee)) return Forbid();
         ValidateDate(input);
-        if (!ModelState.IsValid) return View(input);
+        await ValidateCategory(input);
+        if (!ModelState.IsValid) return await CategoryForm("Create", input);
 
         // نحفظ الطلب وسجل إنشائه معًا؛ إذا فشل أحدهما لا نعتمد أيًا منهما.
         await using var transaction = await Db.Database.BeginTransactionAsync();
         var request = new PurchaseRequisition
         {
-            Title = input.Title.Trim(), Reason = input.Reason.Trim(), Priority = input.Priority,
+            Title = input.Title.Trim(), Reason = input.Reason.Trim(), Priority = input.Priority, CategoryId = input.CategoryId,
             TargetDate = input.TargetDate!.Value.Date, Status = "Draft",
             DepartmentId = employee!.DepartmentId!.Value, CreatedByEmployeeProfileId = employee.Id,
             CreatedAt = DateTime.UtcNow
@@ -100,7 +113,7 @@ public class PurchaseRequisitionsController : RequisitionBaseController
     }
 
     [HttpGet]
-    public async Task<IActionResult> Details(int id)
+    public async Task<IActionResult> Details(int id, string? panel)
     {
         var employee = await CurrentEmployeeAsync();
         if (!HasDepartment(employee)) return Forbid();
@@ -108,6 +121,13 @@ public class PurchaseRequisitionsController : RequisitionBaseController
             .SingleOrDefaultAsync(x => x.Id == id && x.DepartmentId == employee!.DepartmentId);
         if (request == null) return NotFound();
         ViewBag.CanEdit = Owns(request, employee!) && CanEdit(request);
+        if (panel is "items" or "qr")
+        {
+            ViewData["RecordQrOpen"] = true;
+            ViewData["RequestPanel"] = panel;
+            return View("DashboardRequestPanel", request);
+        }
+        ViewBag.OverviewOnly = panel == "overview";
         return View(request);
     }
 
@@ -120,9 +140,10 @@ public class PurchaseRequisitionsController : RequisitionBaseController
         if (request == null || !Owns(request, employee!)) return NotFound();
         if (!CanEdit(request)) return Conflict("Only draft or returned requests can be edited.");
         ViewBag.RequestId = id;
-        return View(new RequisitionInput
+        return await CategoryForm("Edit", new RequisitionInput
         {
-            Title = request.Title, Reason = request.Reason, Priority = request.Priority, TargetDate = request.TargetDate
+            Title = request.Title, Reason = request.Reason, Priority = request.Priority, TargetDate = request.TargetDate,
+            CategoryId = request.CategoryId
         });
     }
 
@@ -138,7 +159,9 @@ public class PurchaseRequisitionsController : RequisitionBaseController
         if (!CanEdit(request)) return Conflict("Only draft or returned requests can be edited.");
         ViewBag.RequestId = id;
         ValidateDate(input);
-        if (!ModelState.IsValid) return View(input);
+        await ValidateCategory(input);
+        if (!ModelState.IsValid) return await CategoryForm("Edit", input);
+        request.CategoryId = input.CategoryId;
         request.Title = input.Title.Trim();
         request.Reason = input.Reason.Trim();
         request.Priority = input.Priority;
@@ -158,6 +181,11 @@ public class PurchaseRequisitionsController : RequisitionBaseController
         var request = await Db.PurchaseRequisitions.Include(x => x.Items).SingleOrDefaultAsync(x => x.Id == id);
         if (request == null || !Owns(request, employee!)) return NotFound();
         if (!CanEdit(request)) return Conflict("This request has already been submitted or decided.");
+        if (request.CategoryId == null)
+        {
+            TempData["RequestError"] = "Select a category before submitting the request.";
+            return RedirectToAction(nameof(Edit), new { id });
+        }
         if (!ReadyToSubmit(request))
         {
             TempData["RequestError"] = "Add at least one valid item and use a target date of today or later before submitting.";
@@ -173,6 +201,18 @@ public class PurchaseRequisitionsController : RequisitionBaseController
     }
 
     // نفحص كل عنصر بخطوات واضحة قبل السماح بإرسال الطلب.
+    private async Task<IActionResult> CategoryForm(string view, RequisitionInput input)
+    {
+        ViewBag.Categories = await Db.Categories.AsNoTracking().OrderBy(c => c.Name).ToListAsync();
+        return View(view, input);
+    }
+
+    private async Task ValidateCategory(RequisitionInput input)
+    {
+        if (input.CategoryId is int id && !await Db.Categories.AnyAsync(c => c.Id == id))
+            ModelState.AddModelError(nameof(input.CategoryId), "Select a valid category.");
+    }
+
     private static bool ReadyToSubmit(PurchaseRequisition request)
     {
         if (request.Items.Count == 0) return false;

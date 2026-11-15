@@ -28,9 +28,37 @@ public sealed class SuppliersController(ApplicationDbContext db, UserManager<Ide
     [HttpGet]
     public async Task<IActionResult> Details(int id)
     {
-        var supplier = await db.SupplierProfiles.AsNoTracking().Include(x => x.SupplierDocuments)
+        var supplier = await db.SupplierProfiles.AsNoTracking().Include(x => x.SupplierDocuments).Include(x => x.Categories)
             .Include(x => x.User).SingleOrDefaultAsync(x => x.Id == id);
         return supplier is null ? NotFound() : View(supplier);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Categories(int id)
+    {
+        var supplier = await db.SupplierProfiles.AsNoTracking().Include(s => s.Categories).SingleOrDefaultAsync(s => s.Id == id);
+        if (supplier is null) return NotFound();
+        ViewBag.Categories = await db.Categories.AsNoTracking().OrderBy(c => c.Name).ToListAsync();
+        return View(supplier);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Categories(int id, List<int> categoryIds)
+    {
+        if (!ModelState.IsValid) return BadRequest();
+        var supplier = await db.SupplierProfiles.Include(s => s.Categories).SingleOrDefaultAsync(s => s.Id == id);
+        if (supplier is null) return NotFound();
+        var ids = categoryIds.Distinct().ToArray();
+        var categories = await db.Categories.Where(c => ids.Contains(c.Id)).ToListAsync();
+        if (ids.Length == 0 || categories.Count != ids.Length)
+        {
+            ModelState.AddModelError("", "Select at least one valid category.");
+            ViewBag.SelectedCategoryIds = ids.ToHashSet();
+            return await Categories(id);
+        }
+        supplier.Categories = categories;
+        await db.SaveChangesAsync();
+        return RedirectToAction(nameof(Details), new { id });
     }
 
     [HttpGet]
@@ -55,6 +83,8 @@ public sealed class SuppliersController(ApplicationDbContext db, UserManager<Ide
         if (supplier is null) return NotFound();
         ViewBag.Supplier = supplier;
         ViewBag.Decision = next;
+        ViewBag.MissingApprovalDocuments = next == SupplierStatus.Approved &&
+            !await db.SupplierProfiles.AnyAsync(x => x.Id == id && x.SupplierDocuments.Any());
         return View("Decision", input);
     }
 

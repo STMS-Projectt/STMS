@@ -18,8 +18,9 @@ public sealed class ClarificationsController(ApplicationDbContext db, Clarificat
     public async Task<IActionResult> Index(string? kind, int? recordId)
     {
         var actor = await routing.Current(User);
-        if (actor is null) return Forbid();
-        var query = Threads(actor);
+        var admin = User.IsInRole(Roles.Admin);
+        if (actor is null && !admin) return Forbid();
+        var query = Threads(actor, admin);
         if (recordId is int id)
             query = kind switch {
                 "request" => query.Where(r => r.PurchaseRequisitionId == id),
@@ -27,9 +28,9 @@ public sealed class ClarificationsController(ApplicationDbContext db, Clarificat
                 "bid" => query.Where(r => r.BidId == id),
                 _ => query.Where(r => false)
             };
-        var route = kind is not null && recordId is int target ? await routing.Get(kind, target, actor) : null;
+        var route = actor is not null && kind is not null && recordId is int target ? await routing.Get(kind, target, actor) : null;
         return View(new ClarificationInbox(await query.OrderByDescending(r => r.AnsweredAt ?? r.CreatedAt)
-            .ThenByDescending(r => r.Id).ToListAsync(), kind, recordId, route, recordId is null ? await routing.RequestTargets(actor) : []));
+            .ThenByDescending(r => r.Id).ToListAsync(), kind, recordId, route, []));
     }
 
     [HttpPost, Authorize(Roles = Roles.SourcingOfficer)]
@@ -45,6 +46,17 @@ public sealed class ClarificationsController(ApplicationDbContext db, Clarificat
             TempData["ClarificationError"] = "The request is already assigned or is no longer awaiting review.";
         return RedirectToAction(nameof(Index), new { kind = "request", recordId = id });
     }
+    [HttpGet]
+    public async Task<IActionResult> StartRequest(int id)
+    {
+        var actor = await routing.Current(User);
+        if (actor is null) return Forbid();
+        var route = await routing.Get("request", id, actor);
+        return route is null
+            ? RedirectToAction(nameof(Index), new { kind = "request", recordId = id })
+            : Compose(new ClarificationInput { Kind = "request", RecordId = id }, route);
+    }
+
     [HttpGet]
     public async Task<IActionResult> Create(string kind, int recordId)
     {
@@ -102,11 +114,12 @@ public sealed class ClarificationsController(ApplicationDbContext db, Clarificat
     public async Task<IActionResult> Details(int id)
     {
         var actor = await routing.Current(User);
-        if (actor is null) return Forbid();
-        var row = await Threads(actor).SingleOrDefaultAsync(r => r.Id == id);
+        var admin = User.IsInRole(Roles.Admin);
+        if (actor is null && !admin) return Forbid();
+        var row = await Threads(actor, admin).SingleOrDefaultAsync(r => r.Id == id);
         if (row is null) return NotFound();
-        return View(new ClarificationThread(row, row.Status == "Pending" && IsReceiver(row, actor) &&
-            await CanReply(row, actor), row.Status == "Answered" && IsSender(row, actor)));
+        return View(new ClarificationThread(row, actor is not null && row.Status == "Pending" && IsReceiver(row, actor) &&
+            await CanReply(row, actor), actor is not null && row.Status == "Answered" && IsSender(row, actor)));
     }
 
     [HttpPost]
@@ -149,12 +162,15 @@ public sealed class ClarificationsController(ApplicationDbContext db, Clarificat
         return RedirectToAction(nameof(Details), new { id });
     }
 
-    private IQueryable<ClarificationRequest> Threads(ClarificationPerson actor)
+    private IQueryable<ClarificationRequest> Threads(ClarificationPerson? actor, bool allThreads)
     {
         var query = db.ClarificationRequests.AsNoTracking();
-        query = actor.Employee is int employee
-            ? query.Where(r => r.SenderEmployeeProfileId == employee || r.ReceiverEmployeeProfileId == employee)
-            : query.Where(r => r.SenderSupplierProfileId == actor.Supplier || r.ReceiverSupplierProfileId == actor.Supplier);
+        if (!allThreads)
+            query = actor?.Employee is int employee
+                ? query.Where(r => r.SenderEmployeeProfileId == employee || r.ReceiverEmployeeProfileId == employee)
+                : actor?.Supplier is int supplier
+                    ? query.Where(r => r.SenderSupplierProfileId == supplier || r.ReceiverSupplierProfileId == supplier)
+                    : query.Where(r => false);
         return query.Include(r => r.SenderEmployeeProfile).Include(r => r.ReceiverEmployeeProfile)
             .Include(r => r.SenderSupplierProfile).Include(r => r.ReceiverSupplierProfile)
             .Include(r => r.PurchaseRequisition).Include(r => r.Tender).Include(r => r.Bid).ThenInclude(b => b!.Tender);

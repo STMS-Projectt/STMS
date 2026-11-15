@@ -27,6 +27,10 @@
                 <button type="button" class="dept-dock-button" aria-expanded="false" aria-haspopup="true"><partial name="_Icon" model='@("sort")' /><span>Sort</span></button>
                 <div class="dept-filter-popover" hidden><strong>Sort by</strong><button type="button" data-dept-select="sort" data-value="">Default order</button><button type="button" data-dept-select="sort" data-value="name">Name (A–Z)</button></div>
             </div>
+            <div class="dept-filter-menu" data-dept-menu data-dept-pagination aria-label="Employee pages" hidden>
+                <button type="button" class="dept-dock-button" aria-expanded="false" aria-haspopup="true" aria-label="Pages" title="Pages"><partial name="_Icon" model='@("file")' /><span>Pages</span></button>
+                <div class="dept-filter-popover" hidden><strong>Pages</strong><div data-page-options></div><span data-page-status aria-live="polite"></span></div>
+            </div>
             <select data-filter-department hidden aria-label="Department filter"><option value="">All departments</option><option value="unassigned">Unassigned</option>
                 @foreach (var department in Model.Where(e => e.Department != null).Select(e => e.Department!).DistinctBy(d => d.Id).OrderBy(d => d.Name))
                 { <option value="@department.Id">@department.Name</option> }
@@ -66,11 +70,6 @@
             }
             </div>
         <div data-filter-empty hidden><div class="empty-state"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("search")' /></span><h2>No matching records</h2><p>Try a different name or reset the filters.</p><button type="button" class="btn btn-outline-secondary">Reset filters</button></div></div>
-        <nav class="dept-pagination" data-dept-pagination aria-label="Employee pages" hidden>
-            <button type="button" data-page-prev aria-label="Previous page">Previous</button>
-            <span data-page-status aria-live="polite"></span>
-            <button type="button" data-page-next aria-label="Next page">Next</button>
-        </nav>
     }
 </section>
 @section Scripts {

@@ -7,18 +7,22 @@
 <a class="back-link" asp-action="Index"><partial name="_Icon" model='@("back")' /> Supplier invitations</a>
 <header class="page-heading"><div><p class="eyebrow">SUPPLIER INVITATIONS</p><h1>New invitation</h1><p>Choose a tender, its suppliers, and the invitation expiry date.</p></div></header>
 <div class="form-shell">
+    <form id="load-invitation-suppliers" asp-action="Create" method="get" hidden></form>
     <form class="surface form-card" asp-action="Create" method="post">
         <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
         <div class="mb-3">
-            <label asp-for="TenderId" class="form-label">Tender</label>
-            <select asp-for="TenderId" class="form-select" asp-items="ViewBag.TenderId" required><option value="">Select a tender</option></select>
+            <label for="invitation-tender" class="form-label">Tender</label>
+            <input type="hidden" name="TenderId" value="@Model.TenderId" />
+            <select id="invitation-tender" name="tenderId" class="form-select" asp-items="ViewBag.TenderId" form="load-invitation-suppliers" required><option value="">Select a tender</option></select>
+            <button type="submit" form="load-invitation-suppliers" class="btn btn-outline-secondary mt-2">Load eligible suppliers</button>
             <span asp-validation-for="TenderId" class="text-danger"></span>
         </div>
         <fieldset class="mb-3">
             <legend class="form-label">Eligible suppliers @if (ViewData["RoundNumber"] is int round) { <span>· Round @round</span> }</legend>
+            @if (ViewData["CategoryName"] is string categoryName) { <p class="field-hint">Category: @categoryName</p> }
             @if (suppliers.Count == 0)
             {
-                <p class="subtle mb-0">No approved suppliers are eligible for a new invitation in this round.</p>
+                <p class="subtle mb-0">@(Model.TenderId == 0 ? "Select a tender and load its eligible suppliers." : ViewData["CategoryName"] is null ? "Assign a supply category to the purchase request before sending invitations." : "No approved suppliers in this category are eligible for a new invitation in this round.")</p>
             }
             else
             {
@@ -38,6 +42,6 @@
             <input asp-for="ExpiresAt" class="form-control" required />
             <span asp-validation-for="ExpiresAt" class="text-danger"></span>
         </div>
-        <button type="submit" class="btn btn-primary" disabled="@(suppliers.Count == 0)">Send invitations</button>
+        <button type="submit" class="btn btn-primary" data-send-invitations disabled="@(suppliers.Count == 0)">Send invitations</button>
     </form>
 </div>
