@@ -38,6 +38,7 @@ builder.Services.AddHttpClient(BidAiAdvisor.HttpClientName, client =>
 });
 
 builder.Services.AddSingleton<BidAiAdvisor>();
+builder.Services.AddSingleton<WinnerAiBriefing>();
 // Free exchange-rate reference (Frankfurter v2) for USD-equivalent bid display only.
 builder.Services.AddMemoryCache();
 builder.Services.AddHttpClient(ExchangeRates.HttpClientName, client =>
