@@ -50,12 +50,24 @@ builder.Services.AddSingleton<EvaluationWeightAdvisor>();
 // Free exchange-rate reference (Frankfurter v2) for USD-equivalent bid display only.
 builder.Services.AddMemoryCache();
 
-builder.Services.AddAuthentication().AddCookie("BiometricPending", options =>
+var authentication = builder.Services.AddAuthentication().AddCookie("BiometricPending", options =>
 {
     options.Cookie.Name = ".STMS.BiometricPending.v2";
     options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
     options.SlidingExpiration = false;
 });
+// Google sign-in is only for accounts an administrator already created; it never creates users.
+if (builder.Configuration["Authentication:Google:ClientId"] is { Length: > 0 } googleClientId &&
+    builder.Configuration["Authentication:Google:ClientSecret"] is { Length: > 0 } googleClientSecret)
+{
+    authentication.AddGoogle(options =>
+    {
+        options.ClientId = googleClientId;
+        options.ClientSecret = googleClientSecret;
+        options.SignInScheme = IdentityConstants.ExternalScheme;
+        Microsoft.AspNetCore.Authentication.ClaimActionCollectionMapExtensions.MapJsonKey(options.ClaimActions, "email_verified", "email_verified");
+    });
+}
 builder.Services.Configure<IdentityPasskeyOptions>(options =>
 {
     options.UserVerificationRequirement = "required";
