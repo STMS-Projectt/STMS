@@ -19,6 +19,12 @@ public class ClarificationRequest
     public int? PurchaseRequisitionId { get; set; }
     public int? TenderId { get; set; }
     public int? BidId { get; set; }
+    public int? SupplierApplicationId { get; set; }
+    public string? RequestedDocumentType { get; set; }
+    public string? AttachmentKey { get; set; }
+    public string? AttachmentName { get; set; }
+    public DateTime? AttachmentExpiryDate { get; set; }
+    public DateTime? AttachmentAddedAt { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? AnsweredAt { get; set; }
     public DateTime? ResolvedAt { get; set; }
@@ -30,4 +36,5 @@ public class ClarificationRequest
     public PurchaseRequisition? PurchaseRequisition { get; set; }
     public Tender? Tender { get; set; }
     public Bid? Bid { get; set; }
+    public SupplierProfile? SupplierApplication { get; set; }
 }

@@ -93,12 +93,16 @@ public sealed partial class BiddingRoundTests
                 TaxNumber = "QA-OTHER", CommercialRegNo = "QA-OTHER", Address = "Synthetic", ContactPhone = "000",
                 Status = "Pending", CreatedAt = DateTime.UtcNow, Categories = [new Category { Name = "Furniture" }] };
             db.AddRange(category, unrelated);
+            var officerRole = new IdentityRole("SourcingOfficer") { NormalizedName = "SOURCINGOFFICER" };
+            db.Roles.Add(officerRole);
+            db.UserRoles.Add(new IdentityUserRole<string> { UserId = "officer", RoleId = officerRole.Id });
             var categorizedTender = await db.Tenders.Include(t => t.PurchaseRequisition).SingleAsync(t => t.Id == seed.Tender);
             categorizedTender.PurchaseRequisition.Category = category;
             foreach (var id in new[] { seed.Submitted, seed.Bidder, seed.NewSupplier })
                 (await db.SupplierProfiles.FindAsync(id))!.Categories.Add(category);
             await db.SaveChangesAsync();
             db.ChangeTracker.Clear();
+            await db.Database.ExecuteSqlInterpolatedAsync($"INSERT dbo.AspNetUserPasskeys(UserId, CredentialId, Data) VALUES ({trialUser.Id}, 0x03, '{{}}')");
             Assert.Equal(1, (await db.Bids.FindAsync(seed.Bid))!.SubmittedRoundNumber);
             Assert.Equal("Declined", (await db.Invitations.FindAsync(seed.Invitation))!.Status);
             Assert.Equal(1, (await db.Invitations.FindAsync(seed.Invitation))!.RoundNumber);
@@ -115,16 +119,50 @@ public sealed partial class BiddingRoundTests
             using var supplier = Client(app, "bidder", "Supplier");
             var officerToken = await Token(officer);
             var supplierToken = await Token(supplier);
-            Assert.Contains(unrelated.CompanyName, await officer.GetStringAsync("/Suppliers"));
-            Assert.Contains(unrelated.CompanyName, await officer.GetStringAsync($"/Suppliers/Details/{unrelated.Id}"));
+            Assert.DoesNotContain(unrelated.CompanyName, await officer.GetStringAsync("/Suppliers"));
+            Assert.Equal(HttpStatusCode.NotFound, (await officer.GetAsync($"/Suppliers/Details/{unrelated.Id}")).StatusCode);
             var reviewUrl = $"/Suppliers/Approve/{unrelated.Id}";
             var reason = new Dictionary<string, string> { ["Reason"] = "Reviewed synthetic application" };
             var missingDocument = await Post(officer, officerToken, reviewUrl, reason);
-            Assert.Equal(HttpStatusCode.OK, missingDocument.StatusCode);
+            Assert.Equal(HttpStatusCode.NotFound, missingDocument.StatusCode);
             Assert.Equal("Pending", await db.SupplierProfiles.Where(s => s.Id == unrelated.Id).Select(s => s.Status).SingleAsync());
             db.SupplierDocuments.Add(new SupplierDocument { SupplierProfileId = unrelated.Id, DocumentType = "Registration",
                 FilePath = "synthetic-review.pdf", UploadedAt = DateTime.UtcNow });
+            await db.SupplierProfiles.Where(s => s.Id == unrelated.Id)
+                .ExecuteUpdateAsync(set => set.SetProperty(s => s.ApplicationSubmittedAt, DateTime.UtcNow));
             await db.SaveChangesAsync();
+            using (var applicant = Client(app, trialUser.Id, "PendingApplicant"))
+            {
+                var applicantToken = await Token(applicant);
+                Assert.Equal(HttpStatusCode.Forbidden, (await applicant.GetAsync("/SupplierRegistration/AddDocument")).StatusCode);
+                Assert.Equal(HttpStatusCode.Forbidden, (await Post(applicant, applicantToken, "/SupplierRegistration/AddDocument",
+                    new() { ["DocumentType"] = "Tax certificate" })).StatusCode);
+                var initialDocument = await db.SupplierDocuments.Where(d => d.SupplierProfileId == unrelated.Id).Select(d => d.Id).SingleAsync();
+                Assert.Equal(HttpStatusCode.Forbidden, (await Post(applicant, applicantToken, $"/SupplierRegistration/RemoveDocument/{initialDocument}", new())).StatusCode);
+                var clarificationCreated = await Post(officer, officerToken, "/Clarifications/Create", new()
+                {
+                    ["Kind"] = "supplier", ["RecordId"] = unrelated.Id.ToString(), ["Recipient"] = $"s{unrelated.Id}",
+                    ["Subject"] = "Updated tax certificate", ["Description"] = "Attach a current certificate.", ["RequestedDocumentType"] = "Tax certificate"
+                });
+                Assert.Equal(HttpStatusCode.Redirect, clarificationCreated.StatusCode);
+                var threadId = await db.ClarificationRequests.Where(r => r.SupplierApplicationId == unrelated.Id).Select(r => r.Id).SingleAsync();
+                Assert.Contains("Updated tax certificate", await applicant.GetStringAsync("/Clarifications"));
+                Assert.Equal(HttpStatusCode.NotFound, (await supplier.GetAsync($"/Clarifications/Details/{threadId}")).StatusCode);
+                Assert.Equal(HttpStatusCode.Redirect, (await ReplyWithPdf(applicant, applicantToken, threadId, "2035-01-02")).StatusCode);
+                Assert.Equal(1, await db.SupplierDocuments.CountAsync(d => d.SupplierProfileId == unrelated.Id));
+                Assert.Equal(HttpStatusCode.NotFound, (await supplier.GetAsync($"/Clarifications/DownloadAttachment/{threadId}")).StatusCode);
+                Assert.Equal(HttpStatusCode.OK, (await officer.GetAsync($"/Clarifications/DownloadAttachment/{threadId}")).StatusCode);
+                Assert.Equal(HttpStatusCode.Forbidden, (await Post(applicant, applicantToken, $"/Clarifications/AddAttachment/{threadId}", new())).StatusCode);
+                Assert.Equal(HttpStatusCode.Redirect, (await Post(officer, officerToken, $"/Clarifications/AddAttachment/{threadId}", new())).StatusCode);
+                Assert.Equal(HttpStatusCode.Conflict, (await Post(officer, officerToken, $"/Clarifications/AddAttachment/{threadId}", new())).StatusCode);
+                var adopted = await db.SupplierDocuments.AsNoTracking().SingleAsync(d => d.SupplierProfileId == unrelated.Id && d.DocumentType == "Tax certificate");
+                var supplied = await db.ClarificationRequests.AsNoTracking().SingleAsync(r => r.Id == threadId);
+                Assert.Equal(new DateTime(2035, 1, 2), adopted.ExpiryDate);
+                Assert.Equal("Resolved", supplied.Status);
+                var store = scope.ServiceProvider.GetRequiredService<SupplierFileStore>();
+                store.Delete(supplied.AttachmentKey!, pending: true);
+                store.Delete(adopted.FilePath);
+            }
             Assert.Equal(HttpStatusCode.Redirect, (await Post(officer, officerToken, reviewUrl, reason)).StatusCode);
             Assert.Equal("Approved", await db.SupplierProfiles.Where(s => s.Id == unrelated.Id).Select(s => s.Status).SingleAsync());
             Assert.True(await db.UserRoles.AnyAsync(r => r.UserId == trialUser.Id && db.Roles.Any(role => role.Id == r.RoleId && role.Name == "Supplier")));
@@ -279,6 +317,15 @@ public sealed partial class BiddingRoundTests
     {
         var fields = new Dictionary<string,string>(values) { ["__RequestVerificationToken"] = token };
         return client.PostAsync(url, new FormUrlEncodedContent(fields));
+    }
+
+    private static async Task<HttpResponseMessage> ReplyWithPdf(HttpClient client, string token, int id, string? expiry = null)
+    {
+        using var form = new MultipartFormDataContent();
+        form.Add(new StringContent(token), "__RequestVerificationToken");
+        form.Add(new ByteArrayContent("%PDF-1.4 synthetic attachment"u8.ToArray()), "attachment", "extra-evidence.pdf");
+        if (expiry != null) form.Add(new StringContent(expiry), "expiryDate");
+        return await client.PostAsync($"/Clarifications/Answer/{id}", form);
     }
 
     private static HttpClient Client(BiddingApp app, string user, string role)

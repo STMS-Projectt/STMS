@@ -23,7 +23,8 @@ public sealed class SupplierWorkspaceController(ApplicationDbContext db) : Contr
     public async Task<IActionResult> Index()
     {
         var model = await OwnProfile().Select(s => new SupplierWorkspaceSummary(
-            s.CompanyName, s.Status, s.SupplierDocuments.Count, 0, 0, 0, 0)).SingleOrDefaultAsync();
+            s.CompanyName, s.Status, s.SupplierDocuments.Count, 0, 0, 0, 0,
+            s.Status == SupplierStatus.Pending && s.ApplicationSubmittedAt == null)).SingleOrDefaultAsync();
         if (model is null) return Forbid();
 
         if (model.Status == SupplierStatus.Approved && User.IsInRole(Roles.Supplier))
@@ -48,19 +49,23 @@ public sealed class SupplierWorkspaceController(ApplicationDbContext db) : Contr
     }
 
     [HttpGet, Authorize(Roles = Roles.Supplier)]
-    public async Task<IActionResult> Invitations()
+    public async Task<IActionResult> Invitations(int? invitationId)
     {
         var supplier = await OwnProfile().AsNoTracking().SingleOrDefaultAsync();
         if (supplier?.Status != SupplierStatus.Approved) return Forbid();
 
-        var rows = await OwnInvitations(supplier.Id).AsNoTracking().Include(i => i.Tender).Include(i => i.Round)
+        var query = OwnInvitations(supplier.Id);
+        if (invitationId is int id) query = query.Where(i => i.Id == id);
+        var rows = await query.AsNoTracking().Include(i => i.Tender).Include(i => i.Round)
             .OrderByDescending(i => i.SentAt).ThenByDescending(i => i.Id).ToListAsync();
+        if (invitationId.HasValue && rows.Count == 0) return NotFound();
         var bidTenders = await db.Bids.Where(b => b.SupplierProfileId == supplier.Id)
             .Select(b => b.TenderId).ToListAsync();
         ViewBag.CurrentLegacyTenders = (await db.TenderRounds.Where(r => r.Legacy && r.Number == r.Tender.Counter &&
             r.Tender.Invitations.Any(i => i.SupplierProfileId == supplier.Id && i.RoundNumber == null))
             .Select(r => r.TenderId).ToListAsync()).ToHashSet();
-        return View(new SupplierInvitationList(rows, bidTenders.ToHashSet(), DateTime.UtcNow));
+        return View(invitationId.HasValue ? "InvitationDetails" : "Invitations",
+            new SupplierInvitationList(rows, bidTenders.ToHashSet(), DateTime.UtcNow));
     }
 
     [HttpPost, Authorize(Roles = Roles.Supplier)]
@@ -90,6 +95,6 @@ public sealed class SupplierWorkspaceController(ApplicationDbContext db) : Contr
         else
             TempData["Message"] = decision == "Accepted" ? "Invitation accepted. You can now prepare a bid." : "Invitation declined.";
 
-        return RedirectToAction(nameof(Invitations));
+        return RedirectToAction(nameof(Invitations), new { invitationId = id });
     }
 }

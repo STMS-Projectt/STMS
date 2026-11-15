@@ -34,7 +34,6 @@
         <partial name="_CommunicationNav" model="true" />
     </nav>
     <div class="side-bottom" aria-label="Account">
-        <a class="side-link @(controller == "Profile" ? "is-current" : "")" aria-current="@(controller == "Profile" ? "page" : null)" asp-controller="Profile" asp-action="Index"><partial name="_Icon" model='@("shield")' /> Account settings</a>
         <form asp-controller="Account" asp-action="Logout" method="post">
             <button class="side-link sign-out" type="submit"><partial name="_Icon" model='@("logout")' /> Sign out</button>
         </form>

@@ -36,7 +36,7 @@ public sealed class ProfileController(UserManager<IdentityUser> users, Applicati
     public async Task<IActionResult> SavePersonal([Bind(Prefix = "Personal")] PersonalPreferences personal)
     {
         var user = await users.GetUserAsync(User);
-        if (user is null) return Forbid();
+        if (user is null || await db.SupplierProfiles.AnyAsync(s => s.UserId == user.Id)) return Forbid();
         if (ModelState.IsValid)
         {
             personal.Trim();
@@ -73,7 +73,7 @@ public sealed class ProfileController(UserManager<IdentityUser> users, Applicati
     public async Task<IActionResult> Upload(IFormFile? photo)
     {
         var user = await users.GetUserAsync(User);
-        if (user is null) return Forbid();
+        if (user is null || await db.SupplierProfiles.AnyAsync(s => s.UserId == user.Id)) return Forbid();
         if (photo is null || photo.Length < 12 || photo.Length > MaxBytes)
             return Fail("Choose a JPEG or PNG image up to 1 MB.");
         using var buffer = new MemoryStream((int)photo.Length);
@@ -107,7 +107,7 @@ public sealed class ProfileController(UserManager<IdentityUser> users, Applicati
     public async Task<IActionResult> Remove()
     {
         var user = await users.GetUserAsync(User);
-        if (user is null) return Forbid();
+        if (user is null || await db.SupplierProfiles.AnyAsync(s => s.UserId == user.Id)) return Forbid();
         if (!(await users.RemoveAuthenticationTokenAsync(user, Provider, PhotoKey)).Succeeded)
             return Fail("Could not remove your photo. Try again.");
         TempData["Message"] = "Profile photo removed.";

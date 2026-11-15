@@ -21,8 +21,8 @@ public sealed class ClarificationRouting(ApplicationDbContext db)
         if (id is null) return null;
         var employee = await db.EmployeeProfiles.AsNoTracking().FirstOrDefaultAsync(e => e.UserId == id && e.IsActive);
         if (employee != null) return new(employee.Id, null, employee.FullName);
-        if (!principal.IsInRole(Roles.Supplier)) return null;
-        var supplier = await db.SupplierProfiles.AsNoTracking().FirstOrDefaultAsync(s => s.UserId == id && s.Status == SupplierStatus.Approved);
+        // Pending suppliers can receive questions about their submitted applications.
+        var supplier = await db.SupplierProfiles.AsNoTracking().FirstOrDefaultAsync(s => s.UserId == id);
         return supplier is null ? null : new(null, supplier.Id, supplier.CompanyName);
     }
 
@@ -52,6 +52,17 @@ public sealed class ClarificationRouting(ApplicationDbContext db)
     {
         var recipients = new List<ClarificationPerson>();
         var officers = WithRole(Roles.SourcingOfficer);
+        if (kind == "supplier")
+        {
+            var application = await db.SupplierProfiles.AsNoTracking().SingleOrDefaultAsync(s => s.Id == id &&
+                (s.Status == SupplierStatus.Pending && s.ApplicationSubmittedAt != null ||
+                 s.Status == SupplierStatus.Approved || s.Status == SupplierStatus.Suspended));
+            if (application is null) return null;
+            if (actor.Supplier == id) await Add(officers, recipients);
+            else if (actor.Employee is int officer && await officers.AnyAsync(e => e.Id == officer))
+                recipients.Add(new(null, id, application.CompanyName));
+            return Route(application.CompanyName + " · Supplier application", recipients);
+        }
         if (kind == "request")
         {
             var request = await db.PurchaseRequisitions.AsNoTracking().SingleOrDefaultAsync(r => r.Id == id);

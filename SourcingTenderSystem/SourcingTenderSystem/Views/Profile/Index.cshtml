@@ -2,7 +2,7 @@
 @{
     ViewData["Title"] = "Account settings";
     var security = Model.Security != null;
-    var information = string.Equals(Context.Request.Query["tab"], "information", StringComparison.OrdinalIgnoreCase);
+    var information = Model.Supplier != null || string.Equals(Context.Request.Query["tab"], "information", StringComparison.OrdinalIgnoreCase);
 }
 <header class="surface account-hero">
     <partial name="_ProfileAvatar" />
@@ -10,9 +10,10 @@
     <span class="account-hero-badge"><partial name="_Icon" model='@("shield")' /> Account settings</span>
 </header>
 <nav class="account-tabs" aria-label="Account settings tabs">
-    <a asp-action="Index" asp-route-tab="personal" aria-current="@(!security && !information ? "page" : null)"><partial name="_Icon" model='@("users")' /> Personal</a>
+    @if (Model.Supplier is null)
+    { <a asp-action="Index" asp-route-tab="personal" aria-current="@(!security && !information ? "page" : null)"><partial name="_Icon" model='@("users")' /> Personal</a> }
     <a asp-action="Index" asp-route-tab="security" aria-current="@(security ? "page" : null)"><partial name="_Icon" model='@("shield")' /> Security</a>
-    <a asp-action="Index" asp-route-tab="information" aria-current="@(information ? "page" : null)"><partial name="_Icon" model='@("file")' /> Account information</a>
+    <a asp-action="Index" asp-route-tab="information" aria-current="@(!security && information ? "page" : null)"><partial name="_Icon" model='@("file")' /> Account information</a>
 </nav>
 @if (TempData["ProfileError"] is string error) { <div class="alert alert-warning" role="alert">@error</div> }
 @if (Model.Security is { } methods)

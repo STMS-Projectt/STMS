@@ -1,14 +1,19 @@
 @inject ProtectedPdf PdfSecurity
 @model EvaluationWorkflowDetails
 @{
-    ViewData["Title"] = "Evaluation progress";
     var tender = Model.Tender;
     var report = tender.EvaluationReport;
+    var panel = Context.Request.Query["panel"].ToString();
+    var labels = new Dictionary<string, string> { ["progress"] = "Reviewer progress", ["comparison"] = "Weighted comparison", ["decision"] = "Report and decision" };
+    var full = !labels.TryGetValue(panel, out var label);
+    ViewData["Title"] = label ?? "Evaluation progress";
 }
 <a class="back-link" asp-action="Index"><partial name="_Icon" model='@("back")' /> Evaluations</a>
-<header class="page-heading stms-hero admin-record-hero"><div><p class="eyebrow">TENDER #@tender.Id</p><h1>@tender.Title</h1><p>@(report?.Status ?? tender.Status)</p></div></header>
-<partial name="_RecordQr" model='@(Url.Action("Details", new { id = tender.Id })!)' />
-@if (TempData["WorkflowError"] is string error) { <div class="alert alert-warning" role="alert">@error</div> }
+<header class="page-heading stms-hero admin-record-hero"><div><p class="eyebrow">TENDER #@tender.Id</p><h1>@(label ?? tender.Title)</h1><p>@(full ? report?.Status ?? tender.Status : tender.Title)</p></div>@if (!full) { <partial name="_Status" model="@(report?.Status ?? tender.Status)" /> }</header>
+@if (full) { <partial name="_RecordQr" model='@(Url.Action("Details", new { id = tender.Id })!)' /> }
+@if (TempData["WorkflowError"] is string error) { <div class="alert alert-warning" data-workspace-feedback role="alert">@error</div> }
+@if (full || panel == "progress")
+{
 <section class="surface directory mb-3">
     <div class="directory-toolbar"><h2 class="mb-0">Committee progress · @Model.Progress.Count(p => p.Complete) / 4 submitted</h2></div>
     <div class="record-list">
@@ -36,22 +41,37 @@
                     var bid = tender.Bids.First(b => b.Id == score.BidId);
                     var criterion = tender.EvaluationCriteria.First(c => c.Id == score.CriterionId);
                     <article class="record-card"><div class="record-name"><span>@criterion.Name<small>@bid.SupplierProfile.CompanyName</small></span></div>
-                        <dl class="record-facts"><div><dt>Reviewer</dt><dd>@member?.EmployeeProfile.FullName</dd></div><div><dt>Score</dt><dd>@score.Score / @criterion.MaxScore</dd></div><div><dt>Notes</dt><dd>@score.Notes</dd></div></dl></article>
+                        <dl class="record-facts"><div><dt>Reviewer</dt><dd>@member?.EmployeeProfile.FullName</dd></div><div><dt>Score</dt><dd>@score.Score / @criterion.MaxScore</dd></div><div><dt>Applied weight</dt><dd>@Model.ReviewerWeights[score.EmployeeId][score.CriterionId].ToString("0.##")%</dd></div><div><dt>Notes</dt><dd>@score.Notes</dd></div></dl></article>
                 }
             </div>
         </details>
     }
 </section>
+}
+@if (full || panel == "comparison")
+{
 @if (ViewBag.Comparison is List<SupplierEvaluationResult> comparison)
 {
     <section class="surface detail-card mb-3">
         <h2>Weighted supplier comparison</h2>
-        <p>Each criterion is normalized and averaged across reviewers, then multiplied by its published weight.</p>
+        <p>Each reviewer’s scores are normalized and weighted by their selected criteria. The four reviewer totals contribute equally.</p>
         @if (comparison.Select(r => r.Currency).Distinct().Count() > 1)
         {
             <p class="alert alert-info">Bids use different currencies. USD equivalents are approximate references at one rate date (the tender closing date) and are not used to rank suppliers or pick a winner.</p>
         }
-        <ul>@foreach (var c in tender.EvaluationCriteria) { <li>@c.Name · @c.Type · @c.WeightPercent%</li> }</ul>
+        <details class="mb-3"><summary>View weights applied by each reviewer</summary>
+            <div class="record-list record-list-inset">
+                @foreach (var reviewer in Model.Progress)
+                {
+                    <article class="record-card"><div class="record-name"><span>@reviewer.Employee<small>@reviewer.Seat</small></span></div>
+                        <dl class="record-facts">
+                            @foreach (var criterion in tender.EvaluationCriteria.Where(c => Model.ReviewerWeights[reviewer.EmployeeId].ContainsKey(c.Id)))
+                            { <div><dt>@criterion.Name</dt><dd>@Model.ReviewerWeights[reviewer.EmployeeId][criterion.Id].ToString("0.##")%</dd></div> }
+                        </dl>
+                    </article>
+                }
+            </div>
+        </details>
         <div class="record-list record-list-inset">@foreach (var row in comparison)
         {
             <article class="record-card"><div class="record-name">@row.Supplier</div><dl class="record-facts"><div><dt>Compliance</dt><dd>@row.Compliance @if (!string.IsNullOrWhiteSpace(row.ComplianceNotes)) { <small>@row.ComplianceNotes</small> }</dd></div><div><dt>Price</dt><dd><partial name="_UsdReference" model="@(new UsdReferenceView(row.Price, row.Currency, row.UsdEquivalent, row.UsdRate, row.RateDate, row.RateSource))" /></dd></div>
@@ -64,6 +84,13 @@
         }</div>
     </section>
 }
+else if (!full)
+{
+    <section class="surface empty-state"><span class="icon-tile tone-blue"><partial name="_Icon" model='@("chart")' /></span><h2>Comparison not available</h2><p>Supplier comparisons appear when they are available for this evaluation.</p></section>
+}
+}
+@if (full || panel == "decision")
+{
 @if (Model.CanUpload)
 {
     <section class="surface form-card mb-3">
@@ -81,7 +108,7 @@
 }
 else if (report == null && User.IsInRole("SourcingManager"))
 {
-    <p class="subtle">The final report can be uploaded once all four members submit scores for every criterion on every compliant bid.</p>
+    <p class="subtle">The final report can be uploaded once all four members submit their checklists for every compliant bid.</p>
 }
 @if (report != null)
 {
@@ -152,8 +179,12 @@ else if (report == null && User.IsInRole("SourcingManager"))
         }
     </section>
 }
+else if (!full && !Model.CanUpload && !User.IsInRole("SourcingManager"))
+{
+    <section class="surface empty-state"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("file")' /></span><h2>No final report yet</h2><p>The report appears here after the evaluation is complete.</p></section>
+}
 
-<div class="mb-3"><a class="btn btn-outline-secondary" asp-controller="Clarifications" asp-action="Index" asp-route-kind="tender" asp-route-recordId="@tender.Id">Clarification history</a></div>
+<div class="mb-3"><a class="btn btn-outline-secondary" data-workspace-dialog="details" asp-controller="Clarifications" asp-action="Index" asp-route-kind="tender" asp-route-recordId="@tender.Id"><partial name="_Icon" model='@("mail")' /> Clarification history</a></div>
 
 @if (report?.Status == TenderRules.AwaitingReturn && User.IsInRole("SourcingManager"))
 {
@@ -167,4 +198,5 @@ else if (report == null && User.IsInRole("SourcingManager"))
         <p>This tender was cancelled by the Top Committee and returned by the sourcing manager. Create a NEW tender for the same purchase requisition #@tender.PurchaseRequisitionId. This cancelled tender and its history stay unchanged.</p>
         <a data-workspace-dialog class="btn btn-primary" asp-controller="Tenders" asp-action="Create" asp-route-purchaseRequisitionId="@tender.PurchaseRequisitionId">Create replacement tender</a>
     </section>
+}
 }

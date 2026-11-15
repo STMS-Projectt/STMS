@@ -8,7 +8,7 @@
     <div><p class="eyebrow">PURCHASE REQUEST · PR-@Model.Id</p><h1>@ViewData["Title"]</h1><p>@Model.Title</p></div>
     @if (items && ViewBag.CanEdit == true)
     {
-        <a class="btn btn-primary" asp-controller="RequisitionItems" asp-action="Create" asp-route-requestId="@Model.Id"><partial name="_Icon" model='@("plus")' /> Add item</a>
+        <a class="btn btn-primary" data-workspace-dialog asp-controller="RequisitionItems" asp-action="Create" asp-route-requestId="@Model.Id"><partial name="_Icon" model='@("plus")' /> Add item</a>
     }
 </header>
 @if (items)

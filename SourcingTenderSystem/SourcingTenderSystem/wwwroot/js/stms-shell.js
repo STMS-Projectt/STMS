@@ -125,7 +125,6 @@
             const link = document.createElement("a");
             link.href = el.href;
             link.textContent = name;
-            if (el.hasAttribute("data-workspace-dialog")) link.setAttribute("data-workspace-dialog", "");
             results.append(link);
         }
         if (!results.childElementCount) {

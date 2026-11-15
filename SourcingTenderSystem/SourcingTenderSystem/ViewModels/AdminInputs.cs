@@ -51,7 +51,7 @@ public sealed class UploadInput
 {
     [Required, Display(Name = "Document type")] public string DocumentType { get; set; } = "";
     [DataType(DataType.Date), Display(Name = "Expiry date")] public DateTime? ExpiryDate { get; set; }
-    [Display(Name = "PDF files")] public List<IFormFile> Files { get; set; } = new();
+    [Required, Display(Name = "PDF file")] public IFormFile? File { get; set; }
 }
 
 public sealed class DecisionInput

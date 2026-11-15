@@ -22,7 +22,7 @@
                         <partial name="_RequestActions" model="@( (assignment.RequestId, assignment.CanEditRequest) )" />
                         @if (assignment.Status == "Under Evaluation")
                         {
-                            <a class="record-icon-action" asp-controller="CommitteeReviews" asp-action="Details" asp-route-id="@assignment.TenderId" aria-label="Review bids for @assignment.Title" data-tooltip="Review bids"><partial name="_Icon" model='@("check")' /></a>
+                            <a class="record-icon-action" data-workspace-dialog="details" asp-controller="CommitteeReviews" asp-action="Details" asp-route-id="@assignment.TenderId" aria-label="Review bids for @assignment.Title" data-tooltip="Review bids"><partial name="_Icon" model='@("check")' /></a>
                         }
                     </div>
                 </article>
@@ -31,4 +31,3 @@
         <partial name="_ListFilterEmpty" />
     }
 </section>
-@section Scripts { <script src="~/js/departments.js" asp-append-version="true" defer></script> }

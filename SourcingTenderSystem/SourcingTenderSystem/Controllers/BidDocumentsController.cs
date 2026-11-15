@@ -27,7 +27,7 @@ public class BidDocumentsController : Controller
     private const long MaxFileBytes = 10 * 1024 * 1024; // 10 MB
 
     // Fixed list of document types
-    private static readonly string[] DocumentTypes = { "Quotation", "Technical Offer", "Certificate", "Other" };
+    private static readonly IReadOnlyList<string> DocumentTypes = BidDocument.DocumentTypes;
 
     private const string CannotChangeMessage = "You can only change documents of a draft bid while the tender is still open.";
 

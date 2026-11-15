@@ -175,7 +175,7 @@ else
                             <td>
                                 @if (bid.Status == "Pending Clarification" && bid.ComplianceClarification is { } clarification)
                                 {
-                                    <a asp-controller="Clarifications" asp-action="Details" asp-route-id="@clarification.Id">Clarification: @clarification.Status</a>
+                                    <a data-workspace-dialog="details" asp-controller="Clarifications" asp-action="Details" asp-route-id="@clarification.Id">Clarification: @clarification.Status</a>
                                 }
                                 @if (bid.Status == "Submitted" || bid.Status == "Pending Clarification" && bid.ComplianceClarification?.Status == "Resolved")
                                 {
@@ -212,7 +212,7 @@ else
         @if (!TenderRules.CanEvaluate(tender, (int)ViewBag.EligibleSuppliers))
         {
             <span>The bid minimum has not been met.</span>
-            <a asp-controller="Tenders" asp-action="Details" asp-route-id="@tender.Id">View bidding rounds</a>
+            <a data-workspace-dialog="details" asp-controller="Tenders" asp-action="Details" asp-route-id="@tender.Id" asp-route-panel="rounds">View bidding rounds</a>
         }</p>
         <ul class="list-group list-group-flush">
             <li class="list-group-item">
@@ -262,7 +262,11 @@ else
         <a class="btn btn-outline-secondary" asp-controller="Clarifications" asp-action="Index" asp-route-kind="tender" asp-route-recordId="@tender.Id">Tender history</a>
         @foreach (var bid in Model.Bids)
         {
-            <a class="btn btn-outline-secondary" asp-controller="Clarifications" asp-action="Index" asp-route-kind="bid" asp-route-recordId="@bid.Id">Ask about bid #@bid.Id</a>
+            <a data-workspace-dialog="details" class="btn btn-outline-secondary" asp-controller="Clarifications" asp-action="Index" asp-route-kind="bid" asp-route-recordId="@bid.Id">Bid #@bid.Id history</a>
+            @if (ViewData["CanRequestBidDocuments"] is true && bid.SubmittedAt.HasValue && bid.Status is ("Submitted" or "Pending Clarification"))
+            {
+                <a data-workspace-dialog class="btn btn-outline-secondary" asp-controller="Clarifications" asp-action="Create" asp-route-kind="bid" asp-route-recordId="@bid.Id"><partial name="_Icon" model='@("file")' /> Request a PDF for bid #@bid.Id</a>
+            }
         }
     </div>
 </section>

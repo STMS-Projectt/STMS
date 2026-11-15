@@ -62,13 +62,15 @@ public sealed class FaceLoginHttpTests
 
             // Authorized enrollment requires the current password, and is bound to the signed-in account.
             var alice = await SignIn(app, "alice");
-            var aliceToken = await Token(alice, "/Account/BiometricSetup");
+            // Accounts with a passkey manage additional sign-in methods in Profile.
+            const string securitySettings = "/Profile?tab=security";
+            var aliceToken = await Token(alice, securitySettings);
             Assert.Equal(HttpStatusCode.BadRequest, (await Post(alice, "/Account/FaceLabStart", new { enroll = true }, aliceToken)).StatusCode);
             var ready = await Challenge(alice, "/Account/FaceLabStart", "/Account/FaceLabCapture", new { enroll = true, password = Password }, aliceToken, 80);
             Assert.True(ready.GetProperty("readyToSave").GetBoolean());
             Assert.False(lab.HasReference("alice"));
             var bob = await SignIn(app, "bob");
-            var bobToken = await Token(bob, "/Account/BiometricSetup");
+            var bobToken = await Token(bob, securitySettings);
             Assert.Equal(HttpStatusCode.Conflict, (await Post(bob, "/Account/FaceLabConfirm", new { token = ready.GetProperty("token").GetString() }, bobToken)).StatusCode);
             Assert.False(lab.HasReference("bob"));
             Assert.Equal(HttpStatusCode.OK, (await Post(alice, "/Account/FaceLabConfirm", new { token = ready.GetProperty("token").GetString() }, aliceToken)).StatusCode);
@@ -76,7 +78,7 @@ public sealed class FaceLoginHttpTests
             Assert.Empty(Directory.GetFiles(Path.Combine(AppContext.BaseDirectory), "*.face", SearchOption.AllDirectories));
             await Enroll(bob, bobToken, 10);
             var carol = await SignIn(app, "carol");
-            await Enroll(carol, await Token(carol, "/Account/BiometricSetup"), 20);
+            await Enroll(carol, await Token(carol, securitySettings), 20);
 
             // Successful comparison creates a real Identity session and redirects to the role dashboard.
             var visitor = Client(app);
@@ -120,7 +122,7 @@ public sealed class FaceLoginHttpTests
             var flood = Client(second);
             var floodToken = await Token(flood, "/Account/Login");
             var statuses = new List<HttpStatusCode>();
-            for (var i = 0; i < 6; i++) statuses.Add((await Post(flood, "/Account/FaceLoginStart", new { email = "alice@example.test" }, floodToken)).StatusCode);
+            for (var i = 0; i < 12; i++) statuses.Add((await Post(flood, "/Account/FaceLoginStart", new { email = "alice@example.test" }, floodToken)).StatusCode);
             Assert.Contains(HttpStatusCode.TooManyRequests, statuses);
 
             // Demo flag off: endpoint refuses and the page offers no camera sign-in.
@@ -152,13 +154,7 @@ public sealed class FaceLoginHttpTests
         var start = await Post(client, "/Account/FaceLoginStart", new { email }, token);
         Assert.Equal(HttpStatusCode.OK, start.StatusCode);
         var prompt = await start.Content.ReadFromJsonAsync<JsonElement>();
-        HttpResponseMessage response = start;
-        for (var step = 0; step < 3; step++)
-        {
-            response = await Post(client, "/Account/FaceLoginCapture", new { token = prompt.GetProperty("token").GetString(), frame = Frame(tag + step) }, token);
-            if (step < 2) { Assert.Equal(HttpStatusCode.OK, response.StatusCode); prompt = await response.Content.ReadFromJsonAsync<JsonElement>(); }
-        }
-        return response;
+        return await Post(client, "/Account/FaceLoginCapture", new { token = prompt.GetProperty("token").GetString(), frame = Frame(tag) }, token);
     }
 
     private static async Task<JsonElement> Challenge(HttpClient client, string start, string capture, object body, string token, int tag)
@@ -166,13 +162,9 @@ public sealed class FaceLoginHttpTests
         var response = await Post(client, start, body, token);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var prompt = await response.Content.ReadFromJsonAsync<JsonElement>();
-        for (var step = 0; step < 3; step++)
-        {
-            response = await Post(client, capture, new { token = prompt.GetProperty("token").GetString(), frame = Frame(tag + step) }, token);
-            Assert.True(response.StatusCode == HttpStatusCode.OK, await response.Content.ReadAsStringAsync());
-            prompt = await response.Content.ReadFromJsonAsync<JsonElement>();
-        }
-        return prompt;
+        response = await Post(client, capture, new { token = prompt.GetProperty("token").GetString(), frame = Frame(tag) }, token);
+        Assert.True(response.StatusCode == HttpStatusCode.OK, await response.Content.ReadAsStringAsync());
+        return await response.Content.ReadFromJsonAsync<JsonElement>();
     }
 
     private static async Task<HttpClient> SignIn(FaceApp app, string name)
@@ -202,7 +194,7 @@ public sealed class FaceLoginHttpTests
         return client.SendAsync(request);
     }
 
-    // Distinct synthetic JPEG per step: tags ending in 1 are the "turn" frame (yaw 25), others look straight ahead.
+    // Synthetic JPEG fixture: the tag lets the fake provider distinguish the input without decoding a real image.
     private static string Frame(int tag)
     {
         var bytes = new byte[128];

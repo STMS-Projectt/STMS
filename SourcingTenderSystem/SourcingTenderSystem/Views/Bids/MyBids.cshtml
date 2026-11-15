@@ -1,86 +1,53 @@
 @model MyBidsViewModel
-@{
-    ViewData["Title"] = "My bids";
-}
-<h1>My bids</h1>
+@{ ViewData["Title"] = "My bids"; }
+<header class="page-heading stms-hero"><div><p class="eyebrow">SUPPLIER WORKSPACE</p><h1>My bids</h1><p>Prepare offers and track submitted bids.</p></div></header>
 <partial name="_Alerts" />
-
-@* Section (a): tenders I was invited to (and accepted) that still wait for my bid *@
-<div class="card mb-4">
-    <div class="card-header">
-        <h2 class="h5 mb-0">Tenders waiting for your bid</h2>
-    </div>
-    <div class="card-body">
-        @if (Model.WaitingInvitations.Count == 0)
+<section class="surface directory dept-directory" data-directory>
+    <div class="dept-directory-heading"><h2>Bid register</h2><p>Search your bids and filter by status.</p></div>
+    @if (Model.MyBids.Count == 0) { <div class="empty-state"><h2>No bids yet</h2></div> }
+    else
+    {
+        <partial name="_ListFilters" model='@("Search my bids", Model.MyBids.Select(b => b.Status))' />
+        <partial name="_DirectoryPages" model='@("Bid pages")' />
+        <div class="record-list" data-record-list>
+        @foreach (var bid in Model.MyBids)
         {
-            <p class="text-muted mb-0">No open tenders are waiting for your bid.</p>
+            <article class="record-card" data-record data-status="@bid.Status">
+                <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("file")' /></span><span>@bid.Tender.Title<small>Bid #@bid.Id</small></span></div>
+                <dl class="record-facts">
+                    <div><dt>Total</dt><dd>@bid.TotalPrice.ToString("N2") @bid.Currency</dd></div>
+                    <div><dt>Status</dt><dd><partial name="_StatusBadge" model="bid.Status" /> @if (bid.AwardOutcome is string result) { <span class="badge bg-secondary">@result</span> }</dd></div>
+                    <div><dt>Submitted (UTC)</dt><dd>@(bid.SubmittedAt?.ToString("dd MMM yyyy HH:mm") ?? "—")</dd></div>
+                </dl>
+                <div class="record-action">
+                    @foreach (var (panel, label, icon) in new[] { ("overview", "Bid summary", "eye"), ("prices", "Item prices", "inbox"), ("documents", "Bid documents", "file"), ("submission", "Bid submission status", "check") })
+                    {
+                        <a data-workspace-dialog="details" class="record-icon-action" asp-action="Details" asp-route-id="@bid.Id" asp-route-panel="@panel" aria-label="@label: @bid.Tender.Title" data-tooltip="@label"><partial name="_Icon" model="icon" /></a>
+                    }
+                </div>
+            </article>
         }
-        else
-        {
-            <div class="table-responsive">
-                <table class="table table-striped align-middle mb-0">
-                    <thead>
-                        <tr>
-                            <th scope="col">Tender</th>
-                            <th scope="col">Closes (UTC)</th>
-                            <th scope="col">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var invitation in Model.WaitingInvitations)
-                        {
-                            <tr>
-                                <td>@invitation.Tender.Title</td>
-                                <td>@invitation.Tender.CloseDate.ToString("yyyy-MM-dd HH:mm")</td>
-                                <td>
-                                    <a data-workspace-dialog class="btn btn-sm btn-primary" asp-action="Create" asp-route-tenderId="@invitation.TenderId">Create bid</a>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        }
-    </div>
-</div>
-
-@* Section (b): all my bids *@
-<h2 class="h4">My bids</h2>
-@if (Model.MyBids.Count == 0)
-{
-    <p class="text-muted">You have no bids yet.</p>
-}
-else
-{
-    <section class="surface directory dept-directory" data-directory>
-    <partial name="_ListFilters" model='@("Search my bids", Model.MyBids.Select(b => b.Status))' />
-    <div class="table-responsive">
-        <table class="table table-striped align-middle">
-            <thead>
-                <tr>
-                    <th scope="col">Tender</th>
-                    <th scope="col" class="text-end">Total price</th>
-                    <th scope="col">Currency</th>
-                    <th scope="col">Status</th>
-                    <th scope="col">Submitted (UTC)</th>
-                    <th scope="col">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var bid in Model.MyBids)
-                {
-                    <tr data-status="@bid.Status">
-                        <td>@bid.Tender.Title</td>
-                        <td class="text-end">@bid.TotalPrice.ToString("N2")</td>
-                        <td>@bid.Currency</td>
-                        <td><partial name="_StatusBadge" model="bid.Status" /> @if (bid.AwardOutcome is string result) { <span class="badge bg-secondary">Result: @result</span> }</td>
-                        <td>@(bid.SubmittedAt?.ToString("yyyy-MM-dd HH:mm") ?? "—")</td>
-                        <td><a asp-action="Details" asp-route-id="@bid.Id">Details</a></td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-    <partial name="_ListFilterEmpty" />
+        </div>
+        <partial name="_ListFilterEmpty" />
+    }
 </section>
-}
+<section class="surface directory dept-directory mt-3" data-directory>
+    <div class="dept-directory-heading"><h2>Tenders waiting for your bid</h2><p>Find accepted invitations and prepare an offer.</p></div>
+    @if (Model.WaitingInvitations.Count == 0) { <div class="empty-state"><p>No open tenders are waiting for your bid.</p></div> }
+    else
+    {
+        <partial name="_ListFilters" model='@("Search tenders without a bid", Enumerable.Empty<string>())' />
+        <partial name="_DirectoryPages" model='@("Open tender pages")' />
+        <div class="record-list" data-record-list>
+        @foreach (var invitation in Model.WaitingInvitations)
+        {
+            <article class="record-card" data-record>
+                <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("briefcase")' /></span><span>@invitation.Tender.Title</span></div>
+                <dl class="record-facts"><div><dt>Closes (UTC)</dt><dd>@invitation.Tender.CloseDate.ToString("dd MMM yyyy HH:mm")</dd></div></dl>
+                <div class="record-action"><a data-workspace-dialog class="record-icon-action" asp-action="Create" asp-route-tenderId="@invitation.TenderId" aria-label="Create bid for @invitation.Tender.Title" data-tooltip="Create bid"><partial name="_Icon" model='@("plus")' /></a></div>
+            </article>
+        }
+        </div>
+        <partial name="_ListFilterEmpty" />
+    }
+</section>

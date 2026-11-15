@@ -1,11 +1,15 @@
 import assert from 'node:assert/strict';
 
 export async function lifecycle(b) {
- const { go, wait, click, set, ev, login, logout, capture, test, resetSession }=b;
+ const { go, wait, click, set, ev, login, logout, capture, test, resetSession, viewport }=b;
  const q=JSON.stringify;
  const dialog='#workspace-dialog ';
  const closeOverlay=async()=>{await click(dialog+'[data-dialog-close]');await closed();};
  let sourcingTenderChecked=false, sourcingComplianceChecked=false, sourcingEvaluationChecked=false;
+ let earlyClosureChecked=false;
+ let documentClarificationChecked=false;
+ let managerOverlayChecked=false, topOverlayChecked=false, departmentOverlayChecked=false;
+ let focusedBidChecked=false;
  const submit=(s='form')=>click(s+' button[type=submit]');
  const has=s=>wait('!!document.querySelector('+q(s)+')',s);
  const words=x=>wait('document.querySelector("#main")?.innerText.includes('+q(x)+')',x);
@@ -43,9 +47,11 @@ export async function lifecycle(b) {
    await fields({CategoryId:1,Title:title,Reason:'Synthetic purchase',TargetDate:iso(14400).slice(0,10)},'#main ');
    await submit('#main form');await words(title);await closed();
    for(const name of ['Monitor','Cable']){
-     await click('a[href*="/RequisitionItems/Create"]'); await has('#main input[name=ItemName]');
-     await fields({ItemName:name,Quantity:2,Unit:'each',Specifications:'Synthetic specification'},'#main ');
-     await submit('#main form');await closed();await words(name);
+     await modal('#main a[href*="/RequisitionItems/Create"]','input[name=ItemName]');
+     await fields({ItemName:name,Quantity:2,Unit:'each',Specifications:'Synthetic specification'},dialog);
+     await submit(dialog+'form');
+     await wait('document.querySelector("#workspace-dialog[open]")?.innerText.includes('+q(name)+')','item saved in modal');
+     await closeOverlay();await words(name);
    }
    const id=await idFrom();
    await submit('form[action*="/Submit/"]');await words('Under Review');
@@ -63,10 +69,14 @@ export async function lifecycle(b) {
    await go(new URL(tender).pathname);return await idFrom();
  }
  async function configure(id){
+   const twoCriteria=!sourcingTenderChecked;
    if(!sourcingTenderChecked){
      await go('/Tenders');
      const origin=await ev('location.href');
-     await modal('#main a[href="/Tenders/Details/'+id+'"]','.admin-record-hero');
+     await has('#main .dept-filter-dock.is-in-view');
+     await has('#main .dept-directory-heading [data-result-count]');
+     await modal('#main a[href="/Tenders/Details/'+id+'?panel=overview"]','.admin-record-hero');
+     assert.equal(await ev('!!document.querySelector("#workspace-dialog .record-qr")'),false);
      await capture('sourcing-tender-modal');
      await click(dialog+'a[href*="/Tenders/Edit/"]');
      await has(dialog+'input[name=Title]');
@@ -77,15 +87,22 @@ export async function lifecycle(b) {
      await has(dialog+'input[name=Name]');
      await click(dialog+'[data-dialog-back]');
      await has(dialog+'form[action*="/Publish/"]');
-     assert.equal(await ev('!!document.querySelector("#workspace-dialog a[href*=\"/Invitations/Create\"]")'),false);
+     assert.equal(await ev('!!document.querySelector('+q('#workspace-dialog a[href*="/Invitations/Create"]')+')'),false);
+     assert.equal(await ev('location.href'),origin);
+     await closeOverlay();
+     await modal('#main .tender-card-quick-actions a[href="/Tenders/Criteria/'+id+'"]','[data-add-criterion]');
      assert.equal(await ev('location.href'),origin);
      await closeOverlay();
      sourcingTenderChecked=true;
      await go('/Tenders/Details/'+id);
    }
    await modal('a[href*="/Tenders/Criteria/"]','input[name=Name]');
-   await fields({Name:'Quality',Type:'Technical',MaxScore:100,WeightPercent:100},dialog);
+   await fields({Name:'Quality',Type:'Technical',MaxScore:100,WeightPercent:twoCriteria?60:100},dialog);
    await submit(dialog+'form');await words('Quality');await closed();
+   if(twoCriteria){
+     await fields({Name:'Cost',Type:'Financial',MaxScore:100,WeightPercent:40},'#main [data-add-criterion] ');
+     await submit('#main [data-add-criterion]');await words('Cost');await closed();
+   }
    await go('/Tenders/Details/'+id);
    await submit('form[action*="/Publish/"]');await wait('document.querySelector("#main .badge")?.textContent.trim()==="Open"','published Open');
    await modal('#main a[href*="/Invitations/Create"]','input[name=selectedSuppliers]');
@@ -98,22 +115,62 @@ export async function lifecycle(b) {
  }
  async function bid(role,id,price){
    await as(role,'/SupplierWorkspace/Invitations');
+   await has('#main .dept-filter-dock.is-in-view');
+   await has('#main .dept-directory-heading [data-result-count]');
    const select='article';
    const article=await ev('Array.from(document.querySelectorAll("article")).findIndex(a=>a.innerText.includes('+q('TENDER #'+id+' ·')+'))');
    assert(article>=0,'Invitation missing');
    const row=select+':nth-of-type('+(article+1)+')';
-   await click(row+' button[value=Accepted]');
-   await modal(row+' a[href*="/Bids/Create"]','[name=Currency]');
+   const origin=await ev('location.href');
+   await modal('#main .record-list '+row+' a[data-workspace-dialog]','button[value=Accepted]');
+   await capture('supplier-invitation-modal');
+   await click(dialog+'button[value=Accepted]');
+   await has(dialog+'a[href*="/Bids/Create"]');
+   await click(dialog+'a[href*="/Bids/Create"]');
+   await has(dialog+'[name=Currency]');
    await fields({Currency:'JOD',DeliveryDays:3,ValidityDays:7},dialog);
-   await submit(dialog+'form');await closed();await has('a[href*="/BidItems/Create"]');
-   const bidId=await idFrom();
-   for(let n=0;n<2;n++){
-     await modal('a[href*="/BidItems/Create"]','input[name=UnitPrice]');
-     await fields({UnitPrice:price},dialog);await submit(dialog+'form');await closed();
+   await submit(dialog+'form');await has(dialog+'a[href*="/BidItems/Create"]');
+   assert.equal(await ev('location.href'),origin);
+   const bidId=Number(await ev('document.querySelector('+q('#workspace-dialog a[href*="/Bids/Edit/"]')+').pathname.split("/").at(-1)'));
+   await capture('supplier-bid-modal');
+   let bidOrigin=origin;
+   const focused=!focusedBidChecked;
+   const openBidPanel = (panel, field) => modal('#main a[href="/Bids/Details/'+bidId+'?panel='+panel+'"]',field);
+   if(focused){
+     await closeOverlay();await go('/Bids/MyBids');
+     bidOrigin=await ev('location.href');
+     await openBidPanel('prices','a[href*="/BidItems/Create"]');
+     assert.equal(await ev('!!document.querySelector('+q('#workspace-dialog a[href*="/BidDocuments/Upload"]')+')'),false);
    }
-   await modal('a[href*="/BidDocuments/Upload"]','input[type=file]');
+   for(let n=0;n<2;n++){
+     await click(dialog+'a[href*="/BidItems/Create"]');await has(dialog+'input[name=UnitPrice]');
+     await fields({UnitPrice:price},dialog);await submit(dialog+'form');await has(dialog+'a[href*="/BidItems/Edit"]');
+   }
+   if(focused){
+     await has(dialog+'h1');
+     assert.equal(await ev('document.querySelector("#workspace-dialog-title").textContent'),'Item prices');
+     await capture('supplier-focused-prices');
+     await closeOverlay();
+     await openBidPanel('documents','a[href*="/BidDocuments/Upload"]');
+   }
+   await click(dialog+'a[href*="/BidDocuments/Upload"]');await has(dialog+'input[type=file]');
+   await capture('supplier-document-modal');
    await ev('const opt=document.querySelector("#workspace-dialog select[name=DocumentType]");opt.selectedIndex=1;');
-   await attachment(dialog+'input[type=file]');await submit(dialog+'form');await closed();
+   await attachment(dialog+'input[type=file]');await submit(dialog+'form');
+   if(focused){
+     await has(dialog+'a[href*="/BidDocuments/Download/"]');
+     assert.equal(await ev('document.querySelector("#workspace-dialog-title").textContent'),'Bid documents');
+     assert.equal(await ev('location.href'),bidOrigin);
+     await capture('supplier-focused-documents');
+     await closeOverlay();
+     await openBidPanel('submission','form[action*="/Bids/Submit/"]');
+     assert.equal(await ev('!!document.querySelector('+q('#workspace-dialog a[href*="/BidDocuments/Download/"]')+')'),false);
+     await closeOverlay();focusedBidChecked=true;
+   }else{
+     await has(dialog+'form[action*="/Bids/Submit/"]');
+     assert.equal(await ev('location.href'),origin);
+   }
+   await go('/Bids/Details/'+bidId);
    const submitBid='form[action*="/Bids/Submit/"] button[type=submit]';
    await has(submitBid);
    assert((await ev('document.querySelector('+q(submitBid)+').form.action')).endsWith('/'+bidId));
@@ -122,6 +179,36 @@ export async function lifecycle(b) {
    return bidId;
  }
  async function review(id){
+   if(!earlyClosureChecked){
+     await as('SourcingOfficer','/Tenders');
+     const origin=await ev('location.href');
+     const card='#main .record-card:has(a[href="/Tenders/Details/'+id+'?panel=overview"])';
+     assert.equal(await ev('!!document.querySelector('+q(card+' .tender-card-quick-actions a[href*="/Tenders/Criteria/"]')+')'),false);
+     await modal('#main a[href="/Tenders/Details/'+id+'?panel=overview"]','form[action*="/Tenders/Close/"]');
+     await capture('tender-overview-actions');
+     await viewport(390);
+     try {
+       assert(await ev('document.querySelector("#workspace-dialog").scrollWidth <= document.querySelector("#workspace-dialog").clientWidth + 1'));
+       await ev('document.querySelector("#workspace-dialog .tender-actions").scrollIntoView({block:"end"})');
+       await capture('tender-mobile-actions');
+     } finally { await viewport(1440); }
+     await closeOverlay();
+     const closeButton=card+' .tender-card-quick-actions form[action*="/Tenders/Close/"] button';
+     await has(closeButton);
+     await click(closeButton);
+     await wait('document.querySelector("#workspace-confirm").open','early close confirmation');
+     await click('#workspace-confirm button[value=cancel]');
+     await wait('!document.querySelector("#workspace-confirm").open','cancel keeps bidding open');
+     await has(closeButton);
+     await act(closeButton);
+     await has(card+'[data-status="Closed"]');
+     assert.equal(await ev('!!document.querySelector('+q(closeButton)+')'),false);
+     assert.equal(await ev('location.href'),origin);
+     await capture('tender-card-closed-early');
+     await go('/Compliance/Review?tenderId='+id);
+     earlyClosureChecked=true;
+     return;
+   }
    await as('SourcingOfficer','/Compliance/Review?tenderId='+id);
    await ev(`document.querySelector('form[action*="/Compliance/Close"]').closest('details').open=true`);
    await click('input[name=confirmClose]');await submit('form[action*="/Compliance/Close"]');
@@ -145,14 +232,95 @@ export async function lifecycle(b) {
      await go('/Compliance/Review?tenderId='+id);
      sourcingComplianceChecked=true;
    }
+   if(!documentClarificationChecked && bids.length===3){
+     const bidId=bids[0];
+     const link='#main a[href*="/Clarifications/Create"][href*="recordId='+bidId+'"]';
+     await modal(link,'select[name=RequestedDocumentType]');
+     const recipient=await ev('Array.from(document.querySelectorAll("#workspace-dialog select[name=Recipient] option")).find(o=>o.value).value');
+     await fields({Recipient:recipient,Subject:'Additional insurance PDF',Description:'Attach the current insurance certificate.',RequestedDocumentType:'Certificate'},dialog);
+     await submit(dialog+'form');
+     await wait('document.querySelector("#workspace-dialog[open]")?.innerText.includes("Requested PDF: Certificate")','request saved in modal');
+     const threadId=await ev('Number(document.querySelector("#workspace-dialog .admin-record-hero .eyebrow").textContent.match(/\\d+/)[0])');
+     await as('Supplier','/Clarifications/Details/'+threadId);
+     await has('#main input[name=attachment]');
+     await attachment('#main input[name=attachment]');
+     await submit('#main form[action*="/Answer/"]');
+     await words('Awaiting approval');
+     await capture('supplier-bid-clarification-reply');
+     await as('SourcingOfficer','/Compliance/Review?tenderId='+id);
+     await modal('#main a[href="/Clarifications/Details/'+threadId+'"]','form[action*="/AddAttachment/"]');
+     await act(dialog+'form[action*="/AddAttachment/"] button');
+     await wait('document.querySelector("#workspace-dialog[open]")?.innerText.includes("Document approved and added to the bid.")','officer approved attachment');
+     await capture('officer-approved-bid-attachment');
+     await closeOverlay();
+     await go('/Compliance/Review?tenderId='+id);
+     documentClarificationChecked=true;
+   }
    for(const bidId of bids){await act('form[action*="/MarkCompliant/'+bidId+'"] button');await wait('!document.querySelector('+q('form[action*="/MarkCompliant/'+bidId+'"]')+')','compliance saved');}
    await go('/Tenders/AssignCommittee/'+id);await submit('form[action*="/AssignCommittee/"]');
    for(const role of ['DepartmentSmoke','TechnicalCommittee','FinancialCommittee','SourcingManager']){
+     if(role==='DepartmentSmoke' && !departmentOverlayChecked){
+       await as(role,'/PurchaseRequisitions/Committee');
+       const origin=await ev('location.href');
+       await modal('#main a[href="/CommitteeReviews/Details/'+id+'"]','.admin-record-hero');
+       assert.equal(await ev('location.href'),origin);
+       assert.equal(await ev('document.querySelector("[data-workspace-frame]").dataset.workspaceFrame'),'department');
+       if(bids.length===3){
+         await click(dialog+'a[href="/CommitteeReviews/Weights/'+id+'"]');
+         await has(dialog+'[data-suggest-weights]:not([hidden])');
+         await click(dialog+'[data-suggest-weights]');
+         await wait('document.querySelector("#workspace-dialog [data-weight-status]")?.innerText.includes("Suggestion ready")','AI response shown as advice');
+         assert.deepEqual(await ev('Array.from(document.querySelectorAll("#workspace-dialog [data-weight-value]"), input => Number(input.value)).sort()'),[35,65]);
+         await ev('Array.from(document.querySelectorAll("#workspace-dialog .weight-plan-row")).find(r=>Number(r.dataset.proposed)===40).querySelector("input[type=checkbox]").click()');
+         assert(await ev('document.querySelector("#workspace-dialog form[data-weight-plan] button[type=submit]").disabled'));
+         await ev('const input=Array.from(document.querySelectorAll("#workspace-dialog .weight-plan-row")).find(r=>Number(r.dataset.proposed)===60).querySelector("[data-weight-value]");input.value="100";input.dispatchEvent(new Event("input",{bubbles:true}));');
+         await submit(dialog+'form[data-weight-plan]');
+         await wait('document.querySelector("#workspace-dialog")?.innerText.includes("Your criteria weights were saved.")','weights saved inside modal');
+         await capture('reviewer-evaluation-weights');
+         assert.equal(await ev('location.href'),origin);
+       }
+       await closeOverlay();
+       departmentOverlayChecked=true;
+     }
+     if(role==='SourcingManager' && !managerOverlayChecked){
+       await as(role,'/CommitteeReviews/Assignments');
+       const origin=await ev('location.href');
+       await has('#main .dept-filter-dock');
+       await click('#main .dept-dock-button[aria-label="Search"]');
+       await set('#main input[data-filter-search]','definitely-not-an-assignment');
+       await ev('document.querySelector("#main input[data-filter-search]").dispatchEvent(new Event("input",{bubbles:true}))');
+       await wait('document.querySelector("#main [data-result-count]").textContent==="0 records"','manager search');
+       await click('#main [data-filter-reset]');
+       await modal('#main a[href="/CommitteeReviews/Details/'+id+'"]','a[href="/CommitteeReviews/Bid/'+bids[0]+'"]');
+       await click(dialog+'a[href="/CommitteeReviews/Bid/'+bids[0]+'"]');
+       await has(dialog+'[data-checklist-choice]');
+       await click(dialog+'.checklist-group [data-checklist-choice]');
+       assert.match(await ev('document.querySelector("#workspace-dialog [data-checklist-total]").textContent'),/^[1-9]\d*% \/ 100%$/);
+       await ev('document.querySelectorAll("#workspace-dialog [data-checklist-choice]:not(:checked)").forEach(input=>input.click())');
+       assert.equal(await ev('document.querySelector("#workspace-dialog [data-checklist-total]").textContent'),'100% / 100%');
+       await submit(dialog+'form[data-bid-checklist]');
+       await wait('document.querySelector("#workspace-dialog[open]")?.innerText.includes("Your evaluation checklist was saved.")','checklist saved inside modal');
+       await capture('manager-bid-checklist');
+       await viewport(390);
+       try {
+         assert(await ev('document.querySelector("#workspace-dialog").scrollWidth <= document.querySelector("#workspace-dialog").clientWidth + 1'));
+         await ev('document.querySelector("#workspace-dialog .bid-checklist").scrollIntoView({block:"start"})');
+         await capture('manager-mobile-checklist');
+       } finally { await viewport(1440); }
+       await click(dialog+'[data-dialog-back]');
+       await has(dialog+'a[href="/CommitteeReviews/Bid/'+bids[0]+'"]');
+       await click(dialog+'a[href="/EvaluationWorkflow/Details/'+id+'"]');
+       await has(dialog+'[data-dialog-back]:not([hidden])');
+       await wait('document.querySelector("#workspace-dialog[open]")?.innerText.includes("Committee progress")','manager nested evaluation report');
+       assert.equal(await ev('location.href'),origin);
+       await closeOverlay();
+       managerOverlayChecked=true;
+     }
      await as(role,'/CommitteeReviews/Details/'+id);
      for(const [i,bidId] of bids.entries()){
-       await go('/CommitteeReviews/Bid/'+bidId);await has('input[name=Score]');
-       await fields({Score:90-i*10,Notes:'Recorded in Chrome'});
-       await submit('form[action*="/SaveScore/"]');await words('Your review score was saved.');
+       await go('/CommitteeReviews/Bid/'+bidId);await has('[data-checklist-choice]');
+       if(i===0) await ev('document.querySelectorAll("#main [data-checklist-choice]:not(:checked)").forEach(input=>input.click())');
+       await submit('#main form[data-bid-checklist]');await words('Your evaluation checklist was saved.');
      }
      await go('/CommitteeReviews/Details/'+id);
      await act('form[action*="/SubmitEvaluation/"] button');await words('Your scores are read-only');
@@ -164,9 +332,30 @@ export async function lifecycle(b) {
  }
  async function decision(role,id,status,kind='approve'){
    await as(role,'/EvaluationWorkflow/Details/'+id);
+   if(role.startsWith('Top') && !topOverlayChecked){
+     await go('/EvaluationWorkflow');
+     const origin=await ev('location.href');
+     await has('#main .dept-filter-dock');
+     await modal('#main a[href="/EvaluationWorkflow/Details/'+id+'?panel=decision"]','a[href*="/EvaluationWorkflow/Reject/"]');
+     assert.equal(await ev('document.querySelector("#workspace-dialog").innerText.includes("Committee progress")'),false);
+     await click(dialog+'a[href*="/EvaluationWorkflow/Reject/"]');
+     await has(dialog+'textarea[name=comments]');
+     await capture('top-committee-nested-rejection');
+     await viewport(390);
+     try {
+       assert(await ev('document.querySelector("#workspace-dialog").scrollWidth <= document.querySelector("#workspace-dialog").clientWidth + 1'),'top decision dialog fits mobile');
+       await capture('top-committee-mobile-rejection');
+     } finally { await viewport(1440); }
+     await click(dialog+'[data-dialog-cancel]');
+     await has(dialog+'a[href*="/EvaluationWorkflow/Reject/"]');
+     assert.equal(await ev('location.href'),origin);
+     await closeOverlay();
+     await go('/EvaluationWorkflow/Details/'+id);
+     topOverlayChecked=true;
+   }
    if(role==='SourcingOfficer' && !sourcingEvaluationChecked){
      await go('/EvaluationWorkflow');
-     await modal('#main a[href="/EvaluationWorkflow/Details/'+id+'"]','.admin-record-hero');
+     await modal('#main a[href="/EvaluationWorkflow/Details/'+id+'?panel=progress"]','.admin-record-hero');
      await closeOverlay();
      await go('/EvaluationWorkflow/Details/'+id);
      sourcingEvaluationChecked=true;
@@ -175,6 +364,8 @@ export async function lifecycle(b) {
       await modal('a[href*="/EvaluationWorkflow/Reject/"]','textarea[name=comments]');
       await fields({comments:'Documented synthetic rejection',password:'Synthetic-Browser!2046'},dialog);
       await click(dialog+'input[name=confirmDecision]');await submit(dialog+'form');
+      await wait('document.querySelector("#workspace-dialog[open]")?.innerText.includes('+q(status)+')','rejection stays in modal');
+      await closeOverlay();
    } else {
       await fields({password:'Synthetic-Browser!2046'});await click('input[name=confirmDecision]');
       await click('form[action*="/Approve/"] button[type=submit]');

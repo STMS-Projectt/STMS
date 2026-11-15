@@ -74,6 +74,10 @@ public class ComplianceController : Controller
         if (tender.Status is "Draft" or "Published" or "Open")
             return View(new ComplianceReviewViewModel { Tender = tender });
 
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        ViewData["CanRequestBidDocuments"] = tender.Status == "Closed" && await _context.EmployeeProfiles
+            .AnyAsync(e => e.Id == tender.CreatedByEmployeeProfileId && e.UserId == userId && e.IsActive);
+
         // All bids except Draft and Withdrawn, lowest total price first
         var bids = await _context.Bids
             .Include(b => b.SupplierProfile)

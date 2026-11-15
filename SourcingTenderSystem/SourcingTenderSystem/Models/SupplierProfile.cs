@@ -18,6 +18,7 @@ public class SupplierProfile
     public string Status { get; set; } = string.Empty;
     public string? StatusReason { get; set; }
     public DateTime CreatedAt { get; set; }
+    public DateTime? ApplicationSubmittedAt { get; set; }
 
     public IdentityUser User { get; set; } = null!;
     public ICollection<Category> Categories { get; set; } = new List<Category>();

@@ -1,7 +1,9 @@
 @model Bid
-@{ ViewData["Title"] = "Submitted bid details"; }
+@{ var panel = Context.Request.Query["panel"].ToString(); ViewData["Title"] = panel == "items" ? "Quoted items" : "Submitted bid details"; }
 <a class="back-link" asp-action="Bids">Back to bids</a>
-<header class="page-heading stms-hero admin-record-hero"><div><p class="eyebrow">SUBMITTED BID #@Model.Id</p><h1>@Model.SupplierProfile.CompanyName</h1><p>@Model.Tender.Title</p></div><div class="record-action"><a data-workspace-dialog="details" class="record-icon-action" asp-action="Tender" asp-route-id="@Model.TenderId" aria-label="View related tender" data-tooltip="View related tender" title="View related tender"><partial name="_Icon" model='@("briefcase")' /></a></div></header>
+<header class="page-heading stms-hero admin-record-hero"><div><p class="eyebrow">SUBMITTED BID #@Model.Id</p><h1>@(panel == "items" ? "Quoted items" : Model.SupplierProfile.CompanyName)</h1><p>@Model.Tender.Title</p></div><div class="record-action"><a data-workspace-dialog="details" class="record-icon-action" asp-action="Tender" asp-route-id="@Model.TenderId" asp-route-panel="overview" aria-label="View related tender" data-tooltip="View related tender"><partial name="_Icon" model='@("briefcase")' /></a></div></header>
+@if (panel != "items")
+{
 <section class="surface detail-card mb-3"><h2>Offer summary</h2>
     <dl class="detail-grid">
         <div><dt>Status</dt><dd><partial name="_Status" model="Model.Status" /></dd></div>
@@ -14,6 +16,9 @@
         @if (!string.IsNullOrWhiteSpace(Model.AwardOutcome)) { <div><dt>Award outcome</dt><dd>@Model.AwardOutcome</dd></div> }
     </dl>
 </section>
+}
+@if (panel != "overview")
+{
 <section class="surface detail-card"><h2>Quoted items</h2>
     @if (Model.BidItems.Count == 0) { <p class="subtle">No item breakdown was recorded.</p> }
     <div class="record-list record-list-inset">
@@ -27,3 +32,4 @@
     }
     </div>
 </section>
+}

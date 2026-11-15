@@ -4,7 +4,7 @@
     var item = (PurchaseRequisitionItem)ViewBag.RequestedItem;
     ViewData["Title"] = "Add price";
 }
-<h1>Add price</h1>
+<header class="page-heading admin-action-heading"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("file")' /></span><div><p class="eyebrow">SUPPLIER BID</p><h1>Add price</h1></div></header>
 <p>Bid for: <strong>@bid.Tender.Title</strong></p>
 
 @* The requested item (read only) *@

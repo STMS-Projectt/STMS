@@ -11,7 +11,8 @@
         "Administrator" => ("AdminDashboard", "Index"),
         "Sourcing officer" => ("SourcingDashboard", "Index"),
         "Supplier" => ("SupplierWorkspace", "Index"),
-        "Committee reviewer" => (User.IsInRole("TopCommittee") ? "EvaluationWorkflow" : "CommitteeReviews", "Index"),
+        "Top Committee" => ("EvaluationWorkflow", "Index"),
+        "Sourcing manager" or "Committee reviewer" => ("CommitteeReviews", "Index"),
         _ => ("PurchaseRequisitions", "Dashboard")
     };
 }

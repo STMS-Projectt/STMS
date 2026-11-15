@@ -1,11 +1,11 @@
 @model Tender
 @{ ViewData["Title"] = "Reject recommendation"; }
-<header class="page-heading"><div><h1>Reject and cancel tender</h1><p>@Model.Title</p></div></header>
-<form asp-action="Approve" asp-route-id="@Model.Id" method="post" class="surface form-card">
+<header class="page-heading admin-action-heading"><span class="icon-tile tone-amber"><partial name="_Icon" model='@("shield")' /></span><div><p class="eyebrow">OFFICIAL DECISION · TENDER #@Model.Id</p><h1>Reject and cancel tender</h1><p>@Model.Title</p></div></header>
+<form asp-action="Approve" asp-route-id="@Model.Id" method="post" class="admin-form">
     <input type="hidden" name="expectedStage" value="Pending Top Committee" />
     <input type="hidden" name="vote" value="reject" />
-    <label class="field">Rejection reason<textarea class="form-control" name="comments" required maxlength="1000"></textarea></label>
-    <label class="field">Current password<input class="form-control" name="password" type="password" autocomplete="current-password" required /></label>
+    <label class="field d-block mb-3">Rejection reason<textarea class="form-control" name="comments" required maxlength="1000" rows="3"></textarea></label>
+    <label class="field d-block">Current password<input class="form-control" name="password" type="password" autocomplete="current-password" required /></label>
     <label class="form-check mt-3"><input class="form-check-input" name="confirmDecision" type="checkbox" value="true" required /> I confirm cancellation.</label>
-    <button type="submit" class="btn btn-danger mt-2">Record rejection</button>
+    <div class="form-actions"><a class="btn btn-outline-secondary" data-dialog-cancel asp-action="Details" asp-route-id="@Model.Id">Cancel</a><button type="submit" class="btn btn-danger">Record rejection</button></div>
 </form>

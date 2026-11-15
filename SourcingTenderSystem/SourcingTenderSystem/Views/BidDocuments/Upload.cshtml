@@ -3,7 +3,7 @@
     var bid = (Bid)ViewBag.Bid;
     ViewData["Title"] = "Upload document";
 }
-<h1>Upload document</h1>
+<header class="page-heading admin-action-heading"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("file")' /></span><div><p class="eyebrow">SUPPLIER BID</p><h1>Upload document</h1></div></header>
 <p>Bid for: <strong>@bid.Tender.Title</strong></p>
 
 @* enctype="multipart/form-data" is required, otherwise the file is not sent *@

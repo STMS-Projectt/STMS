@@ -25,6 +25,26 @@ public sealed partial class BiddingRoundTests
         Assert.Equal(63.62m, EvaluationRules.Round(EvaluationRules.Weighted(criteria, scores)));
     }
 
+    [Fact]
+    public void Reviewer_totals_use_their_own_selection_and_contribute_equally()
+    {
+        EvaluationCriterion[] criteria = [
+            new() { Id=1, MaxScore=20, WeightPercent=60, Name="Quality", Type="Technical" },
+            new() { Id=2, MaxScore=100, WeightPercent=40, Name="Cost", Type="Financial" }];
+        EvaluationScore[] scores = [new(1, 1, 1, 10, null,null,null,null), new(1, 1, 2, 5, null,null,null,null),
+            new(2, 1, 1, 20, null,null,null,null), new(2, 1, 2, 50, null,null,null,null),
+            new(9, 1, 1, 20, null,null,null,null)];
+        var weights = new Dictionary<int, IReadOnlyDictionary<int, decimal>>
+        {
+            [1] = EvaluationRules.EffectiveWeights(criteria, """{"1":100}"""),
+            [2] = EvaluationRules.EffectiveWeights(criteria, null)
+        };
+        Assert.Equal(65m, EvaluationRules.WeightedByReviewer(criteria, scores, weights));
+        Assert.Equal(10m, EvaluationRules.WeightedByReviewer(criteria.Where(c => c.Type == "Financial"), scores, weights));
+        Assert.Empty(EvaluationRules.EffectiveWeights(criteria, """{"99":100}"""));
+        Assert.Empty(EvaluationRules.EffectiveWeights(criteria, """{"1":55.555,"2":44.445}"""));
+    }
+
     [Theory]
     [InlineData("award")]
     [InlineData("reject")]
@@ -106,6 +126,10 @@ public sealed partial class BiddingRoundTests
             await Send(officer,officerToken,$"/Tenders/Publish/{draft.Id}");
             Assert.Equal("Open", await db.Tenders.Where(t=>t.Id==draft.Id).Select(t=>t.Status).SingleAsync());
             Assert.Equal(HttpStatusCode.Conflict, await Send(officer,officerToken,$"/Tenders/Criterion/{draft.Id}",criterion));
+            Assert.Equal(HttpStatusCode.BadRequest, await Send(officer,officerToken,$"/Tenders/Close/{draft.Id}"));
+            Assert.Equal(HttpStatusCode.Redirect, await Send(officer,officerToken,$"/Tenders/Close/{draft.Id}",new(){["confirmClose"]="true"}));
+            Assert.Equal("Closed", await db.Tenders.Where(t=>t.Id==draft.Id).Select(t=>t.Status).SingleAsync());
+            Assert.True(await db.AuditLogs.AnyAsync(a=>a.EntityId==draft.Id && a.Action=="CloseEarly"));
 
             var tenderId = seed.Tender;
             // Set up a third round and two additional offers; controller evaluates all actual persisted bids.
@@ -118,7 +142,7 @@ public sealed partial class BiddingRoundTests
             db.AddRange(runnerUp, excluded);
             await db.SaveChangesAsync();
             Assert.Equal(HttpStatusCode.Redirect, await Send(officer,officerToken,"/Clarifications/Create",
-                new() { ["Kind"]="bid", ["RecordId"]=runnerUp.Id.ToString(), ["Recipient"]="s"+seed.Bidder, ["Subject"]="Evidence", ["Description"]="Provide evidence." }));
+                new() { ["Kind"]="bid", ["RecordId"]=runnerUp.Id.ToString(), ["Recipient"]="s"+seed.Bidder, ["Subject"]="Evidence", ["Description"]="Provide evidence.", ["RequestedDocumentType"]="Certificate" }));
             await db.Entry(runnerUp).ReloadAsync();
             Assert.Equal("Pending Clarification", runnerUp.Status);
             Assert.NotNull(runnerUp.ComplianceClarificationId);
@@ -126,9 +150,20 @@ public sealed partial class BiddingRoundTests
             Assert.False(await db.TenderCommitteeMembers.AnyAsync(m=>m.TenderId==tenderId));
             using var bidder = Client(app,"bidder","Supplier");
             var bidToken=await Token(bidder);
-            var clarificationId=runnerUp.ComplianceClarificationId;
-            Assert.Equal(HttpStatusCode.Redirect, await Send(bidder,bidToken,$"/Clarifications/Answer/{clarificationId}",new(){["Response"]="Attached evidence."}));
-            Assert.Equal(HttpStatusCode.Redirect, await Send(officer,officerToken,$"/Clarifications/Resolve/{clarificationId}"));
+            var clarificationId=runnerUp.ComplianceClarificationId!.Value;
+            Assert.Equal(HttpStatusCode.Redirect, await Send(bidder,bidToken,$"/Clarifications/Answer/{clarificationId}",new(){["Response"]="No file yet."}));
+            Assert.Equal("Pending", await db.ClarificationRequests.Where(r=>r.Id==clarificationId).Select(r=>r.Status).SingleAsync());
+            Assert.Equal(HttpStatusCode.Redirect, (await ReplyWithPdf(bidder,bidToken,clarificationId)).StatusCode);
+            Assert.False(await db.BidDocuments.AnyAsync(d=>d.BidId==runnerUp.Id));
+            Assert.Equal(HttpStatusCode.Redirect, await Send(officer,officerToken,$"/Clarifications/AddAttachment/{clarificationId}"));
+            Assert.Equal(HttpStatusCode.Conflict, await Send(officer,officerToken,$"/Clarifications/AddAttachment/{clarificationId}"));
+            Assert.Equal("Pending Clarification", await db.Bids.Where(b=>b.Id==runnerUp.Id).Select(b=>b.Status).SingleAsync());
+            var addedFile = await db.BidDocuments.AsNoTracking().SingleAsync(d=>d.BidId==runnerUp.Id);
+            Assert.Equal("Certificate", addedFile.DocumentType);
+            var attachmentKey = await db.ClarificationRequests.Where(r=>r.Id==clarificationId).Select(r=>r.AttachmentKey).SingleAsync();
+            var documentStore = scope.ServiceProvider.GetRequiredService<SupplierFileStore>();
+            documentStore.Delete(attachmentKey!, pending: true);
+            documentStore.DeleteCopy(addedFile.FilePath, forBid: true);
             foreach(var id in new[]{seed.Bid,runnerUp.Id}) await Send(officer,officerToken,$"/Compliance/MarkCompliant/{id}");
             await Send(officer,officerToken,$"/Tenders/AssignCommittee/{tenderId}");
             Assert.Equal(4, await db.TenderCommitteeMembers.CountAsync(m=>m.TenderId==tenderId && m.CommitteeType=="Evaluation"));
@@ -136,17 +171,43 @@ public sealed partial class BiddingRoundTests
             await Send(manager,managerToken,$"/CommitteeReviews/SubmitEvaluation/{tenderId}");
             Assert.False(await db.EvaluationSubmissions.AnyAsync(s=>s.TenderId==tenderId));
             var criteria = await db.EvaluationCriteria.Where(c=>c.TenderId==tenderId).ToListAsync();
+            var quality = criteria.Single(c=>c.Type=="Technical");
+            var cost = criteria.Single(c=>c.Type=="Financial");
+            static Dictionary<string,string> Plan(int criterionId, string weight) => new()
+            {
+                ["weights[0].CriterionId"] = criterionId.ToString(),
+                ["weights[0].Selected"] = "true",
+                ["weights[0].WeightPercent"] = weight
+            };
+            var planPath = $"/CommitteeReviews/SaveWeights/{tenderId}";
+            Assert.Equal(HttpStatusCode.OK, await Send(manager,managerToken,planPath,Plan(quality.Id,"90")));
+            Assert.Equal(HttpStatusCode.OK, await Send(manager,managerToken,planPath,Plan(int.MaxValue,"100")));
+            Assert.False(await db.EvaluationWeightPlans.AnyAsync(p=>p.TenderId==tenderId));
+            Assert.Equal(HttpStatusCode.Redirect, await Send(manager,managerToken,planPath,Plan(quality.Id,"100")));
+            static Dictionary<string,string> Checklist(IEnumerable<EvaluationCriterion> selected, bool met)
+            {
+                var fields = new Dictionary<string,string>();
+                foreach (var (item, index) in selected.Select((item, index) => (item, index)))
+                {
+                    fields[$"checks[{index}].CriterionId"] = item.Id.ToString();
+                    if (met) fields[$"checks[{index}].Met"] = "true";
+                }
+                return fields;
+            }
+            var checklistPath = $"/CommitteeReviews/SaveChecklist/{seed.Bid}";
+            Assert.Equal(HttpStatusCode.Conflict, await Send(manager,managerToken,checklistPath,Checklist([cost],true)));
+            Assert.Equal(HttpStatusCode.Conflict, await Send(manager,managerToken,checklistPath,Checklist([quality,quality],true)));
             foreach (var c in new[] { manager,technical,financial,department })
             {
                 var token = c==manager ? managerToken : await Token(c);
                 foreach (var bid in new[]{seed.Bid,runnerUp.Id})
-                foreach (var item in criteria)
-                    Assert.Equal(HttpStatusCode.Redirect, await Send(c,token,$"/CommitteeReviews/SaveScore/{bid}?criterionId={item.Id}",
-                        new(){["Score"]=bid==seed.Bid ? "90":"70",["Notes"]="Synthetic"}));
+                    Assert.Equal(HttpStatusCode.Redirect, await Send(c,token,$"/CommitteeReviews/SaveChecklist/{bid}",
+                        Checklist(criteria.Where(item => c != manager || item.Id == quality.Id), bid==seed.Bid || c==manager)));
                 if (c == manager)
                     Assert.False(await db.EvaluationSubmissions.AnyAsync(s=>s.TenderId==tenderId));
                 await Send(c,token,$"/CommitteeReviews/SubmitEvaluation/{tenderId}");
-                Assert.Equal(HttpStatusCode.Conflict, await Send(c,token,$"/CommitteeReviews/SaveScore/{seed.Bid}?criterionId={criteria[0].Id}", new(){["Score"]="1"}));
+                if (c == manager) Assert.Equal(HttpStatusCode.NotFound, await Send(c,token,planPath,Plan(cost.Id,"100")));
+                Assert.Equal(HttpStatusCode.Conflict, await Send(c,token,checklistPath,Checklist([quality],true)));
             }
             Assert.Equal(4, await db.EvaluationSubmissions.CountAsync(s=>s.TenderId==tenderId));
             Assert.Equal(4, await db.AuditLogs.CountAsync(a=>a.EntityId==tenderId && a.Action=="EvaluationSubmitted"));
@@ -166,7 +227,10 @@ public sealed partial class BiddingRoundTests
             var report = await db.EvaluationReports.AsNoTracking().SingleAsync(r=>r.TenderId==tenderId);
             reportFile = report.FileKey;
             Assert.Contains("Non-Compliant",report.SupplierComparison);
-            Assert.Equal(90m, System.Text.Json.JsonSerializer.Deserialize<List<SupplierEvaluationResult>>(report.SupplierComparison)!.First().Total);
+            Assert.Contains("ReviewerWeights",report.ResultsSnapshot);
+            var comparisonRows = System.Text.Json.JsonSerializer.Deserialize<List<SupplierEvaluationResult>>(report.SupplierComparison)!;
+            Assert.Equal(100m, comparisonRows.Single(r => r.BidId == seed.Bid).Total);
+            Assert.Equal(25m, comparisonRows.Single(r => r.BidId == runnerUp.Id).Total);
             var approve = $"/EvaluationWorkflow/Approve/{tenderId}";
             Dictionary<string,string> Decision(string stage,string? vote=null,string? reason=null)
             {

@@ -11,8 +11,8 @@
         @foreach (var document in Model.OrderByDescending(x => x.UploadedAt))
         {
             <li><div><span class="icon-tile tone-blue"><partial name="_Icon" model='@("file")' /></span>
-                <span><strong>@document.DocumentType</strong><small>PDF · Uploaded @document.UploadedAt.ToString("dd MMM yyyy") (UTC)@if (document.ExpiryDate is DateTime expires) { <text> · Expires @expires.ToString("dd MMM yyyy")</text> }</small></span></div>
-                <a class="btn btn-outline-secondary" asp-action="DownloadDocument" asp-route-id="@document.Id" aria-label="Download @document.DocumentType PDF"><partial name="_Icon" model='@("download")' /> Download</a>
+                <span><strong>@document.DocumentType</strong><small>@(document.FileName ?? "PDF") · Uploaded @document.UploadedAt.ToString("dd MMM yyyy") (UTC)@if (document.ExpiryDate is DateTime expires) { <text> · Expires @expires.ToString("dd MMM yyyy")</text> }</small></span></div>
+                <div class="record-action"><a class="record-icon-action" asp-action="DownloadDocument" asp-route-id="@document.Id" aria-label="Download @document.DocumentType PDF" data-tooltip="Download PDF"><partial name="_Icon" model='@("download")' /></a></div>
             </li>
         }
         </ul>

@@ -72,5 +72,11 @@
     }
     initialize(document);
     document.addEventListener("workspace:load", event => initialize(event.detail));
+    document.querySelector("#workspace-dialog")?.addEventListener("close", event => {
+        if (active && (!active.button.isConnected || event.currentTarget.contains(active.button))) {
+            active.recognition.abort();
+            active = null;
+        }
+    });
     window.addEventListener("pagehide", () => active?.recognition.abort());
 })();

@@ -6,8 +6,10 @@
 @{
     var admin = User.IsInRole(Roles.Admin);
     var sourcing = !admin && User.IsInRole(Roles.SourcingOfficer);
-    var committee = !admin && !sourcing && (User.IsInRole(Roles.TechnicalCommittee) || User.IsInRole(Roles.FinancialCommittee) || User.IsInRole(Roles.SourcingManager) || User.IsInRole(Roles.TopCommittee) || ViewContext.RouteData.Values["controller"]?.ToString() == "CommitteeReviews" && User.IsInRole("RequestingDepartment"));
-    var department = !admin && !sourcing && !committee && User.IsInRole("RequestingDepartment");
+    var department = !admin && !sourcing && User.IsInRole("RequestingDepartment");
+    var manager = User.IsInRole(Roles.SourcingManager);
+    var topCommittee = User.IsInRole(Roles.TopCommittee);
+    var committee = !admin && !sourcing && !department && (User.IsInRole(Roles.TechnicalCommittee) || User.IsInRole(Roles.FinancialCommittee) || manager || topCommittee);
     var signedIn = User.Identity?.IsAuthenticated == true;
     var supplierStatus = signedIn && !Roles.EmployeeRoles.Any(User.IsInRole)
         ? await WorkspaceDb.SupplierProfiles.AsNoTracking().Where(s => s.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier))
@@ -31,8 +33,10 @@
     }
 
     var workspace = admin || department || sourcing || supplier || committee;
-    var workspaceKey = admin ? "admin" : department ? "department" : sourcing ? "sourcing" : supplier ? "supplier" : committee ? "committee" : "portal";
-    var fragment = workspace && Context.Request.Headers["X-STMS-Fragment"] == "workspace";
+    var onboarding = !workspace && supplierStatus != null && controller == "SupplierRegistration";
+    var workspaceKey = admin ? "admin" : department ? "department" : sourcing ? "sourcing" : supplier ? "supplier" : committee ? "committee" : onboarding ? "supplier-onboarding" : "portal";
+    var workspaceLabel = onboarding ? "Supplier application" : admin ? "Administration" : department ? "Department workspace" : sourcing ? "Sourcing workspace" : supplier ? "Supplier workspace" : manager ? "Sourcing manager" : topCommittee ? "Top Committee" : "Evaluation committee";
+    var fragment = (workspace || onboarding) && Context.Request.Headers["X-STMS-Fragment"] == "workspace";
     Context.Response.Headers.Append("Vary", "X-STMS-Fragment");
     if (fragment) Context.Response.Headers.CacheControl = "private, no-store";
     var title = ViewData["Title"]?.ToString();
@@ -55,6 +59,7 @@
     }
     <link rel="stylesheet" href="~/css/workspace.css" asp-append-version="true">
     <link rel="stylesheet" href="~/css/stms-design.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/workspace-polish.css" asp-append-version="true">
 </head>
 }
 
@@ -91,7 +96,7 @@
     <div class="site-body">
         @if (workspace)
         {
-            <partial name="_WorkspaceHeader" model='@(admin ? "Administrator" : sourcing ? "Sourcing officer" : supplier ? "Supplier" : committee ? "Committee reviewer" : "Department employee")' />
+            <partial name="_WorkspaceHeader" model='@(admin ? "Administrator" : sourcing ? "Sourcing officer" : supplier ? "Supplier" : department ? "Department employee" : manager || topCommittee ? workspaceLabel : "Committee reviewer")' />
         }
         else
         {
@@ -158,17 +163,18 @@
         <script src="~/lib/jquery/dist/jquery.min.js"></script>
         <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
         <script src="~/js/site.js" asp-append-version="true"></script>
+        <script src="~/js/supplier-application.js" asp-append-version="true" defer></script>
         <script src="~/js/admin-directory-voice-search.js" asp-append-version="true" defer></script>
-        @if (admin || department || sourcing) { <script src="~/js/departments.js" asp-append-version="true" defer></script> }
+        @if (workspace) { <script src="~/js/departments.js" asp-append-version="true" defer></script> }
         @if (signedIn) { <script src="~/js/notifications.js" asp-append-version="true" defer></script> }
-        @if (workspace)
+        @if (workspace || onboarding)
         {
-            <dialog class="workspace-dialog @(sourcing ? "sourcing-dialog" : "")" id="workspace-dialog" aria-labelledby="workspace-dialog-title">
+            <dialog class="workspace-dialog sourcing-dialog" id="workspace-dialog" aria-labelledby="workspace-dialog-title">
                 <div class="workspace-dialog-bar">
                     <div class="workspace-dialog-heading">
                         <button type="button" class="icon-button" data-dialog-back aria-label="Back to previous record" title="Back" hidden><partial name="_Icon" model='@("back")' /></button>
                         <div class="workspace-dialog-caption">
-                            @if (sourcing) { <span class="workspace-dialog-context" data-dialog-context>Sourcing workspace</span> }
+                            <span class="workspace-dialog-context" data-dialog-context data-root-context="@workspaceLabel">@workspaceLabel</span>
                             <strong id="workspace-dialog-title" tabindex="-1">Record</strong>
                         </div>
                     </div>
@@ -177,7 +183,7 @@
                 <div class="workspace-dialog-loader" data-dialog-loader hidden role="status"><span class="workspace-spinner" aria-hidden="true"></span><span data-dialog-loader-label>Loading…</span></div>
                 <div data-dialog-content></div>
             </dialog>
-            <dialog id="workspace-confirm" class="workspace-dialog workspace-confirm @(sourcing ? "sourcing-confirm" : "")" aria-labelledby="workspace-confirm-title">
+            <dialog id="workspace-confirm" class="workspace-dialog workspace-confirm sourcing-confirm" aria-labelledby="workspace-confirm-title">
                 <form method="dialog" class="p-4">
                     <h2 id="workspace-confirm-title">Confirm action</h2>
                     <p class="mt-2" data-confirm-question></p>
@@ -189,8 +195,9 @@
             </dialog>
             <div class="workspace-progress" hidden role="status" aria-label="Loading"></div>
             <div class="visually-hidden" aria-live="polite" data-workspace-status></div>
-            <script src="~/js/stms-shell.js" asp-append-version="true" defer></script>
+            @if (workspace) { <script src="~/js/stms-shell.js" asp-append-version="true" defer></script> }
             <script src="~/js/workspace.js" asp-append-version="true" defer></script>
+            <script src="~/js/evaluation-weights.js" asp-append-version="true" defer></script>
         }
     }
     <div data-page-scripts hidden>@await RenderSectionAsync("Scripts", required: false)</div>

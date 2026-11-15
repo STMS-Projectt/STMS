@@ -3,7 +3,7 @@
     var bid = (Bid)ViewBag.Bid;
     ViewData["Title"] = "Edit bid";
 }
-<h1>Edit bid</h1>
+<header class="page-heading admin-action-heading"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("file")' /></span><div><p class="eyebrow">SUPPLIER BID</p><h1>Edit bid</h1></div></header>
 <p>Tender: <strong>@bid.Tender.Title</strong> · closes @bid.Tender.CloseDate.ToString("yyyy-MM-dd HH:mm") (UTC)</p>
 
 @* The bid id goes in the URL (/Bids/Edit/5); the controller loads the bid again and checks the owner *@

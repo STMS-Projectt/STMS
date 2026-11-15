@@ -23,7 +23,8 @@
     const admin = frame.dataset.workspaceFrame === "admin";
     const department = frame.dataset.workspaceFrame === "department";
     const sourcing = frame.dataset.workspaceFrame === "sourcing";
-    const nestedWorkspace = department || sourcing;
+    const supplier = frame.dataset.workspaceFrame === "supplier";
+    const committee = frame.dataset.workspaceFrame === "committee";
     const back = dialog.querySelector("[data-dialog-back]");
     const dialogTitle = dialog.querySelector("#workspace-dialog-title");
     const dialogContext = dialog.querySelector("[data-dialog-context]");
@@ -84,13 +85,13 @@
             const details = !!result.main.querySelector(".admin-record-hero");
             dialog.classList.toggle("is-detail", details);
             dialogTitle.textContent = heading?.textContent || "Record";
-            if (dialogContext) dialogContext.textContent = previousDialogs.length ? "Related action" : "Sourcing workspace";
+            if (dialogContext) dialogContext.textContent = previousDialogs.length ? "Related action" : dialogContext.dataset.rootContext;
             back.hidden = previousDialogs.length === 0;
             dialog.scrollTop = 0;
             content.replaceChildren(...result.main.childNodes);
             if (!dialog.open) dialog.showModal();
-            if (sourcing && !matchMedia("(prefers-reduced-motion: reduce)").matches)
-                content.animate?.([{ opacity: .2 }, { opacity: 1 }], { duration: 180, easing: "ease-out" });
+            if (!matchMedia("(prefers-reduced-motion: reduce)").matches)
+                content.animate?.([{ opacity: .45 }, { opacity: 1 }], { duration: 160, easing: "ease-out" });
             await scripts(result.page, content);
             const focusTarget = details ? dialogTitle : content.querySelector("input:not([type=hidden]), select, textarea") || dialogTitle;
             focusTarget.focus({ preventScroll: true });
@@ -140,7 +141,7 @@
             const result = await load(url, request.signal);
             if (request.signal.aborted) return;
             if (!sameWorkspace(result)) {
-                if (mode === "dialog" && nestedWorkspace && !result.res.redirected)
+                if (mode === "dialog" && !/\/Account\//i.test(new URL(result.res.url || url).pathname))
                     showDialogError("This record is unavailable or you no longer have permission to open it.");
                 else location.assign(result.res.url || url);
                 return;
@@ -149,7 +150,7 @@
             status.textContent = "Content loaded";
         } catch (error) {
             if (error.name !== "AbortError" && !request.signal.aborted) {
-                if (mode === "dialog" && nestedWorkspace) showDialogError("The record could not be loaded. Go back or close this window and try again.");
+                if (mode === "dialog") showDialogError("The record could not be loaded. Go back or close this window and try again.");
                 else location.assign(url);
             }
         } finally {
@@ -180,7 +181,7 @@
             event.shiftKey || event.altKey || link.target || link.hasAttribute("download") ||
             link.hasAttribute("data-full-page") || !link.closest("#main, #workspace-nav, #workspace-dialog, .stms-topbar")) return;
         const insideDialog = dialog.contains(link);
-        if (insideDialog && (link.hasAttribute("data-dialog-cancel") || (nestedWorkspace && link.classList.contains("back-link")) || /^(cancel|back(?: to .+)?)$/i.test(link.textContent.trim()))) {
+        if (insideDialog && (link.hasAttribute("data-dialog-cancel") || link.classList.contains("back-link") || /^(cancel|back(?: to .+)?)$/i.test(link.textContent.trim()))) {
             event.preventDefault();
             if (!sending) previousDialogs.length ? showPrevious() : dialog.close();
             return;
@@ -189,11 +190,12 @@
         if (sending) { event.preventDefault(); return; }
         if (!supported(url) || url.hash) return;
         event.preventDefault();
-        const mode = !link.hasAttribute("data-workspace-page") &&
-            (link.hasAttribute("data-workspace-dialog") || (nestedWorkspace && insideDialog)) ? "dialog" : "page";
+        const sideNavigation = link.closest("#workspace-nav");
+        const mode = !sideNavigation && !link.hasAttribute("data-workspace-page") &&
+            (link.hasAttribute("data-workspace-dialog") || insideDialog) ? "dialog" : "page";
         if (mode === "dialog") {
             if (!dialog.open) { previousDialogs.length = 0; dialogUrl = null; }
-            if ((admin || nestedWorkspace) && dialog.open && dialogUrl && dialogUrl.href !== url.href) previousDialogs.push(dialogUrl);
+            if (dialog.open && dialogUrl && dialogUrl.href !== url.href) previousDialogs.push(dialogUrl);
             else if (!dialog.open) dialogTrigger = link;
         }
         if (document.body.classList.contains("nav-open")) document.querySelector("[data-nav-close]")?.click();
@@ -203,10 +205,14 @@
     const confirmed = new WeakSet();
     let pendingConfirmation;
     window.stmsWorkspaceReady = true;
-    confirmDialog.addEventListener("close", () => {
+    confirmDialog.addEventListener("cancel", () => { pendingConfirmation = null; });
+    confirmDialog.querySelector("form").addEventListener("submit", event => {
+        event.preventDefault();
         const pending = pendingConfirmation;
+        const decision = event.submitter?.value;
         pendingConfirmation = null;
-        if (!pending || confirmDialog.returnValue !== "confirm" || !pending.form.isConnected) return;
+        confirmDialog.close(decision || "cancel");
+        if (!pending || decision !== "confirm" || !pending.form.isConnected) return;
         confirmed.add(pending.form);
         try { pending.form.requestSubmit(pending.submit || undefined); }
         finally { confirmed.delete(pending.form); }
@@ -265,23 +271,28 @@
             }
             if (!sameWorkspace(result)) { fail("The site did not return an editable page. Refresh to check the result before trying again."); return; }
             const redirectedToForm = result.res.redirected && /\/(Tenders\/Create|Tenders\/AssignCommittee)(\/|$)/i.test(new URL(result.res.url).pathname);
-            if (redirectedToForm && !dialog.open) {
+            if ((redirectedToForm || form.hasAttribute("data-workspace-dialog")) && !dialog.open) {
                 // Refresh the originating page after the completed workflow action before opening its next form.
                 const nextForm = result;
                 const origin = await load(location.href, request.signal);
                 if (sameWorkspace(origin)) await install(origin, "page", false);
                 await install(nextForm, "dialog");
-            } else if (inDialog && result.res.redirected && (department ||
+            } else if (inDialog && result.res.redirected && (department || supplier || committee ||
                 (sourcing && (redirectedToForm || previousDialogs.length || content.querySelector(".admin-record-hero") ||
+                    url.pathname.startsWith("/Clarifications/") && result.main.querySelector(".admin-record-hero") ||
                     url.pathname.startsWith("/Suppliers/Approve/"))) ||
                 (admin && result.main.querySelector(".admin-record-hero")))) {
                 refreshOnClose = true;
                 const prior = previousDialogs.at(-1);
                 const destination = new URL(result.res.url);
-                if (department && prior?.searchParams.get("panel") === "items" && prior.pathname === destination.pathname) {
-                    const refreshed = await load(prior, request.signal);
+                const panelOrigin = [prior, dialogUrl].find(candidate => candidate?.pathname === destination.pathname &&
+                    candidate.searchParams.get("panel"));
+                if (panelOrigin && !destination.searchParams.has("panel")) {
+                    const refreshed = await load(panelOrigin, request.signal);
                     if (sameWorkspace(refreshed)) {
-                        previousDialogs.pop();
+                        // The redirect already consumed the one-time response messages.
+                        refreshed.main.prepend(...result.main.querySelectorAll(":scope > .notice, :scope > .alert-success, :scope > .alert-danger, :scope > [data-workspace-feedback]"));
+                        if (panelOrigin === prior) previousDialogs.pop();
                         await install(refreshed, "dialog");
                     } else await install(result, "dialog");
                 } else {

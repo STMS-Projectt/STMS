@@ -44,14 +44,18 @@
                                     <a data-workspace-dialog="details" class="record-icon-action" asp-action="RequestQr" asp-route-id="@row.Id" aria-label="Show request QR code" data-tooltip="Show request QR code" title="Show request QR code"><partial name="_Icon" model='@("qr")' /></a>
                                     break;
                                 case "Tenders":
-                                    <a data-workspace-dialog="details" class="record-icon-action" asp-action="Tender" asp-route-id="@row.Id" aria-label="View tender details" data-tooltip="View tender details" title="View tender details"><partial name="_Icon" model='@("eye")' /></a>
+                                    @foreach (var (panel, label, icon) in new[] { ("overview", "Tender summary", "eye"), ("committee", "Committee members", "users"), ("invitations", "Tender invitations", "mail"), ("bids", "Submitted bids", "inbox") })
+                                    {
+                                        <a data-workspace-dialog="details" class="record-icon-action" asp-action="Tender" asp-route-id="@row.Id" asp-route-panel="@panel" aria-label="@label: @row.Name" data-tooltip="@label"><partial name="_Icon" model="icon" /></a>
+                                    }
                                     <a data-workspace-dialog="details" class="record-icon-action" asp-action="TenderQr" asp-route-id="@row.Id" aria-label="Show tender QR code" data-tooltip="Show tender QR code" title="Show tender QR code"><partial name="_Icon" model='@("qr")' /></a>
                                     break;
                                 case "Invitations":
                                     <a data-workspace-dialog="details" class="record-icon-action" asp-action="InvitationDetails" asp-route-id="@row.Id" aria-label="View invitation details" data-tooltip="View invitation details" title="View invitation details"><partial name="_Icon" model='@("eye")' /></a>
                                     break;
                                 case "Bids":
-                                    <a data-workspace-dialog="details" class="record-icon-action" asp-action="BidDetails" asp-route-id="@row.Id" aria-label="View bid details" data-tooltip="View bid details" title="View bid details"><partial name="_Icon" model='@("eye")' /></a>
+                                    <a data-workspace-dialog="details" class="record-icon-action" asp-action="BidDetails" asp-route-id="@row.Id" asp-route-panel="overview" aria-label="View bid summary" data-tooltip="Bid summary"><partial name="_Icon" model='@("eye")' /></a>
+                                    <a data-workspace-dialog="details" class="record-icon-action" asp-action="BidDetails" asp-route-id="@row.Id" asp-route-panel="items" aria-label="View quoted items" data-tooltip="Quoted items"><partial name="_Icon" model='@("inbox")' /></a>
                                     break;
                             }
                         </div>

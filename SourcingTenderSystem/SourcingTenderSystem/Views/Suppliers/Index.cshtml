@@ -55,7 +55,17 @@
                     <div><dt class="record-field-icon" title="Tax number"><partial name="_Icon" model='@("file")' /><span class="visually-hidden">Tax number</span></dt><dd>@item.TaxNumber</dd></div>
                     <div><dt class="visually-hidden">Status</dt><dd><partial name="_Status" model='@(item.Status)' /></dd></div>
                     <div><dt class="record-field-icon" title="Registered (UTC)"><partial name="_Icon" model='@("calendar")' /><span class="visually-hidden">Registered (UTC)</span></dt><dd>@item.CreatedAt.ToString("dd MMM yyyy")</dd></div>
-                    </dl><div class="record-action"><a data-workspace-dialog="details" class="record-icon-action" asp-action="Details" asp-route-id="@item.Id" aria-label="Open application for @item.CompanyName" data-tooltip="Open application"><partial name="_Icon" model='@("eye")' /></a>
+                    </dl><div class="record-action"><a data-workspace-dialog="details" class="record-icon-action" asp-action="Details" asp-route-id="@item.Id" asp-route-panel="overview" aria-label="Open application for @item.CompanyName" data-tooltip="Open application"><partial name="_Icon" model='@("eye")' /></a>
+                        <a data-workspace-dialog="details" class="record-icon-action" asp-action="Details" asp-route-id="@item.Id" asp-route-panel="documents" aria-label="View documents for @item.CompanyName" data-tooltip="Supporting documents"><partial name="_Icon" model='@("file")' /></a>
+                        @if (User.IsInRole("SourcingOfficer") && item.Status is (SupplierStatus.Pending or SupplierStatus.Approved or SupplierStatus.Suspended))
+                        {
+                            <a data-workspace-dialog class="record-icon-action" asp-controller="Clarifications" asp-action="Create" asp-route-kind="supplier" asp-route-recordId="@item.Id" aria-label="Request a document from @item.CompanyName" data-tooltip="Request a document"><partial name="_Icon" model='@("mail")' /></a>
+                        }
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <a data-workspace-dialog class="record-icon-action" asp-action="Categories" asp-route-id="@item.Id" aria-label="Edit categories for @item.CompanyName" data-tooltip="Edit categories"><partial name="_Icon" model='@("filter")' /></a>
+                            @if (item.Status == SupplierStatus.Pending) { <a data-workspace-dialog class="record-icon-action record-icon-danger" asp-action="Reject" asp-route-id="@item.Id" aria-label="Reject @item.CompanyName" data-tooltip="Reject supplier"><partial name="_Icon" model='@("close")' /></a> }
+                        }
                         @if (User.IsInRole("Admin") && item.Status == SupplierStatus.Approved) { <a data-workspace-dialog="details" class="record-icon-action record-icon-danger" asp-action="Suspend" asp-route-id="@item.Id" aria-label="Suspend supplier" data-tooltip="Suspend supplier" title="Suspend supplier"><partial name="_Icon" model='@("pause")' /></a> }
                         @if (item.Status is SupplierStatus.Pending or SupplierStatus.Suspended)
                         {

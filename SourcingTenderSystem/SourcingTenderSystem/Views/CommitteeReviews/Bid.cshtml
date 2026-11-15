@@ -1,52 +1,105 @@
+@using System.Globalization
 @model CommitteeBid
-@{ ViewData["Title"] = "Review bid"; }
+@{
+    ViewData["Title"] = "Review bid";
+    var locked = ViewBag.ReadOnly is true;
+    var entries = Model.Scores.Select((row, index) => (row, index)).ToList();
+    string Percent(decimal value) => EvaluationRules.Round(value).ToString("0.##", CultureInfo.InvariantCulture) + "%";
+    decimal Earned(CommitteeScoreRow row) => row.Score.GetValueOrDefault() * row.WeightPercent / row.Criterion.MaxScore;
+}
 <a class="back-link" asp-action="Details" asp-route-id="@Model.Bid.TenderId"><partial name="_Icon" model='@("back")' /> Tender evaluation</a>
-<header class="page-heading"><div><p class="eyebrow">@Model.Bid.Tender.Title</p><h1>@Model.Bid.SupplierProfile.CompanyName</h1><p>@Model.Bid.TotalPrice.ToString("N2") @Model.Bid.Currency · Delivery in @Model.Bid.DeliveryDays days</p></div></header>
+<header class="page-heading stms-hero admin-record-hero"><div><p class="eyebrow">BID #@Model.Bid.Id · @Model.Bid.Tender.Title</p><h1>@Model.Bid.SupplierProfile.CompanyName</h1><p>@Model.Bid.TotalPrice.ToString("N2") @Model.Bid.Currency · Delivery in @Model.Bid.DeliveryDays days</p></div></header>
 @if (TempData["ReviewError"] is string error) { <div class="alert alert-warning" role="alert">@error</div> }
-<section class="surface directory mb-3">
-    <div class="directory-toolbar"><h2 class="mb-0">Offered items</h2></div>
+<details class="surface detail-card mb-3 bid-evidence">
+    <summary>Offered items <span class="record-panel-label">@Model.Bid.BidItems.Count</span></summary>
     @if (Model.Bid.BidItems.Count == 0) { <div class="empty-state">No items were attached to this bid.</div> }
     else
     {
-        <div class="table-responsive" role="region" aria-label="Offered items" tabindex="0">
-        <table class="directory-table"><thead><tr><th scope="col">Item and specification</th><th scope="col">Quantity</th><th scope="col">Unit price</th><th scope="col">Supplier notes</th></tr></thead><tbody>
-        @foreach (var item in Model.Bid.BidItems)
-        { <tr><td><strong>@item.PurchaseRequisitionItem.ItemName</strong><br />@item.PurchaseRequisitionItem.Specifications</td><td>@item.Quantity</td><td>@item.UnitPrice.ToString("N2") @Model.Bid.Currency</td><td>@item.Notes</td></tr> }
-        </tbody></table></div>
+        <div class="record-list">
+            @foreach (var item in Model.Bid.BidItems)
+            {
+                <article class="record-card"><div class="record-name"><span class="avatar"><partial name="_Icon" model='@("inbox")' /></span><span>@item.PurchaseRequisitionItem.ItemName<small>@item.PurchaseRequisitionItem.Specifications</small></span></div>
+                    <dl class="record-facts"><div><dt>Quantity</dt><dd>@item.Quantity</dd></div><div><dt>Unit price</dt><dd>@item.UnitPrice.ToString("N2") @Model.Bid.Currency</dd></div>
+                        @if (!string.IsNullOrWhiteSpace(item.Notes)) { <div><dt>Supplier notes</dt><dd>@item.Notes</dd></div> }</dl>
+                </article>
+            }
+        </div>
     }
-</section>
-<section class="surface detail-card mb-3"><h2>Bid documents</h2>
+</details>
+<details class="surface detail-card mb-3 bid-evidence"><summary>Bid documents <span class="record-panel-label">@Model.Bid.BidDocuments.Count</span></summary>
     @if (Model.Bid.BidDocuments.Count == 0) { <p class="subtle mb-0">No documents attached.</p> }
-    else { <ul class="mb-0">@foreach (var doc in Model.Bid.BidDocuments) { <li><a asp-controller="BidDocuments" asp-action="Download" asp-route-id="@doc.Id">@doc.FileName</a> · @doc.DocumentType</li> }</ul> }
-</section>
-<section class="stack" aria-label="Your scores">
-    <h2>Your evaluation</h2>
-    @if (Model.Scores.Count == 0) { <div class="surface detail-card">No evaluation criteria have been set yet.</div> }
-    @foreach (var row in Model.Scores)
+    else
     {
-        @if (ViewBag.ReadOnly is true)
-        {
-            <section class="surface detail-card"><h3>@row.Criterion.Name</h3>
-                <p>@row.Score / @row.Criterion.MaxScore · @row.Criterion.WeightPercent%</p><p>@row.Notes</p>
-                @if (row.Taxes.HasValue) { <p>Taxes: @row.Taxes · Extra costs: @row.Extras</p> }
-            </section>
-        }
-        else
-        {
-        <form class="surface form-card" asp-action="SaveScore" asp-route-id="@Model.Bid.Id" asp-route-criterionId="@row.Criterion.Id" method="post">
-            <div class="card-heading"><div><p class="eyebrow">@row.Criterion.Type · @row.Criterion.WeightPercent% WEIGHT</p><h3>@row.Criterion.Name</h3></div>
-                @if (row.Score.HasValue) { <span class="status-pill status-positive"><span></span>Saved</span> }</div>
-            <div class="form-grid mb-3">
-                <label class="field">Score out of @row.Criterion.MaxScore<input class="form-control" name="Score" type="number" min="0" max="@row.Criterion.MaxScore" step=".01" required value="@row.Score" /></label>
-                @if (row.Criterion.Type == "Financial")
+        <div class="record-list record-list-inset">
+            @foreach (var doc in Model.Bid.BidDocuments)
+            {
+                <article class="record-card"><div class="record-name"><span class="avatar"><partial name="_Icon" model='@("file")' /></span><span>@doc.FileName<small>@doc.DocumentType</small></span></div>
+                    <div class="record-action"><a class="record-icon-action" asp-controller="BidDocuments" asp-action="Download" asp-route-id="@doc.Id" aria-label="Download @doc.FileName" data-tooltip="Download"><partial name="_Icon" model='@("download")' /></a></div>
+                </article>
+            }
+        </div>
+    }
+</details>
+<section class="surface detail-card bid-checklist" aria-label="Your evaluation">
+    <div class="record-section-heading"><div><h2>Your evaluation checklist</h2><p>@(locked ? "Saved scores are read-only." : "Check each criterion the offer meets, then save the checklist for this bid.")</p></div>
+        <span class="record-panel-label" data-checklist-total>@Percent(Model.Scores.Sum(Earned)) / @Percent(Model.Scores.Sum(r => r.WeightPercent))</span>
+    </div>
+    @if (Model.Scores.Count == 0) { <p class="subtle">No valid criteria are selected for this evaluation.</p> }
+    else
+    {
+        <form asp-action="SaveChecklist" asp-route-id="@Model.Bid.Id" method="post" data-bid-checklist>
+            @if (!locked && Model.Scores.Any(r => r.Score is decimal score && score > 0 && score < r.Criterion.MaxScore))
+            {
+                <p class="alert alert-info">This bid has older partial scores. Saving this checklist replaces them with full weight or zero.</p>
+            }
+            <div class="checklist-columns">
+                @foreach (var (kind, icon) in new[] { ("Technical", "briefcase"), ("Financial", "chart") })
                 {
-                    <label class="field">Taxes and fees (@Model.Bid.Currency)<input class="form-control" name="Taxes" type="number" min="0" step=".01" value="@(row.Taxes ?? 0)" /></label>
-                    <label class="field">Additional costs (@Model.Bid.Currency)<input class="form-control" name="Extras" type="number" min="0" step=".01" value="@(row.Extras ?? 0)" /></label>
+                    var rows = entries.Where(e => e.row.Criterion.Type == kind).ToList();
+                    var possible = rows.Sum(e => e.row.WeightPercent);
+                    <fieldset class="checklist-group" data-checklist-group>
+                        <legend><span class="icon-tile tone-teal"><partial name="_Icon" model="icon" /></span>@kind</legend>
+                        <p class="checklist-subtotal"><output data-checklist-subtotal>@Percent(rows.Sum(e => Earned(e.row))) / @Percent(possible)</output></p>
+                        @if (rows.Count == 0) { <p class="subtle mb-0">No active @kind.ToLowerInvariant() criteria.</p> }
+                        @foreach (var (row, index) in rows)
+                        {
+                            <div class="checklist-entry">
+                                <label class="checklist-choice">
+                                    <input type="hidden" name="checks[@index].CriterionId" value="@row.Criterion.Id" />
+                                    <input type="checkbox" name="checks[@index].Met" value="true" checked="@(row.Score == row.Criterion.MaxScore)" disabled="@locked"
+                                           data-checklist-choice data-weight="@row.WeightPercent.ToString(CultureInfo.InvariantCulture)" />
+                                    <span>@row.Criterion.Name</span>
+                                    <strong>+@Percent(row.WeightPercent)</strong>
+                                </label>
+                                @if (locked)
+                                {
+                                    @if (row.Score.HasValue) { <p class="field-hint mb-0">Earned @Percent(Earned(row))</p> }
+                                    @if (!string.IsNullOrWhiteSpace(row.Notes)) { <p class="field-hint mb-0">@row.Notes</p> }
+                                    @if (row.Taxes.HasValue) { <p class="field-hint mb-0">Taxes: @row.Taxes · Extra costs: @row.Extras</p> }
+                                }
+                                else
+                                {
+                                    <details>
+                                        <summary>@(kind == "Financial" ? "Notes and costs" : "Review notes")</summary>
+                                        <div class="form-grid mt-2">
+                                            @if (kind == "Financial")
+                                            {
+                                                <label class="field">Taxes (@Model.Bid.Currency)<input class="form-control" name="checks[@index].Taxes" type="number" min="0" step=".01" value="@((row.Taxes ?? 0).ToString(CultureInfo.InvariantCulture))" /></label>
+                                                <label class="field">Extra costs (@Model.Bid.Currency)<input class="form-control" name="checks[@index].Extras" type="number" min="0" step=".01" value="@((row.Extras ?? 0).ToString(CultureInfo.InvariantCulture))" /></label>
+                                            }
+                                            <label class="field field-wide">Notes<textarea class="form-control" name="checks[@index].Notes" rows="2" maxlength="1000">@row.Notes</textarea></label>
+                                        </div>
+                                    </details>
+                                }
+                            </div>
+                        }
+                    </fieldset>
                 }
-                <label class="field field-wide">Review notes<textarea class="form-control" name="Notes" rows="2" maxlength="1000">@row.Notes</textarea></label>
             </div>
-            <button class="btn btn-primary" type="submit">Save score</button>
+            @if (!locked)
+            {
+                <div class="form-actions mt-3"><button class="btn btn-primary" type="submit"><partial name="_Icon" model='@("check")' /> Save checklist</button></div>
+            }
         </form>
-        }
     }
 </section>

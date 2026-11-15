@@ -1,7 +1,7 @@
 @model CommitteeTender
 @{ ViewData["Title"] = "Tender evaluation"; }
 <a class="back-link" asp-action="Assignments"><partial name="_Icon" model='@("back")' /> My assignments</a>
-<header class="page-heading"><div><p class="eyebrow">TENDER #@Model.Tender.Id</p><h1>@Model.Tender.Title</h1><p>Open a compliant bid to review its details and score it.</p></div></header>
+<header class="page-heading stms-hero admin-record-hero"><div><p class="eyebrow">TENDER #@Model.Tender.Id</p><h1>@Model.Tender.Title</h1><p>Open a compliant bid to review its details and score it.</p></div><partial name="_Status" model="Model.Tender.Status" /></header>
 <partial name="_RecordQr" model='@(Url.Action("Details", new { id = Model.Tender.Id })!)' />
 @if (TempData["ReviewError"] is string error) { <div class="alert alert-warning" role="alert">@error</div> }
 @if (ViewBag.Submission is EvaluationSubmission submission)
@@ -17,7 +17,7 @@ else if (Model.Tender.Status == "Under Evaluation")
 }
 @if (User.IsInRole("SourcingManager"))
 {
-    <p><a class="btn btn-outline-secondary" asp-controller="EvaluationWorkflow" asp-action="Details" asp-route-id="@Model.Tender.Id">Evaluation progress and final report</a></p>
+    <p><a class="btn btn-outline-secondary" data-workspace-dialog="details" asp-controller="EvaluationWorkflow" asp-action="Details" asp-route-id="@Model.Tender.Id"><partial name="_Icon" model='@("file")' /> Evaluation progress and final report</a></p>
 }
 @if (Model.Tender.Bids.Count > 0)
 {
@@ -32,38 +32,54 @@ else if (Model.Tender.Status == "Under Evaluation")
         </div>
     </section>
 }
-<section class="surface directory mb-3">
-    <div class="directory-toolbar"><h2 class="mb-0">Compliant bids</h2></div>
+<section class="surface directory dept-directory mb-3" data-directory>
+    <div class="dept-directory-heading"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("inbox")' /></span><div><h2>Compliant bids</h2><p>Open a supplier offer to view documents or save scores.</p></div></div>
     @if (Model.Tender.Bids.Count == 0) { <div class="empty-state">No compliant bids to review.</div> }
     else
     {
-        <div class="table-responsive" role="region" aria-label="Compliant bids" tabindex="0">
-            <table class="directory-table"><thead><tr><th scope="col">Supplier</th><th scope="col">Quoted total</th><th scope="col">Your progress</th><th scope="col">Action</th></tr></thead><tbody>
+        <partial name="_ListFilters" model='@("Search compliant bids", Enumerable.Empty<string>())' />
+        <partial name="_DirectoryPages" model='@("Compliant bid pages")' />
+        <div class="record-list" data-record-list>
             @foreach (var bid in Model.Tender.Bids.OrderBy(b => b.SupplierProfile.CompanyName))
             {
-                <tr><td>@bid.SupplierProfile.CompanyName</td><td>@bid.TotalPrice.ToString("N2") @bid.Currency</td>
-                <td>@Model.ReviewedCriteria.GetValueOrDefault(bid.Id) / @Model.Tender.EvaluationCriteria.Count(c => c.Type is "Technical" or "Financial") criteria scored</td>
-                <td><a class="table-action" asp-action="Bid" asp-route-id="@bid.Id">Review bid</a></td></tr>
+                <article class="record-card" data-record>
+                    <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("supplier")' /></span><span>@bid.SupplierProfile.CompanyName<small>Bid #@bid.Id</small></span></div>
+                    <dl class="record-facts"><div><dt>Quoted total</dt><dd>@bid.TotalPrice.ToString("N2") @bid.Currency</dd></div>
+                        <div><dt>Criteria scored</dt><dd>@Model.ReviewedCriteria.GetValueOrDefault(bid.Id) / @Model.Weights.Count</dd></div></dl>
+                    <div class="record-action"><a class="record-icon-action" data-workspace-dialog="details" asp-action="Bid" asp-route-id="@bid.Id" aria-label="Review bid from @bid.SupplierProfile.CompanyName" data-tooltip="Review bid"><partial name="_Icon" model='@("eye")' /></a></div>
+                </article>
             }
-            </tbody></table>
         </div>
+        <partial name="_ListFilterEmpty" />
     }
 </section>
 <section class="surface detail-card">
-    <h2>Evaluation criteria</h2>
+    <div class="record-section-heading">
+        <div><h2>My evaluation criteria</h2><p>These weights apply to every compliant bid you review.</p></div>
+        @if (Model.CanEditWeights)
+        {
+            <a data-workspace-dialog class="btn btn-outline-secondary" asp-action="Weights" asp-route-id="@Model.Tender.Id"><partial name="_Icon" model='@("filter")' /> Select criteria and weights</a>
+        }
+    </div>
     @if (Model.Tender.EvaluationCriteria.Count == 0) { <p class="subtle">No published criteria are available for this tender.</p> }
     else
     {
-        <ul>
+        <div class="record-list record-list-inset">
             @foreach (var criterion in Model.Tender.EvaluationCriteria.OrderBy(c => c.Type).ThenBy(c => c.Id))
-            { <li><strong>@criterion.Name</strong> · @criterion.Type · @criterion.WeightPercent% weight · @criterion.MaxScore points</li> }
-        </ul>
+            {
+                var used = Model.Weights.TryGetValue(criterion.Id, out var weight);
+                <article class="record-card">
+                    <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("check")' /></span><span>@criterion.Name<small>@criterion.Type · @criterion.MaxScore points</small></span></div>
+                    <dl class="record-facts"><div><dt>Officer proposed</dt><dd>@criterion.WeightPercent.ToString("0.##")%</dd></div><div><dt>My weight</dt><dd>@(used ? $"{weight:0.##}%" : "Not selected")</dd></div></dl>
+                </article>
+            }
+        </div>
     }
 </section>
 @section Scripts {
 <script>
 (() => {
-    const box = document.querySelector("[data-ai-box]");
+    const box = (document.querySelector("#workspace-dialog[open] [data-dialog-content]") || document.querySelector("#main"))?.querySelector("[data-ai-box]");
     if (!box) return;
     const body = box.querySelector("[data-ai-body]");
     const loading = body.innerHTML;
@@ -83,4 +99,4 @@ else if (Model.Tender.Status == "Under Evaluation")
 </script>
 }
 
-<div class="mb-3"><a class="btn btn-outline-secondary" asp-controller="Clarifications" asp-action="Index" asp-route-kind="tender" asp-route-recordId="@Model.Tender.Id">Clarification history</a></div>
+<div class="mb-3"><a class="btn btn-outline-secondary" data-workspace-dialog="details" asp-controller="Clarifications" asp-action="Index" asp-route-kind="tender" asp-route-recordId="@Model.Tender.Id"><partial name="_Icon" model='@("mail")' /> Clarification history</a></div>

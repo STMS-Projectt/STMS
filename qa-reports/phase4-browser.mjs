@@ -48,7 +48,8 @@ try {
   const wait=(expression,label)=>until(()=>ev(expression),label);
   const click=s=>ev('document.querySelector('+JSON.stringify(s)+').click()');
   const set=(s,value)=>ev('document.querySelector('+JSON.stringify(s)+').value='+JSON.stringify(value));
-  const capture=async name=>writeFile(join(evidence,name+'.png'),Buffer.from((await call('Page.captureScreenshot',{format:'png'})).data,'base64'));
+  const capture=async name=>{await sleep(190);await writeFile(join(evidence,name+'.png'),Buffer.from((await call('Page.captureScreenshot',{format:'png'})).data,'base64'));};
+  const viewport=width=>call('Emulation.setDeviceMetricsOverride',{width,height:900,deviceScaleFactor:1,mobile:false});
   async function test(id, fn) {
     try { await fn(); results.push({id,status:'PASS'}); }
     catch(error) { results.push({id,status:'FAIL',reason:error.message, page:await ev('location.pathname').catch(()=>null), statusText:await ev('document.querySelector("[data-bio-status]")?.textContent').catch(()=>null)}); await capture(id+'-failure').catch(()=>{}); }
@@ -193,14 +194,19 @@ try {
     await go(new URL(details).pathname);
     await wait('!!document.querySelector("a[href*=RequisitionItems]")','request details');
     for(const name of ['Synthetic item A','Synthetic item B']){
-      await click('a[href*="/RequisitionItems/Create"]');
-      await wait('!!document.querySelector("#main input[name=ItemName]")','standalone item page');
-      await set('#main input[name=ItemName]',name);
-      await set('#main input[name=Quantity]','2');
-      await set('#main input[name=Unit]','each');
-      await set('#main textarea[name=Specifications]','Synthetic specifications');
-      await click('#main form button[type=submit]');
-      await wait('document.body.innerText.includes('+JSON.stringify(name)+') && !document.querySelector("#workspace-dialog").open','saved item');
+      const origin=await ev('location.href');
+      const overlay='#workspace-dialog ';
+      await click('#main a[href*="/RequisitionItems/Create"]');
+      await wait('!!document.querySelector("#workspace-dialog[open] input[name=ItemName]")','item modal');
+      await set(overlay+'input[name=ItemName]',name);
+      await set(overlay+'input[name=Quantity]','2');
+      await set(overlay+'input[name=Unit]','each');
+      await set(overlay+'textarea[name=Specifications]','Synthetic specifications');
+      await click(overlay+'form button[type=submit]');
+      await wait('document.querySelector("#workspace-dialog[open]")?.innerText.includes('+JSON.stringify(name)+')','saved in modal');
+      assert.equal(await ev('location.href'),origin);
+      await click(overlay+'[data-dialog-close]');
+      await wait('document.querySelector("#main")?.innerText.includes('+JSON.stringify(name)+')','request refreshed');
     }
     await click('form[action*="/Submit/"] button[type=submit]');
     await wait('document.body.innerText.includes("Under Review") && !document.querySelector("a[href*=RequisitionItems]")','submitted and read-only');
@@ -212,6 +218,25 @@ try {
       if(await ev('!!document.querySelector("form[action*=Logout]")'))await logout();
       await login(role);
       await wait('location.pathname.startsWith('+JSON.stringify(path)+') && document.readyState==="complete" && !!document.querySelector("form[action*=Logout]")',role+' landing');
+      const sideLinks=await ev('Array.from(document.querySelectorAll("#workspace-nav a.side-link"), a => ({ path:a.pathname, dialog:a.hasAttribute("data-workspace-dialog") }))');
+      assert(sideLinks.length,role+' has navigation');
+      assert(sideLinks.every(a=>!a.dialog && !/\/(Profile|Create|UploadDocuments|Register|StartRequest|BiometricSetup)(\/|$)/i.test(a.path)),role+' sidebar only links to pages');
+      await ev('window.sidebarNavigationMarker=1; document.querySelector("#workspace-nav a.side-link:not(.is-current)").setAttribute("data-workspace-dialog","")');
+      const destination=await ev('document.querySelector("#workspace-nav a.side-link:not(.is-current)").href');
+      await click('#workspace-nav a.side-link:not(.is-current)');
+      await wait('location.href==='+JSON.stringify(destination)+' && !document.querySelector("#workspace-dialog").open',role+' sidebar uses page mode even with a modal attribute');
+      assert.equal(await ev('window.sidebarNavigationMarker'),1,role+' sidebar swaps content in place');
+      const pages=await ev('Array.from(document.querySelectorAll("#workspace-nav a.side-link"), a=>a.pathname+a.search)');
+      await viewport(390);
+      try {
+        for(const route of new Set(pages)){
+          await go(route);
+          assert.equal(await ev('location.pathname'),new URL(route,base).pathname,role+' authorized for '+route);
+          assert(await ev('!!document.querySelector("main h1") && !document.querySelector("#workspace-dialog").open'),role+' rendered '+route);
+          assert(await ev('document.documentElement.scrollWidth <= innerWidth + 1'),role+' horizontal overflow in '+route);
+        }
+      } finally { await viewport(1440); }
+      await go(path);
       if(role==='Admin'){
         await go('/Profile');
         await wait('!!document.querySelector("#Personal_PreferredName")','personal fields');
@@ -276,6 +301,17 @@ try {
           }
         }
         await call('Emulation.setDeviceMetricsOverride',{width:1440,height:900,deviceScaleFactor:1,mobile:false});
+        await go('/Categories');
+        const categoriesUrl=await ev('location.href');
+        await click('#main a[data-workspace-dialog][href*="/Create"]');
+        await wait('!!document.querySelector("#workspace-dialog[open] #category-name")','category create modal');
+        await set('#workspace-dialog #category-name','Browser supplies');
+        await click('#workspace-dialog form button[type=submit]');
+        await wait('document.querySelector("#workspace-dialog[open] .validation-summary-errors")?.textContent.includes("already exists")','duplicate handled in category modal');
+        await set('#workspace-dialog #category-name','Another synthetic category');
+        await click('#workspace-dialog form button[type=submit]');
+        await wait('!document.querySelector("#workspace-dialog").open && document.querySelector("#main .record-list")?.textContent.includes("Another synthetic category")','category saved and cards refreshed');
+        assert.equal(await ev('location.href'),categoriesUrl);
       }
       if(role==='SourcingOfficer'){
         assert.equal(await ev('!!document.querySelector("#workspace-nav a[href*=Profile], #workspace-nav a[href*=Create]")'),false);
@@ -293,13 +329,83 @@ try {
         await wait('!!document.querySelector("#main .dept-filter-dock") && !!document.querySelector("#main article.record-card")','sourcing queue cards and filters');
       }
       if(role==='Supplier'){
+        assert.equal(await ev('!!document.querySelector("#workspace-nav a[href*=Profile],#workspace-nav a[href*=UploadDocuments]")'),false);
+        const supplierDashboard = await ev('location.href');
+        await click('#main a[data-workspace-dialog][href*=RegistrationStatus]');
+        await wait('!!document.querySelector("#workspace-dialog[open] .admin-record-hero")','supplier application modal');
+        assert.equal(await ev('location.href'),supplierDashboard);
+        await capture('supplier-application-modal');
+        await click('#workspace-dialog [data-dialog-close]');
         await go('/Tenders/Index');
         await wait('location.pathname.includes("AccessDenied") || document.body.innerText.includes("Access denied")','supplier direct URL denied');
       }
       await logout();
     });
   }
-  await lifecycle({go,wait,click,set,ev,login,logout,capture,test,resetSession:async()=>{
+  await test('BR-supplier-public-registration',async()=>{
+    await go('/SupplierRegistration/Register');
+    for(const width of [390,1440]){
+      await viewport(width);
+      await wait('document.documentElement.scrollWidth <= innerWidth + 1','registration fits '+width);
+      await capture('registration-'+width);
+    }
+    for(const [name,value] of Object.entries({
+      CompanyName:'Browser Onboarding',TaxNumber:'BROWSER-ONBOARD',CommercialRegNo:'BROWSER-ONBOARD',
+      ContactPhone:'+962790000000',Address:'Synthetic registration QA',Email:'onboarding@example.test',
+      Password:password,ConfirmPassword:password
+    })) await set('[name="'+name+'"]',value);
+    await ev('document.querySelectorAll("input[name=CategoryIds]").forEach(input=>input.click())');
+    await wait('document.querySelector("[data-category-count]").textContent==="2 selected"','multiple supply categories selected');
+    await click('#main form button[type=submit]');
+    await wait('location.pathname.endsWith("/UploadDocuments") && window.stmsWorkspaceReady && !!document.querySelector("a[href*=AddDocument]")','registered and redirected to the document register');
+    const origin=await ev('location.href');
+    assert(await ev('document.querySelector("form[action*=SubmitApplication] button").disabled'));
+    const openDocument=async()=>{
+      await click('#main a[href*=AddDocument]');
+      await wait('!!document.querySelector("#workspace-dialog[open] input[name=File]")','one document form opened');
+    };
+    const selectDocument=async(type,name,content,expiry)=>{
+      await set('#workspace-dialog select[name=DocumentType]',type);
+      await set('#workspace-dialog input[name=ExpiryDate]',expiry);
+      await ev(`(()=>{ const input=document.querySelector("#workspace-dialog input[name=File]"), transfer=new DataTransfer();
+        transfer.items.add(new File([${JSON.stringify(content)}],${JSON.stringify(name)},{type:"application/pdf"}));
+        input.files=transfer.files; input.dispatchEvent(new Event("change",{bubbles:true})); })()`);
+    };
+    await openDocument();
+    await selectDocument('Commercial registration','invalid.pdf','Not a PDF','2032-04-12');
+    await click('#workspace-dialog form button[type=submit]');
+    await wait('document.querySelector("#workspace-dialog[open]")?.innerText.includes("Choose a valid PDF")','server rejected an invalid PDF in the document modal');
+    await selectDocument('Commercial registration','company-1.pdf','%PDF-1.4\nQA file\n%%EOF','2032-04-12');
+    await capture('registration-document-modal');
+    await click('#workspace-dialog form button[type=submit]');
+    await wait('!document.querySelector("#workspace-dialog").open && document.querySelector("#main").innerText.includes("company-1.pdf")','document appears in the register');
+    assert.equal(await ev('location.href'),origin);
+    await openDocument();
+    await selectDocument('Tax certificate','company-2.pdf','%PDF-1.4\nAnother QA file\n%%EOF','2033-01-25');
+    await click('#workspace-dialog form button[type=submit]');
+    await wait('!document.querySelector("#workspace-dialog").open && document.querySelector("#main").innerText.includes("company-2.pdf")','second document added independently');
+    await capture('registration-document-register');
+    await click('button[aria-label="Remove Tax certificate"]');
+    await wait('document.querySelector("#workspace-confirm").open','confirm remove from draft');
+    await click('#workspace-confirm button[value=confirm]');
+    await wait('!document.querySelector("#main").innerText.includes("company-2.pdf")','removed only the selected draft file');
+    await click('form[action*=SubmitApplication] button');
+    await wait('["/SupplierWorkspace","/Account/BiometricSetup"].includes(location.pathname) && document.readyState==="complete"','application submitted');
+    if(await ev('location.pathname==="/Account/BiometricSetup"')){
+      await wait('!!document.querySelector("[data-phone-button]") && performance.getEntriesByType("resource").some(e=>e.name.includes("biometrics.js"))','first-time security setup');
+      await set('#bio-password',password);
+      await click('[data-phone-button]');
+      await wait('document.querySelector("#main")?.innerText.includes("Continue to workspace")','supplier passkey registered');
+      await click('#main a[data-full-page][href="/SupplierWorkspace"]');
+    }
+    await wait('location.pathname==="/SupplierWorkspace" && document.querySelector("#main").innerText.includes("Browser Onboarding")','read-only supplier dashboard');
+    assert.equal(await ev('!!document.querySelector("#main a[href*=AddDocument], #main a[href*=UploadDocuments], #workspace-nav a[href*=MyBids]")'),false);
+    await go('/SupplierRegistration/RegistrationStatus?workspace=true');
+    await wait('document.querySelector("#main").innerText.includes("Awaiting review") && document.querySelector("#main").innerText.includes("1 uploaded")','submitted application remains visible');
+    assert.equal(await ev('!!document.querySelector("#main a[href*=AddDocument], #main a[href*=UploadDocuments], #main form[action*=RemoveDocument]")'),false);
+    await capture('registration-read-only');
+  });
+  await lifecycle({go,wait,click,set,ev,login,logout,capture,test,viewport,resetSession:async()=>{
     // Let any in-flight POST/redirect from the previous user finish first: Identity re-issues its cookie on every
     // authenticated response (security stamp validated each request), which could otherwise restore the old session.
     await sleep(400);
@@ -319,6 +425,14 @@ try {
     await click('.directory-status-options a[href*=status]');
     await wait('location.href==='+JSON.stringify(filter)+' && !!document.querySelector(".directory-status-options a[aria-current=page][href*=status]")','filtered tender register');
     assert(await ev('document.querySelectorAll(".record-card").length>0'));
+    for(const [panel,heading] of [['overview','Tender information'],['committee','Committee'],['invitations','Invitations'],['bids','Submitted bids']]){
+      const selector='#main a[href*="/AdminOperations/Tender/"][href$="panel='+panel+'"]';
+      await click(selector);
+      await wait('Array.from(document.querySelectorAll("#workspace-dialog[open] h2")).some(h=>h.textContent.trim()==='+JSON.stringify(heading)+')',panel+' focus');
+      assert.equal(await ev('document.querySelectorAll("#workspace-dialog [data-dialog-content] section").length'),1);
+      assert.equal(await ev('location.href'),filter);
+      await click('#workspace-dialog [data-dialog-close]');
+    }
     for(const [register,action,marker] of [
       ['Requests','RequestQr','.record-qr[open] img'],
       ['Invitations','InvitationDetails','h2'],
@@ -335,6 +449,28 @@ try {
       assert.equal(await ev('location.pathname'),path);
       await click('#workspace-dialog [data-dialog-close]');
     }
+  });
+  await test('BR-review-new-supplier',async()=>{
+    if(await ev('!!document.querySelector("form[action*=Logout]")')) await logout();
+    await login('SourcingOfficer');
+    await wait('location.pathname.startsWith("/SourcingDashboard")','officer landing');
+    await go('/Suppliers');
+    const row='.record-card:has(a[aria-label*="Browser Onboarding"])';
+    const overlay='#workspace-dialog ';
+    await wait('!!document.querySelector('+JSON.stringify(row)+')','new supplier in review directory');
+    await click(row+' a[href$="panel=documents"]');
+    await wait('!!document.querySelector('+JSON.stringify('#workspace-dialog[open] a[href*="/DownloadDocument"]')+')','documents opened for review');
+    assert(!(await ev('document.querySelector("#workspace-dialog").innerText.includes("Company information")')));
+    await capture('supplier-review-documents');
+    await click(overlay+'[data-dialog-close]');
+    await click(row+' a[href*="/Suppliers/Approve/"]');
+    await wait('!!document.querySelector("#workspace-dialog[open] textarea[name=Reason]")','approval form');
+    await set(overlay+'textarea[name=Reason]','Synthetic application documents verified');
+    await click(overlay+'form button[type=submit]');
+    await wait('document.querySelector("#workspace-dialog[open]")?.innerText.includes("Supplier status updated to Approved.")','approval saved in modal');
+    assert.equal(await ev('location.pathname'),'/Suppliers');
+    await capture('supplier-approved-modal');
+    await click(overlay+'[data-dialog-close]');
   });
   await writeFile(join(evidence,'results.json'),JSON.stringify({results,errors,http},null,2));
   process.stdout.write(JSON.stringify({results,errors})+'\n');

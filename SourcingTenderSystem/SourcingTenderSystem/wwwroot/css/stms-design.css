@@ -670,9 +670,6 @@ body:has(.dept-directory) [data-scroll-top]{bottom:18px}
 .admin-dock-panel label{display:grid;gap:6px}
 .admin-dock-panel [data-register-pages] [aria-current=page]{text-align:center;font-weight:750}
 .dept-dock-button>b{font-size:1.12rem;line-height:1}
-@media(prefers-reduced-motion:no-preference){
- #workspace-dialog[open] [data-dialog-content]{animation:admin-title-in .28s ease-out both}
-}
 .admin-dock-panel:has([data-register-pages]){min-width:104px;width:104px}
 .admin-dock-panel [data-register-pages]{justify-items:center}
 .admin-dock-panel [data-register-pages]>:is(a,span){display:grid;place-items:center;width:38px;height:38px;padding:0;border-radius:10px;font-weight:750}
@@ -747,8 +744,8 @@ body:has(.dept-directory) [data-scroll-top]{bottom:18px}
 #workspace-dialog .dept-filter-dock{visibility:visible;opacity:1;pointer-events:auto;animation:none}
 #workspace-dialog .dept-filter-dock .dept-filter-popover{z-index:2}
 
-/* Sourcing detail records, related forms, and confirmation windows. */
-#workspace-dialog.sourcing-dialog{width:min(48rem,calc(100vw - 24px));border-radius:20px}
+/* Workspace records, related forms, and confirmation windows. */
+#workspace-dialog.sourcing-dialog{width:min(48rem,calc(100vw - 24px));border-radius:20px;scrollbar-width:thin;scrollbar-color:#9dcbbe transparent}
 #workspace-dialog.sourcing-dialog.is-detail{width:min(72rem,calc(100vw - 24px))}
 .sourcing-dialog .workspace-dialog-caption{display:grid;gap:3px;min-width:0}
 .sourcing-dialog .workspace-dialog-context{font-size:.64rem;text-transform:uppercase;letter-spacing:.11em;color:#356c61;font-weight:800}
@@ -763,6 +760,17 @@ body:has(.dept-directory) [data-scroll-top]{bottom:18px}
 .sourcing-dialog [data-dialog-content] .form-label{color:#234a48}
 .sourcing-dialog [data-dialog-content] .table-responsive{min-width:0;border:1px solid #e3eeeb;border-radius:12px}
 .sourcing-dialog [data-dialog-content] .table-responsive>.table{margin-bottom:0}
+.dept-directory-heading>[data-result-count]{margin-inline-start:auto;flex:none;border:1px solid #d9ebe5;border-radius:999px;padding:.3em .75em;background:#f6fcfa;color:#24564d;font-variant-numeric:tabular-nums}
+.dept-filter-dock>[data-result-count]{padding-inline:.45rem;font-variant-numeric:tabular-nums}
+.dept-directory>.dept-directory-heading{border-start-start-radius:inherit;border-start-end-radius:inherit}
+.dept-directory-heading>div{min-width:0}
+.dept-directory-heading>.icon-tile{flex:none}
+.record-facts dd.request-prose{white-space:pre-wrap}
+@media(max-width:500px){
+    .dept-directory .dept-directory-heading{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 12px}
+    .dept-directory-heading:not(:has(>.icon-tile))>div{grid-column:1/-1}
+    .dept-directory-heading>[data-result-count]{grid-column:1/-1;justify-self:start;margin-inline-start:0}
+}
 .sourcing-confirm{border-color:#dcebe7;background:linear-gradient(135deg,#fff,#eef8f4)}
 .sourcing-confirm h2{font-size:1.2rem;color:#17473d}
 .sourcing-confirm [data-confirm-question]{color:#355268;line-height:1.55}

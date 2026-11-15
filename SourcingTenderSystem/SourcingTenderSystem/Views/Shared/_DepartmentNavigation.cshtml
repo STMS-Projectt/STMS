@@ -1,7 +1,7 @@
 @{
     var controller = ViewContext.RouteData.Values["controller"]?.ToString();
     var action = ViewContext.RouteData.Values["action"]?.ToString();
-    var current = controller == "RequisitionItems" ? "MyRequests" : controller == "PurchaseRequisitions"
+    var current = controller == "CommitteeReviews" ? "Committee" : controller == "RequisitionItems" ? "MyRequests" : controller == "PurchaseRequisitions"
         ? action is "Details" or "Edit" ? "MyRequests" : action : null;
 }
 <aside class="sidebar" id="workspace-nav" aria-label="Department workspace">

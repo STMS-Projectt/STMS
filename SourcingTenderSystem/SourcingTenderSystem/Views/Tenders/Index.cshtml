@@ -45,7 +45,9 @@
     </div>
 }
 
-<section class="surface directory dept-directory" data-directory><div class="directory-toolbar"><h2 class="h5 mb-0">All tenders</h2></div><partial name="_ListFilters" model='@("Search tenders", Model.Select(t => t.Status))' />
+<section class="surface directory dept-directory" data-directory>
+    <div class="dept-directory-heading"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("briefcase")' /></span><div><h2>All tenders</h2><p>Set evaluation criteria on drafts or close bidding on an open tender from its card.</p></div></div>
+    <partial name="_ListFilters" model='@("Search tenders", Model.Select(t => t.Status))' />
     <partial name="_DirectoryPages" model='@("Tender pages")' />
 @if (!Model.Any()) { <div class="empty-state"><h2>No tenders yet</h2></div> }
 else
@@ -53,11 +55,15 @@ else
     <div class="record-list" data-record-list>
     @foreach (var t in Model)
     {
+        var early = TenderRules.IsOpen(t, now);
+        var canClose = early || t.Status is ("Open" or "Published") && t.CloseDate <= now;
         <article class="record-card" data-record data-status="@t.Status">
             <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("briefcase")' /></span><span>@t.Title<small>Tender #@t.Id · @t.CreatedByEmployeeProfile.FullName · @t.CreatedAt.ToString("dd MMM yyyy")</small></span></div>
             <dl class="record-facts"><div><dt>Purchase request</dt><dd>@t.PurchaseRequisition.Title</dd></div><div><dt>Opens (UTC)</dt><dd>@t.OpenDate.ToString("dd MMM yyyy HH:mm")</dd></div><div><dt>Closes (UTC)</dt><dd>@t.CloseDate.ToString("dd MMM yyyy HH:mm")</dd></div><div><dt>Status</dt><dd><span class="badge @BadgeClass(t.Status)">@t.Status</span></dd></div></dl>
             <div class="record-action">
-                <a class="record-icon-action" data-workspace-dialog="details" asp-action="Details" asp-route-id="@t.Id" aria-label="View tender @t.Title" data-tooltip="View details"><partial name="_Icon" model='@("eye")' /></a>
+                <a class="record-icon-action" data-workspace-dialog="details" asp-action="Details" asp-route-id="@t.Id" asp-route-panel="overview" aria-label="View tender @t.Title" data-tooltip="Tender summary"><partial name="_Icon" model='@("eye")' /></a>
+                <a class="record-icon-action" data-workspace-dialog="details" asp-action="Details" asp-route-id="@t.Id" asp-route-panel="rounds" aria-label="Bidding rounds for @t.Title" data-tooltip="Bidding rounds"><partial name="_Icon" model='@("clock")' /></a>
+                <a class="record-icon-action" data-workspace-dialog="details" asp-action="Details" asp-route-id="@t.Id" asp-route-panel="qr" aria-label="QR code for @t.Title" data-tooltip="Tender QR code"><partial name="_Icon" model='@("qr")' /></a>
                 @if (t.Status == "Draft")
                 {
                     <a class="record-icon-action" data-workspace-dialog asp-action="Edit" asp-route-id="@t.Id" aria-label="Edit tender @t.Title" data-tooltip="Edit"><partial name="_Icon" model='@("edit")' /></a>
@@ -71,6 +77,24 @@ else
                     <a class="record-icon-action" data-workspace-dialog asp-action="AssignCommittee" asp-route-id="@t.Id" aria-label="Assign committee for @t.Title" data-tooltip="Assign committee"><partial name="_Icon" model='@("users")' /></a>
                 }
             </div>
+            @if (t.Status == "Draft" || canClose)
+            {
+                <div class="tender-card-quick-actions">
+                    @if (t.Status == "Draft")
+                    {
+                        <a class="btn btn-outline-secondary" data-workspace-dialog asp-action="Criteria" asp-route-id="@t.Id" aria-label="Evaluation criteria for @t.Title"><partial name="_Icon" model='@("filter")' /> Evaluation criteria</a>
+                    }
+                    @if (canClose)
+                    {
+                        <form asp-action="Close" asp-route-id="@t.Id" asp-route-fromList="true" method="post"
+                              data-workspace-confirm="@(early ? $"Close bidding early for “{t.Title}”? This stops new submissions for the current round." : null)"
+                              onsubmit="return !this.dataset.workspaceConfirm || window.stmsWorkspaceReady || confirm(this.dataset.workspaceConfirm);">
+                            <input type="hidden" name="confirmClose" value="@(early ? "true" : "false")" />
+                            <button class="btn btn-outline-danger" type="submit" aria-label="@(early ? "Close bidding early for" : "Close bidding for") @t.Title"><partial name="_Icon" model='@("pause")' /> @(early ? "Close bidding early" : "Close bidding")</button>
+                        </form>
+                    }
+                </div>
+            }
         </article>
     }
     </div>
@@ -91,15 +115,16 @@ else
     @if (upcoming.Count == 0) { <p class="subtle mb-0">No upcoming bidding deadlines.</p> }
     else
     {
-        <ul class="list-group list-group-flush">
+        <div class="record-list record-list-inset">
             @foreach (var tender in upcoming)
             {
-                <li class="list-group-item d-flex gap-2 flex-wrap justify-content-between">
-                    <a asp-action="Details" asp-route-id="@tender.Id">@tender.Title</a>
-                    <time datetime="@tender.CloseDate.ToString("yyyy-MM-ddTHH:mm:ss")Z">@tender.CloseDate.ToString("dd MMM yyyy · HH:mm")</time>
-                </li>
+                <article class="record-card">
+                    <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("calendar")' /></span><span>@tender.Title</span></div>
+                    <dl class="record-facts"><div><dt>Closes (UTC)</dt><dd><time datetime="@tender.CloseDate.ToString("yyyy-MM-ddTHH:mm:ss")Z">@tender.CloseDate.ToString("dd MMM yyyy · HH:mm")</time></dd></div></dl>
+                    <div class="record-action"><a data-workspace-dialog="details" class="record-icon-action" asp-action="Details" asp-route-id="@tender.Id" asp-route-panel="overview" aria-label="View tender @tender.Title" data-tooltip="View tender"><partial name="_Icon" model='@("eye")' /></a></div>
+                </article>
             }
-        </ul>
+        </div>
     }
 </section>
 </div>

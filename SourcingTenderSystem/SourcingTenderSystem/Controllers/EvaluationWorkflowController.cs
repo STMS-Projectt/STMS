@@ -51,13 +51,15 @@ public sealed class EvaluationWorkflowController(ApplicationDbContext db, Suppli
             !await Db.Tenders.AnyAsync(t => t.PurchaseRequisitionId == tender.PurchaseRequisitionId &&
                 (t.Id > tender.Id || t.Status != Cancelled));
         var scores = await EvaluationRules.Scores(Db, id);
-        var progress = await Progress(tender, scores);
+        var weights = await WeightSets(tender);
+        scores = ActiveScores(scores, weights);
+        var progress = await Progress(tender, scores, weights);
         ViewBag.Comparison = tender.EvaluationReport?.SupplierComparison is { Length: > 0 } comparison &&
             tender.EvaluationReport.ResultsSnapshot != null
             ? System.Text.Json.JsonSerializer.Deserialize<List<SupplierEvaluationResult>>(comparison)
-            : progress.Count == 4 && progress.All(p => p.Complete) ? await Compare(tender, scores) : null;
+            : progress.Count == 4 && progress.All(p => p.Complete) ? await Compare(tender, scores, weights) : null;
         return View(new EvaluationWorkflowDetails(tender, progress, CanUpload(tender, employee.Id, progress),
-            NextStage(tender, employee.Id), scores));
+            NextStage(tender, employee.Id), scores, weights));
     }
 
     [HttpPost, Authorize(Roles = Roles.SourcingManager), RequestSizeLimit(SupplierFileStore.MaxBytes + 65536)]
@@ -69,18 +71,20 @@ public sealed class EvaluationWorkflowController(ApplicationDbContext db, Suppli
         var tender = await Load(id, employee.Id);
         if (tender is null) return NotFound();
         var scores = await EvaluationRules.Scores(Db, id);
-        var progress = await Progress(tender, scores);
+        var weights = await WeightSets(tender);
+        scores = ActiveScores(scores, weights);
+        var progress = await Progress(tender, scores, weights);
         if (!CanUpload(tender, employee.Id, progress) || await EvaluationRules.Unresolved(Db, id).AnyAsync()) return Conflict("All four members must finish first.");
         if (!ModelState.IsValid || string.IsNullOrWhiteSpace(input.Summary) || !tender.Bids.Any(b => b.Id == input.RecommendedBidId))
         {
             TempData["WorkflowError"] = "Select a compliant bid and provide a summary and PDF report.";
             return RedirectToAction(nameof(Details), new { id });
         }
-        var comparison = await Compare(tender, scores);
+        var comparison = await Compare(tender, scores, weights);
         var snapshot = System.Text.Json.JsonSerializer.Serialize(new {
             tender.Id, tender.Title, tender.Description, tender.Terms, tender.OpenDate, tender.CloseDate,
             Criteria = tender.EvaluationCriteria.Select(c => new { c.Id, c.Name, c.Type, c.MaxScore, c.WeightPercent }),
-            Scores = scores, Submissions = progress, Suppliers = comparison, input.RecommendedBidId,
+            Scores = scores, ReviewerWeights = weights, Submissions = progress, Suppliers = comparison, input.RecommendedBidId,
             Justification = input.Summary.Trim()
         });
         var key = await files.SaveAsync(input.File!, cancellationToken);
@@ -185,7 +189,7 @@ public sealed class EvaluationWorkflowController(ApplicationDbContext db, Suppli
             report.Status == Top && tender.Status != "Awaiting Committee Decision")
             return Conflict("Tender and report are not at the expected stage.");
         if (report.ResultsSnapshot == null || !EvaluationRules.CriteriaValid(tender.EvaluationCriteria.ToArray()) || await EvaluationRules.Unresolved(Db, id).AnyAsync() ||
-            !(await Progress(tender, await EvaluationRules.Scores(Db, id))).All(p => p.Complete) ||
+            !(await Progress(tender, await EvaluationRules.Scores(Db, id), await WeightSets(tender))).All(p => p.Complete) ||
             tender.CommitteeMembers.Count(m => m.CommitteeType == "Evaluation") != 4)
             return Conflict("An assembled report and four submitted evaluations are required.");
         var next = NextStage(tender, employee.Id);
@@ -301,19 +305,35 @@ public sealed class EvaluationWorkflowController(ApplicationDbContext db, Suppli
         .Include(t => t.EvaluationReport).ThenInclude(r => r!.TenderApprovals).ThenInclude(a => a.ApproverEmployeeProfile)
         .SingleOrDefaultAsync(t => t.Id == id);
 
-    private async Task<List<EvaluationProgress>> Progress(Tender tender, List<EvaluationScore> scores)
+    private async Task<IReadOnlyDictionary<int, IReadOnlyDictionary<int, decimal>>> WeightSets(Tender tender)
+    {
+        var saved = await Db.EvaluationWeightPlans.AsNoTracking().Where(p => p.TenderId == tender.Id)
+            .ToDictionaryAsync(p => p.EmployeeProfileId, p => p.CriteriaWeights);
+        var criteria = tender.EvaluationCriteria.ToArray();
+        return tender.CommitteeMembers.Where(m => m.CommitteeType == "Evaluation").Select(m => m.EmployeeProfileId)
+            .Distinct().ToDictionary(id => id, id => EvaluationRules.EffectiveWeights(criteria, saved.GetValueOrDefault(id)));
+    }
+
+    private static List<EvaluationScore> ActiveScores(IEnumerable<EvaluationScore> scores,
+        IReadOnlyDictionary<int, IReadOnlyDictionary<int, decimal>> weights) =>
+        scores.Where(s => weights.TryGetValue(s.EmployeeId, out var selected) && selected.ContainsKey(s.CriterionId)).ToList();
+
+    private async Task<List<EvaluationProgress>> Progress(Tender tender, List<EvaluationScore> scores,
+        IReadOnlyDictionary<int, IReadOnlyDictionary<int, decimal>> weights)
     {
         var submissions = await Db.EvaluationSubmissions.Where(s => s.TenderId == tender.Id)
             .ToDictionaryAsync(s => s.EmployeeProfileId, s => (DateTime?)s.SubmittedAt);
-        var required = tender.Bids.Count * tender.EvaluationCriteria.Count;
-        return tender.CommitteeMembers.Where(m => m.CommitteeType == "Evaluation").Select(m => new EvaluationProgress(
-            m.EmployeeProfile.FullName, m.MemberRole,
-            EvaluationRules.CompleteCells(tender.Bids.Select(b => b.Id), tender.EvaluationCriteria,
-                scores.Where(s => s.EmployeeId == m.EmployeeProfileId)),
-            required, submissions.GetValueOrDefault(m.EmployeeProfileId), m.EmployeeProfileId)).ToList();
+        return tender.CommitteeMembers.Where(m => m.CommitteeType == "Evaluation").Select(m =>
+        {
+            var selected = tender.EvaluationCriteria.Where(c => weights[m.EmployeeProfileId].ContainsKey(c.Id)).ToArray();
+            return new EvaluationProgress(m.EmployeeProfile.FullName, m.MemberRole,
+                EvaluationRules.CompleteCells(tender.Bids.Select(b => b.Id), selected, scores.Where(s => s.EmployeeId == m.EmployeeProfileId)),
+                tender.Bids.Count * selected.Length, submissions.GetValueOrDefault(m.EmployeeProfileId), m.EmployeeProfileId);
+        }).ToList();
     }
 
-    private async Task<List<SupplierEvaluationResult>> Compare(Tender tender, List<EvaluationScore> scores)
+    private async Task<List<SupplierEvaluationResult>> Compare(Tender tender, List<EvaluationScore> scores,
+        IReadOnlyDictionary<int, IReadOnlyDictionary<int, decimal>> weights)
     {
         var bidders = await Db.Bids.AsNoTracking().Where(b => b.TenderId == tender.Id && b.SubmittedAt != null)
             .Include(b => b.SupplierProfile).Include(b => b.BidDocuments).AsSplitQuery().ToListAsync();
@@ -325,8 +345,8 @@ public sealed class EvaluationWorkflowController(ApplicationDbContext db, Suppli
             var fx = usd[b.Id];
             var rows = scores.Where(s => s.BidId == b.Id).ToList();
             var eligible = b.Status == "Compliant";
-            var technical = eligible ? EvaluationRules.Weighted(tender.EvaluationCriteria.Where(c => c.Type == "Technical"), rows) : (decimal?)null;
-            var financial = eligible ? EvaluationRules.Weighted(tender.EvaluationCriteria.Where(c => c.Type == "Financial"), rows) : (decimal?)null;
+            var technical = eligible ? EvaluationRules.WeightedByReviewer(tender.EvaluationCriteria.Where(c => c.Type == "Technical"), rows, weights) : (decimal?)null;
+            var financial = eligible ? EvaluationRules.WeightedByReviewer(tender.EvaluationCriteria.Where(c => c.Type == "Financial"), rows, weights) : (decimal?)null;
             return new SupplierEvaluationResult(b.Id, b.SupplierProfile.CompanyName, b.Status, b.ComplianceNotes, b.TotalPrice, b.Currency,
                 technical is decimal t ? EvaluationRules.Round(t) : null,
                 financial is decimal f ? EvaluationRules.Round(f) : null,

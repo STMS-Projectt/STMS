@@ -1,28 +1,44 @@
 @model AdminTenderView
 @{
-    ViewData["Title"] = "Tender details";
     var tender = Model.Tender;
+    var panel = Context.Request.Query["panel"].ToString();
+    var labels = new Dictionary<string, string> { ["overview"] = "Tender summary", ["committee"] = "Committee members", ["invitations"] = "Tender invitations", ["bids"] = "Submitted bids" };
+    var full = !labels.TryGetValue(panel, out var label);
+    ViewData["Title"] = label ?? "Tender details";
 }
 <a class="back-link" asp-action="Tenders"><partial name="_Icon" model='@("back")' /> Tenders</a>
-<header class="page-heading stms-hero admin-record-hero"><div><p class="eyebrow">TENDER #@tender.Id</p><h1>@tender.Title</h1><p>@tender.Status · @tender.PurchaseRequisition.Department.Name</p></div>
+<header class="page-heading stms-hero admin-record-hero"><div><p class="eyebrow">TENDER #@tender.Id</p><h1>@(label ?? tender.Title)</h1><p>@(full ? $"{tender.Status} · {tender.PurchaseRequisition.Department.Name}" : tender.Title)</p></div>
+@if (full || panel == "overview")
+{
 <div class="record-action">
     <a data-workspace-dialog="details" class="record-icon-action" asp-action="RequestDetails" asp-route-id="@tender.PurchaseRequisitionId" aria-label="View purchase request" data-tooltip="View purchase request" title="View purchase request"><partial name="_Icon" model='@("file")' /></a>
     <a data-workspace-dialog="details" class="record-icon-action" asp-action="TenderQr" asp-route-id="@tender.Id" aria-label="Show tender QR code" data-tooltip="Show tender QR code" title="Show tender QR code"><partial name="_Icon" model='@("qr")' /></a>
     @if (tender.Status == "Under Evaluation" || tender.EvaluationReport != null) { <a data-workspace-dialog="details" class="record-icon-action" asp-controller="EvaluationWorkflow" asp-action="Details" asp-route-id="@tender.Id" aria-label="View evaluation" data-tooltip="View evaluation" title="View evaluation"><partial name="_Icon" model='@("check")' /></a> }
-</div></header>
-<partial name="_RecordQr" model='@(Url.Action("Tender", new { id = tender.Id })!)' />
+</div>
+}
+</header>
+@if (full) { <partial name="_RecordQr" model='@(Url.Action("Tender", new { id = tender.Id })!)' /> }
+@if (full || panel == "overview")
+{
 <section class="surface detail-card mb-3"><h2>Tender information</h2>
     <dl class="detail-grid"><div><dt>Opens (UTC)</dt><dd>@tender.OpenDate.ToString("dd MMM yyyy HH:mm")</dd></div><div><dt>Closes (UTC)</dt><dd>@tender.CloseDate.ToString("dd MMM yyyy HH:mm")</dd></div></dl>
     <p style="white-space:pre-wrap">@tender.Description</p>
     <details><summary>Terms</summary><p style="white-space:pre-wrap">@tender.Terms</p></details>
 </section>
+}
+@if (full || panel == "committee")
+{
 <section class="surface detail-card mb-3"><h2>Committee</h2>
 @if (tender.CommitteeMembers.Count == 0) { <p class="subtle mb-0">No members assigned.</p> }
 else { <ul class="mb-0">@foreach (var member in tender.CommitteeMembers.OrderBy(m => m.CommitteeType).ThenBy(m => m.MemberRole)) { <li>@member.EmployeeProfile.FullName · @member.MemberRole · @member.CommitteeType</li> }</ul> }
 </section>
-<div class="dashboard-grid">
-@foreach (var (title, records) in new[] { ("Invitations", Model.Invitations), ("Submitted bids", Model.Bids) })
+}
+@if (full || panel is "invitations" or "bids")
 {
+<div class="@(full ? "dashboard-grid" : "stack")">
+@foreach (var (key, title, records) in new[] { ("invitations", "Invitations", Model.Invitations), ("bids", "Submitted bids", Model.Bids) })
+{
+    if (!full && panel != key) continue;
     <section class="surface directory"><div class="directory-toolbar"><h2 class="mb-0">@title</h2></div>
     @if (records.Count == 0) { <div class="empty-state">No records yet.</div> }
     else
@@ -42,3 +58,4 @@ else { <ul class="mb-0">@foreach (var member in tender.CommitteeMembers.OrderBy(
     }</section>
 }
 </div>
+}

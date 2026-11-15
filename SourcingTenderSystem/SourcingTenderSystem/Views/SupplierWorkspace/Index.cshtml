@@ -4,23 +4,24 @@
     ViewData["Title"] = "Supplier dashboard";
     var trading = Model.Status == SupplierStatus.Approved && User.IsInRole(Roles.Supplier);
 }
-<section class="review-banner" aria-labelledby="supplier-heading">
-    <div class="review-copy">
-        <p class="banner-label"><partial name="_Icon" model='@("supplier")' /> SUPPLIER WORKSPACE</p>
+<header class="page-heading stms-hero" aria-labelledby="supplier-heading">
+    <div>
+        <p class="eyebrow">SUPPLIER WORKSPACE</p>
         <h1 id="supplier-heading">@Model.Company</h1>
         <p>@(trading ? "Manage tender invitations and follow your bids." : "Track your supplier application and supporting documents.")</p>
-        <div class="button-row">
-            @if (trading) { <a class="btn btn-light" asp-action="Invitations">Open tender invitations <partial name="_Icon" model='@("arrow")' /></a> }
-            else if (Model.Status == SupplierStatus.Pending) { <a data-workspace-dialog class="btn btn-light" asp-controller="SupplierRegistration" asp-action="UploadDocuments">Upload document</a> }
-            <a class="btn btn-on-dark" asp-controller="SupplierRegistration" asp-action="RegistrationStatus">View application</a>
+    </div>
+    <div class="button-row">
+        @if (trading) { <a class="btn btn-primary" asp-action="Invitations">Tender invitations <partial name="_Icon" model='@("arrow")' /></a> }
+        <div class="record-action">
+            <a data-workspace-dialog="details" class="record-icon-action" asp-controller="SupplierRegistration" asp-action="RegistrationStatus" asp-route-workspace="true" asp-route-panel="overview" aria-label="View application status" data-tooltip="Application status"><partial name="_Icon" model='@("eye")' /></a>
+            <a data-workspace-dialog="details" class="record-icon-action" asp-controller="SupplierRegistration" asp-action="RegistrationStatus" asp-route-workspace="true" asp-route-panel="documents" aria-label="View application documents" data-tooltip="Application documents"><partial name="_Icon" model='@("file")' /></a>
         </div>
     </div>
-    <div class="banner-art" aria-hidden="true"><span></span><span></span><span></span></div>
-</section>
-<section class="metrics-grid" aria-label="Supplier statistics">
+</header>
+<section class="metrics-grid stms-metrics" aria-label="Supplier statistics">
     <article class="surface metric">
         <span class="icon-tile tone-teal"><partial name="_Icon" model='@("shield")' /></span>
-        <strong>@Model.Status</strong>
+        <strong>@(Model.ApplicationDraft ? "Draft" : Model.Status)</strong>
         <span>Application status</span>
     </article>
     @if (trading)
@@ -40,9 +41,13 @@
     {
         <ol class="mb-0"><li>Review and accept an invitation while the tender is open.</li><li>Create a bid, enter your prices, and attach supporting documents.</li><li>Submit before the deadline and track the bid in <a asp-controller="Bids" asp-action="MyBids">My bids</a>.</li></ol>
     }
+    else if (Model.ApplicationDraft)
+    {
+        <p class="subtle mb-0">Your application has not been sent to the sourcing team yet.</p>
+    }
     else if (Model.Status == SupplierStatus.Pending)
     {
-        <p class="subtle mb-0">Upload your supporting PDFs. Tender invitations and bidding become available after approval.</p>
+        <p class="subtle mb-0">Track the application here. If the sourcing officer needs another document, you can reply to their request in Clarifications.</p>
     }
     else
     {

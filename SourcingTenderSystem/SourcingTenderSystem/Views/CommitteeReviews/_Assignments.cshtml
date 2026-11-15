@@ -1,18 +1,25 @@
 @model IReadOnlyList<CommitteeAssignment>
 <section class="surface directory dept-directory" data-directory>
+    <div class="dept-directory-heading"><span class="icon-tile tone-violet"><partial name="_Icon" model='@("briefcase")' /></span><div><h2>Assigned tenders</h2><p>Find a tender and open its evaluation.</p></div></div>
     @if (Model.Count == 0)
     { <div class="empty-state"><h2>No tenders to review here</h2><p>Review starts once sourcing completes its compliance checks.</p></div> }
     else
     {
         <partial name="_ListFilters" model='@("Search assigned tenders", Model.Select(r => r.Status))' />
-    <div class="table-responsive" role="region" aria-label="Assigned tenders" tabindex="0">
-            <table class="directory-table"><thead><tr><th scope="col">Tender</th><th scope="col">Your seat</th><th scope="col">Status</th><th scope="col">Action</th></tr></thead><tbody>
+        <partial name="_DirectoryPages" model='@("Assignment pages")' />
+        <div class="record-list" data-record-list>
             @foreach (var row in Model)
             {
-                <tr data-status="@row.Status"><td><strong>@row.Title</strong></td><td>@row.Seat</td><td>@row.Status</td>
-                <td><a class="table-action" asp-action="Details" asp-route-id="@row.Id">@(row.Status == "Under Evaluation" ? "Review bids" : "View evaluation history")</a></td></tr>
+                var action = row.Status == "Under Evaluation" ? "Review bids" : "View evaluation history";
+                <article class="record-card" data-record data-status="@row.Status">
+                    <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("briefcase")' /></span><span>@row.Title<small>Tender #@row.Id</small></span></div>
+                    <dl class="record-facts">
+                        <div><dt class="record-field-icon" title="Committee seat"><partial name="_Icon" model='@("users")' /><span class="visually-hidden">Committee seat</span></dt><dd>@row.Seat</dd></div>
+                        <div><dt class="visually-hidden">Status</dt><dd><partial name="_Status" model="row.Status" /></dd></div>
+                    </dl>
+                    <div class="record-action"><a class="record-icon-action" data-workspace-dialog="details" asp-action="Details" asp-route-id="@row.Id" aria-label="@action: @row.Title" data-tooltip="@action"><partial name="_Icon" model='@("eye")' /></a></div>
+                </article>
             }
-            </tbody></table>
         </div>
     }
 <partial name="_ListFilterEmpty" />

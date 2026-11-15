@@ -26,6 +26,7 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser>
     public DbSet<Bid> Bids => Set<Bid>();
     public DbSet<BidDocument> BidDocuments => Set<BidDocument>();
     public DbSet<EvaluationSubmission> EvaluationSubmissions => Set<EvaluationSubmission>();
+    public DbSet<EvaluationWeightPlan> EvaluationWeightPlans => Set<EvaluationWeightPlan>();
     public DbSet<EvaluationCriterion> EvaluationCriteria => Set<EvaluationCriterion>();
     public DbSet<TechnicalEvaluation> TechnicalEvaluations => Set<TechnicalEvaluation>();
     public DbSet<FinancialEvaluation> FinancialEvaluations => Set<FinancialEvaluation>();
@@ -306,6 +307,13 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser>
             .HasIndex(x => x.Name)
             .IsUnique();
 
+        modelBuilder.Entity<ClarificationRequest>().HasOne(r => r.SupplierApplication).WithMany()
+            .HasForeignKey(r => r.SupplierApplicationId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<ClarificationRequest>().Property(r => r.RequestedDocumentType).HasMaxLength(80);
+        modelBuilder.Entity<ClarificationRequest>().Property(r => r.AttachmentName).HasMaxLength(255);
+        modelBuilder.Entity<ClarificationRequest>().Property(r => r.AttachmentKey).HasMaxLength(32);
+        modelBuilder.Entity<SupplierDocument>().Property(d => d.FileName).HasMaxLength(255);
+
         modelBuilder.Entity<SupplierProfile>()
             .HasIndex(x => x.TaxNumber)
             .IsUnique();
@@ -319,6 +327,12 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser>
             s.HasKey(x => new { x.TenderId, x.EmployeeProfileId });
             s.HasOne(x => x.Tender).WithMany().HasForeignKey(x => x.TenderId).OnDelete(DeleteBehavior.Restrict);
             s.HasOne(x => x.EmployeeProfile).WithMany().HasForeignKey(x => x.EmployeeProfileId).OnDelete(DeleteBehavior.Restrict);
+        });
+        modelBuilder.Entity<EvaluationWeightPlan>(p =>
+        {
+            p.HasKey(x => new { x.TenderId, x.EmployeeProfileId });
+            p.HasOne(x => x.Tender).WithMany().HasForeignKey(x => x.TenderId).OnDelete(DeleteBehavior.Restrict);
+            p.HasOne(x => x.EmployeeProfile).WithMany().HasForeignKey(x => x.EmployeeProfileId).OnDelete(DeleteBehavior.Restrict);
         });
         modelBuilder.Entity<Bid>().HasOne(b => b.ComplianceClarification).WithMany()
             .HasForeignKey(b => b.ComplianceClarificationId).OnDelete(DeleteBehavior.Restrict);

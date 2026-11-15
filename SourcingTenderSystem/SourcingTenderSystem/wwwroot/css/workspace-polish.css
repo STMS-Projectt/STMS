@@ -1,0 +1,126 @@
+/* Shared rhythm for forms, record surfaces, and focused dialogs. */
+.workspace :is(.detail-card,.form-card,.admin-form,.dashboard-card),
+.portal :is(.detail-card,.form-card,.helper-card){min-width:0}
+.site-body .page-content :is(.notice,.alert){overflow-wrap:anywhere}
+.site-body .page-content :is(h1,h2,h3,.record-name,.record-facts dd),.workspace-dialog :is(h1,h2,h3,dd){overflow-wrap:anywhere}
+.workspace-dialog .form-label,.workspace-dialog .field,.application-form .form-label{font-weight:680}
+.workspace-dialog .field-hint,.application-form .field-hint{font-weight:400}
+.workspace-dialog .detail-card h2{font-size:clamp(1.05rem,2vw,1.24rem)}
+.workspace-dialog .detail-grid,.workspace-dialog .form-grid{min-width:0}
+.workspace-dialog .surface:has(>summary){border-radius:15px}
+#workspace-dialog.sourcing-dialog.is-detail:has([data-compact-panel=true]){width:min(48rem,calc(100vw - 16px))}
+.workspace-dialog details>summary{font-weight:680;color:#235b51}
+.workspace-dialog details>summary:is(:hover,:focus-visible){color:#006e52}
+.record-action .record-icon-action{flex:none}
+.record-facts dd>.badge{white-space:normal}
+.record-section{margin-block:0 16px}
+.record-section:last-child{margin-bottom:0}
+.record-section-heading,.application-section-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
+.record-section-heading>div,.application-section-heading>div{min-width:0}
+.record-section-heading h2,.application-section-heading h2{margin:0;font-size:1.12rem;font-weight:770;letter-spacing:-.02em}
+.record-section-heading p,.application-section-heading p{margin:4px 0 0;color:#475f70;font-size:.87rem}
+.record-section-heading .icon-tile,.application-section-heading .icon-tile{flex:none}
+.record-panel-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.record-panel-actions .record-action{margin:0;border:0;padding:0}
+.record-panel-label{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;background:#e8f6f0;color:#075941;font-size:.76rem;font-weight:720}
+.record-terms{white-space:pre-wrap;line-height:1.65}
+.weight-plan-list{display:grid;gap:8px;margin-top:14px}
+.weight-plan-row,.weight-officer-criterion{padding:12px;border:1px solid #dce9e5;border-radius:13px;background:#fff}
+.weight-plan-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(90px,130px);gap:14px;align-items:center}
+.weight-plan-row.is-selected{border-color:#b4d9cb;background:#f3faf7}
+.weight-choice{display:flex;gap:10px;align-items:center;cursor:pointer;min-width:0}
+.weight-choice input{width:19px;height:19px;accent-color:#007858;flex:none}
+.weight-choice span{min-width:0;overflow-wrap:anywhere}
+.weight-choice small{display:block;margin-top:2px;color:#496276;font-size:.79rem;font-weight:500}
+.weight-value{font-size:.8rem}
+[data-weight-total]{font-variant-numeric:tabular-nums;background:#fdf4e6;color:#795117}
+[data-weight-total].is-complete{background:#e2f5ec;color:#005844}
+.weight-officer-criterion+.weight-officer-criterion{margin-top:8px}
+.tender-overview{margin-bottom:12px}
+.tender-overview-facts{grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr));gap:8px}
+.tender-overview-facts>div,.tender-terms{padding:12px;border:1px solid #e0ece7;border-radius:12px;background:#f7fbf9}
+.tender-action-panel .record-section-heading{padding-bottom:9px;margin-bottom:12px;border-bottom:1px solid #e3eeea}
+.tender-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:stretch}
+.tender-actions form{display:flex;margin:0}
+.tender-actions .btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:44px;padding:8px 12px;margin:0;line-height:1.2}
+.tender-actions .icon,.criterion-category h3 .icon{width:17px;height:17px;flex:none}
+.tender-card-quick-actions{grid-column:1 / -1;display:flex;justify-content:flex-end;gap:8px;padding-top:8px;border-top:1px solid #e3eeea}
+.tender-card-quick-actions form{margin:0}
+.tender-card-quick-actions .btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:44px}
+.tender-card-quick-actions .icon{width:17px;height:17px;flex:none}
+@media(max-width:500px){.tender-card-quick-actions{justify-content:stretch}.tender-card-quick-actions>*{width:100%}.tender-card-quick-actions form .btn{width:100%}}
+.checklist-columns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.checklist-group,.criterion-category{min-width:0;margin:0;border:1px solid #dce9e4;border-radius:15px;padding:12px;background:#f7fbf9}
+.checklist-group legend{float:none;width:auto;display:inline-flex;align-items:center;gap:7px;padding:0 6px;font-size:1rem;font-weight:750}
+.checklist-group legend .icon-tile{width:30px;height:30px;border-radius:9px}
+.checklist-subtotal{text-align:end;margin:0 0 8px;color:#075941;font-weight:720;font-variant-numeric:tabular-nums}
+.checklist-entry{background:#fff;border:1px solid #dfebe6;border-radius:11px;padding:9px}
+.checklist-entry+.checklist-entry{margin-top:7px}
+.checklist-entry:has([data-checklist-choice]:checked){border-color:#a6d5c5;background:#ecf8f2}
+.checklist-choice{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:8px;min-height:35px;cursor:pointer}
+.checklist-choice input[type=checkbox]{width:18px;height:18px;accent-color:#007858}
+.checklist-choice span{overflow-wrap:anywhere;font-weight:650}
+.checklist-choice strong{color:#076a50;white-space:nowrap;font-size:.83rem}
+.checklist-entry details{margin-inline-start:26px;font-size:.85rem}
+.bid-evidence>summary{font-weight:740;color:#214f49}
+.bid-evidence>summary>.record-panel-label{margin-inline-start:6px}
+.bid-evidence[open]>p{margin-top:12px}
+@media(max-width:700px){.checklist-columns{grid-template-columns:1fr}}
+@media(max-width:500px){.tender-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.tender-actions form>.btn{width:100%}}
+@media(prefers-reduced-motion:no-preference){.checklist-entry{transition:background-color .18s ease,border-color .18s ease}}
+@media(max-width:450px){.weight-plan-row{padding:9px;gap:8px}.weight-choice{gap:6px}.weight-value .form-control{padding-inline:7px}}
+
+.application-hero{align-items:center}
+.application-hero>.icon-tile{flex:none;width:58px;height:58px;border-radius:17px;box-shadow:0 6px 20px #096a6420}
+.application-hero>.icon-tile .icon{width:27px;height:27px}
+.application-steps{gap:10px;margin-block:0 20px}
+.application-steps li{min-width:0;padding:12px 14px;gap:10px;border-radius:15px;background:#ffffffd9}
+.application-steps li>span{width:34px;height:34px;background:#edf2f7;color:#38546c}
+.application-steps li>div{display:grid;gap:1px}
+.application-steps small{color:#4e6675;font-size:.69rem;font-weight:620}
+.application-steps strong{line-height:1.2}
+.application-steps li[aria-current=step]{box-shadow:0 6px 16px #06846612}
+.application-steps li[aria-current=step]>span,.application-steps li.is-complete>span{color:#00664b;background:#d7f1e7}
+.application-steps li>span .icon{width:17px;height:17px}
+.application-shell{align-items:start}
+.application-form .form-section{margin-bottom:20px}
+.application-form .form-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:9px}
+.application-form .form-control,.application-form .form-select{min-height:44px}
+.application-form .form-control.input-validation-error,.application-form .form-select.input-validation-error{border-color:#be424b;background:#fff7f7}
+.application-form .validation-summary-valid,.application-form .field-validation-valid{display:none}
+.application-form .field-validation-error{display:block;margin-top:5px}
+.application-section-heading{justify-content:flex-start}
+.application-categories{position:relative}
+.application-categories .supplier-category-grid{margin-top:8px}
+.application-count{display:inline-flex;margin:3px 0 0;padding:3px 9px;border-radius:999px;background:#e5f4ef;color:#075941;font-size:.76rem;font-weight:700}
+.application-count[hidden]{display:none}
+.application-assist>h2{margin-top:12px}
+.application-checklist,.application-file-list{padding:0;margin:12px 0;list-style:none;display:grid;gap:8px}
+.application-checklist>li,.application-file-list>li{min-width:0;display:flex;align-items:center;justify-content:space-between;gap:9px;padding:9px 10px;border:1px solid #dfebe6;border-radius:11px;background:#fff;color:#1b3e45;font-size:.83rem}
+.application-file-list:empty{display:none}
+.application-file-list li>span{min-width:0;overflow-wrap:anywhere}
+.application-remove-file{display:grid;place-items:center;min-width:34px;min-height:34px;border:0;border-radius:9px;background:#fff3f2;color:#9d302b;font-size:1.25rem;line-height:1}
+.application-remove-file:is(:hover,:focus-visible){background:#fbe1dd}
+.application-dropzone{border:1px dashed #89bfb0;background:#f4fbf8}
+.application-dropzone.is-dragging{border-color:#00775a;background:#e1f6ed;outline:2px solid #79c7ae;outline-offset:2px}
+.application-dropzone>label{margin-top:8px}
+@media(max-width:575px){
+    .record-section-heading{align-items:flex-start;flex-wrap:wrap}
+    .application-hero>.icon-tile{display:none}
+    .application-steps{gap:5px}
+    .application-steps li{padding:8px 6px;gap:5px}
+    .application-steps li>span{width:28px;height:28px}
+    .application-form .form-actions>*{flex:1 1 auto}
+}
+@media(prefers-reduced-motion:no-preference){
+    .site-body #main>.page-heading:not(.dept-reveal),.site-body #main>.application-steps,.site-body #main>.application-shell{animation:stms-surface-arrival .28s ease-out both}
+    .site-body #main>.application-steps{animation-delay:35ms}
+    .site-body #main>.application-shell{animation-delay:70ms}
+    #main>.public-hero,#main>.steps-grid,#main>.confirmation,#main>.auth-shell{animation:stms-surface-arrival .32s ease-out both}
+    @keyframes stms-surface-arrival{from{opacity:.55}to{opacity:1}}
+    .application-dropzone,.application-steps li,.supplier-category-option,.record-action .record-icon-action,.application-remove-file{transition:background-color .16s ease,border-color .16s ease,box-shadow .16s ease,translate .16s ease}
+    .record-action .record-icon-action:hover{translate:0 -2px}
+    .record-action .record-icon-action:active{translate:0 0}
+    .application-file-list li{animation:stms-surface-arrival .2s ease-out both}
+    .workspace-dialog details[open]>:not(summary){animation:stms-surface-arrival .18s ease-out both}
+}

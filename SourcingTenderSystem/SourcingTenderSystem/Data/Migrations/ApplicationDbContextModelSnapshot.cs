@@ -441,6 +441,20 @@ namespace SourcingTenderSystem.Data.Migrations
                     b.Property<DateTime?>("AnsweredAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime?>("AttachmentAddedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("AttachmentExpiryDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("AttachmentKey")
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
+
+                    b.Property<string>("AttachmentName")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
                     b.Property<int?>("BidId")
                         .HasColumnType("int");
 
@@ -459,6 +473,10 @@ namespace SourcingTenderSystem.Data.Migrations
 
                     b.Property<int?>("ReceiverSupplierProfileId")
                         .HasColumnType("int");
+
+                    b.Property<string>("RequestedDocumentType")
+                        .HasMaxLength(80)
+                        .HasColumnType("nvarchar(80)");
 
                     b.Property<DateTime?>("ResolvedAt")
                         .HasColumnType("datetime2");
@@ -480,6 +498,9 @@ namespace SourcingTenderSystem.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("SupplierApplicationId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("TenderId")
                         .HasColumnType("int");
 
@@ -496,6 +517,8 @@ namespace SourcingTenderSystem.Data.Migrations
                     b.HasIndex("SenderEmployeeProfileId");
 
                     b.HasIndex("SenderSupplierProfileId");
+
+                    b.HasIndex("SupplierApplicationId");
 
                     b.HasIndex("TenderId");
 
@@ -669,6 +692,28 @@ namespace SourcingTenderSystem.Data.Migrations
                     b.HasIndex("EmployeeProfileId");
 
                     b.ToTable("EvaluationSubmissions");
+                });
+
+            modelBuilder.Entity("SourcingTenderSystem.Models.EvaluationWeightPlan", b =>
+                {
+                    b.Property<int>("TenderId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("EmployeeProfileId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CriteriaWeights")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("TenderId", "EmployeeProfileId");
+
+                    b.HasIndex("EmployeeProfileId");
+
+                    b.ToTable("EvaluationWeightPlans");
                 });
 
             modelBuilder.Entity("SourcingTenderSystem.Models.FinancialEvaluation", b =>
@@ -908,6 +953,10 @@ namespace SourcingTenderSystem.Data.Migrations
                     b.Property<DateTime?>("ExpiryDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("FileName")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
                     b.Property<string>("FilePath")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -936,6 +985,9 @@ namespace SourcingTenderSystem.Data.Migrations
                     b.Property<string>("Address")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ApplicationSubmittedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("CommercialRegNo")
                         .IsRequired()
@@ -1418,6 +1470,11 @@ namespace SourcingTenderSystem.Data.Migrations
                         .HasForeignKey("SenderSupplierProfileId")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("SourcingTenderSystem.Models.SupplierProfile", "SupplierApplication")
+                        .WithMany()
+                        .HasForeignKey("SupplierApplicationId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("SourcingTenderSystem.Models.Tender", "Tender")
                         .WithMany("ClarificationRequests")
                         .HasForeignKey("TenderId")
@@ -1434,6 +1491,8 @@ namespace SourcingTenderSystem.Data.Migrations
                     b.Navigation("SenderEmployeeProfile");
 
                     b.Navigation("SenderSupplierProfile");
+
+                    b.Navigation("SupplierApplication");
 
                     b.Navigation("Tender");
                 });
@@ -1495,6 +1554,25 @@ namespace SourcingTenderSystem.Data.Migrations
                 });
 
             modelBuilder.Entity("SourcingTenderSystem.Models.EvaluationSubmission", b =>
+                {
+                    b.HasOne("SourcingTenderSystem.Models.EmployeeProfile", "EmployeeProfile")
+                        .WithMany()
+                        .HasForeignKey("EmployeeProfileId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SourcingTenderSystem.Models.Tender", "Tender")
+                        .WithMany()
+                        .HasForeignKey("TenderId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("EmployeeProfile");
+
+                    b.Navigation("Tender");
+                });
+
+            modelBuilder.Entity("SourcingTenderSystem.Models.EvaluationWeightPlan", b =>
                 {
                     b.HasOne("SourcingTenderSystem.Models.EmployeeProfile", "EmployeeProfile")
                         .WithMany()

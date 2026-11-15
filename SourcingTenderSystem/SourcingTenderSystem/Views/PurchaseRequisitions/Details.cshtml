@@ -26,7 +26,7 @@
 }
 <section class="surface detail-card request-section">
     <div class="card-heading"><h2>Request overview</h2>
-        @if (canEdit && !overviewOnly) { <a class="btn btn-outline-secondary" asp-action="Edit" asp-route-id="@Model.Id">Edit request</a> }
+        @if (canEdit && !overviewOnly) { <a class="btn btn-outline-secondary" data-workspace-dialog asp-action="Edit" asp-route-id="@Model.Id"><partial name="_Icon" model='@("edit")' /> Edit request</a> }
     </div>
     <dl class="request-meta">
         <div><dt>Priority <span lang="ar" dir="rtl">الأولوية</span></dt><dd>@Model.Priority</dd></div>
@@ -38,8 +38,8 @@
 @if (overviewOnly)
 {
     <div class="button-row mt-3">
-        <a class="btn btn-outline-secondary" data-workspace-page asp-controller="Clarifications" asp-action="StartRequest" asp-route-id="@Model.Id" aria-label="Start a clarification" title="Start a clarification"><partial name="_Icon" model='@("mail")' /></a>
-        <a class="btn btn-outline-secondary" data-workspace-page asp-controller="Clarifications" asp-action="Index" asp-route-kind="request" asp-route-recordId="@Model.Id">Clarification history</a>
+        <a class="btn btn-outline-secondary" data-workspace-dialog asp-controller="Clarifications" asp-action="StartRequest" asp-route-id="@Model.Id" aria-label="Start a clarification" title="Start a clarification"><partial name="_Icon" model='@("mail")' /></a>
+        <a class="btn btn-outline-secondary" data-workspace-dialog="details" asp-controller="Clarifications" asp-action="Index" asp-route-kind="request" asp-route-recordId="@Model.Id">Clarification history</a>
     </div>
 }
 @if (!overviewOnly)
@@ -47,32 +47,9 @@
 <section class="surface directory request-section">
     <div class="directory-toolbar">
         <div><h2 class="mb-0">Requested items</h2><span class="result-count">@Model.Items.Count line item(s)</span></div>
-        @if (canEdit) { <a class="btn btn-outline-secondary" asp-controller="RequisitionItems" asp-action="Create" asp-route-requestId="@Model.Id"><partial name="_Icon" model='@("plus")' /> Add item</a> }
+        @if (canEdit) { <a class="btn btn-outline-secondary" data-workspace-dialog asp-controller="RequisitionItems" asp-action="Create" asp-route-requestId="@Model.Id"><partial name="_Icon" model='@("plus")' /> Add item</a> }
     </div>
-    @if (Model.Items.Count == 0)
-    {
-        <div class="empty-state"><h3>No items yet</h3><p>Add at least one item before submitting this request.</p></div>
-    }
-    else
-    {
-        <div class="table-responsive" role="region" aria-label="Requested items" tabindex="0">
-            <table class="directory-table">
-                <thead><tr><th scope="col">Item</th><th scope="col">Quantity</th><th scope="col">Specifications <span lang="ar" dir="rtl">المواصفات</span></th>@if (canEdit) { <th scope="col">Actions</th> }</tr></thead>
-                <tbody>
-                @foreach (var item in Model.Items.OrderBy(x => x.Id))
-                {
-                    <tr><td><strong>@item.ItemName</strong></td><td>@item.Quantity @item.Unit</td><td class="request-prose">@item.Specifications</td>
-                    @if (canEdit)
-                    {
-                        <td><a class="table-action" asp-controller="RequisitionItems" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
-                            <a class="table-action text-danger ms-2" asp-controller="RequisitionItems" asp-action="Delete" asp-route-id="@item.Id">Remove</a></td>
-                    }
-                    </tr>
-                }
-                </tbody>
-            </table>
-        </div>
-    }
+    <partial name="_RequisitionItems" model="Model.Items" />
 </section>
 @if (canEdit && Model.Items.Count > 0)
 {
@@ -82,7 +59,7 @@
     </form>
 }
 
-<div class="button-row mb-3"><a class="btn btn-outline-secondary" data-workspace-page asp-controller="Clarifications" asp-action="StartRequest" asp-route-id="@Model.Id" aria-label="Start a clarification" title="Start a clarification"><partial name="_Icon" model='@("mail")' /></a><a class="btn btn-outline-secondary" data-workspace-page asp-controller="Clarifications" asp-action="Index" asp-route-kind="request" asp-route-recordId="@Model.Id">Clarification history</a></div>
+<div class="button-row mb-3"><a class="btn btn-outline-secondary" data-workspace-dialog asp-controller="Clarifications" asp-action="StartRequest" asp-route-id="@Model.Id" aria-label="Start a clarification" title="Start a clarification"><partial name="_Icon" model='@("mail")' /></a><a class="btn btn-outline-secondary" data-workspace-dialog="details" asp-controller="Clarifications" asp-action="Index" asp-route-kind="request" asp-route-recordId="@Model.Id">Clarification history</a></div>
 
 <partial name="_TenderHistory" model="Model.Tenders" />
 }

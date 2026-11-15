@@ -38,6 +38,7 @@ builder.Services.AddHttpClient(BidAiAdvisor.HttpClientName, client =>
 });
 
 builder.Services.AddSingleton<BidAiAdvisor>();
+builder.Services.AddSingleton<EvaluationWeightAdvisor>();
 // Free exchange-rate reference (Frankfurter v2) for USD-equivalent bid display only.
 builder.Services.AddMemoryCache();
 builder.Services.AddHttpClient(ExchangeRates.HttpClientName, client =>
@@ -69,6 +70,9 @@ builder.Services.AddRateLimiter(options =>
     options.AddPolicy("biometric-login", context => RateLimitPartition.GetFixedWindowLimiter(
         context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
         _ => new FixedWindowRateLimiterOptions { PermitLimit = 12, Window = TimeSpan.FromMinutes(2) }));
+    options.AddPolicy("evaluation-weight-advice", context => RateLimitPartition.GetFixedWindowLimiter(
+        context.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "unknown",
+        _ => new FixedWindowRateLimiterOptions { PermitLimit = 5, Window = TimeSpan.FromMinutes(2) }));
 });
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddSingleton<SourcingTenderSystem.Services.Biometrics.FaceLab>();

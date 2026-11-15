@@ -3,6 +3,7 @@
     window.__stmsDepartmentsMotionBound = true;
 
     function animateNumber(number) {
+        if (!number) return;
         const target = Number(number.textContent.replace(/[^\d.-]/g, ""));
         if (!Number.isFinite(target) || target <= 0) return;
         const formatter = new Intl.NumberFormat(document.documentElement.lang || "en");
@@ -19,6 +20,7 @@
     function upgradeDock(directory) {
         const panel = directory.querySelector(".directory-filter-panel");
         if (!panel) return;
+        const count = panel.querySelector("[data-result-count]");
         const dock = document.createElement("div");
         dock.className = "directory-filter-panel dept-filter-dock";
         dock.setAttribute("aria-label", "Record filters");
@@ -72,20 +74,19 @@
         const clear = panel.querySelector("[data-directory-clear]");
         if (clear) dock.append(clear);
         if (!dock.children.length) return;
+        if (count) (directory.querySelector(".dept-directory-heading") || dock).append(count);
         panel.hidden = true;
         directory.append(dock);
         return dock;
     }
 
-    function setupFilters(main, signal) {
-        const directory = main.querySelector(".dept-directory[data-directory]");
-        if (!directory) return;
+    function setupDirectory(directory, signal) {
         const dock = directory.querySelector(".dept-filter-dock") || upgradeDock(directory);
         if (!dock) return;
         directory.append(dock);
         const updateDockVisibility = () => {
             if (!directory.isConnected) return;
-            const heading = (directory.querySelector(".dept-directory-heading") || main.querySelector(".page-heading") || directory).getBoundingClientRect();
+            const heading = (directory.querySelector(".dept-directory-heading") || directory).getBoundingClientRect();
             const section = directory.getBoundingClientRect();
             dock.classList.toggle("is-in-view", heading.bottom < innerHeight - 72 && section.bottom > 0);
         };
@@ -103,16 +104,19 @@
             popover.hidden = false;
             const center = menu.getBoundingClientRect().left + menu.offsetWidth / 2;
             const half = popover.offsetWidth / 2;
-            const edge = document.documentElement.clientWidth;
-            popover.style.translate = `${Math.max(12 + half, Math.min(center, edge - half - 12)) - center}px 0`;
+            const bounds = directory.closest("dialog")?.getBoundingClientRect();
+            const start = (bounds?.left ?? 0) + 12;
+            const end = (bounds?.right ?? document.documentElement.clientWidth) - 12;
+            popover.style.translate = `${Math.max(start + half, Math.min(center, end - half)) - center}px 0`;
             menu.querySelector(".dept-dock-button").setAttribute("aria-expanded", "true");
         };
         menus.forEach(menu => {
             const trigger = menu.querySelector(".dept-dock-button");
             menu.addEventListener("pointerenter", event => { if (event.pointerType !== "touch") openMenu(menu); });
             trigger.addEventListener("click", () => {
-                openMenu(menu);
-                menu.querySelector("input[type=search]")?.focus();
+                const input = menu.querySelector("input[type=search]");
+                if (!input && trigger.getAttribute("aria-expanded") === "true" && !trigger.matches(":hover")) closeMenus();
+                else { openMenu(menu); input?.focus(); }
             });
             menu.querySelectorAll("[data-dept-select]").forEach(option => option.addEventListener("click", () => {
                 const select = directory.querySelector(`[data-filter-${option.dataset.deptSelect}]`);
@@ -132,7 +136,7 @@
                 option.setAttribute("aria-pressed", String(select.value === option.dataset.value));
             });
             menus.forEach(menu => menu.querySelector(".dept-dock-button").classList.toggle("is-active", !!menu.querySelector('[aria-pressed="true"][data-status-choice]:not([data-status-choice=""]), [aria-pressed="true"][data-dept-select]:not([data-value=""])')));
-            directory.querySelector("[data-dept-search-open]")?.classList.toggle("is-active", !!directory.querySelector("[data-filter-search]")?.value);
+            directory.querySelector('[data-dept-search-open], .dept-dock-button[aria-label="Search"]')?.classList.toggle("is-active", !!directory.querySelector("[data-filter-search]")?.value);
         };
         directory.querySelector("[data-filter-reset]")?.addEventListener("click", () => { closeMenus(); queueMicrotask(sync); });
         const dialog = directory.querySelector("[data-dept-search-dialog]");
@@ -146,8 +150,19 @@
         dialog?.addEventListener("click", event => { if (event.target === dialog) dialog.close(); });
         search?.addEventListener("input", sync);
         document.addEventListener("click", event => { if (!directory.isConnected || !event.target.closest("[data-dept-menu]")) closeMenus(); }, { signal });
-        document.addEventListener("keydown", event => { if (event.key === "Escape") closeMenus(); }, { signal });
+        document.addEventListener("keydown", event => {
+            if (event.key !== "Escape" || !directory.contains(document.activeElement)) return;
+            const open = dock.querySelector('.dept-dock-button[aria-expanded="true"]');
+            if (!open) return;
+            event.preventDefault();
+            closeMenus();
+            open.focus();
+        }, { signal });
         sync();
+    }
+
+    function setupFilters(root, signal) {
+        root.querySelectorAll(".dept-directory[data-directory]").forEach(directory => setupDirectory(directory, signal));
     }
 
     let pageEvents;
@@ -156,14 +171,14 @@
     function initialize(event) {
         const workspace = document.querySelector("[data-workspace-frame]")?.dataset.workspaceFrame;
         if (event?.detail?.closest?.("dialog")) {
-            if (!["admin", "department", "sourcing"].includes(workspace)) return;
+            if (!["admin", "department", "sourcing", "supplier", "committee"].includes(workspace)) return;
             dialogEvents?.abort();
             dialogEvents = new AbortController();
             setupFilters(event.detail, dialogEvents.signal);
             return;
         }
         const main = document.querySelector("main#main");
-        if (!["admin", "department", "sourcing"].includes(workspace)) return;
+        if (!["admin", "department", "sourcing", "supplier", "committee"].includes(workspace)) return;
         if (main?.querySelector(".department-analytics,.sourcing-analytics")) {
             pageEvents?.abort();
             return;

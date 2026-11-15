@@ -1,7 +1,10 @@
 @model int
-<ol class="flow-steps" aria-label="Supplier application steps">
-    @foreach (var step in new[] { (1, "Company profile"), (2, "Documents"), (3, "Application status") })
+<ol class="flow-steps application-steps" aria-label="Supplier application steps">
+    @foreach (var (number, title) in new[] { (1, "Company profile"), (2, "Documents"), (3, "Application status") })
     {
-        <li aria-current="@(Model == step.Item1 ? "step" : null)"><span aria-hidden="true">@step.Item1</span>@step.Item2</li>
+        <li class="@(number < Model ? "is-complete" : null)" aria-current="@(Model == number ? "step" : null)">
+            <span aria-hidden="true">@if (number < Model) { <partial name="_Icon" model='@("check")' /> } else { @number }</span>
+            <div><small>@(number < Model ? "Completed" : Model == number ? "Current step" : $"Step {number}")</small><strong>@title</strong></div>
+        </li>
     }
 </ol>

@@ -1,4 +1,7 @@
 using System.Diagnostics;
+using System.Net;
+using System.Net.Http.Json;
+using System.Text.Json;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -102,10 +105,22 @@ public sealed class BrowserReleaseTests(ITestOutputHelper output)
             await File.WriteAllTextAsync(Path.Combine(evidence,"phase6-sql.json"),
                 System.Text.Json.JsonSerializer.Serialize(persisted,new System.Text.Json.JsonSerializerOptions { WriteIndented=true }));
             Assert.True(process.ExitCode==0,await stderr+"\n"+await stdout);
+            var application = await db.SupplierProfiles.AsNoTracking()
+                .Where(s => s.TaxNumber == "BROWSER-ONBOARD")
+                .Select(s => new { s.UserId, s.Status, Categories = s.Categories.Count, Documents = s.SupplierDocuments.Count })
+                .SingleAsync();
+            Assert.Equal("Approved", application.Status);
+            Assert.Equal(2, application.Categories);
+            Assert.Equal(1, application.Documents);
+            var onboardedSupplier = await users.FindByIdAsync(application.UserId);
+            Assert.NotNull(onboardedSupplier);
+            Assert.True(await users.IsInRoleAsync(onboardedSupplier, "Supplier"));
             var completed = await db.Tenders.Where(t=>t.Title.StartsWith("Phase 6 ")).ToListAsync();
             Assert.Equal("Awarded", completed.Single(t=>t.Title=="Phase 6 Award").Status);
             var award = completed.Single(t=>t.Title=="Phase 6 Award");
             Assert.Equal(4,await db.EvaluationSubmissions.CountAsync(s=>s.TenderId==award.Id));
+            var weightPlan = await db.EvaluationWeightPlans.AsNoTracking().SingleAsync(p=>p.TenderId==award.Id);
+            Assert.Equal(100m, JsonSerializer.Deserialize<Dictionary<int, decimal>>(weightPlan.CriteriaWeights)!.Values.Single());
             Assert.Equal(1,await db.Bids.CountAsync(b=>b.TenderId==award.Id && b.AwardOutcome=="Awarded"));
             Assert.Equal(2,await db.Bids.CountAsync(b=>b.TenderId==award.Id && b.AwardOutcome=="Unsuccessful"));
             var rounds = completed.Single(t=>t.Title=="Phase 6 Rounds");
@@ -126,7 +141,20 @@ public sealed class BrowserReleaseTests(ITestOutputHelper output)
             Assert.Equal(cancelled.PurchaseRequisitionId,replacement.PurchaseRequisitionId);
             Assert.False(await db.Bids.AnyAsync(b=>b.TenderId==replacement.Id));
         }
-        finally { await db.Database.EnsureDeletedAsync(); }
+        finally
+        {
+            try
+            {
+                if (await db.Database.CanConnectAsync())
+                {
+                    var store = scope.ServiceProvider.GetRequiredService<SupplierFileStore>();
+                    var artifacts = await db.SupplierDocuments.Where(d => d.SupplierProfile.TaxNumber == "BROWSER-ONBOARD")
+                        .Select(d => d.FilePath).ToListAsync();
+                    foreach (var artifact in artifacts) store.Delete(artifact);
+                }
+            }
+            finally { await db.Database.EnsureDeletedAsync(); }
+        }
     }
 
     private sealed class LocalBrowserApp(string connection) : WebApplicationFactory<Program>
@@ -138,9 +166,25 @@ public sealed class BrowserReleaseTests(ITestOutputHelper output)
             {
                 services.RemoveAll<IDbContextOptionsConfiguration<ApplicationDbContext>>();
                 services.AddDbContext<ApplicationDbContext>(options=>options.UseSqlServer(connection));
+                services.AddHttpClient(BidAiAdvisor.HttpClientName).ConfigurePrimaryHttpMessageHandler(() => new SyntheticWeightAdvisor());
                 foreach(var d in services.Where(d=>d.ServiceType==typeof(IHostedService) &&
                     d.ImplementationType==typeof(TenderClock)).ToList()) services.Remove(d);
             });
+        }
+    }
+
+    private sealed class SyntheticWeightAdvisor : HttpMessageHandler
+    {
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            using var body = JsonDocument.Parse(await request.Content!.ReadAsStringAsync(cancellationToken));
+            var input = body.RootElement.GetProperty("messages")[1].GetProperty("content").GetString();
+            if (input is null || !input.StartsWith('{')) return new(HttpStatusCode.ServiceUnavailable);
+            using var data = JsonDocument.Parse(input);
+            var criteria = data.RootElement.GetProperty("criteria").EnumerateArray().ToArray();
+            if (criteria.Length != 2) return new(HttpStatusCode.ServiceUnavailable);
+            var weights = criteria.Select((c, i) => new { criterionId = c.GetProperty("criterionId").GetInt32(), weightPercent = i == 0 ? 65 : 35 });
+            return new(HttpStatusCode.OK) { Content = JsonContent.Create(new { message = new { content = JsonSerializer.Serialize(new { weights }) } }) };
         }
     }
 }

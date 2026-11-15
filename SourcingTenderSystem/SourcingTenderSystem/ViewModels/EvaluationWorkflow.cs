@@ -9,7 +9,8 @@ public sealed record EvaluationProgress(string Employee, string Seat, int Scored
 }
 
 public sealed record EvaluationWorkflowDetails(Tender Tender, IReadOnlyList<EvaluationProgress> Progress,
-    bool CanUpload, string? NextStage, IReadOnlyList<EvaluationScore> Scores);
+    bool CanUpload, string? NextStage, IReadOnlyList<EvaluationScore> Scores,
+    IReadOnlyDictionary<int, IReadOnlyDictionary<int, decimal>> ReviewerWeights);
 
 public sealed record EvaluationScore(int EmployeeId, int BidId, int CriterionId, decimal Score, string? Notes, decimal? Taxes, decimal? Extras, decimal? TotalCost);
 

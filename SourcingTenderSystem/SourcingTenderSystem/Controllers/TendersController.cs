@@ -204,7 +204,7 @@ public class TendersController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Criterion(int id, CommitteeCriterionInput input, int? remove)
+    public async Task<IActionResult> Criterion(int id, CommitteeCriterionInput input, int? remove, int? edit)
     {
         if (await GetCurrentEmployeeAsync() is not { } employee) return Forbid();
         await using var tx = await TenderRules.LockAsync(_context, id);
@@ -212,6 +212,8 @@ public class TendersController : Controller
         if (tender is null) return NotFound();
         if (tender.Status != DraftStatus || await _context.Bids.AnyAsync(b => b.TenderId == id))
             return Conflict("Criteria are frozen once published.");
+        var edited = edit.HasValue ? tender.EvaluationCriteria.SingleOrDefault(c => c.Id == edit) : null;
+        if (edit.HasValue && edited is null) return NotFound();
         if (remove is int key)
         {
             var criterion = tender.EvaluationCriteria.SingleOrDefault(c => c.Id == key);
@@ -220,16 +222,23 @@ public class TendersController : Controller
         }
         else if (ModelState.IsValid && !string.IsNullOrWhiteSpace(input.Name) &&
             input.WeightPercent == EvaluationRules.Round(input.WeightPercent) &&
-            tender.EvaluationCriteria.Sum(c => c.WeightPercent) + input.WeightPercent <= 100 &&
-            !tender.EvaluationCriteria.Any(c => string.Equals(c.Name, input.Name.Trim(), StringComparison.OrdinalIgnoreCase)))
-            tender.EvaluationCriteria.Add(new EvaluationCriterion { Name = input.Name.Trim(), Type = input.Type,
-                MaxScore = input.MaxScore, WeightPercent = input.WeightPercent });
+            tender.EvaluationCriteria.Where(c => c.Id != edit).Sum(c => c.WeightPercent) + input.WeightPercent <= 100 &&
+            !tender.EvaluationCriteria.Any(c => c.Id != edit && string.Equals(c.Name, input.Name.Trim(), StringComparison.OrdinalIgnoreCase)))
+        {
+            var criterion = edited ?? new EvaluationCriterion();
+            criterion.Name = input.Name.Trim();
+            criterion.Type = input.Type;
+            criterion.MaxScore = input.MaxScore;
+            criterion.WeightPercent = input.WeightPercent;
+            if (edited is null) tender.EvaluationCriteria.Add(criterion);
+        }
         else
         {
             TempData["Error"] = "Enter a unique valid criterion. Total weight cannot exceed 100%.";
             return RedirectToAction(nameof(Criteria), new { id });
         }
-        EvaluationRules.Audit(_context, id, employee.Id, "DraftCriteriaChanged", remove is null ? input.Name : $"Removed criterion {remove}", DateTime.UtcNow);
+        EvaluationRules.Audit(_context, id, employee.Id, "DraftCriteriaChanged", remove is int removed
+            ? $"Removed criterion {removed}" : $"{(edited is null ? "Added" : "Edited")} {input.Name.Trim()}: {input.WeightPercent:0.##}%.", DateTime.UtcNow);
         await _context.SaveChangesAsync();
         await tx.CommitAsync();
         return RedirectToAction(nameof(Criteria), new { id });
@@ -275,7 +284,7 @@ public class TendersController : Controller
     }
 
     [HttpPost, ValidateAntiForgeryToken]
-    public async Task<IActionResult> Close(int id)
+    public async Task<IActionResult> Close(int id, bool confirmClose, string? panel, bool fromList = false)
     {
         var employee = await GetCurrentEmployeeAsync();
         if (employee is null) return Forbid();
@@ -283,15 +292,18 @@ public class TendersController : Controller
         var tender = await _context.Tenders.FindAsync(id);
         if (tender is null) return NotFound();
         var now = DateTime.UtcNow;
-        if (tender.Status is ("Open" or "Published") && tender.CloseDate <= now)
+        var early = TenderRules.IsOpen(tender, now);
+        if (early && !confirmClose) return BadRequest("Confirm the early closure before continuing.");
+        if (early || tender.Status is ("Open" or "Published") && tender.CloseDate <= now)
         {
-            await TenderRules.CloseRoundAsync(_context, tender, now, employee.Id, false);
+            await TenderRules.CloseRoundAsync(_context, tender, now, employee.Id, early);
             await _context.SaveChangesAsync();
             await tx.CommitAsync();
             TempData["Success"] = "Tender closed and available for compliance review.";
         }
-        else TempData["Error"] = "An active tender can be closed here after its bidding deadline.";
-        return RedirectToAction(nameof(Index));
+        else TempData["Error"] = "Only a tender open for bidding or past its deadline can be closed.";
+        return fromList ? RedirectToAction(nameof(Index)) :
+            RedirectToAction(nameof(Details), new { id, panel = panel == "overview" ? panel : null });
     }
     // GET: /Tenders/Edit/5
     public async Task<IActionResult> Edit(int? id)

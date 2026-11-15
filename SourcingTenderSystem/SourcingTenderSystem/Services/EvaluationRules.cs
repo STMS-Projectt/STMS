@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using SourcingTenderSystem.Data;
 using SourcingTenderSystem.Models;
@@ -39,6 +40,41 @@ public static class EvaluationRules
     {
         var lookup = scores.ToLookup(s => s.CriterionId);
         return criteria.Sum(c => lookup[c.Id].Average(s => s.Score) / c.MaxScore * c.WeightPercent);
+    }
+
+    public static IReadOnlyDictionary<int, decimal> EffectiveWeights(IReadOnlyCollection<EvaluationCriterion> criteria, string? saved)
+    {
+        if (!CriteriaValid(criteria)) return new Dictionary<int, decimal>();
+        if (saved is null) return criteria.ToDictionary(c => c.Id, c => c.WeightPercent);
+        try
+        {
+            var weights = JsonSerializer.Deserialize<Dictionary<int, decimal>>(saved);
+            return weights is not null && ValidWeights(weights, criteria.Select(c => c.Id).ToHashSet())
+                ? weights : new Dictionary<int, decimal>();
+        }
+        catch (JsonException) { return new Dictionary<int, decimal>(); }
+    }
+
+    public static bool ValidWeights(IReadOnlyDictionary<int, decimal> weights, IReadOnlySet<int> available) =>
+        weights.Count > 0 && weights.All(row => available.Contains(row.Key) &&
+            row.Value is > 0 and <= 100 && row.Value == Round(row.Value)) && weights.Values.Sum() == 100;
+
+    public static async Task<IReadOnlyDictionary<int, decimal>> ReviewerWeights(ApplicationDbContext db, int tenderId, int employeeId,
+        IReadOnlyCollection<EvaluationCriterion> criteria)
+    {
+        var saved = await db.EvaluationWeightPlans.Where(p => p.TenderId == tenderId && p.EmployeeProfileId == employeeId)
+            .Select(p => p.CriteriaWeights).SingleOrDefaultAsync();
+        return EffectiveWeights(criteria, saved);
+    }
+
+    // Give every evaluation seat one vote on the scale of 0–100, even when their selected criteria differ.
+    public static decimal WeightedByReviewer(IEnumerable<EvaluationCriterion> criteria, IEnumerable<EvaluationScore> scores,
+        IReadOnlyDictionary<int, IReadOnlyDictionary<int, decimal>> reviewerWeights)
+    {
+        var cells = scores.ToLookup(s => (s.EmployeeId, s.CriterionId));
+        var typed = criteria.ToArray();
+        return reviewerWeights.Average(reviewer => typed.Where(c => reviewer.Value.ContainsKey(c.Id))
+            .Sum(c => cells[(reviewer.Key, c.Id)].Single().Score / c.MaxScore * reviewer.Value[c.Id]));
     }
 
     public static decimal Round(decimal value) => decimal.Round(value, 2, MidpointRounding.AwayFromZero);
