@@ -1,28 +1,50 @@
 @model IReadOnlyList<EmployeeProfile>
 @{ ViewData["Title"] = "Employees"; }
-<header class="page-heading stms-hero"><div><p class="eyebrow">ADMINISTRATION</p><h1>Employees</h1><p>Manage employee accounts, department assignments and access.</p></div><a data-workspace-dialog class="btn btn-primary" asp-action="Create" ><partial name="_Icon" model='@("plus")' /> Add employee</a></header>
+<header class="page-heading stms-hero dept-overview"><div><p class="eyebrow">ADMINISTRATION</p><h1>Employees</h1><p>Manage employee accounts, department assignments and access.</p></div><a data-workspace-dialog class="btn btn-primary" asp-action="Create" ><partial name="_Icon" model='@("plus")' /> Add employee</a></header>
 <partial name="_DesignMetrics" model='@(new[] { ("Employee accounts", Model.Count, "users", "blue"), ("Active", Model.Count(e => e.IsActive), "check", "teal"), ("Inactive", Model.Count(e => !e.IsActive), "shield", "amber"), ("Unassigned", Model.Count(e => e.DepartmentId == null), "building", "violet") })' />
 <section class="surface directory dept-directory" aria-label="Employees directory" data-directory>
-    <div class="dept-directory-heading"><h2>Employee directory</h2><p>Find employees by name, department or account status.</p></div>
-    <div class="directory-filter-panel">
-    @if (Model.Count > 0) { <partial name="_DirectoryStatusButtons" /> }
-    <div class="directory-toolbar dept-filters">
-    <div class="directory-search" hidden="@(Model.Count == 0)">
-        <label class="search-box"><partial name="_Icon" model='@("search")' /><span class="visually-hidden">Search employees</span><input class="form-control" type="search" data-filter-search placeholder="Search employees"></label>
-        <partial name="_DirectoryVoice" />
+    <div class="dept-directory-heading">
+        <span class="icon-tile tone-teal"><partial name="_Icon" model='@("users")' /></span>
+        <div><p class="eyebrow">ORGANIZATION</p><h2>Employee directory</h2><p>Find employees by name, department or account status.</p></div>
     </div>
-    @if (Model.Count > 0)
-    {
-        <label>Department<select class="form-select" data-filter-department><option value="">All departments</option><option value="unassigned">Unassigned</option>
-        @foreach (var department in Model.Where(e => e.Department != null).Select(e => e.Department!).DistinctBy(d => d.Id).OrderBy(d => d.Name))
-        { <option value="@department.Id">@department.Name</option> }
-        </select></label>
-        <label>Sort by<select class="form-select" data-filter-sort><option value="">Default order</option><option value="name">Name (A–Z)</option></select></label>
-        <button type="button" class="btn btn-outline-secondary" data-filter-reset>Reset</button>
-    }
-    <span class="result-count" data-result-count aria-live="polite">@Model.Count records</span>
-</div>
+    <div class="directory-filter-panel dept-filter-dock" aria-label="Employee filters">
+        @if (Model.Count > 0)
+        {
+            <div class="dept-filter-menu" data-dept-menu>
+                <button type="button" class="dept-dock-button" aria-expanded="false" aria-haspopup="true"><partial name="_Icon" model='@("filter")' /><span>Status</span></button>
+                <div class="dept-filter-popover" hidden><strong>Status</strong><partial name="_DirectoryStatusButtons" /></div>
+            </div>
+            <div class="dept-filter-menu" data-dept-menu>
+                <button type="button" class="dept-dock-button" aria-expanded="false" aria-haspopup="true"><partial name="_Icon" model='@("building")' /><span>Department</span></button>
+                <div class="dept-filter-popover" hidden><strong>Department</strong>
+                    <button type="button" data-dept-select="department" data-value="">All departments</button>
+                    <button type="button" data-dept-select="department" data-value="unassigned">Unassigned</button>
+                    @foreach (var department in Model.Where(e => e.Department != null).Select(e => e.Department!).DistinctBy(d => d.Id).OrderBy(d => d.Name))
+                    { <button type="button" data-dept-select="department" data-value="@department.Id">@department.Name</button> }
+                </div>
+            </div>
+            <div class="dept-filter-menu" data-dept-menu>
+                <button type="button" class="dept-dock-button" aria-expanded="false" aria-haspopup="true"><partial name="_Icon" model='@("sort")' /><span>Sort</span></button>
+                <div class="dept-filter-popover" hidden><strong>Sort by</strong><button type="button" data-dept-select="sort" data-value="">Default order</button><button type="button" data-dept-select="sort" data-value="name">Name (A–Z)</button></div>
+            </div>
+            <select data-filter-department hidden aria-label="Department filter"><option value="">All departments</option><option value="unassigned">Unassigned</option>
+                @foreach (var department in Model.Where(e => e.Department != null).Select(e => e.Department!).DistinctBy(d => d.Id).OrderBy(d => d.Name))
+                { <option value="@department.Id">@department.Name</option> }
+            </select>
+            <select data-filter-sort hidden aria-label="Sort employees"><option value="">Default order</option><option value="name">Name (A–Z)</option></select>
+        }
+        <button type="button" class="dept-dock-button" data-dept-search-open aria-label="Search employees" title="Search employees"><partial name="_Icon" model='@("search")' /><span>Search</span></button>
+        <button type="button" class="dept-dock-button" data-filter-reset aria-label="Reset filters" title="Reset filters"><partial name="_Icon" model='@("refresh")' /><span>Reset</span></button>
+        <span data-result-count aria-live="polite" hidden>@Model.Count records</span>
     </div>
+    <dialog class="dept-search-dialog" aria-label="Search employees" data-dept-search-dialog>
+        <div class="dept-search-heading"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("search")' /></span><div><h2>Search employees</h2><p>Find an employee by name, email or department.</p></div><button type="button" class="dept-search-close" data-dept-search-close aria-label="Close search">×</button></div>
+        <div class="directory-search">
+            <label class="search-box"><partial name="_Icon" model='@("search")' /><span class="visually-hidden">Search employees</span><input class="form-control" type="search" data-filter-search placeholder="Search employees" autocomplete="off"></label>
+            <partial name="_DirectoryVoice" />
+        </div>
+        <p class="dept-search-hint">Results update as you type.</p>
+    </dialog>
     @if (Model.Count == 0)
     {
         <div class="empty-state"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("users")' /></span><h2>No employees yet</h2><p>Create an account to give an employee access.</p><a data-workspace-dialog class="btn btn-primary" asp-action="Create" >Add employee</a></div>
@@ -44,5 +66,13 @@
             }
             </div>
         <div data-filter-empty hidden><div class="empty-state"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("search")' /></span><h2>No matching records</h2><p>Try a different name or reset the filters.</p><button type="button" class="btn btn-outline-secondary">Reset filters</button></div></div>
+        <nav class="dept-pagination" data-dept-pagination aria-label="Employee pages" hidden>
+            <button type="button" data-page-prev aria-label="Previous page">Previous</button>
+            <span data-page-status aria-live="polite"></span>
+            <button type="button" data-page-next aria-label="Next page">Next</button>
+        </nav>
     }
 </section>
+@section Scripts {
+    <script src="~/js/departments.js" asp-append-version="true" defer></script>
+}

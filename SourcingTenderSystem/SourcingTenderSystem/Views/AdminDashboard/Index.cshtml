@@ -18,18 +18,22 @@
         <h1>Analytics &amp; Statistics</h1>
         <p>Track procurement activity, review supplier applications, and manage access.</p>
     </div>
-    <div class="admin-review-action">
-        <span><strong>@Model.PendingSuppliers</strong> supplier applications awaiting review</span>
-        <a class="btn btn-primary" asp-controller="Suppliers" asp-action="Index" asp-route-status="@SupplierStatus.Pending">Open review queue <partial name="_Icon" model='@("arrow")' /></a>
-    </div>
 </header>
 <div class="admin-analytics">
 <section aria-labelledby="snapshot-title">
     <div class="section-heading"><h2 id="snapshot-title">Organization snapshot</h2><span>Current totals</span></div>
     <div class="metrics-grid">
-        @foreach (var item in new[] { ("Purchase requests", Model.Requests, "file", "blue"), ("Tenders", Model.Tenders, "dashboard", "teal"), ("Supplier applications", total, "supplier", "amber"), ("Active employees", Model.ActiveEmployees, "users", "violet") })
+        @foreach (var item in new[] {
+            ("Purchase requests", Model.Requests, "file", "blue", "AdminOperations", "Requests"),
+            ("Tenders", Model.Tenders, "dashboard", "teal", "AdminOperations", "Tenders"),
+            ("Suppliers", total, "supplier", "amber", "Suppliers", "Index"),
+            ("Active employees", Model.ActiveEmployees, "users", "violet", "Employees", "Index") })
         {
-            <div class="metric surface"><span class="icon-tile tone-@item.Item4"><partial name="_Icon" model="item.Item3" /></span><strong>@item.Item2</strong><span>@item.Item1</span></div>
+            <a class="metric surface admin-metric-link" asp-controller="@item.Item5" asp-action="@item.Item6" aria-label="View @item.Item1">
+                <span class="icon-tile tone-@item.Item4"><partial name="_Icon" model="item.Item3" /></span>
+                <strong data-count="@item.Item2">@item.Item2</strong><span>@item.Item1</span>
+                <span class="admin-metric-arrow" aria-hidden="true"><partial name="_Icon" model='@("arrow")' /></span>
+            </a>
         }
     </div>
 </section>
@@ -94,21 +98,19 @@
     <div class="admin-total-grid">
         @foreach (var (label, count, icon, tone, controller, action) in new[] {
             ("Departments", Model.Departments, "building", "blue", "Departments", "Index"),
-            ("User accounts", Model.Users, "users", "violet", "", ""),
+            ("Suppliers", total, "supplier", "violet", "Suppliers", "Index"),
             ("Purchase requests", Model.Requests, "file", "amber", "AdminOperations", "Requests"),
             ("Tenders", Model.Tenders, "dashboard", "teal", "AdminOperations", "Tenders") })
         {
-            if (string.IsNullOrEmpty(controller))
-            {
-                <div class="surface admin-total-card"><span class="icon-tile tone-@tone"><partial name="_Icon" model="icon" /></span><span><strong>@count.ToString("N0")</strong><small>@label</small></span></div>
-                continue;
-            }
             <a class="surface admin-total-card" asp-controller="@controller" asp-action="@action">
                 <span class="icon-tile tone-@tone"><partial name="_Icon" model="icon" /></span>
-                <span><strong>@count.ToString("N0")</strong><small>@label</small></span>
+                <span><strong data-count="@count">@count.ToString("N0")</strong><small>@label</small></span>
                 <partial name="_Icon" model='@("arrow")' />
             </a>
         }
     </div>
 </section>
 </div>
+@section Scripts {
+    <script src="~/js/admin-dashboard.js" asp-append-version="true" defer></script>
+}

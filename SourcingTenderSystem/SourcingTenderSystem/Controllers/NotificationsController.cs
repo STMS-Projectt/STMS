@@ -26,6 +26,18 @@ public sealed class NotificationsController(ApplicationDbContext db, Clarificati
         if (actor is null) return Forbid();
         return Json(new { count = await For(db, actor).CountAsync(n => !n.IsRead) });
     }
+    [HttpGet]
+    public async Task<IActionResult> Recent()
+    {
+        var actor = await routing.Current(User);
+        if (actor is null) return Forbid();
+        var items = await For(db, actor).AsNoTracking()
+            .OrderByDescending(n => n.CreatedAt).ThenByDescending(n => n.Id)
+            .Take(5)
+            .Select(n => new { n.Id, n.Title, n.Message, n.CreatedAt, n.IsRead })
+            .ToListAsync();
+        return Json(new { items });
+    }
     [HttpPost]
     public async Task<IActionResult> Read(int id)
     {

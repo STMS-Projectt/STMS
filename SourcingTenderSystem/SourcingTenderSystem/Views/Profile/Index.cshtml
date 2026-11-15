@@ -2,6 +2,7 @@
 @{
     ViewData["Title"] = "Account settings";
     var security = Model.Security != null;
+    var information = string.Equals(Context.Request.Query["tab"], "information", StringComparison.OrdinalIgnoreCase);
 }
 <header class="surface account-hero">
     <partial name="_ProfileAvatar" />
@@ -9,8 +10,9 @@
     <span class="account-hero-badge"><partial name="_Icon" model='@("shield")' /> Account settings</span>
 </header>
 <nav class="account-tabs" aria-label="Account settings tabs">
-    <a asp-action="Index" asp-route-tab="personal" aria-current="@(!security ? "page" : null)"><partial name="_Icon" model='@("users")' /> Personal</a>
+    <a asp-action="Index" asp-route-tab="personal" aria-current="@(!security && !information ? "page" : null)"><partial name="_Icon" model='@("users")' /> Personal</a>
     <a asp-action="Index" asp-route-tab="security" aria-current="@(security ? "page" : null)"><partial name="_Icon" model='@("shield")' /> Security</a>
+    <a asp-action="Index" asp-route-tab="information" aria-current="@(information ? "page" : null)"><partial name="_Icon" model='@("file")' /> Account information</a>
 </nav>
 @if (TempData["ProfileError"] is string error) { <div class="alert alert-warning" role="alert">@error</div> }
 @if (Model.Security is { } methods)
@@ -20,11 +22,32 @@
         <partial name="_SignInMethods" model="methods" />
     </div>
 }
+else if (information)
+{
+    <section class="surface detail-card account-fields account-panel account-information-panel">
+        <div class="account-info-intro"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("shield")' /></span><div><p class="eyebrow">ACCOUNT OVERVIEW</p><h2>Account information</h2><p>Details managed by your organization.</p></div></div>
+        <dl class="account-info-grid">
+            <div class="account-info-tile"><span class="icon-tile tone-blue"><partial name="_Icon" model='@("users")' /></span><dt>@(Model.Supplier is null ? "Account name" : "Company")</dt><dd>@Model.DisplayName</dd></div>
+            <div class="account-info-tile"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("mail")' /></span><dt>Sign-in email</dt><dd>@Model.Email</dd></div>
+            @if (Model.Roles.Count > 0) { <div class="account-info-tile"><span class="icon-tile tone-blue"><partial name="_Icon" model='@("shield")' /></span><dt>Access roles</dt><dd>@string.Join(", ", Model.Roles)</dd></div> }
+            @if (Model.Employee is { } employee)
+            {
+                <div class="account-info-tile"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("building")' /></span><dt>Department</dt><dd>@(employee.Department?.Name ?? "Unassigned")</dd></div>
+                <div class="account-info-tile"><span class="icon-tile tone-blue"><partial name="_Icon" model='@("briefcase")' /></span><dt>Job title</dt><dd>@(employee.JobTitle ?? "Not set")</dd></div>
+            }
+            @if (Model.Supplier is { } supplier)
+            {
+                <div class="account-info-tile"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("building")' /></span><dt>Company phone</dt><dd>@supplier.ContactPhone</dd></div>
+                <div class="account-info-tile"><span class="icon-tile tone-blue"><partial name="_Icon" model='@("building")' /></span><dt>Company address</dt><dd>@supplier.Address</dd></div>
+            }
+        </dl>
+    </section>
+}
 else
 {
-    <div class="account-grid account-panel">
-        <section class="surface detail-card account-fields">
-            <div class="account-section-heading"><h2>Personal details</h2><p>Add contact information and choose how your name appears on this page.</p></div>
+    <section class="surface detail-card account-fields account-panel">
+        <div class="account-section-heading"><h2>Personal details</h2><p>Add contact information and choose how your name appears on this page.</p></div>
+        <div class="account-personal-layout">
             <form asp-action="SavePersonal" method="post">
                 <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
                 <div class="account-field-grid">
@@ -35,38 +58,22 @@ else
                 </div>
                 <div class="form-actions"><button class="btn btn-primary" type="submit"><partial name="_Icon" model='@("check")' /> Save changes</button></div>
             </form>
-        </section>
-        <div class="stack">
-            <section class="surface detail-card account-fields">
-                <div class="account-section-heading"><h2>Account information</h2><p>Details managed by your organization.</p></div>
-                <dl class="detail-grid">
-                    <div><dt>@(Model.Supplier is null ? "Account name" : "Company")</dt><dd>@Model.DisplayName</dd></div>
-                    <div><dt>Sign-in email</dt><dd>@Model.Email</dd></div>
-                    @if (Model.Roles.Count > 0) { <div><dt>Access roles</dt><dd>@string.Join(", ", Model.Roles)</dd></div> }
-                    @if (Model.Employee is { } employee)
-                    {
-                        <div><dt>Department</dt><dd>@(employee.Department?.Name ?? "Unassigned")</dd></div>
-                        <div><dt>Job title</dt><dd>@(employee.JobTitle ?? "Not set")</dd></div>
-                    }
-                    @if (Model.Supplier is { } supplier)
-                    {
-                        <div><dt>Company phone</dt><dd>@supplier.ContactPhone</dd></div>
-                        <div><dt>Company address</dt><dd>@supplier.Address</dd></div>
-                    }
-                </dl>
-            </section>
-            <section class="surface detail-card account-fields">
-                <div class="account-section-heading"><h2>Profile photo</h2><p>This photo appears in your workspace header.</p></div>
+            <div class="account-photo-section" data-photo-upload>
+                <div class="account-section-heading"><h3>Profile photo</h3><p>Preview your image before saving it to your profile.</p></div>
+                <div class="account-photo-preview">
+                    @if (Model.HasPhoto) { <img src="@Url.Action("Photo", "Profile")" alt="Current profile photo" data-photo-preview /> }
+                    else { <img alt="Selected profile photo preview" data-photo-preview hidden /><span data-photo-placeholder><partial name="_Icon" model='@("users")' /></span> }
+                </div>
                 <form asp-action="Upload" method="post" enctype="multipart/form-data">
-                    <label class="form-label" for="photo">Choose an image</label>
-                    <input class="form-control" type="file" id="photo" name="photo" accept="image/png,image/jpeg" required aria-describedby="photo-hint" />
-                    <p id="photo-hint" class="field-hint">JPEG or PNG, up to 1 MB.</p>
-                    <button class="btn btn-primary" type="submit"><partial name="_Icon" model='@("upload")' /> Save photo</button>
+                    <label class="account-photo-picker" for="photo"><partial name="_Icon" model='@("upload")' /><strong>Choose a photo</strong><span>JPEG or PNG · up to 1 MB</span></label>
+                    <input class="visually-hidden" type="file" id="photo" name="photo" accept="image/png,image/jpeg" required aria-describedby="photo-hint" />
+                    <p id="photo-hint" class="field-hint" data-photo-status>No photo selected.</p>
+                    <div class="account-photo-actions"><button class="btn btn-primary" type="submit" data-photo-save><partial name="_Icon" model='@("check")' /> Save photo</button><button class="btn btn-outline-secondary" type="button" data-photo-cancel hidden>Cancel selection</button></div>
                 </form>
                 @if (Model.HasPhoto) { <form asp-action="Remove" method="post" class="mt-3"><button class="btn btn-outline-danger" type="submit">Remove photo</button></form> }
-            </section>
+            </div>
         </div>
-    </div>
+    </section>
 }
 @section Scripts {
     @if (security)
@@ -74,5 +81,5 @@ else
         <script src="~/js/biometrics.js" asp-append-version="true" defer></script>
         <script src="~/js/face-lab.js" asp-append-version="true" defer></script>
     }
-    else { <partial name="_ValidationScriptsPartial" /> }
+    else if (!information) { <partial name="_ValidationScriptsPartial" /><script src="~/js/profile-photo.js" asp-append-version="true" defer></script> }
 }

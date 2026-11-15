@@ -3,6 +3,35 @@
     const input = document.querySelector("#stms-workspace-search");
     const results = document.querySelector("#stms-search-results");
     if (!header || !input || !results) return;
+    const searchBox = input.closest(".stms-search");
+    const searchDialog = document.querySelector("#stms-search-dialog");
+    const searchSlot = searchDialog?.querySelector("[data-mobile-search-slot]");
+    const searchTrigger = header.querySelector(".stms-search-trigger");
+    const mobileSearch = window.matchMedia("(max-width: 510px)");
+    function syncSearchPlacement() {
+        if (!searchSlot) return;
+        if (mobileSearch.matches) searchSlot.append(searchBox);
+        else {
+            if (searchDialog.open) searchDialog.close();
+            const bell = header.querySelector(".stms-notifications-wrap") ?? header.querySelector(".workspace-bell");
+            if (bell?.parentElement === header) header.insertBefore(searchBox, bell);
+        }
+    }
+    mobileSearch.addEventListener("change", syncSearchPlacement);
+    syncSearchPlacement();
+    function openSearch() {
+        if (!searchDialog || !mobileSearch.matches) return false;
+        if (!searchDialog.open) searchDialog.showModal();
+        input.focus();
+        input.select();
+        return true;
+    }
+    searchTrigger?.addEventListener("click", openSearch);
+    searchDialog?.querySelector(".stms-search-close")?.addEventListener("click", () => searchDialog.close());
+    searchDialog?.addEventListener("click", e => {
+        if (e.target === searchDialog) searchDialog.close();
+    });
+    searchDialog?.addEventListener("close", () => { results.hidden = true; input.value = ""; });
     const navSelector = "#workspace-nav .side-link, #workspace-nav .side-bottom form button";
     function label(el) {
         if (el.getAttribute("aria-label")) return el.getAttribute("aria-label");
@@ -71,12 +100,13 @@
         window.addEventListener("pagehide", stopVoice);
     }
     function positionRail() {
-        document.body.style.setProperty("--stms-rail-top", Math.max(14, Math.ceil(header.getBoundingClientRect().bottom + 14)) + "px");
+        document.body.style.setProperty("--stms-rail-top", Math.max(12, Math.ceil(header.getBoundingClientRect().bottom + 8)) + "px");
     }
     window.addEventListener("scroll", positionRail, { passive: true });
     window.addEventListener("resize", positionRail);
     positionRail();
     function setup() {
+        if (searchDialog?.open) searchDialog.close();
         if (voice) { stopVoice(); announceVoice(""); }
         document.querySelectorAll(navSelector).forEach(el => el.setAttribute("aria-label", label(el)));
         results.hidden = true;
@@ -115,10 +145,12 @@
     });
     document.addEventListener("click", e => {
         if (!e.target.closest(".stms-search") || e.target.closest("#stms-search-results a")) results.hidden = true;
+        if (e.target.closest("#stms-search-results a") && searchDialog?.open) searchDialog.close();
     });
     document.addEventListener("keydown", e => {
-        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k" && !document.querySelector("dialog[open]")) {
-            e.preventDefault(); input.focus(); input.select();
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k" && (!document.querySelector("dialog[open]") || searchDialog?.open)) {
+            e.preventDefault();
+            if (!openSearch()) { input.focus(); input.select(); }
         }
         if (e.key === "Escape") {
             if (voice) { stopVoice(); announceVoice(""); }

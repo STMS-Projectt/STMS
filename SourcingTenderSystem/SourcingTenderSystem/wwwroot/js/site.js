@@ -1,10 +1,52 @@
 (() => {
+    const scrollTopButton = document.querySelector("[data-scroll-top]");
+    if (scrollTopButton) {
+        let scheduled = false;
+        const updateScroll = () => {
+            scheduled = false;
+            const max = document.documentElement.scrollHeight - window.innerHeight;
+            scrollTopButton.hidden = window.scrollY < 360 || max <= 0;
+            scrollTopButton.style.setProperty("--scroll-progress", `${max > 0 ? Math.min(100, Math.round(window.scrollY / max * 100)) : 0}%`);
+        };
+        window.addEventListener("scroll", () => {
+            if (!scheduled) { scheduled = true; requestAnimationFrame(updateScroll); }
+        }, { passive: true });
+        window.addEventListener("resize", updateScroll);
+        document.addEventListener("workspace:load", updateScroll);
+        scrollTopButton.addEventListener("click", () => window.scrollTo({ top: 0, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" }));
+        updateScroll();
+    }
     const nav = document.querySelector("#workspace-nav");
     const toggle = document.querySelector("[data-nav-toggle]");
     const scrim = document.querySelector("[data-nav-close]");
     const site = document.querySelector(".site-body");
     if (nav && toggle && scrim && site) {
         const compact = matchMedia("(max-width: 1000px)");
+        const scrollContent = document.createElement("div");
+        scrollContent.className = "sidebar-scroll-content";
+        scrollContent.append(...nav.children);
+        nav.append(scrollContent);
+        const scrollControl = document.createElement("button");
+        scrollControl.type = "button";
+        scrollControl.className = "sidebar-scroll-control";
+        scrollControl.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>';
+        nav.append(scrollControl);
+        const updateNavScroll = () => {
+            const remaining = scrollContent.scrollHeight - scrollContent.clientHeight - scrollContent.scrollTop;
+            const canScroll = scrollContent.scrollHeight > scrollContent.clientHeight + 2;
+            const atEnd = canScroll && remaining <= 3;
+            scrollControl.hidden = !canScroll;
+            scrollControl.classList.toggle("is-at-end", atEnd);
+            scrollControl.setAttribute("aria-label", atEnd ? "Scroll to top of navigation" : "Scroll down navigation");
+            scrollControl.title = atEnd ? "Back to top of navigation" : "More navigation items";
+        };
+        scrollControl.addEventListener("click", () => {
+            const behavior = matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth";
+            if (scrollControl.classList.contains("is-at-end")) scrollContent.scrollTo({ top: 0, behavior });
+            else scrollContent.scrollBy({ top: Math.max(180, scrollContent.clientHeight * .7), behavior });
+        });
+        scrollContent.addEventListener("scroll", updateNavScroll, { passive: true });
+        window.addEventListener("resize", updateNavScroll);
         document.body.classList.add("has-nav");
         const setOpen = (open, focus = true) => {
             nav.classList.toggle("is-open", open);
@@ -14,6 +56,7 @@
             document.body.classList.toggle("nav-open", open);
             toggle.setAttribute("aria-expanded", String(open));
             toggle.setAttribute("aria-label", open ? "Close navigation" : "Open navigation");
+            requestAnimationFrame(updateNavScroll);
             if (focus) (open ? nav.querySelector(".side-link") : toggle)?.focus();
         };
         setOpen(false, false);
@@ -53,6 +96,9 @@
         const department = directory.querySelector("[data-filter-department]");
         const staff = directory.querySelector("[data-filter-staff]");
         const sort = directory.querySelector("[data-filter-sort]");
+        const pagination = directory.querySelector("[data-dept-pagination]");
+        const pageSize = pagination ? 8 : 0;
+        let currentPage = 1;
         const apply = () => {
             if (sort) {
                 const ordered = sort.value === "name" ? [...rows].sort((a, b) => (a.dataset.sortName || "").localeCompare(b.dataset.sortName || ""))
@@ -62,33 +108,48 @@
                 (cards || rows[0]?.parentElement)?.append(...ordered);
             }
             const words = search.value.toLocaleLowerCase().trim().split(/\s+/).filter(Boolean);
-            let shown = 0;
-            for (const row of rows) {
+            const matched = [];
+            const displayRows = pagination && cards ? [...cards.querySelectorAll("[data-record]")] : rows;
+            for (const row of displayRows) {
                 const content = row.textContent.toLocaleLowerCase();
                 const visible = words.every(word => content.includes(word)) &&
                     (!status || status === row.dataset.status) &&
                     (!department?.value || department.value === row.dataset.department) &&
                     (!staff?.value || (staff.value === "staffed") === (Number(row.dataset.staff) > 0));
                 row.hidden = !visible;
-                if (visible) shown++;
+                if (visible) matched.push(row);
+            }
+            const shown = matched.length;
+            if (pagination) {
+                const pages = Math.max(1, Math.ceil(shown / pageSize));
+                currentPage = Math.min(currentPage, pages);
+                matched.forEach((row, index) => row.hidden = Math.floor(index / pageSize) + 1 !== currentPage);
+                pagination.hidden = pages <= 1;
+                pagination.querySelector("[data-page-status]").textContent = `Page ${currentPage} of ${pages}`;
+                pagination.querySelector("[data-page-prev]").disabled = currentPage === 1;
+                pagination.querySelector("[data-page-next]").disabled = currentPage === pages;
             }
             count.textContent = shown + (shown === 1 ? " record" : " records");
             empty.hidden = shown !== 0;
             results.hidden = shown === 0;
         };
-        search.addEventListener("input", apply);
+        search.addEventListener("input", () => { currentPage = 1; apply(); });
         const reset = () => {
             search.value = "";
             selectStatus("");
             for (const select of [department, staff, sort]) if (select) select.value = "";
+            currentPage = 1;
             apply();
-            search.focus();
+            if (search.getClientRects().length) search.focus();
         };
         choices.forEach(button => button.addEventListener("click", () => {
             selectStatus(button.dataset.statusChoice);
+            currentPage = 1;
             apply();
         }));
-        for (const select of [department, staff, sort]) select?.addEventListener("change", apply);
+        for (const select of [department, staff, sort]) select?.addEventListener("change", () => { currentPage = 1; apply(); });
+        pagination?.querySelector("[data-page-prev]").addEventListener("click", () => { currentPage--; apply(); });
+        pagination?.querySelector("[data-page-next]").addEventListener("click", () => { currentPage++; apply(); });
         empty.querySelector("button").addEventListener("click", reset);
         directory.querySelector("[data-filter-reset]")?.addEventListener("click", reset);
         apply();

@@ -9,10 +9,13 @@
         </div>
         <div class="face-loader" data-face-loader hidden><span class="workspace-spinner" aria-hidden="true"></span><span data-face-loader-label>Starting camera…</span></div>
     </div>
-    <ol class="face-steps" aria-label="Verification steps">
-        <li data-face-step="1">Look straight</li>
-        <li data-face-step="2">Turn slightly</li>
-        <li data-face-step="3">Look straight</li>
-    </ol>
+    @if (ViewContext.RouteData.Values["controller"]?.ToString() != "Profile")
+    {
+        <ol class="face-steps" aria-label="Verification steps">
+            <li data-face-step="1">Look straight</li>
+            <li data-face-step="2">Turn slightly</li>
+            <li data-face-step="3">Look straight</li>
+        </ol>
+    }
     <div class="face-feedback" data-face-status role="status" aria-live="polite" hidden></div>
 </div>
