@@ -1,0 +1,30 @@
+@model WinnerBrief
+@{
+    var win = Model.Winner;
+    var output = Model.Output;
+}
+@if (!Model.AiGenerated)
+{
+    <div class="alert alert-warning" role="status"><strong>AI unavailable — showing recorded facts only.</strong> @Model.Notice <button type="button" class="btn btn-outline-secondary btn-sm ms-2" data-winner-retry>Try again</button></div>
+}
+<div class="ai-pick">
+    <p class="ai-label">Winning offer</p>
+    <h3>@win.Supplier</h3>
+    <p class="ai-pick-meta">@win.TotalPrice.ToString("N2") @win.Currency · Delivery in @win.DeliveryDays days · Valid @win.ValidityDays days@(win.Total is decimal total ? $" · Score {total:0.##} / 100" : "")</p>
+    <p class="ai-headline">@output.SupplierDescription</p>
+</div>
+<h3 class="h6 mt-3">The offer</h3>
+<p>@output.OfferSummary</p>
+<h3 class="h6 mt-3">Why it won</h3>
+<ul class="ai-reasons">@foreach (var reason in output.WhyWon) { <li>@reason</li> }</ul>
+<h3 class="h6 mt-3">What sets it apart</h3>
+<ul class="ai-reasons">@foreach (var item in output.Differentiators) { <li>@item</li> }</ul>
+@if (output.PointsToVerify.Count > 0)
+{
+    <h3 class="h6 mt-3">Points to verify before voting</h3>
+    <ul class="ai-reasons">@foreach (var item in output.PointsToVerify) { <li>@item</li> }</ul>
+}
+<div class="ai-actions">
+    <a class="btn btn-primary" asp-action="DownloadWinnerBrief" asp-route-id="@Model.Input.TenderId"><partial name="_Icon" model='@("download")' /> Download PDF summary</a>
+    <span class="subtle small">@(Model.AiGenerated ? $"Generated {Model.GeneratedAtUtc.ToLocalTime():g} · {Model.Model}" : "Facts only") · @Model.Input.Bids.Count compliant bid(s) compared</span>
+</div>
