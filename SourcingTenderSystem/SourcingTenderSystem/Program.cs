@@ -62,8 +62,8 @@ if (builder.Configuration["Authentication:Google:ClientId"] is { Length: > 0 } g
 {
     authentication.AddGoogle(options =>
     {
-        options.ClientId = googleClientId;
-        options.ClientSecret = googleClientSecret;
+        options.ClientId = googleClientId.Trim();
+        options.ClientSecret = googleClientSecret.Trim();
         options.SignInScheme = IdentityConstants.ExternalScheme;
         Microsoft.AspNetCore.Authentication.ClaimActionCollectionMapExtensions.MapJsonKey(options.ClaimActions, "email_verified", "email_verified");
         // A cancelled consent or a misconfigured client returns to the sign-in page instead of a 500 error.
