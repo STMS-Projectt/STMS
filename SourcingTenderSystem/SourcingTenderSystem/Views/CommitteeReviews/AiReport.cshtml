@@ -4,35 +4,37 @@
     var input = Model.Input;
     var output = Model.Output;
     var best = Model.RecommendedBid;
-    string Supplier(int bidId) => input.Bids.Single(b => b.BidId == bidId).Supplier;
+
 }
 <!DOCTYPE html>
-<html lang="en">
+<html lang="@L.Language" dir="@L.Direction">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>AI bid analysis · Tender #@input.TenderId</title>
+<partial name="_DisplayHead" />
+<link rel="stylesheet" href="~/css/display-preferences.css" asp-append-version="true">
+<title>@L.F("AI bid analysis · Tender #{0}", input.TenderId)</title>
 <style>
-    :root {--ink:#17243a;--muted:#56657a;--line:#e2e8f0;--brand:#08766c;--brand-soft:#eef8f6;--warn:#7a4b00;--warn-soft:#fff4dc;--good:#0b6b3a;--bad:#a82f41}
+    :root {--ink:light-dark(#17243a, #c4cfe3);--muted:light-dark(#56657a, #c1c9d4);--line:light-dark(#e2e8f0, #2d4059);--brand:light-dark(#08766c, #146a63);--brand-soft:light-dark(#eef8f6, #15302b);--warn:light-dark(#7a4b00, #f3d8ae);--warn-soft:light-dark(#fff4dc, #332a15);--good:light-dark(#0b6b3a, #b4eed0);--bad:light-dark(#a82f41, #e2b2b9)}
     * {box-sizing:border-box}
-    body {margin:0;font:15px/1.55 "Segoe UI",system-ui,sans-serif;color:var(--ink);background:#f4f7fb}
+    body {margin:0;font:15px/1.55 "Segoe UI",system-ui,sans-serif;color:var(--ink);background:light-dark(#f4f7fb, #14202f)}
     main {max-width:980px;margin:0 auto;padding:32px 20px 48px}
     h1 {font-size:1.9rem;margin:.2rem 0 .3rem;line-height:1.2}
     h2 {font-size:1.25rem;margin:0 0 .8rem}
     h3 {font-size:1.05rem;margin:0}
-    section {background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px 24px;margin-top:18px;break-inside:avoid}
+    section {background:light-dark(#fff, #1b2125);border:1px solid var(--line);border-radius:14px;padding:22px 24px;margin-top:18px;break-inside:avoid}
     .eyebrow {color:var(--brand);font-size:.72rem;font-weight:800;letter-spacing:.15em;text-transform:uppercase;margin:0}
     .meta {color:var(--muted);margin:0}
-    .disclaimer {background:var(--warn-soft);border:1px solid #f2d48f;color:var(--warn);border-radius:12px;padding:12px 16px;margin-top:18px}
-    .pick {background:var(--brand-soft);border-color:#cbe9e3}
+    .disclaimer {background:var(--warn-soft);border:1px solid light-dark(#f2d48f, #705c2e);color:var(--warn);border-radius:12px;padding:12px 16px;margin-top:18px}
+    .pick {background:var(--brand-soft);border-color:light-dark(#cbe9e3, #2c6358)}
     .pick .name {font-size:1.5rem;font-weight:750;margin:.1rem 0}
     table {width:100%;border-collapse:collapse;font-size:.9rem}
-    th,td {text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
-    th {font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);background:#f8fafc}
-    td.num,th.num {text-align:right;white-space:nowrap}
-    tr.is-best td {background:#f3fbf9}
+    th,td {text-align:start;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+    th {font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);background:light-dark(#f8fafc, #15212d)}
+    td.num,th.num {text-align:end;white-space:nowrap}
+    tr.is-best td {background:light-dark(#f3fbf9, #143029)}
     .best-cell {color:var(--good);font-weight:700}
-    .tag {display:inline-block;font-size:.7rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;border-radius:999px;padding:.15rem .5rem;background:var(--brand);color:#fff;margin-left:6px;vertical-align:middle}
+    .tag {display:inline-block;font-size:.7rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;border-radius:999px;padding:.15rem .5rem;background:var(--brand);color:light-dark(#fff, #fff);margin-inline-start:6px;vertical-align:middle}
     .scroll {overflow-x:auto}
     .bid-card + .bid-card {margin-top:14px}
     .bid-card {border:1px solid var(--line);border-radius:12px;padding:16px 18px}
@@ -41,58 +43,58 @@
     .grid {display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px 22px;margin-top:12px}
     .grid h4 {font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:0 0 .3rem}
     .grid p, .grid ul {margin:0}
-    ul {padding-left:1.15rem}
+    ul {padding-inline-start:1.15rem}
     li + li {margin-top:.2rem}
     .good li::marker {color:var(--good)}
     .bad li::marker {color:var(--bad)}
     .muted {color:var(--muted)}
     footer {color:var(--muted);font-size:.82rem;margin-top:22px;text-align:center}
-    @@media print {body{background:#fff} main{padding:0} section{border-color:#ccc}}
+    @@media print {body{background:light-dark(#fff, #1b2125)} main{padding:0} section{border-color:light-dark(#ccc, #425255)}}
 </style>
 </head>
 <body>
 <main>
-    <p class="eyebrow">AI bid analysis · Tender #@input.TenderId</p>
+    <div class="report-display-controls"><partial name="_DisplayPreferences" /></div>
+    <p class="eyebrow">@L.F("AI bid analysis · Tender #{0}", input.TenderId)</p>
     <h1>@input.Title</h1>
-    <p class="meta">Generated @Model.GeneratedAtUtc.ToLocalTime().ToString("f") · Model: @Model.Model · @input.Bids.Count compliant bids compared</p>
+    <p class="meta">@L.F("Generated {0} · Model: {1} · {2} compliant bids compared", Model.GeneratedAtUtc.ToLocalTime().ToString("f", L.DisplayCulture), Model.Model, input.Bids.Count)</p>
 
     <div class="disclaimer">
-        <strong>Advisory only.</strong> This report was produced by an AI assistant to support the evaluation committee.
-        It does not score the bids and does not replace the committee's judgement or decision. Check every point against the bid documents before relying on it.
+        <strong>@L.T("Advisory only.")</strong> @L.T("This report was produced by an AI assistant to support the evaluation committee. It does not score the bids and does not replace the committee's judgement or decision. Check every point against the bid documents before relying on it.")
     </div>
 
     <section class="pick">
-        <p class="eyebrow">Recommended offer</p>
+        <p class="eyebrow">@L.T("Recommended offer")</p>
         <p class="name">@best.Supplier</p>
-        <p class="meta">@best.TotalPrice.ToString("N2") @best.Currency · Delivery in @best.DeliveryDays days · Valid for @best.ValidityDays days</p>
+        <p class="meta">@best.TotalPrice.ToString("N2") @best.Currency · @L.F("Delivery in {0} days · Valid for {1} days", best.DeliveryDays, best.ValidityDays)</p>
         <p><strong>@output.Headline</strong></p>
         @if (!string.IsNullOrWhiteSpace(output.Summary)) { <p>@output.Summary</p> }
         @if (output.WhyChosen.Count > 0)
         {
-            <h3>Why the AI chose this offer over the others</h3>
+            <h3>@L.T("Why the AI chose this offer over the others")</h3>
             <ul class="good">@foreach (var reason in output.WhyChosen) { <li>@reason</li> }</ul>
         }
     </section>
 
     <section>
-        <h2>Side-by-side comparison</h2>
-        <p class="muted">Figures in this table are calculated by the system from the submitted bids, not by the AI.</p>
+        <h2>@L.T("Side-by-side comparison")</h2>
+        <p class="muted">@L.T("Figures in this table are calculated by the system from the submitted bids, not by the AI.")</p>
         <div class="scroll">
         <table>
-            <thead><tr><th>AI rank</th><th>Supplier</th><th class="num">Total price</th><th class="num">Above lowest</th><th class="num">Delivery</th><th class="num">Validity</th><th>Items covered</th><th>Gaps</th><th class="num">Documents</th></tr></thead>
+            <thead><tr><th>@L.T("AI rank")</th><th>@L.T("Supplier")</th><th class="num">@L.T("Total price")</th><th class="num">@L.T("Above lowest")</th><th class="num">@L.T("Delivery")</th><th class="num">@L.T("Validity")</th><th>@L.T("Items covered")</th><th>@L.T("Gaps")</th><th class="num">@L.T("Documents")</th></tr></thead>
             <tbody>
             @foreach (var assessment in output.Bids)
             {
                 var f = Model.Facts.Single(x => x.BidId == assessment.BidId);
                 <tr class="@(f.BidId == best.BidId ? "is-best" : "")">
                     <td>#@assessment.OverallRank</td>
-                    <td><strong>@f.Supplier</strong>@if (f.BidId == best.BidId) { <span class="tag">AI pick</span> }</td>
-                    <td class="num @(f.PriceRank == 1 ? "best-cell" : "")">@f.TotalPrice.ToString("N2") @f.Currency@if (f.UsdEquivalent is decimal usd) { <br /><span class="muted">≈ @usd.ToString("N2") USD</span> }</td>
-                    <td class="num">@(!f.PriceComparable ? "Not comparable (no exchange rate)" : f.PriceGapPercent == 0 ? "Lowest" : $"+{f.PriceGapPercent}%")</td>
+                    <td><strong>@f.Supplier</strong>@if (f.BidId == best.BidId) { <span class="tag">@L.T("AI pick")</span> }</td>
+                    <td class="num @(f.PriceRank == 1 ? "best-cell" : "")">@f.TotalPrice.ToString("N2") @f.Currency</td>
+                    <td class="num">@(!f.PriceComparable ? L.T("Not comparable") : f.PriceGapPercent == 0 ? "Lowest" : $"+{f.PriceGapPercent}%")</td>
                     <td class="num @(f.DeliveryRank == 1 ? "best-cell" : "")">@f.DeliveryDays days</td>
                     <td class="num">@f.ValidityDays days</td>
                     <td>@f.ItemsCovered / @f.ItemsRequested</td>
-                    <td>@(f.QuantityShortfalls.Count == 0 ? "None" : string.Join("; ", f.QuantityShortfalls))</td>
+                    <td>@(f.QuantityShortfalls.Count == 0 ? L.T("None") : string.Join("; ", f.QuantityShortfalls))</td>
                     <td class="num">@f.DocumentCount</td>
                 </tr>
             }
@@ -104,10 +106,10 @@
     @if (input.RequestedItems.Count > 0)
     {
         <section>
-            <h2>Unit prices by item</h2>
+            <h2>@L.T("Unit prices by item")</h2>
             <div class="scroll">
             <table>
-                <thead><tr><th>Requested item</th><th class="num">Qty</th>
+                <thead><tr><th>@L.T("Requested item")</th><th class="num">@L.T("Qty")</th>
                     @foreach (var b in input.Bids) { <th class="num">@b.Supplier</th> }
                 </tr></thead>
                 <tbody>
@@ -123,8 +125,8 @@
                         @for (var i = 0; i < input.Bids.Count; i++)
                         {
                             var line = prices[i];
-                            if (line is null) { <td class="num muted">Not offered</td> }
-                            else { <td class="num @(line.UnitPrice == lowest ? "best-cell" : "")">@line.UnitPrice.ToString("N2") @input.Bids[i].Currency@if (line.Quantity != item.Quantity) { <br /><span class="muted">qty @line.Quantity</span> }</td> }
+                            if (line is null) { <td class="num muted">@L.T("Not offered")</td> }
+                            else { <td class="num @(line.UnitPrice == lowest ? "best-cell" : "")">@line.UnitPrice.ToString("N2") @input.Bids[i].Currency@if (line.Quantity != item.Quantity) { <br /><span class="muted">@L.F("qty {0}", line.Quantity)</span> }</td> }
                         }
                     </tr>
                 }
@@ -135,24 +137,24 @@
     }
 
     <section>
-        <h2>Strengths and weaknesses of each offer</h2>
+        <h2>@L.T("Strengths and weaknesses of each offer")</h2>
         @foreach (var a in output.Bids)
         {
             var bid = input.Bids.Single(b => b.BidId == a.BidId);
             <div class="bid-card @(a.BidId == best.BidId ? "is-best" : "")">
                 <div class="bid-head">
-                    <h3>#@a.OverallRank · @bid.Supplier@if (a.BidId == best.BidId) { <span class="tag">AI pick</span> }</h3>
+                    <h3>#@a.OverallRank · @bid.Supplier@if (a.BidId == best.BidId) { <span class="tag">@L.T("AI pick")</span> }</h3>
                     <span class="muted">@bid.TotalPrice.ToString("N2") @bid.Currency · @bid.DeliveryDays days</span>
                 </div>
                 <div class="grid">
-                    @if (!string.IsNullOrWhiteSpace(a.PriceAssessment)) { <div><h4>Price</h4><p>@a.PriceAssessment</p></div> }
-                    @if (!string.IsNullOrWhiteSpace(a.SpecificationAssessment)) { <div><h4>Specifications</h4><p>@a.SpecificationAssessment</p></div> }
-                    @if (!string.IsNullOrWhiteSpace(a.DeliveryAssessment)) { <div><h4>Delivery</h4><p>@a.DeliveryAssessment</p></div> }
+                    @if (!string.IsNullOrWhiteSpace(a.PriceAssessment)) { <div><h4>@L.T("Price")</h4><p>@a.PriceAssessment</p></div> }
+                    @if (!string.IsNullOrWhiteSpace(a.SpecificationAssessment)) { <div><h4>@L.T("Specifications")</h4><p>@a.SpecificationAssessment</p></div> }
+                    @if (!string.IsNullOrWhiteSpace(a.DeliveryAssessment)) { <div><h4>@L.T("Delivery")</h4><p>@a.DeliveryAssessment</p></div> }
                 </div>
                 <div class="grid">
-                    <div><h4>Strengths</h4>@if (a.Strengths.Count == 0) { <p class="muted">None noted.</p> } else { <ul class="good">@foreach (var s in a.Strengths) { <li>@s</li> }</ul> }</div>
-                    <div><h4>Weaknesses</h4>@if (a.Weaknesses.Count == 0) { <p class="muted">None noted.</p> } else { <ul class="bad">@foreach (var s in a.Weaknesses) { <li>@s</li> }</ul> }</div>
-                    @if (a.Risks.Count > 0) { <div><h4>Risks</h4><ul class="bad">@foreach (var s in a.Risks) { <li>@s</li> }</ul></div> }
+                    <div><h4>@L.T("Strengths")</h4>@if (a.Strengths.Count == 0) { <p class="muted">@L.T("None noted.")</p> } else { <ul class="good">@foreach (var s in a.Strengths) { <li>@s</li> }</ul> }</div>
+                    <div><h4>@L.T("Weaknesses")</h4>@if (a.Weaknesses.Count == 0) { <p class="muted">@L.T("None noted.")</p> } else { <ul class="bad">@foreach (var s in a.Weaknesses) { <li>@s</li> }</ul> }</div>
+                    @if (a.Risks.Count > 0) { <div><h4>@L.T("Risks")</h4><ul class="bad">@foreach (var s in a.Risks) { <li>@s</li> }</ul></div> }
                 </div>
             </div>
         }
@@ -161,7 +163,7 @@
     @if (output.ComparisonNotes.Count > 0)
     {
         <section>
-            <h2>Comparison notes</h2>
+            <h2>@L.T("Comparison notes")</h2>
             <ul>@foreach (var note in output.ComparisonNotes) { <li>@note</li> }</ul>
         </section>
     }
@@ -169,18 +171,18 @@
     @if (output.QuestionsForCommittee.Count > 0)
     {
         <section>
-            <h2>Points to check before scoring</h2>
+            <h2>@L.T("Points to check before scoring")</h2>
             <ul>@foreach (var q in output.QuestionsForCommittee) { <li>@q</li> }</ul>
         </section>
     }
 
     <section>
-        <h2>Evaluation criteria considered</h2>
-        @if (input.Criteria.Count == 0) { <p class="muted">No criteria had been set when this analysis was produced.</p> }
-        else { <ul>@foreach (var c in input.Criteria) { <li><strong>@c.Name</strong> · @c.Type · @c.WeightPercent% weight · @c.MaxScore points</li> }</ul> }
+        <h2>@L.T("Evaluation criteria considered")</h2>
+        @if (input.Criteria.Count == 0) { <p class="muted">@L.T("No criteria had been set when this analysis was produced.")</p> }
+        else { <ul>@foreach (var c in input.Criteria) { <li><strong>@c.Name</strong> · @L.T(c.Type) · @L.F("Weight {0}% · {1} points", c.WeightPercent, c.MaxScore)</li> }</ul> }
     </section>
 
-    <footer>Sourcing Desk · AI assistant report for Tender #@input.TenderId · Supplier text was treated as data only. The committee's scores and decision are final.</footer>
+    <footer>@L.T("Sourcing Desk") · @L.F("AI assistant report for Tender #{0}. The committee’s scores and decision are final.", input.TenderId)</footer>
 </main>
 </body>
 </html>

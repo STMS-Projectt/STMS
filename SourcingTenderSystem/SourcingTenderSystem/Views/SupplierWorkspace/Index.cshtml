@@ -1,64 +1,64 @@
 @using SourcingTenderSystem.Security
 @model SupplierWorkspaceSummary
 @{
-    ViewData["Title"] = "Supplier dashboard";
+    ViewData["Title"] = L.T("Supplier dashboard");
     var trading = Model.Status == SupplierStatus.Approved && User.IsInRole(Roles.Supplier);
 }
 <header class="page-heading stms-hero" aria-labelledby="supplier-heading">
     <div>
-        <p class="eyebrow">SUPPLIER WORKSPACE</p>
+        <p class="eyebrow">@L.T("SUPPLIER WORKSPACE")</p>
         <h1 id="supplier-heading">@Model.Company</h1>
-        <p>@(trading ? "Manage tender invitations and follow your bids." : "Track your supplier application and supporting documents.")</p>
+        <p>@L.T(trading ? "Manage tender invitations and follow your bids." : "Track your supplier application and supporting documents.")</p>
     </div>
     <div class="button-row">
-        @if (trading) { <a class="btn btn-primary" asp-action="Invitations">Tender invitations <partial name="_Icon" model='@("arrow")' /></a> }
+        @if (trading) { <a class="btn btn-primary" asp-action="Invitations">@L.T("Tender invitations") <partial name="_Icon" model='@("arrow")' /></a> }
         <div class="record-action">
-            <a data-workspace-dialog="details" class="record-icon-action" asp-controller="SupplierRegistration" asp-action="RegistrationStatus" asp-route-workspace="true" asp-route-panel="overview" aria-label="View application status" data-tooltip="Application status"><partial name="_Icon" model='@("eye")' /></a>
-            <a data-workspace-dialog="details" class="record-icon-action" asp-controller="SupplierRegistration" asp-action="RegistrationStatus" asp-route-workspace="true" asp-route-panel="documents" aria-label="View application documents" data-tooltip="Application documents"><partial name="_Icon" model='@("file")' /></a>
+            <a data-workspace-dialog="details" class="record-icon-action" asp-controller="SupplierRegistration" asp-action="RegistrationStatus" asp-route-workspace="true" asp-route-panel="overview" aria-label="@L.T("View application status")" data-tooltip="@L.T("Application status")"><partial name="_Icon" model='@("eye")' /></a>
+            <a data-workspace-dialog="details" class="record-icon-action" asp-controller="SupplierRegistration" asp-action="RegistrationStatus" asp-route-workspace="true" asp-route-panel="documents" aria-label="@L.T("View application documents")" data-tooltip="@L.T("Application documents")"><partial name="_Icon" model='@("file")' /></a>
         </div>
     </div>
 </header>
 @if (trading && Model.NextInvitation is { } next)
 {
-    <section class="surface detail-card vote-queue" aria-label="Next invitation deadline">
-        <div class="record-section-heading"><div><h2>Next invitation to review</h2><p>@next.Tender · Respond by <time datetime="@next.Deadline.ToString("O")">@next.Deadline.ToString("dd MMM yyyy · HH:mm") UTC</time></p></div>
-            <a data-workspace-dialog="details" class="btn btn-primary" asp-action="Invitations" asp-route-invitationId="@next.Id">Review invitation</a>
+    <section class="surface detail-card vote-queue" aria-label="@L.T("Next invitation deadline")">
+        <div class="record-section-heading"><div><h2>@L.T("Next invitation to review")</h2><p>@next.Tender · @L.T("Respond by") <time datetime="@next.Deadline.ToString("O")">@next.Deadline.ToString("dd MMM yyyy · HH:mm", L.DisplayCulture) UTC</time></p></div>
+            <a data-workspace-dialog="details" class="btn btn-primary" asp-action="Invitations" asp-route-invitationId="@next.Id">@L.T("Review invitation")</a>
         </div>
     </section>
 }
-<section class="metrics-grid stms-metrics" aria-label="Supplier statistics">
+<section class="metrics-grid stms-metrics" aria-label="@L.T("Supplier statistics")">
     <article class="surface metric">
         <span class="icon-tile tone-teal"><partial name="_Icon" model='@("shield")' /></span>
-        <strong>@(Model.ApplicationDraft ? "Draft" : Model.Status)</strong>
-        <span>Application status</span>
+        <strong>@L.T(Model.ApplicationDraft ? "Draft" : Model.Status)</strong>
+        <span>@L.T("Application status")</span>
     </article>
     @if (trading)
     {
-        <article class="surface metric"><span class="icon-tile tone-blue"><partial name="_Icon" model='@("supplier")' /></span><strong>@Model.Invitations</strong><a class="text-link" asp-action="Invitations">Invitations · @Model.AwaitingResponse awaiting response</a></article>
-        <article class="surface metric"><span class="icon-tile tone-violet"><partial name="_Icon" model='@("file")' /></span><strong>@Model.DraftBids</strong><a class="text-link" asp-controller="Bids" asp-action="MyBids">Draft bids</a></article>
-        <article class="surface metric"><span class="icon-tile tone-amber"><partial name="_Icon" model='@("check")' /></span><strong>@Model.SentBids</strong><a class="text-link" asp-controller="Bids" asp-action="MyBids">Bids submitted to date</a></article>
+        <article class="surface metric"><span class="icon-tile tone-blue"><partial name="_Icon" model='@("supplier")' /></span><strong>@Model.Invitations</strong><a class="text-link" asp-action="Invitations">@L.F("Invitations · {0} awaiting response", Model.AwaitingResponse)</a></article>
+        <article class="surface metric"><span class="icon-tile tone-violet"><partial name="_Icon" model='@("file")' /></span><strong>@Model.DraftBids</strong><a class="text-link" asp-controller="Bids" asp-action="MyBids">@L.T("Draft bids")</a></article>
+        <article class="surface metric"><span class="icon-tile tone-amber"><partial name="_Icon" model='@("check")' /></span><strong>@Model.SentBids</strong><a class="text-link" asp-controller="Bids" asp-action="MyBids">@L.T("Bids submitted to date")</a></article>
     }
     else
     {
-        <article class="surface metric"><span class="icon-tile tone-blue"><partial name="_Icon" model='@("file")' /></span><strong>@Model.Documents</strong><span>Application documents</span></article>
+        <article class="surface metric"><span class="icon-tile tone-blue"><partial name="_Icon" model='@("file")' /></span><strong>@Model.Documents</strong><span>@L.T("Application documents")</span></article>
     }
 </section>
 <section class="surface detail-card">
-    <h2>@(trading ? "How to submit a bid" : "What happens next")</h2>
+    <h2>@L.T(trading ? "How to submit a bid" : "What happens next")</h2>
     @if (trading)
     {
-        <ol class="mb-0"><li>Review and accept an invitation while the tender is open.</li><li>Create a bid, enter your prices, and attach supporting documents.</li><li>Submit before the deadline and track the bid in <a asp-controller="Bids" asp-action="MyBids">My bids</a>.</li></ol>
+        <ol class="mb-0"><li>@L.T("Review and accept an invitation while the tender is open.")</li><li>@L.T("Create a bid, enter your prices, and attach supporting documents.")</li><li>@L.T("Submit before the deadline and track the bid in") <a asp-controller="Bids" asp-action="MyBids">@L.T("My bids")</a>.</li></ol>
     }
     else if (Model.ApplicationDraft)
     {
-        <p class="subtle mb-0">Your application has not been sent to the sourcing team yet.</p>
+        <p class="subtle mb-0">@L.T("Your application has not been sent to the sourcing team yet.")</p>
     }
     else if (Model.Status == SupplierStatus.Pending)
     {
-        <p class="subtle mb-0">Track the application here. If the sourcing officer needs another document, you can reply to their request in Clarifications.</p>
+        <p class="subtle mb-0">@L.T("Track the application here. If the sourcing officer needs another document, you can reply to their request in Clarifications.")</p>
     }
     else
     {
-        <p class="subtle mb-0">Open your application to see the latest review decision and any notes.</p>
+        <p class="subtle mb-0">@L.T("Open your application to see the latest review decision and any notes.")</p>
     }
 </section>

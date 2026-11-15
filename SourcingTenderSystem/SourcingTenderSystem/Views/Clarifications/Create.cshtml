@@ -1,35 +1,35 @@
 @model ClarificationInput
 @{
-    ViewData["Title"] = "New clarification";
+    ViewData["Title"] = L.T("New clarification");
     var route = (ClarificationRoute)ViewData["ClarificationRoute"]!;
     var types = ViewData["RequestedDocumentTypes"] as IReadOnlyList<string> ?? [];
     if (Model.Kind == "supplier") ViewData["Title"] = "Request supplier document";
 }
-<a class="back-link" asp-action="Index" asp-route-kind="@Model.Kind" asp-route-recordId="@Model.RecordId"><partial name="_Icon" model='@("back")' /> Clarification history</a>
-<header class="page-heading admin-action-heading"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("mail")' /></span><div><p class="eyebrow">TRANSACTION COMMUNICATION</p><h1>@ViewData["Title"]</h1><p>@route.Title</p></div></header>
+<a class="back-link" asp-action="Index" asp-route-kind="@Model.Kind" asp-route-recordId="@Model.RecordId"><partial name="_Icon" model='@("back")' /> @L.T("Clarification history")</a>
+<header class="page-heading admin-action-heading"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("mail")' /></span><div><p class="eyebrow">@L.T("TRANSACTION COMMUNICATION")</p><h1>@L.T(ViewData["Title"]?.ToString())</h1><p>@route.Title</p></div></header>
 <div class="form-shell">
     <form class="surface form-card" asp-action="Create" asp-controller="Clarifications" asp-route-id="" method="post">
         <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
         <input asp-for="Kind" type="hidden" /><input asp-for="RecordId" type="hidden" />
         <div class="stack">
-            <label asp-for="Recipient" class="form-label">Send to</label>
-            <select asp-for="Recipient" class="form-select" required><option value="">Select participant</option>
+            <label asp-for="Recipient" class="form-label">@L.T("Send to")</label>
+            <select asp-for="Recipient" class="form-select" required><option value="">@L.T("Select participant")</option>
                 @foreach (var person in route.Recipients) { <option value="@person.Key">@person.Name</option> }
             </select><span asp-validation-for="Recipient" class="text-danger"></span>
             <label asp-for="Subject" class="form-label"></label><input asp-for="Subject" class="form-control" maxlength="150" required /><span asp-validation-for="Subject" class="text-danger"></span>
-            <label asp-for="Description" class="form-label">Question or request</label><textarea asp-for="Description" class="form-control" rows="5" maxlength="2000" required></textarea><span asp-validation-for="Description" class="text-danger"></span>
+            <label asp-for="Description" class="form-label">@L.T("Question or request")</label><textarea asp-for="Description" class="form-control" rows="5" maxlength="2000" required></textarea><span asp-validation-for="Description" class="text-danger"></span>
             @if (types.Count > 0)
             {
-                <div><label asp-for="RequestedDocumentType" class="form-label">Request a supporting PDF</label>
+                <div><label asp-for="RequestedDocumentType" class="form-label">@L.T("Request a supporting PDF")</label>
                     <select asp-for="RequestedDocumentType" class="form-select" required="@(Model.Kind == "supplier")">
-                        <option value="">@(Model.Kind == "supplier" ? "Select a document type" : "No attachment needed")</option>
-                        @foreach (var type in types) { <option value="@type">@type</option> }
+                        <option value="">@L.T(Model.Kind == "supplier" ? "Select a document type" : "No attachment needed")</option>
+                        @foreach (var type in types) { <option value="@type">@L.T(type)</option> }
                     </select><span asp-validation-for="RequestedDocumentType" class="text-danger"></span>
-                    <p class="field-hint mb-0 mt-1">The file stays in this conversation until you approve adding it.</p>
+                    <p class="field-hint mb-0 mt-1">@L.T("The file stays in this conversation until you approve adding it.")</p>
                 </div>
             }
-            <div><button class="btn btn-primary" type="submit">Send clarification</button></div>
+            <div><button class="btn btn-primary" type="submit">@L.T("Send clarification")</button></div>
         </div>
     </form>
-    <aside class="surface helper-card"><h2>Who can see this?</h2><p class="mb-0">The participants and administrators can read this conversation. The recipient receives an in-app notification.</p></aside>
+    <aside class="surface helper-card"><h2>@L.T("Who can see this?")</h2><p class="mb-0">@L.T("The participants and administrators can read this conversation. The recipient receives an in-app notification.")</p></aside>
 </div>

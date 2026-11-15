@@ -5,52 +5,52 @@
     string? DateValue(DateOnly? date) => date?.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
     var filtered = !string.IsNullOrWhiteSpace(Model.Query) || Model.Status != null || activity?.Event != null || activity?.From != null || activity?.To != null;
 }
-<header class="page-heading stms-hero admin-record-hero"><div><p class="eyebrow">ADMINISTRATION</p><h1>@Model.Title</h1><p>@Model.Description</p></div></header>
+<header class="page-heading stms-hero admin-record-hero"><div><p class="eyebrow">@L.T("ADMINISTRATION")</p><h1>@L.T(Model.Title)</h1><p>@L.T(Model.Description)</p></div></header>
 <section class="surface directory dept-directory" data-directory>
-    <div class="dept-directory-heading"><h2>Records</h2><p>Browse or search this register.</p></div>
+    <div class="dept-directory-heading"><h2>@L.T("Records")</h2><p>@L.T("Browse or search this register.")</p></div>
     <div class="directory-filter-panel">
     @if (Model.Statuses.Count > 1 || Model.Status != null)
     {
-        <nav class="directory-status-options" aria-label="Filter by status">
-            <a asp-action="@Model.Action" asp-route-q="@Model.Query" aria-current="@(Model.Status == null ? "page" : null)">All statuses</a>
+        <nav class="directory-status-options" aria-label="@L.T("Filter by status")">
+            <a asp-action="@Model.Action" asp-route-q="@Model.Query" aria-current="@(Model.Status == null ? "page" : null)">@L.T("All statuses")</a>
             @foreach (var status in Model.Statuses)
             {
-                <a asp-action="@Model.Action" asp-route-q="@Model.Query" asp-route-status="@status" aria-current="@(Model.Status == status ? "page" : null)">@status</a>
+                <a asp-action="@Model.Action" asp-route-q="@Model.Query" asp-route-status="@status" aria-current="@(Model.Status == status ? "page" : null)">@L.T(status)</a>
             }
         </nav>
     }
     <form class="directory-toolbar dept-filters" asp-action="@Model.Action" method="get" role="search">
         @if (Model.Status != null) { <input type="hidden" name="status" value="@Model.Status" /> }
-        <div class="directory-search"><label class="search-box"><span class="visually-hidden">Search records</span><partial name="_Icon" model='@("search")' /><input class="form-control" type="search" data-filter-search name="q" value="@Model.Query" placeholder="Search records" /></label><partial name="_DirectoryVoice" /></div>
+        <div class="directory-search"><label class="search-box"><span class="visually-hidden">@L.T("Search records")</span><partial name="_Icon" model='@("search")' /><input class="form-control" type="search" data-filter-search name="q" value="@Model.Query" placeholder="@L.T("Search records")" /></label><partial name="_DirectoryVoice" /></div>
         @if (activity != null)
         {
-            <label class="field">Event type<select name="eventType" class="form-select" data-activity-event>
-                <option value="">All events</option>
-                @foreach (var item in activity.Events) { <option value="@item" selected="@(item == activity.Event)">@item</option> }
+            <label class="field">@L.T("Event type")<select name="eventType" class="form-select" data-activity-event>
+                <option value="">@L.T("All events")</option>
+                @foreach (var item in activity.Events) { <option value="@item" selected="@(item == activity.Event)">@L.T(item)</option> }
             </select></label>
             <div class="activity-date-fields">
-                <label class="field">From (UTC)<input name="from" type="date" value="@DateValue(activity.From)" class="form-control" data-activity-date /></label>
-                <label class="field">Through (UTC)<input name="to" type="date" value="@DateValue(activity.To)" class="form-control" data-activity-date /></label>
+                <label class="field">@L.T("From (UTC)")<input name="from" type="date" value="@DateValue(activity.From)" class="form-control" data-activity-date /></label>
+                <label class="field">@L.T("Through (UTC)")<input name="to" type="date" value="@DateValue(activity.To)" class="form-control" data-activity-date /></label>
             </div>
         }
-        <span class="result-count" data-result-count>@Model.Rows.Count on this page</span>
-        <button class="btn btn-primary" type="submit">Apply filters</button>
+        <span class="result-count" data-result-count>@L.F("{0} on this page", Model.Rows.Count)</span>
+        <button class="btn btn-primary" type="submit">@L.T("Apply filters")</button>
     </form>
-    @if (filtered) { <a class="dept-dock-button" data-directory-clear asp-action="@Model.Action" aria-label="Clear filters"><partial name="_Icon" model='@("refresh")' /><span>Reset</span></a> }
+    @if (filtered) { <a class="dept-dock-button" data-directory-clear asp-action="@Model.Action" aria-label="@L.T("Clear filters")"><partial name="_Icon" model='@("refresh")' /><span>@L.T("Reset")</span></a> }
     </div>
-    @if (activity?.Error != null) { <p class="alert alert-warning m-3" role="alert">@activity.Error</p> }
-    @if (Model.Rows.Count == 0) { <div class="empty-state"><h2>No matching records</h2><p>Try changing the search or returning to the first page.</p></div> }
+    @if (activity?.Error != null) { <p class="alert alert-warning m-3" role="alert">@L.T(activity.Error)</p> }
+    @if (Model.Rows.Count == 0) { <div class="empty-state"><h2>@L.T("No matching records")</h2><p>@L.T("Try changing the search or returning to the first page.")</p></div> }
     else
     {
         <div class="record-list">
             @foreach (var row in Model.Rows)
             {
                 <article class="record-card">
-                    <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("file")' /></span><span>@row.Name<small>#@row.Id</small></span></div>
+                    <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("file")' /></span><span>@(Model.Action == "Activity" ? L.T(row.Name) : row.Name)<small>#@row.Id</small></span></div>
                     <dl class="record-facts">
-                        <div><dt class="record-field-icon" title="Context"><partial name="_Icon" model='@("briefcase")' /><span class="visually-hidden">Context</span></dt><dd>@row.Context</dd></div>
-                        <div><dt>@(Model.Action == "Activity" ? "Details" : "Status")</dt><dd>@row.Status</dd></div>
-                        <div><dt class="record-field-icon" title="Date (UTC)"><partial name="_Icon" model='@("calendar")' /><span class="visually-hidden">Date (UTC)</span></dt><dd>@(row.Date?.ToString("dd MMM yyyy HH:mm") ?? "—")</dd></div>
+                        <div><dt class="record-field-icon" title="@L.T("Context")"><partial name="_Icon" model='@("briefcase")' /><span class="visually-hidden">@L.T("Context")</span></dt><dd>@row.Context</dd></div>
+                        <div><dt>@L.T(Model.Action == "Activity" ? "Details" : "Status")</dt><dd>@L.T(row.Status)</dd></div>
+                        <div><dt class="record-field-icon" title="@L.T("Date (UTC)")"><partial name="_Icon" model='@("calendar")' /><span class="visually-hidden">@L.T("Date (UTC)")</span></dt><dd>@(row.Date?.ToString("dd MMM yyyy HH:mm", L.DisplayCulture) ?? "—")</dd></div>
                     </dl>
                     @if (Model.Action != "Activity")
                     {
@@ -58,22 +58,22 @@
                             @switch (Model.Action)
                             {
                                 case "Requests":
-                                    <a data-workspace-dialog="details" class="record-icon-action" asp-action="RequestDetails" asp-route-id="@row.Id" aria-label="View request details and items" data-tooltip="View request details and items" title="View request details and items"><partial name="_Icon" model='@("eye")' /></a>
-                                    <a data-workspace-dialog="details" class="record-icon-action" asp-action="RequestQr" asp-route-id="@row.Id" aria-label="Show request QR code" data-tooltip="Show request QR code" title="Show request QR code"><partial name="_Icon" model='@("qr")' /></a>
+                                    <a data-workspace-dialog="details" class="record-icon-action" asp-action="RequestDetails" asp-route-id="@row.Id" aria-label="@L.T("View request details and items")" data-tooltip="@L.T("View request details and items")" title="@L.T("View request details and items")"><partial name="_Icon" model='@("eye")' /></a>
+                                    <a data-workspace-dialog="details" class="record-icon-action" asp-action="RequestQr" asp-route-id="@row.Id" aria-label="@L.T("Show request QR code")" data-tooltip="@L.T("Show request QR code")" title="@L.T("Show request QR code")"><partial name="_Icon" model='@("qr")' /></a>
                                     break;
                                 case "Tenders":
                                     @foreach (var (panel, label, icon) in new[] { ("overview", "Tender summary", "eye"), ("committee", "Committee members", "users"), ("invitations", "Tender invitations", "mail"), ("bids", "Submitted bids", "inbox") })
                                     {
-                                        <a data-workspace-dialog="details" class="record-icon-action" asp-action="Tender" asp-route-id="@row.Id" asp-route-panel="@panel" aria-label="@label: @row.Name" data-tooltip="@label"><partial name="_Icon" model="icon" /></a>
+                                        <a data-workspace-dialog="details" class="record-icon-action" asp-action="Tender" asp-route-id="@row.Id" asp-route-panel="@panel" aria-label="@L.T(label): @row.Name" data-tooltip="@L.T(label)"><partial name="_Icon" model="icon" /></a>
                                     }
-                                    <a data-workspace-dialog="details" class="record-icon-action" asp-action="TenderQr" asp-route-id="@row.Id" aria-label="Show tender QR code" data-tooltip="Show tender QR code" title="Show tender QR code"><partial name="_Icon" model='@("qr")' /></a>
+                                    <a data-workspace-dialog="details" class="record-icon-action" asp-action="TenderQr" asp-route-id="@row.Id" aria-label="@L.T("Show tender QR code")" data-tooltip="@L.T("Show tender QR code")" title="@L.T("Show tender QR code")"><partial name="_Icon" model='@("qr")' /></a>
                                     break;
                                 case "Invitations":
-                                    <a data-workspace-dialog="details" class="record-icon-action" asp-action="InvitationDetails" asp-route-id="@row.Id" aria-label="View invitation details" data-tooltip="View invitation details" title="View invitation details"><partial name="_Icon" model='@("eye")' /></a>
+                                    <a data-workspace-dialog="details" class="record-icon-action" asp-action="InvitationDetails" asp-route-id="@row.Id" aria-label="@L.T("View invitation details")" data-tooltip="@L.T("View invitation details")" title="@L.T("View invitation details")"><partial name="_Icon" model='@("eye")' /></a>
                                     break;
                                 case "Bids":
-                                    <a data-workspace-dialog="details" class="record-icon-action" asp-action="BidDetails" asp-route-id="@row.Id" asp-route-panel="overview" aria-label="View bid summary" data-tooltip="Bid summary"><partial name="_Icon" model='@("eye")' /></a>
-                                    <a data-workspace-dialog="details" class="record-icon-action" asp-action="BidDetails" asp-route-id="@row.Id" asp-route-panel="items" aria-label="View quoted items" data-tooltip="Quoted items"><partial name="_Icon" model='@("inbox")' /></a>
+                                    <a data-workspace-dialog="details" class="record-icon-action" asp-action="BidDetails" asp-route-id="@row.Id" asp-route-panel="overview" aria-label="@L.T("View bid summary")" data-tooltip="@L.T("Bid summary")"><partial name="_Icon" model='@("eye")' /></a>
+                                    <a data-workspace-dialog="details" class="record-icon-action" asp-action="BidDetails" asp-route-id="@row.Id" asp-route-panel="items" aria-label="@L.T("View quoted items")" data-tooltip="@L.T("Quoted items")"><partial name="_Icon" model='@("inbox")' /></a>
                                     break;
                             }
                         </div>
@@ -84,10 +84,10 @@
     }
     @if (Model.Page > 1 || Model.HasNext)
     {
-        <nav class="directory-toolbar" data-register-pages aria-label="Record pages">
-            @if (Model.Page > 1) { <a class="btn btn-outline-secondary" asp-action="@Model.Action" asp-route-q="@Model.Query" asp-route-status="@Model.Status" asp-route-eventType="@activity?.Event" asp-route-from="@DateValue(activity?.From)" asp-route-to="@DateValue(activity?.To)" asp-route-page="@(Model.Page - 1)" aria-label="Previous page">@(Model.Page - 1)</a> }
-            <span aria-current="page" aria-label="Current page">@Model.Page</span>
-            @if (Model.HasNext) { <a class="btn btn-outline-secondary" asp-action="@Model.Action" asp-route-q="@Model.Query" asp-route-status="@Model.Status" asp-route-eventType="@activity?.Event" asp-route-from="@DateValue(activity?.From)" asp-route-to="@DateValue(activity?.To)" asp-route-page="@(Model.Page + 1)" aria-label="Next page">@(Model.Page + 1)</a> }
+        <nav class="directory-toolbar" data-register-pages aria-label="@L.T("Record pages")">
+            @if (Model.Page > 1) { <a class="btn btn-outline-secondary" asp-action="@Model.Action" asp-route-q="@Model.Query" asp-route-status="@Model.Status" asp-route-eventType="@activity?.Event" asp-route-from="@DateValue(activity?.From)" asp-route-to="@DateValue(activity?.To)" asp-route-page="@(Model.Page - 1)" aria-label="@L.T("Previous page")">@(Model.Page - 1)</a> }
+            <span aria-current="page" aria-label="@L.T("Current page")">@Model.Page</span>
+            @if (Model.HasNext) { <a class="btn btn-outline-secondary" asp-action="@Model.Action" asp-route-q="@Model.Query" asp-route-status="@Model.Status" asp-route-eventType="@activity?.Event" asp-route-from="@DateValue(activity?.From)" asp-route-to="@DateValue(activity?.To)" asp-route-page="@(Model.Page + 1)" aria-label="@L.T("Next page")">@(Model.Page + 1)</a> }
         </nav>
     }
 </section>

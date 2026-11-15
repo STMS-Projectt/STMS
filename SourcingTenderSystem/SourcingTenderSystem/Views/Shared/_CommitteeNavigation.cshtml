@@ -4,26 +4,26 @@
     var top = User.IsInRole("TopCommittee");
     var manager = User.IsInRole("SourcingManager");
 }
-<aside class="sidebar" id="workspace-nav" aria-label="Evaluation workspace">
+<aside class="sidebar" id="workspace-nav" aria-label="@L.T("Evaluation workspace")">
     <a class="brand" asp-controller="@(top ? "EvaluationWorkflow" : "CommitteeReviews")" asp-action="Index">
         <span class="brand-mark"><partial name="_Icon" model='@("brand")' /></span>
-        <span>Sourcing Desk<small>@(top ? "Top Committee" : manager ? "Sourcing manager" : "Evaluation committee")</small></span>
+        <span>@L.T("Sourcing Desk")<small>@L.T(top ? "Top Committee" : manager ? "Sourcing manager" : "Evaluation committee")</small></span>
     </a>
-    <nav class="side-nav" aria-label="Committee pages">
-        <span class="nav-caption">REVIEW WORKSPACE</span>
+    <nav class="side-nav" aria-label="@L.T("Committee pages")">
+        <span class="nav-caption">@L.T("REVIEW WORKSPACE")</span>
         @if (!top)
         {
         @foreach (var (route, label, icon) in new[] { ("Index", "Dashboard", "dashboard"), ("Assignments", "My assignments", "file") })
         {
             var current = controller == "CommitteeReviews" && (route == "Index" ? action == "Index" : action != "Index");
-            <a class="side-link @(current ? "is-current" : "")" aria-current="@(current ? "page" : null)" asp-controller="CommitteeReviews" asp-action="@route" asp-route-id=""><partial name="_Icon" model="icon" /> @label</a>
+            <a class="side-link @(current ? "is-current" : "")" aria-current="@(current ? "page" : null)" asp-controller="CommitteeReviews" asp-action="@route" asp-route-id=""><partial name="_Icon" model="icon" /> @L.T(label)</a>
         }
         }
         @if (manager || top)
         {
-            <a class="side-link @(controller == "EvaluationWorkflow" ? "is-current" : "")" aria-current="@(controller == "EvaluationWorkflow" ? "page" : null)" asp-controller="EvaluationWorkflow" asp-action="Index"><partial name="_Icon" model='@("check")' /> @(top ? "Award decisions" : "Evaluation reports")</a>
+            <a class="side-link @(controller == "EvaluationWorkflow" ? "is-current" : "")" aria-current="@(controller == "EvaluationWorkflow" ? "page" : null)" asp-controller="EvaluationWorkflow" asp-action="Index"><partial name="_Icon" model='@("check")' /> @L.T(top ? "Award decisions" : "Evaluation reports")</a>
         }
     </nav>
     <div class="side-bottom"><partial name="_LoginPartial" /></div>
 </aside>
-<button type="button" class="nav-scrim" data-nav-close tabindex="-1" aria-label="Close navigation" hidden></button>
+<button type="button" class="nav-scrim" data-nav-close tabindex="-1" aria-label="@L.T("Close navigation")" hidden></button>

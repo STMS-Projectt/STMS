@@ -525,6 +525,58 @@ namespace SourcingTenderSystem.Data.Migrations
                     b.ToTable("ClarificationRequests");
                 });
 
+            modelBuilder.Entity("SourcingTenderSystem.Models.ContactMessage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(254)
+                        .HasColumnType("nvarchar(254)");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<Guid>("Receipt")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("ReceivedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("RepliedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("RepliedByUserId")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Reply")
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
+
+                    b.Property<string>("Topic")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Receipt").IsUnique();
+
+                    b.ToTable("ContactMessages");
+                });
+
             modelBuilder.Entity("SourcingTenderSystem.Models.Department", b =>
                 {
                     b.Property<int>("Id")

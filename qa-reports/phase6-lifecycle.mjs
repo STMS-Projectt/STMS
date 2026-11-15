@@ -118,7 +118,7 @@ export async function lifecycle(b) {
    await has('#main .dept-filter-dock.is-in-view');
    await has('#main .dept-directory-heading [data-result-count]');
    const select='article';
-   const article=await ev('Array.from(document.querySelectorAll("article")).findIndex(a=>a.innerText.includes('+q('TENDER #'+id+' ·')+'))');
+   const article=await ev('Array.from(document.querySelectorAll("article")).findIndex(a=>a.dataset.tenderId==='+q(String(id))+')');
    assert(article>=0,'Invitation missing');
    const row=select+':nth-of-type('+(article+1)+')';
    const origin=await ev('location.href');
@@ -127,8 +127,9 @@ export async function lifecycle(b) {
    await click(dialog+'button[value=Accepted]');
    await has(dialog+'a[href*="/Bids/Create"]');
    await click(dialog+'a[href*="/Bids/Create"]');
-   await has(dialog+'[name=Currency]');
-   await fields({Currency:'JOD',DeliveryDays:3,ValidityDays:7},dialog);
+   await has(dialog+'[name=DeliveryDays]');
+   assert.equal(await ev('!!document.querySelector("#workspace-dialog [name=Currency]")'),false);
+   await fields({DeliveryDays:3,ValidityDays:7},dialog);
    await submit(dialog+'form');await has(dialog+'a[href*="/BidItems/Create"]');
    assert.equal(await ev('location.href'),origin);
    const bidId=Number(await ev('document.querySelector('+q('#workspace-dialog a[href*="/Bids/Edit/"]')+').pathname.split("/").at(-1)'));

@@ -1,0 +1,37 @@
+@model ContactInbox
+@{ ViewData["Title"] = "Contact inbox"; }
+<header class="page-heading stms-hero"><div><h1>@L.T("Contact inbox")</h1><p>@L.T("Read messages from the public contact form and publish a reply on the sender's private tracking page.")</p></div></header>
+@if (TempData["ContactError"] is string error) { <p class="alert alert-warning" role="alert">@L.T(error)</p> }
+@if (TempData["ContactSuccess"] is string success) { <p class="alert alert-success" role="status">@L.T(success)</p> }
+@if (Model.Messages.Count == 0) { <section class="surface detail-card"><p>@L.T("No contact messages yet.")</p></section> }
+<div class="d-grid gap-3">
+@foreach (var item in Model.Messages)
+{
+    <article class="surface detail-card" id="contact-@item.Id">
+        <div class="card-heading"><div><h2>@L.T(item.Topic)</h2><p><bdi>@item.Name</bdi> · <bdi>@item.Email</bdi> · @item.ReceivedAtUtc.ToString("g", L.DisplayCulture) UTC</p></div>
+        <span class="record-panel-label">@L.T(item.Reply is null ? "Awaiting response" : "Answered")</span></div>
+        <p class="contact-message-body" dir="auto">@item.Message</p>
+        @if (item.Reply is not null)
+        {
+            <h3 class="h6">@L.T("Your reply")</h3>
+            <p class="contact-message-body" dir="auto">@item.Reply</p>
+            <small>@item.RepliedAtUtc?.ToString("g", L.DisplayCulture) UTC</small>
+        }
+        else
+        {
+            <form asp-action="Reply" asp-route-id="@item.Id" method="post" data-full-page>
+                <label class="form-label" for="reply-@item.Id">@L.T("Your reply")</label>
+                <textarea class="form-control mb-2" id="reply-@item.Id" name="Reply" maxlength="4000" rows="3" required></textarea>
+                <button class="btn btn-primary" type="submit">@L.T("Publish reply")</button>
+            </form>
+        }
+    </article>
+}
+</div>
+@if (Model.Page > 1 || Model.HasNext)
+{
+    <nav class="button-row mt-3" aria-label="@L.T("Pages")">
+        @if (Model.Page > 1) { <a class="btn btn-outline-secondary" asp-route-page="@(Model.Page - 1)">@L.T("Previous")</a> }
+        @if (Model.HasNext) { <a class="btn btn-outline-secondary" asp-route-page="@(Model.Page + 1)">@L.T("Next")</a> }
+    </nav>
+}

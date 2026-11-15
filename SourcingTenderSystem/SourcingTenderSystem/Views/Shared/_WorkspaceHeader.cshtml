@@ -17,17 +17,17 @@
     };
 }
 <header class="workspace-bar stms-topbar">
-    <button class="btn btn-outline-secondary menu-toggle" type="button" data-nav-toggle aria-controls="workspace-nav" aria-expanded="false" aria-label="Open navigation" title="Open navigation"><partial name="_Icon" model='@("menu")' /></button>
-    <a class="stms-top-brand" asp-controller="@home.Item1" asp-action="@home.Item2" aria-label="STMS dashboard">
+    <button class="btn btn-outline-secondary menu-toggle" type="button" data-nav-toggle aria-controls="workspace-nav" aria-expanded="false" aria-label="@L.T("Open navigation")" title="@L.T("Open navigation")"><partial name="_Icon" model='@("menu")' /></button>
+    <a class="stms-top-brand" asp-controller="@home.Item1" asp-action="@home.Item2" aria-label="@L.T("STMS dashboard")">
         <img src="~/images/stms-cube.svg" alt="" /><strong>STMS</strong>
-        <span>Sourcing &amp; Tender<br />Management System</span>
+        <span>@L.T("Sourcing & Tender")<br />@L.T("Management System")</span>
     </a>
-    <button class="stms-search-trigger" type="button" aria-label="Open search" aria-haspopup="dialog" aria-controls="stms-search-dialog" title="Search workspace pages"><partial name="_Icon" model='@("search")' /></button>
+    <button class="stms-search-trigger" type="button" aria-label="@L.T("Open search")" aria-haspopup="dialog" aria-controls="stms-search-dialog" title="@L.T("Search workspace pages")"><partial name="_Icon" model='@("search")' /></button>
     <div class="stms-search" role="search">
-        <label class="visually-hidden" for="stms-workspace-search">Search workspace pages</label>
+        <label class="visually-hidden" for="stms-workspace-search">@L.T("Search workspace pages")</label>
         <partial name="_Icon" model='@("search")' />
-        <input id="stms-workspace-search" type="search" placeholder="Search workspace pages…" autocomplete="off" aria-controls="stms-search-results" />
-        <button type="button" class="stms-voice-button" data-workspace-voice aria-label="Search by voice" title="Search by voice" aria-pressed="false">
+        <input id="stms-workspace-search" type="search" placeholder="@L.T("Search workspace pages…")" autocomplete="off" aria-controls="stms-search-results" />
+        <button type="button" class="stms-voice-button" data-workspace-voice aria-label="@L.T("Search by voice")" title="@L.T("Search by voice")" aria-pressed="false">
             <partial name="_Icon" model='@("microphone")' />
         </button>
         <span class="visually-hidden" data-workspace-voice-status role="status"></span>
@@ -35,28 +35,29 @@
         <div id="stms-search-results" class="stms-search-results" hidden></div>
     </div>
     <div class="stms-header-menu-wrap stms-notifications-wrap">
-        <button class="workspace-bell" type="button" data-header-menu-toggle="notifications" aria-label="Notifications" aria-controls="stms-notifications-menu" aria-expanded="false" title="Notifications">
+        <button class="workspace-bell" type="button" data-header-menu-toggle="notifications" aria-label="@L.T("Notifications")" aria-controls="stms-notifications-menu" aria-expanded="false" title="@L.T("Notifications")">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4" /></svg>
             <span class="workspace-bell-count" data-notification-count="@Url.Action("Unread", "Notifications")" hidden></span>
         </button>
-        <section class="stms-header-menu stms-notifications-menu" id="stms-notifications-menu" aria-label="Recent notifications" data-recent-url="@Url.Action("Recent", "Notifications")" hidden>
-            <div class="stms-header-menu-heading"><strong>Notifications</strong><span>Latest five</span></div>
-            <div class="stms-notification-list" data-recent-notifications role="status">Loading notifications…</div>
-            <a class="stms-header-menu-footer" asp-controller="Notifications" asp-action="Index">Read all <partial name="_Icon" model='@("arrow")' /></a>
+        <section class="stms-header-menu stms-notifications-menu" id="stms-notifications-menu" aria-label="@L.T("Recent notifications")" data-recent-url="@Url.Action("Recent", "Notifications")" hidden>
+            <div class="stms-header-menu-heading"><strong>@L.T("Notifications")</strong><span>@L.T("Latest five")</span></div>
+            <div class="stms-notification-list" data-recent-notifications role="status">@L.T("Loading notifications…")</div>
+            <a class="stms-header-menu-footer" asp-controller="Notifications" asp-action="Index">@L.T("Read all") <partial name="_Icon" model='@("arrow")' /></a>
         </section>
     </div>
+    <partial name="_DisplayPreferences" />
     <div class="bar-profile">
-<button class="stms-profile-toggle" type="button" data-header-menu-toggle="profile" aria-label="Open account menu" aria-controls="stms-profile-menu" aria-expanded="false" title="Account menu"><partial name="_ProfileAvatar" view-data='@(new ViewDataDictionary(ViewData) { ["AvatarDecoration"] = true })' /><span><strong title="@displayName">@(displayName ?? User.Identity?.Name)</strong><span class="stms-profile-role">@Model</span><small class="visually-hidden">@User.Identity?.Name</small></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg></button>
+<button class="stms-profile-toggle" type="button" data-header-menu-toggle="profile" aria-label="@L.T("Open account menu")" aria-controls="stms-profile-menu" aria-expanded="false" title="@L.T("Account menu")"><partial name="_ProfileAvatar" view-data='@(new ViewDataDictionary(ViewData) { ["AvatarDecoration"] = true })' /><span><strong title="@displayName">@(displayName ?? User.Identity?.Name)</strong><span class="stms-profile-role">@L.T(Model)</span><small class="visually-hidden" dir="ltr">@User.Identity?.Name</small></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg></button>
         <div class="stms-header-menu stms-profile-menu" id="stms-profile-menu" hidden>
-            <a class="stms-profile-menu-item" asp-controller="Profile" asp-action="Index"><partial name="_Icon" model='@("users")' /> Profile</a>
-            <form asp-controller="Account" asp-action="Logout" method="post"><button class="stms-profile-menu-item stms-logout-item" type="submit"><partial name="_Icon" model='@("logout")' /> Logout</button></form>
+            <a class="stms-profile-menu-item" asp-controller="Profile" asp-action="Index"><partial name="_Icon" model='@("users")' /> @L.T("Profile")</a>
+            <form asp-controller="Account" asp-action="Logout" method="post"><button class="stms-profile-menu-item stms-logout-item" type="submit"><partial name="_Icon" model='@("logout")' /> @L.T("Logout")</button></form>
         </div>
     </div>
 </header>
 <dialog class="stms-search-dialog" id="stms-search-dialog" aria-labelledby="stms-search-dialog-title">
     <div class="stms-search-dialog-heading">
-        <h2 id="stms-search-dialog-title">Search workspace pages</h2>
-        <button class="stms-search-close" type="button" aria-label="Close search"><partial name="_Icon" model='@("close")' /></button>
+        <h2 id="stms-search-dialog-title">@L.T("Search workspace pages")</h2>
+        <button class="stms-search-close" type="button" aria-label="@L.T("Close search")"><partial name="_Icon" model='@("close")' /></button>
     </div>
     <div data-mobile-search-slot></div>
 </dialog>

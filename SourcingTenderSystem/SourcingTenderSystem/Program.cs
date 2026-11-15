@@ -1,4 +1,5 @@
 using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -28,7 +29,13 @@ builder.Services.ConfigureApplicationCookie(options =>
 });
 // Recheck the security stamp before honoring a session after a role or account change.
 builder.Services.Configure<SecurityStampValidatorOptions>(options => options.ValidationInterval = TimeSpan.Zero);
-builder.Services.AddControllersWithViews(options => options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
+builder.Services.AddControllersWithViews(options =>
+{
+    options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+    options.Filters.Add(new UiValidationFilter());
+    options.ModelMetadataDetailsProviders.Add(new UiDisplayMetadata());
+});
+builder.Services.AddSingleton<UiText>();
 builder.Services.AddSingleton<SupplierFileStore>();
 // AI Advisor - Ollama
 builder.Services.AddHttpClient(BidAiAdvisor.HttpClientName, client =>
@@ -38,14 +45,10 @@ builder.Services.AddHttpClient(BidAiAdvisor.HttpClientName, client =>
 });
 
 builder.Services.AddSingleton<BidAiAdvisor>();
+builder.Services.AddSingleton<WinnerAiBriefing>();
+builder.Services.AddSingleton<EvaluationWeightAdvisor>();
 // Free exchange-rate reference (Frankfurter v2) for USD-equivalent bid display only.
 builder.Services.AddMemoryCache();
-builder.Services.AddHttpClient(ExchangeRates.HttpClientName, client =>
-{
-    client.BaseAddress = new Uri(builder.Configuration["ExchangeRates:BaseUrl"] is { Length: > 0 } fx ? fx.TrimEnd('/') + "/" : "https://api.frankfurter.dev/");
-    client.Timeout = TimeSpan.FromSeconds(8);
-});
-builder.Services.AddSingleton<ExchangeRates>();
 
 builder.Services.AddAuthentication().AddCookie("BiometricPending", options =>
 {
@@ -62,6 +65,9 @@ builder.Services.Configure<IdentityPasskeyOptions>(options =>
 builder.Services.AddRateLimiter(options =>
 {
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.AddPolicy("public-contact", context => RateLimitPartition.GetFixedWindowLimiter(
+        context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+        _ => new FixedWindowRateLimiterOptions { PermitLimit = 8, Window = TimeSpan.FromMinutes(10) }));
     options.AddPolicy("face-lab", context => RateLimitPartition.GetFixedWindowLimiter(
         context.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ??
         context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
@@ -69,6 +75,9 @@ builder.Services.AddRateLimiter(options =>
     options.AddPolicy("biometric-login", context => RateLimitPartition.GetFixedWindowLimiter(
         context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
         _ => new FixedWindowRateLimiterOptions { PermitLimit = 12, Window = TimeSpan.FromMinutes(2) }));
+    options.AddPolicy("evaluation-weight-advice", context => RateLimitPartition.GetFixedWindowLimiter(
+        context.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "anonymous",
+        _ => new FixedWindowRateLimiterOptions { PermitLimit = 10, Window = TimeSpan.FromMinutes(1) }));
 });
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddSingleton<SourcingTenderSystem.Services.Biometrics.FaceLab>();
@@ -118,6 +127,10 @@ else
 }
 
 app.UseHttpsRedirection();
+var languages = new RequestLocalizationOptions().SetDefaultCulture("en-US")
+    .AddSupportedCultures("en-US").AddSupportedUICultures("en-US", "en", "ar");
+languages.RequestCultureProviders = [new CookieRequestCultureProvider()];
+app.UseRequestLocalization(languages);
 app.Use(async (context, next) =>
 {
     if (context.Request.Path.StartsWithSegments("/uploads/biometrics", StringComparison.OrdinalIgnoreCase))

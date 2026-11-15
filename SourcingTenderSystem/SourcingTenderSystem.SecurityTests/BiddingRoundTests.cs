@@ -218,10 +218,17 @@ public sealed partial class BiddingRoundTests
                 new() { ["decision"] = "Accepted" })).StatusCode);
 
             var create = $"/Bids/Create?tenderId={seed.Tender}";
-            var fields = new Dictionary<string,string> { ["Currency"] = "JOD", ["DeliveryDays"] = "3", ["ValidityDays"] = "7" };
+            var fields = new Dictionary<string,string> { ["Currency"] = "EUR", ["DeliveryDays"] = "3", ["ValidityDays"] = "7" };
+            var bidForm = await supplier.GetStringAsync(create);
+            Assert.DoesNotContain("name=\"Currency\"", bidForm);
+            Assert.Contains("Jordanian dinar (JOD)", bidForm);
             var drafts = await Task.WhenAll(Post(supplier, supplierToken, create, fields), Post(supplier, supplierToken, create, fields));
             Assert.All(drafts, r => Assert.Equal(HttpStatusCode.Redirect, r.StatusCode));
             var draft = await db.Bids.SingleAsync(b => b.TenderId == seed.Tender && b.SupplierProfileId == seed.Bidder);
+            Assert.Equal(Bid.JordanianDinar, draft.Currency);
+            Assert.Equal(HttpStatusCode.Redirect, (await Post(supplier, supplierToken, $"/Bids/Edit/{draft.Id}", fields)).StatusCode);
+            await db.Entry(draft).ReloadAsync();
+            Assert.Equal(Bid.JordanianDinar, draft.Currency);
             db.Add(new BidItem { BidId = draft.Id, PurchaseRequisitionItemId = seed.Item, UnitPrice = 20, Quantity = 1 });
             db.Add(new BidDocument { BidId = draft.Id, DocumentType = "Proposal", FileName = "synthetic.pdf", FilePath = "synthetic.pdf", UploadedAt = DateTime.UtcNow });
             await db.SaveChangesAsync();
@@ -231,6 +238,14 @@ public sealed partial class BiddingRoundTests
             await db.Entry(draft).ReloadAsync();
             Assert.Equal("Draft", draft.Status);
             await db.Tenders.Where(t => t.Id == seed.Tender).ExecuteUpdateAsync(set => set.SetProperty(t => t.Status, "Open"));
+            draft.Currency = "USD"; // Simulate a draft saved before the JOD-only policy.
+            await db.SaveChangesAsync();
+            Assert.Equal(HttpStatusCode.Redirect, (await Post(supplier, supplierToken, $"/Bids/Submit/{draft.Id}", new())).StatusCode);
+            await db.Entry(draft).ReloadAsync();
+            Assert.Equal("Draft", draft.Status);
+            Assert.Equal("USD", draft.Currency);
+            draft.Currency = Bid.JordanianDinar;
+            await db.SaveChangesAsync();
             var submissions = await Task.WhenAll(Post(supplier, supplierToken, $"/Bids/Submit/{draft.Id}", new()),
                 Post(supplier, supplierToken, $"/Bids/Submit/{draft.Id}", new()));
             Assert.All(submissions, r => Assert.Equal(HttpStatusCode.Redirect, r.StatusCode));

@@ -226,7 +226,6 @@ public sealed class FaceLoginHttpTests
         {
             builder.ConfigureAppConfiguration((_, c) => c.AddInMemoryCollection(new Dictionary<string, string?> {
                 ["ConnectionStrings:DefaultConnection"] = connection,
-                ["ExchangeRates:BaseUrl"] = "http://127.0.0.1:9/",
                 ["FacePlusPlus:EnableFreeLab"] = "true", ["FacePlusPlus:ApiKey"] = "synthetic-key", ["FacePlusPlus:ApiSecret"] = "synthetic-secret",
                 ["FacePlusPlus:EnableDemoFaceLogin"] = demo ? "true" : "false", ["FacePlusPlus:StoragePath"] = storage }));
             builder.ConfigureLogging(l => l.ClearProviders());

@@ -82,17 +82,45 @@ public sealed class BrowserReleaseTests(ITestOutputHelper output)
                 INSERT dbo.AspNetUserPasskeys(UserId,CredentialId,Data)
                 SELECT Id,CONVERT(varbinary(128),Id),'{{}}' FROM dbo.AspNetUsers WHERE UserName<>'RequestingDepartment@example.test'
                 """);
+            if (Environment.GetEnvironmentVariable("STMS_DISPLAY_FOCUS") == "portal-fixes")
+            {
+                var requester = await db.EmployeeProfiles.SingleAsync(e => e.FullName == "Department QA");
+                var officer = await db.EmployeeProfiles.SingleAsync(e => e.FullName == "SourcingOfficer");
+                var now = DateTime.UtcNow;
+                var request = new PurchaseRequisition
+                {
+                    Title = "Portal QA Request", Reason = "Synthetic request", Priority = "High", Status = "Under Review",
+                    DepartmentId = department.Id, CategoryId = category.Id, CreatedByEmployeeProfileId = requester.Id,
+                    ReviewedByEmployeeProfileId = officer.Id, CreatedAt = now, TargetDate = now.AddDays(7)
+                };
+                db.Add(request);
+                var first = new Tender { PurchaseRequisition = request, CreatedByEmployeeProfileId = officer.Id,
+                    Title = "Portal QA Draft", Status = "Draft", CreatedAt = now, OpenDate = now, CloseDate = now.AddDays(1) };
+                var second = new Tender { PurchaseRequisition = request, CreatedByEmployeeProfileId = officer.Id,
+                    Title = "Portal QA Closed", Status = "Closed", CreatedAt = now, OpenDate = now.AddDays(-2), CloseDate = now.AddDays(-1) };
+                db.AddRange(first, second);
+                db.AddRange(new ClarificationRequest { PurchaseRequisition = request, SenderEmployeeProfileId = requester.Id,
+                    ReceiverEmployeeProfileId = officer.Id, Subject = "Do the requested specifications include accessories?", Description = "Synthetic request question",
+                    Status = "Pending", CreatedAt = now },
+                    new ClarificationRequest { PurchaseRequisition = request, SenderEmployeeProfileId = officer.Id,
+                    ReceiverEmployeeProfileId = requester.Id, Subject = "Second question", Description = "Synthetic reverse participants",
+                    Status = "Answered", CreatedAt = now, AnsweredAt = now, Response = "Synthetic answer" });
+                await db.SaveChangesAsync();
+            }
             var node = new ProcessStartInfo("node") { UseShellExecute=false, RedirectStandardError=true, RedirectStandardOutput=true };
             foreach(var arg in new[]{script,new UriBuilder(client.BaseAddress!) { Host="localhost" }.Uri.ToString(),chrome!,evidence})
                 node.ArgumentList.Add(arg);
             using var process=Process.Start(node)!;
             var stdout=process.StandardOutput.ReadToEndAsync();
             var stderr=process.StandardError.ReadToEndAsync();
-            using var deadline=new CancellationTokenSource(TimeSpan.FromMinutes(8));
+            using var deadline=new CancellationTokenSource(TimeSpan.FromMinutes(
+                Environment.GetEnvironmentVariable("STMS_DISPLAY_AUDIT") == "1" ? 45 : 8));
             try { await process.WaitForExitAsync(deadline.Token); }
             catch(OperationCanceledException) { process.Kill(entireProcessTree:true); throw; }
             output.WriteLine(await stdout);
-            if (Environment.GetEnvironmentVariable("STMS_EXTRA_FUNCTIONAL_AUDIT") == "only")
+            if (Environment.GetEnvironmentVariable("STMS_EXTRA_FUNCTIONAL_AUDIT") == "only" ||
+                Environment.GetEnvironmentVariable("STMS_DISPLAY_RESUME") is not null ||
+                Environment.GetEnvironmentVariable("STMS_DISPLAY_FOCUS") == "portal-fixes")
             {
                 Assert.True(process.ExitCode==0,await stderr+"\n"+await stdout);
                 return;
@@ -111,7 +139,7 @@ public sealed class BrowserReleaseTests(ITestOutputHelper output)
                 System.Text.Json.JsonSerializer.Serialize(persisted,new System.Text.Json.JsonSerializerOptions { WriteIndented=true }));
             Assert.True(process.ExitCode==0,await stderr+"\n"+await stdout);
             var application = await db.SupplierProfiles.AsNoTracking()
-                .Where(s => s.TaxNumber == "BROWSER-ONBOARD")
+                .Where(s => s.TaxNumber == "123456789")
                 .Select(s => new { s.UserId, s.Status, Categories = s.Categories.Count, Documents = s.SupplierDocuments.Count })
                 .SingleAsync();
             Assert.Equal("Approved", application.Status);
@@ -153,7 +181,7 @@ public sealed class BrowserReleaseTests(ITestOutputHelper output)
                 if (await db.Database.CanConnectAsync())
                 {
                     var store = scope.ServiceProvider.GetRequiredService<SupplierFileStore>();
-                    var artifacts = await db.SupplierDocuments.Where(d => d.SupplierProfile.TaxNumber == "BROWSER-ONBOARD")
+                    var artifacts = await db.SupplierDocuments.Where(d => d.SupplierProfile.TaxNumber == "123456789")
                         .Select(d => d.FilePath).ToListAsync();
                     foreach (var artifact in artifacts) store.Delete(artifact);
                 }

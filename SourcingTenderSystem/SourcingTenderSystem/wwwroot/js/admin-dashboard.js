@@ -13,7 +13,7 @@
             chart.querySelector('[data-month][aria-pressed="true"]')?.setAttribute("aria-pressed", "false");
             point.setAttribute("aria-pressed", "true");
             chart.querySelector("[data-chart-selection]").textContent =
-                `${point.dataset.month} · ${point.dataset.requests} requests · ${point.dataset.tenders} tenders`;
+                window.stmsFormat("{0} · {1} requests · {2} tenders", point.dataset.month, point.dataset.requests, point.dataset.tenders);
         });
         const cards = main.querySelectorAll(".admin-metric-link, .admin-chart-grid .dashboard-card, .admin-secondary .dashboard-card, .admin-total-card");
         cards.forEach(card => {

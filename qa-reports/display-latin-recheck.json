@@ -1,0 +1,500 @@
+[
+  {
+    "path": "/",
+    "text": "WhatsApp",
+    "tag": "A",
+    "cls": ""
+  },
+  {
+    "path": "/Account/Login",
+    "text": "STMS",
+    "tag": "STRONG",
+    "cls": ""
+  },
+  {
+    "path": "/Account/Login",
+    "text": "Google",
+    "tag": "BUTTON",
+    "cls": "login-provider"
+  },
+  {
+    "path": "/Account/Login",
+    "text": "GitHub",
+    "tag": "BUTTON",
+    "cls": "login-provider"
+  },
+  {
+    "path": "/Suppliers/Categories/4",
+    "text": "Another synthetic category",
+    "tag": "SPAN",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/RequestDetails/6",
+    "text": "Browser supplies",
+    "tag": "P",
+    "cls": ""
+  },
+  {
+    "path": "/SupplierRegistration/Register",
+    "text": "name@company.com",
+    "tag": "INPUT",
+    "cls": "form-control"
+  },
+  {
+    "path": "/AdminDashboard?months=12",
+    "text": "Under Evaluation",
+    "tag": "METER",
+    "cls": ""
+  },
+  {
+    "path": "/AdminDashboard?months=12",
+    "text": "Awarded",
+    "tag": "METER",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/BidDetails/9?panel=overview",
+    "text": "Cancelled",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/AdminDashboard?months=12",
+    "text": "Closed",
+    "tag": "METER",
+    "cls": ""
+  },
+  {
+    "path": "/AdminDashboard?months=12",
+    "text": "Draft",
+    "tag": "METER",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/RequestDetails/6",
+    "text": "Browser QA",
+    "tag": "DD",
+    "cls": "col-sm-9"
+  },
+  {
+    "path": "/Employees/Details/1",
+    "text": "Admin",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/Employees/Details/1",
+    "text": "Admin@example.test",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/EvaluationWorkflow/Details/5?panel=progress",
+    "text": "Department QA",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/Employees",
+    "text": "DepartmentSmoke@example.test",
+    "tag": "SMALL",
+    "cls": ""
+  },
+  {
+    "path": "/EvaluationWorkflow/Details/5?panel=progress",
+    "text": "FinancialCommittee",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/Employees",
+    "text": "FinancialCommittee@example.test",
+    "tag": "SMALL",
+    "cls": ""
+  },
+  {
+    "path": "/Suppliers/Suspend/4",
+    "text": "Browser Onboarding",
+    "tag": "STRONG",
+    "cls": ""
+  },
+  {
+    "path": "/Suppliers/Details/4?panel=overview",
+    "text": "BROWSER-ONBOARD",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/EvaluationWorkflow/Details/5?panel=progress",
+    "text": "Supplier3",
+    "tag": "SMALL",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Requests?status=Under%20Review",
+    "text": "Track requests, originating departments, and review decisions.",
+    "tag": "P",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/RequestQr/6",
+    "text": "Phase 6 Cancel requisition",
+    "tag": "P",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Requests?status=Converted%20to%20Tender",
+    "text": "Phase 6 Rounds 0 requisition",
+    "tag": "SPAN",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Requests?status=Converted%20to%20Tender",
+    "text": "Phase 6 Rounds 1 requisition",
+    "tag": "SPAN",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Requests?status=Converted%20to%20Tender",
+    "text": "Phase 6 Rounds requisition",
+    "tag": "SPAN",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Requests?status=Converted%20to%20Tender",
+    "text": "Phase 6 Award requisition",
+    "tag": "SPAN",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Tenders?status=Draft",
+    "text": "Follow sourcing, invitations, committee assignments, and evaluation.",
+    "tag": "P",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/TenderQr/6",
+    "text": "Phase 6 Replacement",
+    "tag": "P",
+    "cls": ""
+  },
+  {
+    "path": "/EvaluationWorkflow/Details/5?panel=progress",
+    "text": "Phase 6 Cancel",
+    "tag": "P",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Invitations?status=Pending",
+    "text": "Phase 6 Rounds 0",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Invitations?status=Accepted",
+    "text": "Phase 6 Rounds 1",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Invitations?status=Accepted",
+    "text": "Phase 6 Rounds",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Invitations?status=Pending",
+    "text": "Track invitations and supplier responses across tenders.",
+    "tag": "P",
+    "cls": ""
+  },
+  {
+    "path": "/EvaluationWorkflow/Details/5?panel=progress",
+    "text": "Supplier2",
+    "tag": "SMALL",
+    "cls": ""
+  },
+  {
+    "path": "/EvaluationWorkflow/Details/5?panel=progress",
+    "text": "Browser supplier",
+    "tag": "SMALL",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Bids",
+    "text": "Supplier bids",
+    "tag": "H1",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Bids",
+    "text": "Track bid and compliance status. Supplier drafts stay private.",
+    "tag": "P",
+    "cls": ""
+  },
+  {
+    "path": "/EvaluationWorkflow/Details/5?panel=progress",
+    "text": "Cancelled - Ready to Retender",
+    "tag": "SPAN",
+    "cls": "status-pill status-neutral"
+  },
+  {
+    "path": "/AdminOperations/Tenders?status=Awarded",
+    "text": "Phase 6 Award",
+    "tag": "SPAN",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Activity",
+    "text": "Review recorded workflow and account activity.",
+    "tag": "P",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Activity",
+    "text": "SourcingOfficer · SupplierProfile #4",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/Suppliers/Details/4?panel=overview",
+    "text": "Synthetic application documents verified",
+    "tag": "P",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Activity",
+    "text": "SourcingOfficer · Tender #6",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Activity",
+    "text": "CancellationHandoff",
+    "tag": "SPAN",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Activity",
+    "text": "SourcingManager · Tender #5",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Activity",
+    "text": "Returned to sourcing officer.",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Activity",
+    "text": "Top Committee Rejected",
+    "tag": "SPAN",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Activity",
+    "text": "TopCommittee · Tender #5",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Activity",
+    "text": "Evaluation report #2",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/Clarifications",
+    "text": "Additional insurance PDF",
+    "tag": "SPAN",
+    "cls": ""
+  },
+  {
+    "path": "/Clarifications",
+    "text": "Bid #1",
+    "tag": "SMALL",
+    "cls": "d-block subtle"
+  },
+  {
+    "path": "/AdminOperations/RequestDetails/6",
+    "text": "SourcingOfficer",
+    "tag": "DD",
+    "cls": "col-sm-9"
+  },
+  {
+    "path": "/Clarifications",
+    "text": "Last reply 15 Nov 2026 21:09 UTC",
+    "tag": "SMALL",
+    "cls": ""
+  },
+  {
+    "path": "/Profile?tab=security",
+    "text": "Browser account",
+    "tag": "H1",
+    "cls": ""
+  },
+  {
+    "path": "/Suppliers?status=Suspended",
+    "text": "0 records",
+    "tag": "SPAN",
+    "cls": "result-count"
+  },
+  {
+    "path": "/AdminOperations/Requests?status=Under%20Review",
+    "text": "Phase 4 browser draft",
+    "tag": "SPAN",
+    "cls": ""
+  },
+  {
+    "path": "/Employees/Create",
+    "text": "name@example.com",
+    "tag": "INPUT",
+    "cls": "form-control"
+  },
+  {
+    "path": "/Departments/Details/1",
+    "text": "No description provided.",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/Suppliers/Details/4?panel=overview",
+    "text": "onboarding@example.test",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/Suppliers/Details/4?panel=overview",
+    "text": "Synthetic registration QA",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/Suppliers/Details/4?panel=overview",
+    "text": "Another synthetic category, Browser supplies",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/RequestDetails/6",
+    "text": "Browser QA · Converted to Tender",
+    "tag": "P",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/RequestQr/6",
+    "text": "http://localhost:59284/AdminOperations/RequestDetails/6",
+    "tag": "A",
+    "cls": "d-block text-break small"
+  },
+  {
+    "path": "/AdminOperations/RequestDetails/6",
+    "text": "Synthetic purchase",
+    "tag": "DD",
+    "cls": "col-sm-9"
+  },
+  {
+    "path": "/AdminOperations/RequestDetails/6",
+    "text": "Approved for browser QA",
+    "tag": "DD",
+    "cls": "col-sm-9"
+  },
+  {
+    "path": "/AdminOperations/BidDetails/9?panel=items",
+    "text": "Monitor",
+    "tag": "DIV",
+    "cls": "record-name"
+  },
+  {
+    "path": "/AdminOperations/RequestDetails/6",
+    "text": "2 each",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/RequestDetails/6",
+    "text": "Synthetic specification",
+    "tag": "DD",
+    "cls": "request-prose"
+  },
+  {
+    "path": "/AdminOperations/BidDetails/9?panel=items",
+    "text": "Cable",
+    "tag": "DIV",
+    "cls": "record-name"
+  },
+  {
+    "path": "/AdminOperations/Tender/6?panel=overview",
+    "text": "Synthetic tender",
+    "tag": "P",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Tender/6?panel=overview",
+    "text": "Test terms",
+    "tag": "P",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/TenderQr/6",
+    "text": "http://localhost:59284/AdminOperations/Tender/6",
+    "tag": "A",
+    "cls": "d-block text-break small"
+  },
+  {
+    "path": "/AdminOperations/BidDetails/9?panel=overview",
+    "text": "140.00 JOD",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/BidDetails/9?panel=overview",
+    "text": "3 days",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/BidDetails/9?panel=overview",
+    "text": "7 days",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/BidDetails/9?panel=items",
+    "text": "Quoted items",
+    "tag": "STRONG",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/BidDetails/9?panel=items",
+    "text": "35.00 JOD",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/EvaluationWorkflow/Details/5?panel=progress",
+    "text": "SourcingManager",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/EvaluationWorkflow/Details/5?panel=progress",
+    "text": "2026-11-15 21:11 UTC",
+    "tag": "SMALL",
+    "cls": ""
+  },
+  {
+    "path": "/EvaluationWorkflow/Details/5?panel=progress",
+    "text": "TechnicalCommittee",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/EvaluationWorkflow/Details/5?panel=progress",
+    "text": "Quality",
+    "tag": "SPAN",
+    "cls": ""
+  }
+]

@@ -1,26 +1,26 @@
 @model PurchaseRequisition
-@{ ViewData["Title"] = "Purchase request"; }
-<a class="back-link" asp-action="Requests"><partial name="_Icon" model='@("back")' /> Purchase requests</a>
-<header class="page-heading stms-hero admin-record-hero"><div><p class="eyebrow">REQUEST #@Model.Id</p><h1>@Model.Title</h1><p>@Model.Department.Name · @Model.Status</p></div>
+@{ ViewData["Title"] = L.T("Purchase request"); }
+<a class="back-link" asp-action="Requests"><partial name="_Icon" model='@("back")' /> @L.T("Purchase requests")</a>
+<header class="page-heading stms-hero admin-record-hero"><div><p class="eyebrow">@L.F("Request #{0}", Model.Id)</p><h1>@Model.Title</h1><p>@Model.Department.Name · @L.T(Model.Status)</p></div>
 </header>
 <partial name="_RecordQr" model='@(Url.Action("RequestDetails", new { id = Model.Id })!)' />
 <section class="surface detail-card mb-3"><partial name="_RequisitionSummary" model="Model" /></section>
 <section class="surface detail-card mb-3">
-    <h2>Supply category</h2>
+    <h2>@L.T("Supply category")</h2>
     @if (Model.Category is { } category) { <p>@category.Name</p> }
     else if (ViewBag.Categories is IReadOnlyList<Category> categories && categories.Count > 0)
     {
         <form asp-action="AssignRequestCategory" asp-route-id="@Model.Id" method="post">
-            <label for="request-category" class="form-label">Assign a category to this existing request</label>
+            <label for="request-category" class="form-label">@L.T("Assign a category to this existing request")</label>
             <select id="request-category" name="categoryId" class="form-select mb-2" required>
-                <option value="">Select a category</option>
+                <option value="">@L.T("Select a category")</option>
                 @foreach (var option in categories) { <option value="@option.Id">@option.Name</option> }
             </select>
-            <button class="btn btn-primary">Assign category</button>
+            <button class="btn btn-primary">@L.T("Assign category")</button>
         </form>
     }
-    else { <p>No category assigned. Create a supply category first.</p> }
+    else { <p>@L.T("No category assigned. Create a supply category first.")</p> }
 </section>
-<section class="surface detail-card"><h2>Requested items</h2><partial name="_RequisitionItems" model="Model.Items" /></section>
+<section class="surface detail-card"><h2>@L.T("Requested items")</h2><partial name="_RequisitionItems" model="Model.Items" /></section>
 
 <partial name="_TenderHistory" model="Model.Tenders" />

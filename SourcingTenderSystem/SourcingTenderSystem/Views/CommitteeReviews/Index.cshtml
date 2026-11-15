@@ -1,9 +1,9 @@
 @model IReadOnlyList<CommitteeAssignment>
 @{ ViewData["Title"] = "Evaluation dashboard"; }
-<header class="page-heading stms-hero"><div><p class="eyebrow">EVALUATION COMMITTEE</p><h1>Reviewer dashboard</h1><p>Review compliant bids for tenders assigned to you.</p></div><a class="btn btn-outline-secondary" asp-action="Assignments">My assignments <partial name="_Icon" model='@("arrow")' /></a></header>
-<section class="metrics-grid stms-metrics" aria-label="Assignment statistics">
-    <article class="surface metric"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("file")' /></span><strong>@Model.Count</strong><span>Assigned tenders</span></article>
-    <article class="surface metric"><span class="icon-tile tone-blue"><partial name="_Icon" model='@("clock")' /></span><strong>@Model.Count(x => x.Status == "Under Evaluation")</strong><span>Ready for evaluation</span></article>
-    <article class="surface metric"><span class="icon-tile tone-violet"><partial name="_Icon" model='@("inbox")' /></span><strong>@Model.Count(x => x.Status != "Under Evaluation")</strong><span>Other stages</span></article>
+<header class="page-heading stms-hero"><div><p class="eyebrow">@L.T("EVALUATION COMMITTEE")</p><h1>@L.T("Reviewer dashboard")</h1><p>@L.T("Review compliant bids for tenders assigned to you.")</p></div><a class="btn btn-outline-secondary" asp-action="Assignments">@L.T("My assignments") <partial name="_Icon" model='@("arrow")' /></a></header>
+<section class="metrics-grid stms-metrics" aria-label="@L.T("Assignment statistics")">
+    <article class="surface metric"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("file")' /></span><strong>@Model.Count</strong><span>@L.T("Assigned tenders")</span></article>
+    <article class="surface metric"><span class="icon-tile tone-blue"><partial name="_Icon" model='@("clock")' /></span><strong>@Model.Count(x => x.Status == "Under Evaluation")</strong><span>@L.T("Ready for evaluation")</span></article>
+    <article class="surface metric"><span class="icon-tile tone-violet"><partial name="_Icon" model='@("inbox")' /></span><strong>@Model.Count(x => x.Status != "Under Evaluation")</strong><span>@L.T("Other stages")</span></article>
 </section>
 <partial name="_Assignments" model='@Model.Where(x => x.Status == "Under Evaluation").ToList()' />

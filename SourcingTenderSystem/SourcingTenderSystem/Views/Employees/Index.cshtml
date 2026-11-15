@@ -1,57 +1,57 @@
 @model IReadOnlyList<EmployeeProfile>
-@{ ViewData["Title"] = "Employees"; }
-<header class="page-heading stms-hero dept-overview"><div><p class="eyebrow">ADMINISTRATION</p><h1>Employees</h1><p>Manage employee accounts, department assignments and access.</p></div><a data-workspace-dialog class="btn btn-primary" asp-action="Create" ><partial name="_Icon" model='@("plus")' /> Add employee</a></header>
+@{ ViewData["Title"] = L.T("Employees"); }
+<header class="page-heading stms-hero dept-overview"><div><p class="eyebrow">@L.T("ADMINISTRATION")</p><h1>@L.T("Employees")</h1><p>@L.T("Manage employee accounts, department assignments and access.")</p></div><a data-workspace-dialog class="btn btn-primary" asp-action="Create" ><partial name="_Icon" model='@("plus")' /> @L.T("Add employee")</a></header>
 <partial name="_DesignMetrics" model='@(new[] { ("Employee accounts", Model.Count, "users", "blue"), ("Active", Model.Count(e => e.IsActive), "check", "teal"), ("Inactive", Model.Count(e => !e.IsActive), "shield", "amber"), ("Unassigned", Model.Count(e => e.DepartmentId == null), "building", "violet") })' />
-<section class="surface directory dept-directory" aria-label="Employees directory" data-directory>
+<section class="surface directory dept-directory" aria-label="@L.T("Employees directory")" data-directory>
     <div class="dept-directory-heading">
         <span class="icon-tile tone-teal"><partial name="_Icon" model='@("users")' /></span>
-        <div><p class="eyebrow">ORGANIZATION</p><h2>Employee directory</h2><p>Find employees by name, department or account status.</p></div>
+        <div><p class="eyebrow">@L.T("ORGANIZATION")</p><h2>@L.T("Employee directory")</h2><p>@L.T("Find employees by name, department or account status.")</p></div>
     </div>
-    <div class="directory-filter-panel dept-filter-dock" aria-label="Employee filters">
+    <div class="directory-filter-panel dept-filter-dock" aria-label="@L.T("Employee filters")">
         @if (Model.Count > 0)
         {
             <div class="dept-filter-menu" data-dept-menu>
-                <button type="button" class="dept-dock-button" aria-expanded="false" aria-haspopup="true"><partial name="_Icon" model='@("filter")' /><span>Status</span></button>
-                <div class="dept-filter-popover" hidden><strong>Status</strong><partial name="_DirectoryStatusButtons" /></div>
+                <button type="button" class="dept-dock-button" aria-expanded="false" aria-haspopup="true"><partial name="_Icon" model='@("filter")' /><span>@L.T("Status")</span></button>
+                <div class="dept-filter-popover" hidden><strong>@L.T("Status")</strong><partial name="_DirectoryStatusButtons" /></div>
             </div>
             <div class="dept-filter-menu" data-dept-menu>
-                <button type="button" class="dept-dock-button" aria-expanded="false" aria-haspopup="true"><partial name="_Icon" model='@("building")' /><span>Department</span></button>
-                <div class="dept-filter-popover" hidden><strong>Department</strong>
-                    <button type="button" data-dept-select="department" data-value="">All departments</button>
-                    <button type="button" data-dept-select="department" data-value="unassigned">Unassigned</button>
+                <button type="button" class="dept-dock-button" aria-expanded="false" aria-haspopup="true"><partial name="_Icon" model='@("building")' /><span>@L.T("Department")</span></button>
+                <div class="dept-filter-popover" hidden><strong>@L.T("Department")</strong>
+                    <button type="button" data-dept-select="department" data-value="">@L.T("All departments")</button>
+                    <button type="button" data-dept-select="department" data-value="unassigned">@L.T("Unassigned")</button>
                     @foreach (var department in Model.Where(e => e.Department != null).Select(e => e.Department!).DistinctBy(d => d.Id).OrderBy(d => d.Name))
                     { <button type="button" data-dept-select="department" data-value="@department.Id">@department.Name</button> }
                 </div>
             </div>
             <div class="dept-filter-menu" data-dept-menu>
-                <button type="button" class="dept-dock-button" aria-expanded="false" aria-haspopup="true"><partial name="_Icon" model='@("sort")' /><span>Sort</span></button>
-                <div class="dept-filter-popover" hidden><strong>Sort by</strong><button type="button" data-dept-select="sort" data-value="">Default order</button><button type="button" data-dept-select="sort" data-value="name">Name (A–Z)</button></div>
+                <button type="button" class="dept-dock-button" aria-expanded="false" aria-haspopup="true"><partial name="_Icon" model='@("sort")' /><span>@L.T("Sort")</span></button>
+                <div class="dept-filter-popover" hidden><strong>@L.T("Sort by")</strong><button type="button" data-dept-select="sort" data-value="">@L.T("Default order")</button><button type="button" data-dept-select="sort" data-value="name">@L.T("Name (A–Z)")</button></div>
             </div>
-            <div class="dept-filter-menu" data-dept-menu data-dept-pagination aria-label="Employee pages" hidden>
-                <button type="button" class="dept-dock-button" aria-expanded="false" aria-haspopup="true" aria-label="Pages" title="Pages"><partial name="_Icon" model='@("file")' /><span>Pages</span></button>
-                <div class="dept-filter-popover" hidden><strong>Pages</strong><div data-page-options></div><span data-page-status aria-live="polite"></span></div>
+            <div class="dept-filter-menu" data-dept-menu data-dept-pagination aria-label="@L.T("Employee pages")" hidden>
+                <button type="button" class="dept-dock-button" aria-expanded="false" aria-haspopup="true" aria-label="@L.T("Pages")" title="@L.T("Pages")"><partial name="_Icon" model='@("file")' /><span>@L.T("Pages")</span></button>
+                <div class="dept-filter-popover" hidden><strong>@L.T("Pages")</strong><div data-page-options></div><span data-page-status aria-live="polite"></span></div>
             </div>
-            <select data-filter-department hidden aria-label="Department filter"><option value="">All departments</option><option value="unassigned">Unassigned</option>
+            <select data-filter-department hidden aria-label="@L.T("Department filter")"><option value="">@L.T("All departments")</option><option value="unassigned">@L.T("Unassigned")</option>
                 @foreach (var department in Model.Where(e => e.Department != null).Select(e => e.Department!).DistinctBy(d => d.Id).OrderBy(d => d.Name))
                 { <option value="@department.Id">@department.Name</option> }
             </select>
-            <select data-filter-sort hidden aria-label="Sort employees"><option value="">Default order</option><option value="name">Name (A–Z)</option></select>
+            <select data-filter-sort hidden aria-label="@L.T("Sort employees")"><option value="">@L.T("Default order")</option><option value="name">@L.T("Name (A–Z)")</option></select>
         }
-        <button type="button" class="dept-dock-button" data-dept-search-open aria-label="Search employees" title="Search employees"><partial name="_Icon" model='@("search")' /><span>Search</span></button>
-        <button type="button" class="dept-dock-button" data-filter-reset aria-label="Reset filters" title="Reset filters"><partial name="_Icon" model='@("refresh")' /><span>Reset</span></button>
+        <button type="button" class="dept-dock-button" data-dept-search-open aria-label="@L.T("Search employees")" title="@L.T("Search employees")"><partial name="_Icon" model='@("search")' /><span>@L.T("Search")</span></button>
+        <button type="button" class="dept-dock-button" data-filter-reset aria-label="@L.T("Reset filters")" title="@L.T("Reset filters")"><partial name="_Icon" model='@("refresh")' /><span>@L.T("Reset")</span></button>
         <span data-result-count aria-live="polite" hidden>@Model.Count records</span>
     </div>
-    <dialog class="dept-search-dialog" aria-label="Search employees" data-dept-search-dialog>
-        <div class="dept-search-heading"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("search")' /></span><div><h2>Search employees</h2><p>Find an employee by name, email or department.</p></div><button type="button" class="dept-search-close" data-dept-search-close aria-label="Close search">×</button></div>
+    <dialog class="dept-search-dialog" aria-label="@L.T("Search employees")" data-dept-search-dialog>
+        <div class="dept-search-heading"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("search")' /></span><div><h2>@L.T("Search employees")</h2><p>@L.T("Find an employee by name, email or department.")</p></div><button type="button" class="dept-search-close" data-dept-search-close aria-label="@L.T("Close search")">×</button></div>
         <div class="directory-search">
-            <label class="search-box"><partial name="_Icon" model='@("search")' /><span class="visually-hidden">Search employees</span><input class="form-control" type="search" data-filter-search placeholder="Search employees" autocomplete="off"></label>
+            <label class="search-box"><partial name="_Icon" model='@("search")' /><span class="visually-hidden">@L.T("Search employees")</span><input class="form-control" type="search" data-filter-search placeholder="@L.T("Search employees")" autocomplete="off"></label>
             <partial name="_DirectoryVoice" />
         </div>
-        <p class="dept-search-hint">Results update as you type.</p>
+        <p class="dept-search-hint">@L.T("Results update as you type.")</p>
     </dialog>
     @if (Model.Count == 0)
     {
-        <div class="empty-state"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("users")' /></span><h2>No employees yet</h2><p>Create an account to give an employee access.</p><a data-workspace-dialog class="btn btn-primary" asp-action="Create" >Add employee</a></div>
+        <div class="empty-state"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("users")' /></span><h2>@L.T("No employees yet")</h2><p>@L.T("Create an account to give an employee access.")</p><a data-workspace-dialog class="btn btn-primary" asp-action="Create" >@L.T("Add employee")</a></div>
     }
     else
     {
@@ -60,16 +60,16 @@
             {
                 <article class="record-card" data-record data-sort-name="@item.FullName" data-status="@(item.IsActive ? "active" : "inactive")" data-department="@(item.DepartmentId?.ToString() ?? "unassigned")">
                     <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("users")' /></span><span>@item.FullName<small>@item.User.Email</small></span></div><dl class="record-facts">
-                    <div><dt class="record-field-icon" title="Department"><partial name="_Icon" model='@("building")' /><span class="visually-hidden">Department</span></dt><dd>@(item.Department?.Name ?? "Unassigned")</dd></div>
-                    <div><dt class="visually-hidden">Status</dt><dd><partial name="_Status" model='@(item.IsActive ? "Active" : "Inactive")' /></dd></div>
-                    </dl><div class="record-action"><a data-workspace-dialog="details" class="record-icon-action" asp-action="Details" asp-route-id="@item.Id" aria-label="View details for @item.FullName" data-tooltip="View details"><partial name="_Icon" model='@("eye")' /></a>
-                        <a data-workspace-dialog="details" class="record-icon-action" asp-action="Edit" asp-route-id="@item.Id" aria-label="Edit employee" data-tooltip="Edit employee" title="Edit employee"><partial name="_Icon" model='@("edit")' /></a>
-                        @if (item.IsActive) { <a data-workspace-dialog="details" class="record-icon-action record-icon-danger" asp-action="Deactivate" asp-route-id="@item.Id" aria-label="Deactivate employee" data-tooltip="Deactivate employee" title="Deactivate employee"><partial name="_Icon" model='@("pause")' /></a> }
+                    <div><dt class="record-field-icon" title="@L.T("Department")"><partial name="_Icon" model='@("building")' /><span class="visually-hidden">@L.T("Department")</span></dt><dd>@(item.Department?.Name ?? L.T("Unassigned"))</dd></div>
+                    <div><dt class="visually-hidden">@L.T("Status")</dt><dd><partial name="_Status" model='@(item.IsActive ? "Active" : "Inactive")' /></dd></div>
+                    </dl><div class="record-action"><a data-workspace-dialog="details" class="record-icon-action" asp-action="Details" asp-route-id="@item.Id" aria-label="@L.F("View details for {0}", item.FullName)" data-tooltip="@L.T("View details")"><partial name="_Icon" model='@("eye")' /></a>
+                        <a data-workspace-dialog="details" class="record-icon-action" asp-action="Edit" asp-route-id="@item.Id" aria-label="@L.T("Edit employee")" data-tooltip="@L.T("Edit employee")" title="@L.T("Edit employee")"><partial name="_Icon" model='@("edit")' /></a>
+                        @if (item.IsActive) { <a data-workspace-dialog="details" class="record-icon-action record-icon-danger" asp-action="Deactivate" asp-route-id="@item.Id" aria-label="@L.T("Deactivate employee")" data-tooltip="@L.T("Deactivate employee")" title="@L.T("Deactivate employee")"><partial name="_Icon" model='@("pause")' /></a> }
                     </div>
                 </article>
             }
             </div>
-        <div data-filter-empty hidden><div class="empty-state"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("search")' /></span><h2>No matching records</h2><p>Try a different name or reset the filters.</p><button type="button" class="btn btn-outline-secondary">Reset filters</button></div></div>
+        <div data-filter-empty hidden><div class="empty-state"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("search")' /></span><h2>@L.T("No matching records")</h2><p>@L.T("Try a different name or reset the filters.")</p><button type="button" class="btn btn-outline-secondary">@L.T("Reset filters")</button></div></div>
     }
 </section>
 @section Scripts {

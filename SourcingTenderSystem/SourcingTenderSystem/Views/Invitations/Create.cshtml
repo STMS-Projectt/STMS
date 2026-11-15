@@ -4,29 +4,29 @@
     var suppliers = (IReadOnlyList<SupplierProfile>)ViewData["Suppliers"]!;
     var selected = (HashSet<int>)ViewData["SelectedSuppliers"]!;
 }
-<a class="back-link" asp-action="Index"><partial name="_Icon" model='@("back")' /> Supplier invitations</a>
-<header class="page-heading admin-action-heading"><div><p class="eyebrow">SUPPLIER INVITATIONS</p><h1>New invitation</h1><p>Choose a tender, its suppliers, and the invitation expiry date.</p></div></header>
+<a class="back-link" asp-action="Index"><partial name="_Icon" model='@("back")' /> @L.T("Supplier invitations")</a>
+<header class="page-heading admin-action-heading"><div><p class="eyebrow">@L.T("SUPPLIER INVITATIONS")</p><h1>@L.T("New invitation")</h1><p>@L.T("Choose a tender, its suppliers, and the invitation expiry date.")</p></div></header>
 <div class="form-shell">
     <form id="load-invitation-suppliers" asp-action="Create" method="get" hidden></form>
     <form class="surface form-card" asp-action="Create" method="post">
         <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
         <div class="mb-3">
-            <label for="invitation-tender" class="form-label">Tender</label>
+            <label for="invitation-tender" class="form-label">@L.T("Tender")</label>
             <input type="hidden" name="TenderId" value="@Model.TenderId" />
-            <select id="invitation-tender" name="tenderId" class="form-select" asp-items="ViewBag.TenderId" form="load-invitation-suppliers" required><option value="">Select a tender</option></select>
-            <button type="submit" form="load-invitation-suppliers" class="btn btn-outline-secondary mt-2">Load eligible suppliers</button>
+            <select id="invitation-tender" name="tenderId" class="form-select" asp-items="ViewBag.TenderId" form="load-invitation-suppliers" required><option value="">@L.T("Select a tender")</option></select>
+            <button type="submit" form="load-invitation-suppliers" class="btn btn-outline-secondary mt-2">@L.T("Load eligible suppliers")</button>
             <span asp-validation-for="TenderId" class="text-danger"></span>
         </div>
         <fieldset class="mb-3">
-            <legend class="form-label">Eligible suppliers @if (ViewData["RoundNumber"] is int round) { <span>· Round @round</span> }</legend>
-            @if (ViewData["CategoryName"] is string categoryName) { <p class="field-hint">Category: @categoryName</p> }
+            <legend class="form-label">@L.T("Eligible suppliers") @if (ViewData["RoundNumber"] is int round) { <span>· @L.F("Round {0}", round)</span> }</legend>
+            @if (ViewData["CategoryName"] is string categoryName) { <p class="field-hint">@L.F("Category: {0}", categoryName)</p> }
             @if (ViewData["TenderUnavailable"] is true)
             {
-                <p class="callout callout-warning">This tender is not open for bidding. Select an open tender to send invitations.</p>
+                <p class="callout callout-warning">@L.T("This tender is not open for bidding. Select an open tender to send invitations.")</p>
             }
             else if (suppliers.Count == 0)
             {
-                <p class="subtle mb-0">@(Model.TenderId == 0 ? "Select a tender and load its eligible suppliers." : ViewData["CategoryName"] is null ? "Assign a supply category to the purchase request before sending invitations." : "No approved suppliers in this category are eligible for a new invitation in this round.")</p>
+                <p class="subtle mb-0">@L.T(Model.TenderId == 0 ? "Select a tender and load its eligible suppliers." : ViewData["CategoryName"] is null ? "Assign a supply category to the purchase request before sending invitations." : "No approved suppliers in this category are eligible for a new invitation in this round.")</p>
             }
             else
             {
@@ -42,13 +42,13 @@
             }
         </fieldset>
         <div class="mb-3">
-            <label asp-for="ExpiresAt" class="form-label">Expires at (UTC)</label>
+            <label asp-for="ExpiresAt" class="form-label">@L.T("Expires at (UTC)")</label>
             <input asp-for="ExpiresAt" class="form-control" required />
             <span asp-validation-for="ExpiresAt" class="text-danger"></span>
         </div>
         <div class="form-actions">
-            <a data-dialog-cancel class="btn btn-outline-secondary" asp-action="Index" asp-route-tenderId="@Model.TenderId">Cancel</a>
-            <button type="submit" class="btn btn-primary" data-send-invitations disabled="@(suppliers.Count == 0)"><partial name="_Icon" model='@("mail")' /> Send invitations</button>
+            <a data-dialog-cancel class="btn btn-outline-secondary" asp-action="Index" asp-route-tenderId="@Model.TenderId">@L.T("Cancel")</a>
+            <button type="submit" class="btn btn-primary" data-send-invitations disabled="@(suppliers.Count == 0)"><partial name="_Icon" model='@("mail")' /> @L.T("Send invitations")</button>
         </div>
     </form>
 </div>

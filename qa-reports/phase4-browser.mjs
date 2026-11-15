@@ -1,5 +1,9 @@
+import {verifyPortalFixes} from './portal-fixes-browser.mjs';
+import {verifyWinnerDisplay} from './winner-display-audit.mjs';
 import {lifecycle} from './phase6-lifecycle.mjs';
 import {siteUxAudit} from './full-site-ux-audit.mjs';
+import {verifyDisplayFixes} from './display-audit-focused.mjs';
+import {displayAudit} from './display-audit.mjs';
 import {additionalFunctionalAudit} from './full-site-functional-audit.mjs';
 import assert from 'node:assert/strict';
 import {spawn} from 'node:child_process';
@@ -59,6 +63,7 @@ try {
   await mkdir(evidence,{recursive:true});
   await call('Network.enable'); await call('Network.setCacheDisabled',{cacheDisabled:true});
   await call('Page.enable');await call('Runtime.enable');
+  await call('Emulation.setEmulatedMedia',{features:[{name:'prefers-color-scheme',value:'light'}]});
   await call('WebAuthn.enable');
   await call('WebAuthn.addVirtualAuthenticator',{options:{protocol:'ctap2',transport:'internal',hasResidentKey:true,hasUserVerification:true,hasPrf:true,isUserVerified:true,automaticPresenceSimulation:true}});
   await call('Emulation.setDeviceMetricsOverride',{width:1440,height:900,deviceScaleFactor:1,mobile:false});
@@ -76,6 +81,49 @@ try {
     await click('form[action*=Logout] button');
     await wait('location.pathname==="/Account/Login" && document.readyState==="complete" && !!document.querySelector("#password-sign-in")','logout');
   }
+  async function language(lang) {
+    if(await ev('document.documentElement.lang')===lang)return;
+    await wait('!!document.querySelector(".display-preferences button.language-control")','language control');
+    await click('.display-preferences button.language-control');
+    await wait('document.readyState==="complete" && document.documentElement.lang==='+JSON.stringify(lang),'display language '+lang);
+  }
+  const resume = process.env.STMS_DISPLAY_RESUME;
+  const winnerAudit = process.env.STMS_DISPLAY_FOCUS === 'winner';
+  const quick = process.env.STMS_EXTRA_FUNCTIONAL_AUDIT === 'only';
+  if (process.env.STMS_DISPLAY_FOCUS === 'portal-fixes') {
+    await verifyPortalFixes({go,wait,ev,click,set,login,logout,capture,viewport,language,test,call});
+  } else {
+  if (!resume) {
+  await test('BR-portal-language-theme-and-validation',async()=>{
+    await go('/Account/Login');
+    try {
+    await language('ar');
+    assert.equal(await ev('document.documentElement.dir'),'rtl');
+    assert.match(await ev('document.querySelector("main h1").textContent'),/تسجيل الدخول/);
+    assert.match(await ev('document.querySelector("#Password").getAttribute("data-val-required")'),/مطلوب/);
+    await wait('document.documentElement.dataset.bsTheme==="light"','initial light appearance');
+    await click('[data-theme-toggle]');
+    await wait('document.documentElement.dataset.bsTheme==="dark"','dark mode selected');
+    await go('/SupplierRegistration/Register');
+    assert.equal(await ev('document.documentElement.lang'),'ar');
+    assert.equal(await ev('document.documentElement.dataset.bsTheme'),'dark');
+    assert.match(await ev('document.querySelector("h1").textContent'),/مورد/);
+    assert(await ev(`(() => {
+      const colors = getComputedStyle(document.querySelector(".application-form")).backgroundColor.match(/[0-9]+/g);
+      return colors && Math.max(...colors.slice(0,3).map(Number)) < 105;
+    })()`),'registration form uses a dark surface');
+    await viewport(390);
+    await capture('registration-ar-dark');
+    await click('[data-theme-toggle]');
+    assert.equal(await ev('document.documentElement.dataset.bsTheme'),'light');
+    await language('en');
+    assert.match(await ev('document.querySelector("h1").textContent'),/Register as a supplier/);
+    } finally {
+      if(await ev('document.documentElement.dataset.bsTheme==="dark"'))await click('[data-theme-toggle]');
+      if(await ev('document.documentElement.lang==="ar"'))await language('en');
+      await viewport(1440);
+    }
+  });
   await test('BR01-invalid-password',async()=>{
     await login('RequestingDepartment','wrong-password');
     await wait('document.body.innerText.includes("Unable to sign in")','invalid login feedback');
@@ -93,7 +141,7 @@ try {
     await wait('document.readyState==="complete" && performance.getEntriesByType("resource").some(e=>e.name.includes("biometrics.js"))','login passkey script');
     await sleep(250);
     await click('[data-phone-button]');
-    await wait('location.pathname.includes("/PurchaseRequisitions/Dashboard")','discoverable passkey login');
+    await wait('location.pathname.includes("/PurchaseRequisitions/Dashboard") && document.readyState==="complete" && !!document.querySelector("form[action*=Logout]")','discoverable passkey login');
   });
   await test('BR03-real-modal-draft',async()=>{
     if (!await ev('!!document.querySelector("form[action*=Logout]")')) {
@@ -225,10 +273,8 @@ try {
     await click('#workspace-dialog [data-dialog-close]');
     await wait('!document.querySelector("#workspace-dialog").open','overview closed');
     await click(link);
-    await wait('!!document.querySelector("#workspace-dialog[open] input[name=Subject]")','direct clarification composer');
-    await click('#workspace-dialog [data-dialog-close]');
+    await wait('location.pathname.includes("/Clarifications/StartRequest/") && !!document.querySelector("#main input[name=Subject]") && !document.querySelector("#workspace-dialog").open','direct clarification page');
   });
-  const quick = process.env.STMS_EXTRA_FUNCTIONAL_AUDIT === 'only';
   if (!quick) {
   const rolePaths={Admin:'/AdminDashboard',SourcingOfficer:'/SourcingDashboard',Supplier:'/SupplierWorkspace',SourcingManager:'/CommitteeReviews',TechnicalCommittee:'/CommitteeReviews',FinancialCommittee:'/CommitteeReviews',TopCommittee:'/EvaluationWorkflow'};
   for(const [role,path] of Object.entries(rolePaths)){
@@ -338,11 +384,7 @@ try {
         await click('#main .sourcing-queue a[data-workspace-dialog]');
         await wait('!!document.querySelector("#workspace-dialog[open] .admin-record-hero")','request review opens in modal');
         await click(details+'a[href*="/Clarifications/StartRequest/"]');
-        await wait('!!document.querySelector("#workspace-dialog[open] input[name=Subject]")','nested clarification form');
-        assert.equal(await ev('location.href'),url);
-        await click('#workspace-dialog [data-dialog-back]');
-        await wait('!!document.querySelector("#workspace-dialog[open] .admin-record-hero")','back to review');
-        await click('#workspace-dialog [data-dialog-close]');
+        await wait('location.pathname.includes("/Clarifications/StartRequest/") && !!document.querySelector("#main input[name=Subject]") && !document.querySelector("#workspace-dialog").open','standalone clarification page');
         await go('/RequisitionReviews/Pending');
         await wait('!!document.querySelector("#main .dept-filter-dock") && !!document.querySelector("#main article.record-card")','sourcing queue cards and filters');
       }
@@ -368,7 +410,7 @@ try {
       await capture('registration-'+width);
     }
     for(const [name,value] of Object.entries({
-      CompanyName:'Browser Onboarding',TaxNumber:'BROWSER-ONBOARD',CommercialRegNo:'BROWSER-ONBOARD',
+      CompanyName:'Browser Onboarding',TaxNumber:'123456789',CommercialRegNo:'987654321',
       ContactPhone:'+962790000000',Address:'Synthetic registration QA',Email:'onboarding@example.test',
       Password:password,ConfirmPassword:password
     })) await set('[name="'+name+'"]',value);
@@ -425,7 +467,10 @@ try {
     assert.equal(await ev('!!document.querySelector("#main a[href*=AddDocument], #main a[href*=UploadDocuments], #main form[action*=RemoveDocument]")'),false);
     await capture('registration-read-only');
   });
-  await lifecycle({go,wait,click,set,ev,login,logout,capture,test,viewport,resetSession:async()=>{
+  }
+  }
+  if (!quick && process.env.STMS_DISPLAY_FOCUS !== 'home') {
+  await lifecycle({go,wait,click,set,ev,login,logout,capture,test: (id, fn) => (winnerAudit ? id==='P6-A-award' : !resume || id !== 'P6-B-rounds-0') ? test(id, fn) : undefined,viewport,resetSession:async()=>{
     // Let any in-flight POST/redirect from the previous user finish first: Identity re-issues its cookie on every
     // authenticated response (security stamp validated each request), which could otherwise restore the old session.
     await sleep(400);
@@ -435,7 +480,7 @@ try {
     await until(async()=>!(await call('Network.getAllCookies')).cookies.some(c=>c.name.startsWith('.STMS.')),'session cookies cleared');
     await go('/Account/Login');
   }});
-  await test('BR-admin-operations-record-modals',async()=>{
+  if (!winnerAudit) await test('BR-admin-operations-record-modals',async()=>{
     if(await ev('!!document.querySelector("form[action*=Logout]")'))await logout();
     await login('Admin');
     await wait('location.pathname.startsWith("/AdminDashboard")','admin landing');
@@ -470,7 +515,7 @@ try {
       await click('#workspace-dialog [data-dialog-close]');
     }
   });
-  await test('BR-review-new-supplier',async()=>{
+  if (!resume) await test('BR-review-new-supplier',async()=>{
     if(await ev('!!document.querySelector("form[action*=Logout]")')) await logout();
     await login('SourcingOfficer');
     await wait('location.pathname.startsWith("/SourcingDashboard")','officer landing');
@@ -492,7 +537,7 @@ try {
     await capture('supplier-approved-modal');
     await click(overlay+'[data-dialog-close]');
   });
-  await test('BR-supplier-bid-register-narrow-hit-targets',async()=>{
+  if (!winnerAudit) await test('BR-supplier-bid-register-narrow-hit-targets',async()=>{
     await logout();
     await login('Supplier');
     await wait('location.pathname.startsWith("/SupplierWorkspace") && document.readyState==="complete"','supplier signed in');
@@ -517,12 +562,87 @@ try {
       }
     } finally { await viewport(1440); }
   });
+  if (!resume) {
+  await test('BR-localized-workspace-modal-and-navigation',async()=>{
+    await logout();
+    await login('Admin');
+    await wait('location.pathname.endsWith("/AdminDashboard")','admin dashboard');
+    await wait('!!document.querySelector(\'#workspace-nav a[href="/Departments"]\')','department navigation link');
+    await click('#workspace-nav a[href="/Departments"]');
+    await wait('location.pathname==="/Departments"','departments AJAX navigation');
+    try {
+      await language('ar');
+      assert.equal(await ev('location.pathname'),'/Departments');
+      assert.equal(await ev('document.querySelector("#main h1").innerText'),'الأقسام');
+      await click('[data-theme-toggle]');
+      await wait('document.documentElement.dataset.bsTheme==="dark"','workspace dark theme');
+      await wait('!!document.querySelector(\'#main a[href="/Departments/Create"]\')','add department link');
+      await click('#main a[href="/Departments/Create"]');
+      await wait('!!document.querySelector("#workspace-dialog[open] input[name=Name]")','translated create modal');
+      assert.equal(await ev('document.querySelector("#workspace-dialog-title").textContent'),'إضافة قسم');
+      await viewport(390);
+      assert(await ev('document.documentElement.scrollWidth<=innerWidth'));
+      await capture('department-dialog-ar-dark');
+      await click('#workspace-dialog [data-dialog-close]');
+      await viewport(1440);
+      await click('#workspace-nav a[href="/Employees"]');
+      await wait('location.pathname==="/Employees" && document.querySelector("#main h1")?.textContent==="الموظفون"','Arabic AJAX navigation remains Arabic');
+      assert.equal(await ev('document.documentElement.dataset.bsTheme'),'dark');
+    } finally {
+      await viewport(1440);
+      if(await ev('document.querySelector("#workspace-dialog")?.open'))await click('#workspace-dialog [data-dialog-close]');
+      if(await ev('document.documentElement.dataset.bsTheme==="dark"'))await click('[data-theme-toggle]');
+      if(await ev('document.documentElement.lang==="ar"'))await language('en');
+    }
+  });
+  await test('BR-arabic-dark-role-workspaces',async()=>{
+    if(await ev('!!document.querySelector("form[action*=Logout]")'))await logout();
+    await language('ar');
+    await click('[data-theme-toggle]');
+    try {
+      for(const [role,route,heading] of [
+        ['DepartmentSmoke','/PurchaseRequisitions/MyRequests','طلباتي'],
+        ['SourcingOfficer','/Tenders','إدارة العطاءات'],
+        ['Supplier','/Bids/MyBids','عروضي'],
+        ['SourcingManager','/CommitteeReviews','لوحة المراجع'],
+        ['TechnicalCommittee','/CommitteeReviews','لوحة المراجع'],
+        ['FinancialCommittee','/CommitteeReviews','لوحة المراجع'],
+        ['TopCommittee','/EvaluationWorkflow','قرارات الترسية'],
+      ]){
+        await login(role);
+        await wait('!!document.querySelector("form[action*=Logout]") && document.readyState==="complete"',role+' signed in');
+        await go(route);
+        assert.equal(await ev('document.querySelector("main h1").textContent.trim()'),heading);
+        if(role==='SourcingOfficer') assert(await ev('document.querySelector(".stms-metrics").textContent.includes("مفتوح للتقديم")'));
+        assert.equal(await ev('document.documentElement.dir+":"+document.documentElement.dataset.bsTheme'),'rtl:dark');
+        for(const width of [320,390,1440]){
+          await viewport(width);
+          const overflow=await ev('new Promise(resolve=>requestAnimationFrame(()=>resolve(document.documentElement.scrollWidth > innerWidth + 1)))');
+          assert.equal(overflow,false,role+' '+width+' horizontal overflow');
+          if(width===390 && ['DepartmentSmoke','SourcingOfficer','Supplier','FinancialCommittee','TopCommittee'].includes(role))
+            await capture(role.toLowerCase()+'-ar-dark');
+        }
+        await logout();
+      }
+    }finally{
+      await viewport(1440);
+      if(await ev('document.documentElement.dataset.bsTheme==="dark"'))await click('[data-theme-toggle]');
+      await language('en');
+    }
+  });
+  }
+  }
+  if (winnerAudit) await verifyWinnerDisplay({go,wait,ev,click,login,logout,capture,viewport,language,test});
+  else if (resume) await verifyDisplayFixes({go,wait,ev,click,set,login,logout,capture,viewport,language,test,focus:process.env.STMS_DISPLAY_FOCUS});
+  if (process.env.STMS_DISPLAY_AUDIT === '1') {
+    await displayAudit({go,wait,ev,login,logout,capture,call,evidence,language,resume});
   }
   if (process.env.STMS_FULL_UX_AUDIT === '1') {
     await siteUxAudit({base,go,wait,click,ev,login,logout,capture,call,evidence});
   }
   if (process.env.STMS_EXTRA_FUNCTIONAL_AUDIT === '1' || quick) {
     await additionalFunctionalAudit({go,wait,click,set,ev,login,logout,capture,call,test});
+  }
   }
   await writeFile(join(evidence,'results.json'),JSON.stringify({results,errors,http},null,2));
   process.stdout.write(JSON.stringify({results,errors})+'\n');

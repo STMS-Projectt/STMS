@@ -1,9 +1,9 @@
 @model string
-@{ ViewData["Title"] = "Add category"; }
-<header class="page-heading admin-action-heading"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("filter")' /></span><div><p class="eyebrow">SUPPLY CATEGORIES</p><h1>Add category</h1><p>Use a name that employees and suppliers can recognize.</p></div></header>
+@{ ViewData["Title"] = L.T("Add category"); }
+<header class="page-heading admin-action-heading"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("filter")' /></span><div><p class="eyebrow">@L.T("SUPPLY CATEGORIES")</p><h1>@L.T("Add category")</h1><p>@L.T("Use a name that employees and suppliers can recognize.")</p></div></header>
 <form asp-action="Create" method="post" class="admin-form">
-    <label class="form-label" for="category-name">Category name</label>
+    <label class="form-label" for="category-name">@L.T("Category name")</label>
     <input class="form-control" id="category-name" name="name" value="@Model" maxlength="120" required />
     <div asp-validation-summary="All" class="text-danger mt-2"></div>
-    <div class="form-actions"><a class="btn btn-outline-secondary" data-dialog-cancel asp-action="Index">Cancel</a><button class="btn btn-primary" type="submit">Add category</button></div>
+    <div class="form-actions"><a class="btn btn-outline-secondary" data-dialog-cancel asp-action="Index">@L.T("Cancel")</a><button class="btn btn-primary" type="submit">@L.T("Add category")</button></div>
 </form>

@@ -1,9 +1,9 @@
 @model RequisitionInput
 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 <div class="mb-3">
-    <label asp-for="CategoryId" class="form-label">Category</label>
+    <label asp-for="CategoryId" class="form-label">@L.T("Category")</label>
     <select asp-for="CategoryId" class="form-select" required>
-        <option value="">Select a category</option>
+        <option value="">@L.T("Select a category")</option>
         @foreach (var category in (IEnumerable<Category>)ViewBag.Categories)
         { <option value="@category.Id">@category.Name</option> }
     </select>
@@ -20,9 +20,9 @@
     <span asp-validation-for="Reason" class="text-danger"></span>
 </div>
 <div class="mb-3">
-    <label asp-for="Priority" class="form-label">Priority <span lang="ar" dir="rtl">الأولوية</span></label>
+    <label asp-for="Priority" class="form-label">@L.T("Priority")</label>
     <select asp-for="Priority" class="form-select">
-        <option>Low</option><option>Normal</option><option>High</option><option>Urgent</option>
+        <option value="Low">@L.T("Low")</option><option value="Normal">@L.T("Normal")</option><option value="High">@L.T("High")</option><option value="Urgent">@L.T("Urgent")</option>
     </select>
     <span asp-validation-for="Priority" class="text-danger"></span>
 </div>

@@ -4,12 +4,12 @@
     var returned = Model.Status == "Returned";
     ViewData["Title"] = items ? "Requested items" : "Request QR code";
 }
-<a class="back-link" asp-action="Details" asp-route-id="@Model.Id">Back to request</a>
+<a class="back-link" asp-action="Details" asp-route-id="@Model.Id">@L.T("Back to request")</a>
 <header class="page-heading stms-hero admin-record-hero">
-    <div><p class="eyebrow">PURCHASE REQUEST · PR-@Model.Id</p><h1>@ViewData["Title"]</h1><p>@Model.Title</p></div>
+    <div><p class="eyebrow">@L.F("Purchase request · PR-{0}", Model.Id)</p><h1>@L.T(ViewData["Title"]?.ToString())</h1><p>@Model.Title</p></div>
     @if (items && ViewBag.CanEdit == true)
     {
-        <a class="btn btn-primary" data-workspace-dialog asp-controller="RequisitionItems" asp-action="Create" asp-route-requestId="@Model.Id"><partial name="_Icon" model='@("plus")' /> Add item</a>
+        <a class="btn btn-primary" data-workspace-dialog asp-controller="RequisitionItems" asp-action="Create" asp-route-requestId="@Model.Id"><partial name="_Icon" model='@("plus")' /> @L.T("Add item")</a>
     }
 </header>
 @if (items)
@@ -18,8 +18,8 @@
     @if (ViewBag.CanEdit == true && Model.Items.Count > 0)
     {
         <form asp-action="Submit" asp-route-id="@Model.Id" method="post" class="surface detail-card request-submit mt-3">
-            <div><h2>@(returned ? "Ready to send it back?" : "Ready for review?")</h2><p class="subtle mb-0">Send this purchase request and its items to the sourcing officer.</p></div>
-            <button type="submit" class="btn btn-primary">@(returned ? "Resubmit for review" : "Submit for review")</button>
+            <div><h2>@L.T(returned ? "Ready to send it back?" : "Ready for review?")</h2><p class="subtle mb-0">@L.T("Send this purchase request and its items to the sourcing officer.")</p></div>
+            <button type="submit" class="btn btn-primary">@L.T(returned ? "Resubmit for review" : "Submit for review")</button>
         </form>
     }
 }

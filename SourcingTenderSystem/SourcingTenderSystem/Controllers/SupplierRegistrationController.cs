@@ -46,8 +46,8 @@ public sealed class SupplierRegistrationController(ApplicationDbContext db, User
 
         db.SupplierProfiles.Add(new SupplierProfile
         {
-            UserId = user.Id, CompanyName = input.CompanyName.Trim(), TaxNumber = input.TaxNumber.Trim(),
-            CommercialRegNo = input.CommercialRegNo.Trim(), ContactPhone = input.ContactPhone.Trim(),
+            UserId = user.Id, CompanyName = input.CompanyName.Trim(), TaxNumber = SupplierRegistrationNumbers.NormalizeDigits(input.TaxNumber),
+            CommercialRegNo = SupplierRegistrationNumbers.NormalizeDigits(input.CommercialRegNo), ContactPhone = input.ContactPhone.Trim(),
             Address = input.Address.Trim(), Status = SupplierStatus.Pending, CreatedAt = DateTime.UtcNow,
             Categories = categories
         });

@@ -1,0 +1,1706 @@
+[
+  {
+    "path": "/Suppliers/Categories/4",
+    "text": "Another synthetic category",
+    "tag": "SPAN",
+    "cls": ""
+  },
+  {
+    "path": "/SupplierRegistration/RegistrationStatus?workspace=true&panel=overview",
+    "text": "Browser supplies",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/SupplierRegistration/Register",
+    "text": "name@company.com",
+    "tag": "INPUT",
+    "cls": "form-control"
+  },
+  {
+    "path": "/AdminDashboard?months=12",
+    "text": "View Purchase requests",
+    "tag": "A",
+    "cls": "metric surface admin-metric-link admin-reveal is-visible"
+  },
+  {
+    "path": "/AdminDashboard?months=12",
+    "text": "View Tenders",
+    "tag": "A",
+    "cls": "metric surface admin-metric-link admin-reveal is-visible"
+  },
+  {
+    "path": "/AdminDashboard?months=12",
+    "text": "View Suppliers",
+    "tag": "A",
+    "cls": "metric surface admin-metric-link admin-reveal is-visible"
+  },
+  {
+    "path": "/AdminDashboard?months=12",
+    "text": "View Active employees",
+    "tag": "A",
+    "cls": "metric surface admin-metric-link admin-reveal is-visible"
+  },
+  {
+    "path": "/Tenders",
+    "text": "Open",
+    "tag": "METER",
+    "cls": ""
+  },
+  {
+    "path": "/Tenders",
+    "text": "Closed",
+    "tag": "METER",
+    "cls": ""
+  },
+  {
+    "path": "/Tenders/AssignCommittee/4",
+    "text": "Browser QA",
+    "tag": "STRONG",
+    "cls": ""
+  },
+  {
+    "path": "/Departments",
+    "text": "View details for Browser QA",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/Employees/Details/1",
+    "text": "Admin",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/Employees/Details/1",
+    "text": "Admin@example.test",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/Employees",
+    "text": "View details for Admin",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/Tenders/AssignCommittee/4",
+    "text": "Department QA",
+    "tag": "DIV",
+    "cls": "fw-semibold"
+  },
+  {
+    "path": "/Employees",
+    "text": "DepartmentSmoke@example.test",
+    "tag": "SMALL",
+    "cls": ""
+  },
+  {
+    "path": "/Employees",
+    "text": "View details for Department QA",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/Tenders/AssignCommittee/4",
+    "text": "FinancialCommittee",
+    "tag": "DIV",
+    "cls": "fw-semibold"
+  },
+  {
+    "path": "/Profile?tab=information",
+    "text": "FinancialCommittee@example.test",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/Employees",
+    "text": "View details for FinancialCommittee",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/Invitations?tenderId=5",
+    "text": "Record filters",
+    "tag": "DIV",
+    "cls": "directory-filter-panel dept-filter-dock is-in-view"
+  },
+  {
+    "path": "/Invitations/Create?tenderId=5",
+    "text": "Browser Onboarding",
+    "tag": "SPAN",
+    "cls": ""
+  },
+  {
+    "path": "/Suppliers/Details/4?panel=overview",
+    "text": "BROWSER-ONBOARD",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/Suppliers?status=Approved",
+    "text": "Open application for Browser Onboarding",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/Suppliers?status=Approved",
+    "text": "View documents for Browser Onboarding",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/Suppliers?status=Approved",
+    "text": "Edit categories for Browser Onboarding",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/Invitations/Details/17",
+    "text": "Supplier3",
+    "tag": "STRONG",
+    "cls": ""
+  },
+  {
+    "path": "/Suppliers?status=Approved",
+    "text": "Open application for Supplier3",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/Suppliers?status=Approved",
+    "text": "View documents for Supplier3",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/Suppliers?status=Approved",
+    "text": "Edit categories for Supplier3",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/AdminOperations/Requests?status=Under%20Review",
+    "text": "Purchase requests",
+    "tag": "H1",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Requests?status=Under%20Review",
+    "text": "Track requests, originating departments, and review decisions.",
+    "tag": "P",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Requests",
+    "text": "6 on this page",
+    "tag": "SPAN",
+    "cls": "result-count"
+  },
+  {
+    "path": "/PurchaseRequisitions/Details/6?panel=qr",
+    "text": "Phase 6 Cancel requisition",
+    "tag": "P",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Requests?status=Converted%20to%20Tender",
+    "text": "Converted to Tender",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/Tenders",
+    "text": "Phase 6 Rounds 0 requisition",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/RequisitionReviews",
+    "text": "Phase 6 Rounds 1 requisition",
+    "tag": "SPAN",
+    "cls": ""
+  },
+  {
+    "path": "/RequisitionReviews",
+    "text": "Phase 6 Rounds requisition",
+    "tag": "SPAN",
+    "cls": ""
+  },
+  {
+    "path": "/RequisitionReviews",
+    "text": "Phase 6 Award requisition",
+    "tag": "SPAN",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Tenders?status=Closed",
+    "text": "Tenders",
+    "tag": "H1",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Tenders?status=Closed",
+    "text": "Follow sourcing, invitations, committee assignments, and evaluation.",
+    "tag": "P",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Requests?status=Converted%20to%20Tender",
+    "text": "5 on this page",
+    "tag": "SPAN",
+    "cls": "result-count"
+  },
+  {
+    "path": "/SupplierWorkspace/Invitations?invitationId=15",
+    "text": "Phase 6 Cancel",
+    "tag": "STRONG",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Tenders?status=Open",
+    "text": "Committee members: Phase 6 Cancel",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/AdminOperations/Tender/5?panel=committee",
+    "text": "Committee members",
+    "tag": "STRONG",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Tenders?status=Open",
+    "text": "Submitted bids: Phase 6 Cancel",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/AdminOperations/Tender/5",
+    "text": "Submitted bids",
+    "tag": "H2",
+    "cls": "mb-0"
+  },
+  {
+    "path": "/SupplierWorkspace/Invitations?invitationId=10",
+    "text": "Phase 6 Rounds 0",
+    "tag": "STRONG",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Tenders?status=Closed",
+    "text": "Committee members: Phase 6 Rounds 0",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/AdminOperations/Tenders?status=Closed",
+    "text": "Submitted bids: Phase 6 Rounds 0",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/SupplierWorkspace/Invitations?invitationId=7",
+    "text": "Phase 6 Rounds 1",
+    "tag": "STRONG",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Tenders?status=Open",
+    "text": "Committee members: Phase 6 Rounds 1",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/AdminOperations/Tenders?status=Open",
+    "text": "Submitted bids: Phase 6 Rounds 1",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/SupplierWorkspace/Invitations?invitationId=4",
+    "text": "Phase 6 Rounds",
+    "tag": "STRONG",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Tenders?status=Open",
+    "text": "Committee members: Phase 6 Rounds",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/AdminOperations/Tenders?status=Open",
+    "text": "Submitted bids: Phase 6 Rounds",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/SupplierWorkspace/Invitations?invitationId=1",
+    "text": "Phase 6 Award",
+    "tag": "STRONG",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Tenders?status=Open",
+    "text": "Committee members: Phase 6 Award",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/AdminOperations/Tenders?status=Open",
+    "text": "Submitted bids: Phase 6 Award",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/AdminOperations/Invitations",
+    "text": "Supplier invitations",
+    "tag": "H1",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Invitations",
+    "text": "Track invitations and supplier responses across tenders.",
+    "tag": "P",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Invitations",
+    "text": "17 on this page",
+    "tag": "SPAN",
+    "cls": "result-count"
+  },
+  {
+    "path": "/SupplierWorkspace/Invitations?invitationId=4",
+    "text": "Pending",
+    "tag": "SPAN",
+    "cls": "status-pill status-waiting"
+  },
+  {
+    "path": "/Invitations?tenderId=5",
+    "text": "Supplier2",
+    "tag": "SPAN",
+    "cls": ""
+  },
+  {
+    "path": "/SupplierRegistration/RegistrationStatus?workspace=true&panel=documents",
+    "text": "Browser supplier",
+    "tag": "P",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Bids",
+    "text": "Supplier bids",
+    "tag": "H1",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Bids",
+    "text": "Track bid and compliance status. Supplier drafts stay private.",
+    "tag": "P",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Bids",
+    "text": "0 on this page",
+    "tag": "SPAN",
+    "cls": "result-count"
+  },
+  {
+    "path": "/AdminOperations/Activity?page=3",
+    "text": "Activity log",
+    "tag": "H1",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Activity?page=3",
+    "text": "Review recorded workflow and account activity.",
+    "tag": "P",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Activity?page=1",
+    "text": "25 on this page",
+    "tag": "SPAN",
+    "cls": "result-count"
+  },
+  {
+    "path": "/SupplierWorkspace",
+    "text": "Approved",
+    "tag": "STRONG",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Activity?page=1",
+    "text": "SourcingOfficer · SupplierProfile #4",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/Suppliers/Details/4?panel=overview",
+    "text": "Synthetic application documents verified",
+    "tag": "P",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Activity?page=1",
+    "text": "InviteSuppliers",
+    "tag": "SPAN",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Activity?page=1",
+    "text": "SourcingOfficer · Tender #5",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Activity?page=1",
+    "text": "Round 1: 3 invitation attempts sent.",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Activity?page=1",
+    "text": "Publish",
+    "tag": "SPAN",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Activity?page=1",
+    "text": "Round 1: Initial round published.",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Activity?page=1",
+    "text": "DraftCriteriaChanged",
+    "tag": "SPAN",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Activity?page=1",
+    "text": "Added Quality: 100%.",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Activity?page=1",
+    "text": "Create",
+    "tag": "SPAN",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Activity?page=1",
+    "text": "Tender created from the approved request.",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/Clarifications",
+    "text": "Review clarification requests and responses across the workspace.",
+    "tag": "P",
+    "cls": ""
+  },
+  {
+    "path": "/Clarifications?kind=tender&recordId=5",
+    "text": "conversations",
+    "tag": "SPAN",
+    "cls": ""
+  },
+  {
+    "path": "/Profile?tab=information",
+    "text": "Browser account",
+    "tag": "H1",
+    "cls": ""
+  },
+  {
+    "path": "/Profile?tab=security",
+    "text": "Not enrolled",
+    "tag": "SPAN",
+    "cls": "status-pill status-neutral"
+  },
+  {
+    "path": "/Profile?tab=security",
+    "text": "Set up face recognition",
+    "tag": "BUTTON",
+    "cls": "btn btn-primary"
+  },
+  {
+    "path": "/Suppliers?status=Suspended",
+    "text": "0 records",
+    "tag": "SPAN",
+    "cls": "result-count"
+  },
+  {
+    "path": "/AdminOperations/Tenders?status=Open",
+    "text": "4 on this page",
+    "tag": "SPAN",
+    "cls": "result-count"
+  },
+  {
+    "path": "/AdminOperations/Requests?status=Under%20Review",
+    "text": "1 on this page",
+    "tag": "SPAN",
+    "cls": "result-count"
+  },
+  {
+    "path": "/RequisitionReviews/Details/1",
+    "text": "Phase 4 browser draft",
+    "tag": "STRONG",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Requests?status=Under%20Review",
+    "text": "Under Review",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Activity?page=3",
+    "text": "Created",
+    "tag": "SPAN",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Activity?page=2",
+    "text": "Department QA · PurchaseRequisition #5",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Activity?page=2",
+    "text": "SourcingOfficer · Tender #3",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/Profile?tab=information",
+    "text": "Account name",
+    "tag": "DT",
+    "cls": ""
+  },
+  {
+    "path": "/Suppliers/Details/4?panel=overview",
+    "text": "Registered 15 Nov 2026 (UTC)",
+    "tag": "P",
+    "cls": ""
+  },
+  {
+    "path": "/Suppliers/Details/4?panel=overview",
+    "text": "onboarding@example.test",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/Suppliers/Details/4?panel=overview",
+    "text": "Synthetic registration QA",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/Suppliers/Details/4?panel=overview",
+    "text": "Another synthetic category, Browser supplies",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/Suppliers/Details/4?panel=documents",
+    "text": "1 uploaded",
+    "tag": "P",
+    "cls": ""
+  },
+  {
+    "path": "/Suppliers/Details/4?panel=documents",
+    "text": "Commercial registration",
+    "tag": "STRONG",
+    "cls": ""
+  },
+  {
+    "path": "/Suppliers/Details/4?panel=documents",
+    "text": "Download Commercial registration PDF",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/AdminOperations/Activity?page=3",
+    "text": "12 on this page",
+    "tag": "SPAN",
+    "cls": "result-count"
+  },
+  {
+    "path": "/AdminOperations/Activity?page=3",
+    "text": "Submitted",
+    "tag": "SPAN",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Activity?page=3",
+    "text": "Department QA · PurchaseRequisition #2",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Activity?page=3",
+    "text": "Item added",
+    "tag": "SPAN",
+    "cls": ""
+  },
+  {
+    "path": "/PurchaseRequisitions/Details/6?panel=items",
+    "text": "Cable",
+    "tag": "SPAN",
+    "cls": ""
+  },
+  {
+    "path": "/PurchaseRequisitions/Details/6?panel=items",
+    "text": "Monitor",
+    "tag": "SPAN",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Activity?page=3",
+    "text": "RequestingDepartment · PurchaseRequisition #1",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/PurchaseRequisitions/Dashboard",
+    "text": "Jun 26: 0 purchase requests",
+    "tag": "DIV",
+    "cls": "admin-chart-month"
+  },
+  {
+    "path": "/SourcingDashboard",
+    "text": "Jun 26",
+    "tag": "SPAN",
+    "cls": "admin-chart-label"
+  },
+  {
+    "path": "/PurchaseRequisitions/Dashboard",
+    "text": "Jul 26: 0 purchase requests",
+    "tag": "DIV",
+    "cls": "admin-chart-month"
+  },
+  {
+    "path": "/SourcingDashboard",
+    "text": "Jul 26",
+    "tag": "SPAN",
+    "cls": "admin-chart-label"
+  },
+  {
+    "path": "/PurchaseRequisitions/Dashboard",
+    "text": "Aug 26: 0 purchase requests",
+    "tag": "DIV",
+    "cls": "admin-chart-month"
+  },
+  {
+    "path": "/SourcingDashboard",
+    "text": "Aug 26",
+    "tag": "SPAN",
+    "cls": "admin-chart-label"
+  },
+  {
+    "path": "/PurchaseRequisitions/Dashboard",
+    "text": "Sep 26: 0 purchase requests",
+    "tag": "DIV",
+    "cls": "admin-chart-month"
+  },
+  {
+    "path": "/SourcingDashboard",
+    "text": "Sep 26",
+    "tag": "SPAN",
+    "cls": "admin-chart-label"
+  },
+  {
+    "path": "/PurchaseRequisitions/Dashboard",
+    "text": "Oct 26: 0 purchase requests",
+    "tag": "DIV",
+    "cls": "admin-chart-month"
+  },
+  {
+    "path": "/SourcingDashboard",
+    "text": "Oct 26",
+    "tag": "SPAN",
+    "cls": "admin-chart-label"
+  },
+  {
+    "path": "/PurchaseRequisitions/Dashboard",
+    "text": "Nov 26: 6 purchase requests",
+    "tag": "DIV",
+    "cls": "admin-chart-month"
+  },
+  {
+    "path": "/SourcingDashboard",
+    "text": "Nov 26",
+    "tag": "SPAN",
+    "cls": "admin-chart-label"
+  },
+  {
+    "path": "/PurchaseRequisitions/Dashboard",
+    "text": "6 total",
+    "tag": "SPAN",
+    "cls": "department-status-total"
+  },
+  {
+    "path": "/PurchaseRequisitions/MyRequests?status=Converted%20to%20Tender",
+    "text": "Details for PR-6",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/PurchaseRequisitions/MyRequests?status=Converted%20to%20Tender",
+    "text": "Items for PR-6",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/PurchaseRequisitions/MyRequests?status=Converted%20to%20Tender",
+    "text": "QR code for PR-6",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/PurchaseRequisitions/MyRequests?status=Converted%20to%20Tender",
+    "text": "Details for PR-5",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/PurchaseRequisitions/MyRequests?status=Converted%20to%20Tender",
+    "text": "Items for PR-5",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/PurchaseRequisitions/MyRequests?status=Converted%20to%20Tender",
+    "text": "QR code for PR-5",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/PurchaseRequisitions/MyRequests?status=Converted%20to%20Tender",
+    "text": "Details for PR-4",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/PurchaseRequisitions/MyRequests?status=Converted%20to%20Tender",
+    "text": "Items for PR-4",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/PurchaseRequisitions/MyRequests?status=Converted%20to%20Tender",
+    "text": "QR code for PR-4",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/PurchaseRequisitions/MyRequests?status=Converted%20to%20Tender",
+    "text": "Details for PR-3",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/PurchaseRequisitions/MyRequests?status=Converted%20to%20Tender",
+    "text": "Items for PR-3",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/PurchaseRequisitions/MyRequests?status=Converted%20to%20Tender",
+    "text": "QR code for PR-3",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/PurchaseRequisitions/MyRequests?status=Converted%20to%20Tender",
+    "text": "Details for PR-2",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/PurchaseRequisitions/MyRequests?status=Converted%20to%20Tender",
+    "text": "Items for PR-2",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/PurchaseRequisitions/MyRequests?status=Converted%20to%20Tender",
+    "text": "QR code for PR-2",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/PurchaseRequisitions/MyRequests?status=Converted%20to%20Tender",
+    "text": "PR-6 · Department QA",
+    "tag": "SMALL",
+    "cls": ""
+  },
+  {
+    "path": "/RequisitionReviews",
+    "text": "PR-5 · Department QA",
+    "tag": "SMALL",
+    "cls": ""
+  },
+  {
+    "path": "/RequisitionReviews",
+    "text": "PR-4 · Department QA",
+    "tag": "SMALL",
+    "cls": ""
+  },
+  {
+    "path": "/RequisitionReviews",
+    "text": "PR-3 · Department QA",
+    "tag": "SMALL",
+    "cls": ""
+  },
+  {
+    "path": "/RequisitionReviews",
+    "text": "PR-2 · Department QA",
+    "tag": "SMALL",
+    "cls": ""
+  },
+  {
+    "path": "/Clarifications?kind=tender&recordId=5",
+    "text": "Questions and responses involving your account.",
+    "tag": "P",
+    "cls": ""
+  },
+  {
+    "path": "/Profile?tab=information",
+    "text": "RequestingDepartment",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/Profile?tab=information",
+    "text": "RequestingDepartment@example.test",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/RequisitionReviews",
+    "text": "PR-1 · RequestingDepartment",
+    "tag": "SMALL",
+    "cls": ""
+  },
+  {
+    "path": "/PurchaseRequisitions/MyRequests?status=Under%20Review",
+    "text": "Details for PR-1",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/PurchaseRequisitions/MyRequests?status=Under%20Review",
+    "text": "Items for PR-1",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/PurchaseRequisitions/MyRequests?status=Under%20Review",
+    "text": "QR code for PR-1",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/PurchaseRequisitions/MyRequests?status=Under%20Review",
+    "text": "Start a clarification for PR-1",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/SourcingDashboard",
+    "text": "SourcingOfficer · Review requests, coordinate tenders, and check supplier bids.",
+    "tag": "P",
+    "cls": ""
+  },
+  {
+    "path": "/SourcingDashboard",
+    "text": "Jun 26: 0 requests, 0 tenders",
+    "tag": "DIV",
+    "cls": "admin-chart-month"
+  },
+  {
+    "path": "/SourcingDashboard",
+    "text": "Jul 26: 0 requests, 0 tenders",
+    "tag": "DIV",
+    "cls": "admin-chart-month"
+  },
+  {
+    "path": "/SourcingDashboard",
+    "text": "Aug 26: 0 requests, 0 tenders",
+    "tag": "DIV",
+    "cls": "admin-chart-month"
+  },
+  {
+    "path": "/SourcingDashboard",
+    "text": "Sep 26: 0 requests, 0 tenders",
+    "tag": "DIV",
+    "cls": "admin-chart-month"
+  },
+  {
+    "path": "/SourcingDashboard",
+    "text": "Oct 26: 0 requests, 0 tenders",
+    "tag": "DIV",
+    "cls": "admin-chart-month"
+  },
+  {
+    "path": "/SourcingDashboard",
+    "text": "Nov 26: 6 requests, 5 tenders",
+    "tag": "DIV",
+    "cls": "admin-chart-month"
+  },
+  {
+    "path": "/SourcingDashboard",
+    "text": "5 total",
+    "tag": "SPAN",
+    "cls": "department-status-total"
+  },
+  {
+    "path": "/RequisitionReviews",
+    "text": "View request PR-1",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/RequisitionReviews",
+    "text": "View request PR-2",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/RequisitionReviews",
+    "text": "View request PR-3",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/RequisitionReviews",
+    "text": "View request PR-4",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/RequisitionReviews",
+    "text": "View request PR-5",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/Suppliers?status=Approved",
+    "text": "Request a document from Browser Onboarding",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/Suppliers?status=Approved",
+    "text": "Request a document from Supplier3",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/AdminOperations/RequestDetails/6",
+    "text": "View tender Phase 6 Cancel",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/Tenders",
+    "text": "Bidding rounds for Phase 6 Cancel",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/Tenders",
+    "text": "QR code for Phase 6 Cancel",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/Tenders",
+    "text": "Invitations for Phase 6 Cancel",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/Tenders/Details/5",
+    "text": "Close bidding early",
+    "tag": "BUTTON",
+    "cls": "btn btn-outline-danger"
+  },
+  {
+    "path": "/Tenders",
+    "text": "Close bidding early for Phase 6 Cancel",
+    "tag": "BUTTON",
+    "cls": "btn btn-outline-danger"
+  },
+  {
+    "path": "/Tenders",
+    "text": "View tender Phase 6 Rounds 0",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/Tenders",
+    "text": "Bidding rounds for Phase 6 Rounds 0",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/Tenders",
+    "text": "QR code for Phase 6 Rounds 0",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/Tenders",
+    "text": "Invitations for Phase 6 Rounds 0",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/Tenders",
+    "text": "Assign committee for Phase 6 Rounds 0",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/Tenders",
+    "text": "15 Nov 2026 · 23:58",
+    "tag": "TIME",
+    "cls": ""
+  },
+  {
+    "path": "/Tenders",
+    "text": "View tender Phase 6 Award",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/Tenders",
+    "text": "15 Nov 2026 · 23:59",
+    "tag": "TIME",
+    "cls": ""
+  },
+  {
+    "path": "/Tenders",
+    "text": "View tender Phase 6 Rounds 1",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/Tenders",
+    "text": "View tender Phase 6 Rounds",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/Invitations",
+    "text": "Track invitations and supplier responses.",
+    "tag": "P",
+    "cls": ""
+  },
+  {
+    "path": "/Invitations",
+    "text": "Invitation pages",
+    "tag": "DIV",
+    "cls": "dept-filter-menu"
+  },
+  {
+    "path": "/Invitations?tenderId=5",
+    "text": "Phase 6 Cancel · Invitation #17",
+    "tag": "SMALL",
+    "cls": ""
+  },
+  {
+    "path": "/Invitations?tenderId=5",
+    "text": "View invitation 17",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/Invitations?tenderId=5",
+    "text": "Phase 6 Cancel · Invitation #16",
+    "tag": "SMALL",
+    "cls": ""
+  },
+  {
+    "path": "/Invitations?tenderId=5",
+    "text": "View invitation 16",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/Invitations?tenderId=5",
+    "text": "Phase 6 Cancel · Invitation #15",
+    "tag": "SMALL",
+    "cls": ""
+  },
+  {
+    "path": "/Invitations?tenderId=5",
+    "text": "View invitation 15",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/Invitations",
+    "text": "Phase 6 Rounds 0 · Invitation #14",
+    "tag": "SMALL",
+    "cls": ""
+  },
+  {
+    "path": "/Invitations",
+    "text": "View invitation 14",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/Compliance/Pending",
+    "text": "Review and compare offers for Phase 6 Award",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/Compliance/Pending",
+    "text": "Review and compare offers for Phase 6 Rounds",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/Compliance/Pending",
+    "text": "Review and compare offers for Phase 6 Rounds 1",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/Compliance/Pending",
+    "text": "Review and compare offers for Phase 6 Cancel",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/PurchaseRequisitions/Details/6?panel=overview",
+    "text": "SourcingOfficer",
+    "tag": "SMALL",
+    "cls": "subtle"
+  },
+  {
+    "path": "/Profile?tab=information",
+    "text": "SourcingOfficer@example.test",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/Clarifications/Create?kind=supplier&recordId=4",
+    "text": "Browser Onboarding · Supplier application",
+    "tag": "P",
+    "cls": ""
+  },
+  {
+    "path": "/SupplierWorkspace",
+    "text": "Phase 6 Award · Respond by",
+    "tag": "P",
+    "cls": ""
+  },
+  {
+    "path": "/SupplierWorkspace",
+    "text": "15 Nov 2026 · 22:28 UTC",
+    "tag": "TIME",
+    "cls": ""
+  },
+  {
+    "path": "/SupplierRegistration/RegistrationStatus?workspace=true&panel=overview",
+    "text": "BROWSER",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/SupplierRegistration/RegistrationStatus?workspace=true&panel=overview",
+    "text": "Supplier@example.test",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/SupplierRegistration/RegistrationStatus?workspace=true&panel=overview",
+    "text": "Test",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/SupplierRegistration/RegistrationStatus?workspace=true&panel=documents",
+    "text": "0 uploaded",
+    "tag": "P",
+    "cls": ""
+  },
+  {
+    "path": "/SupplierWorkspace/Invitations",
+    "text": "View invitation for Phase 6 Cancel",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/SupplierWorkspace/Invitations",
+    "text": "View invitation for Phase 6 Rounds 0",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/SupplierWorkspace/Invitations",
+    "text": "View invitation for Phase 6 Rounds 1",
+    "tag": "A",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/Notifications",
+    "text": "Tender invitation · Round 1",
+    "tag": "SPAN",
+    "cls": ""
+  },
+  {
+    "path": "/Notifications",
+    "text": "Open notification: Tender invitation · Round 1",
+    "tag": "BUTTON",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/Notifications",
+    "text": "Open notification",
+    "tag": "BUTTON",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/Notifications",
+    "text": "Tender invitation · Round 3",
+    "tag": "SPAN",
+    "cls": ""
+  },
+  {
+    "path": "/Notifications",
+    "text": "Open notification: Tender invitation · Round 3",
+    "tag": "BUTTON",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/Notifications",
+    "text": "Tender invitation · Round 2",
+    "tag": "SPAN",
+    "cls": ""
+  },
+  {
+    "path": "/Notifications",
+    "text": "Open notification: Tender invitation · Round 2",
+    "tag": "BUTTON",
+    "cls": "record-icon-action"
+  },
+  {
+    "path": "/Profile?tab=information",
+    "text": "Company",
+    "tag": "DT",
+    "cls": ""
+  },
+  {
+    "path": "/Profile?tab=information",
+    "text": "Supplier",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/Tenders/AssignCommittee/4",
+    "text": "SourcingManager",
+    "tag": "DIV",
+    "cls": "fw-semibold"
+  },
+  {
+    "path": "/Profile?tab=information",
+    "text": "SourcingManager@example.test",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/Tenders/AssignCommittee/4",
+    "text": "TechnicalCommittee",
+    "tag": "DIV",
+    "cls": "fw-semibold"
+  },
+  {
+    "path": "/Profile?tab=information",
+    "text": "TechnicalCommittee@example.test",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/Profile?tab=information",
+    "text": "TopCommittee",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/Profile?tab=information",
+    "text": "TopCommittee@example.test",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/Employees/Create",
+    "text": "name@example.com",
+    "tag": "INPUT",
+    "cls": "form-control"
+  },
+  {
+    "path": "/Departments/Details/1",
+    "text": "No description provided.",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/Suppliers/Details/4?panel=documents",
+    "text": "Supplier documents",
+    "tag": "STRONG",
+    "cls": ""
+  },
+  {
+    "path": "/Suppliers/Suspend/4",
+    "text": "Suspend supplier",
+    "tag": "STRONG",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/RequestDetails/6",
+    "text": "Browser QA · Converted to Tender",
+    "tag": "P",
+    "cls": ""
+  },
+  {
+    "path": "/PurchaseRequisitions/Details/6?panel=overview",
+    "text": "Synthetic purchase",
+    "tag": "P",
+    "cls": "request-prose mb-0"
+  },
+  {
+    "path": "/PurchaseRequisitions/Details/6?panel=overview",
+    "text": "Normal",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/PurchaseRequisitions/Details/6?panel=overview",
+    "text": "Approved for browser QA",
+    "tag": "P",
+    "cls": "request-prose mb-0"
+  },
+  {
+    "path": "/RequisitionReviews/Details/1",
+    "text": "2 each",
+    "tag": "SPAN",
+    "cls": "department-status-count"
+  },
+  {
+    "path": "/PurchaseRequisitions/Details/6?panel=items",
+    "text": "Synthetic specification",
+    "tag": "DD",
+    "cls": "request-prose"
+  },
+  {
+    "path": "/AdminOperations/RequestQr/6",
+    "text": "http://localhost:51517/AdminOperations/RequestDetails/6",
+    "tag": "A",
+    "cls": "d-block text-break small"
+  },
+  {
+    "path": "/AdminOperations/Tender/5?panel=overview",
+    "text": "Tender summary",
+    "tag": "STRONG",
+    "cls": ""
+  },
+  {
+    "path": "/Tenders/Details/5",
+    "text": "Synthetic tender",
+    "tag": "P",
+    "cls": "record-terms"
+  },
+  {
+    "path": "/AdminOperations/Tender/5?panel=invitations",
+    "text": "Tender invitations",
+    "tag": "STRONG",
+    "cls": ""
+  },
+  {
+    "path": "/AdminOperations/Tender/5",
+    "text": "Invitations",
+    "tag": "H2",
+    "cls": "mb-0"
+  },
+  {
+    "path": "/AdminOperations/TenderQr/5",
+    "text": "http://localhost:51517/AdminOperations/Tender/5",
+    "tag": "A",
+    "cls": "d-block text-break small"
+  },
+  {
+    "path": "/AdminOperations/Tender/5",
+    "text": "Open · Browser QA",
+    "tag": "P",
+    "cls": ""
+  },
+  {
+    "path": "/PurchaseRequisitions/Details/6?panel=overview",
+    "text": "Browser QA · Requested by Department QA",
+    "tag": "P",
+    "cls": ""
+  },
+  {
+    "path": "/PurchaseRequisitions/Details/6?panel=qr",
+    "text": "Request QR code",
+    "tag": "STRONG",
+    "cls": ""
+  },
+  {
+    "path": "/PurchaseRequisitions/Details/6?panel=qr",
+    "text": "http://localhost:51517/PurchaseRequisitions/Details/6",
+    "tag": "A",
+    "cls": "d-block text-break small"
+  },
+  {
+    "path": "/RequisitionReviews/Details/1",
+    "text": "Browser QA · RequestingDepartment",
+    "tag": "P",
+    "cls": ""
+  },
+  {
+    "path": "/RequisitionReviews/Details/1",
+    "text": "Unassigned",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/RequisitionReviews/Details/1",
+    "text": "Edited in the dashboard modal",
+    "tag": "P",
+    "cls": "request-prose mb-0"
+  },
+  {
+    "path": "/RequisitionReviews/Details/1",
+    "text": "Synthetic item A",
+    "tag": "H3",
+    "cls": ""
+  },
+  {
+    "path": "/RequisitionReviews/Details/1",
+    "text": "Synthetic specifications",
+    "tag": "P",
+    "cls": "request-prose mb-0"
+  },
+  {
+    "path": "/RequisitionReviews/Details/1",
+    "text": "Synthetic item B",
+    "tag": "H3",
+    "cls": ""
+  },
+  {
+    "path": "/Tenders/Create",
+    "text": "Open date (UTC)",
+    "tag": "LABEL",
+    "cls": "form-label"
+  },
+  {
+    "path": "/Tenders/Create",
+    "text": "Close date (UTC)",
+    "tag": "LABEL",
+    "cls": "form-label"
+  },
+  {
+    "path": "/Tenders/Details/5",
+    "text": "Browser QA · Phase 6 Cancel requisition",
+    "tag": "P",
+    "cls": ""
+  },
+  {
+    "path": "/Tenders/Details/5",
+    "text": "15 Nov 2026 · 23:59 UTC",
+    "tag": "TIME",
+    "cls": ""
+  },
+  {
+    "path": "/Tenders/Details/5?panel=rounds",
+    "text": "Bidding rounds",
+    "tag": "STRONG",
+    "cls": ""
+  },
+  {
+    "path": "/Tenders/Details/5",
+    "text": "0 distinct eligible suppliers · 3 required · 2 rounds remaining",
+    "tag": "P",
+    "cls": ""
+  },
+  {
+    "path": "/Tenders/Details/5",
+    "text": "Reopening is available only after a round closes.",
+    "tag": "P",
+    "cls": "subtle"
+  },
+  {
+    "path": "/Tenders/Details/5",
+    "text": "Not closed",
+    "tag": "SMALL",
+    "cls": ""
+  },
+  {
+    "path": "/Tenders/Details/5?panel=qr",
+    "text": "Tender QR code",
+    "tag": "STRONG",
+    "cls": ""
+  },
+  {
+    "path": "/Tenders/Details/5?panel=qr",
+    "text": "http://localhost:51517/Tenders/Details/5",
+    "tag": "A",
+    "cls": "d-block text-break small"
+  },
+  {
+    "path": "/Tenders/AssignCommittee/4",
+    "text": "Round 3 requires 1 eligible supplier bids.",
+    "tag": "LI",
+    "cls": ""
+  },
+  {
+    "path": "/Tenders/AssignCommittee/4",
+    "text": "The committee includes three evaluation employees and the employee who created the purchase request.",
+    "tag": "P",
+    "cls": ""
+  },
+  {
+    "path": "/Tenders/AssignCommittee/4",
+    "text": "SourcingManager\n· Browser QA",
+    "tag": "SMALL",
+    "cls": "text-muted"
+  },
+  {
+    "path": "/Tenders/AssignCommittee/4",
+    "text": "Sourcing Manager",
+    "tag": "SPAN",
+    "cls": "badge bg-primary"
+  },
+  {
+    "path": "/Tenders/AssignCommittee/4",
+    "text": "Fixed",
+    "tag": "SPAN",
+    "cls": "badge bg-secondary"
+  },
+  {
+    "path": "/Tenders/AssignCommittee/4",
+    "text": "TechnicalCommittee\n· Browser QA",
+    "tag": "SMALL",
+    "cls": "text-muted"
+  },
+  {
+    "path": "/Tenders/AssignCommittee/4",
+    "text": "Technical Representative",
+    "tag": "SPAN",
+    "cls": "badge bg-primary"
+  },
+  {
+    "path": "/Tenders/AssignCommittee/4",
+    "text": "FinancialCommittee\n· Browser QA",
+    "tag": "SMALL",
+    "cls": "text-muted"
+  },
+  {
+    "path": "/Tenders/AssignCommittee/4",
+    "text": "Financial Representative",
+    "tag": "SPAN",
+    "cls": "badge bg-primary"
+  },
+  {
+    "path": "/Tenders/AssignCommittee/4",
+    "text": "Test\n· Browser QA",
+    "tag": "SMALL",
+    "cls": "text-muted"
+  },
+  {
+    "path": "/Tenders/AssignCommittee/4",
+    "text": "Department Representative",
+    "tag": "SPAN",
+    "cls": "badge bg-primary"
+  },
+  {
+    "path": "/Tenders/AssignCommittee/4",
+    "text": "Requester",
+    "tag": "SPAN",
+    "cls": "badge bg-info text-dark"
+  },
+  {
+    "path": "/Tenders/AssignCommittee/4",
+    "text": "Assign committee and start evaluation",
+    "tag": "BUTTON",
+    "cls": "btn btn-primary"
+  },
+  {
+    "path": "/Invitations/Create",
+    "text": "Select a tender and load its eligible suppliers.",
+    "tag": "P",
+    "cls": "subtle mb-0"
+  },
+  {
+    "path": "/Invitations/Details/17",
+    "text": "No response yet",
+    "tag": "DD",
+    "cls": ""
+  },
+  {
+    "path": "/Tenders/Criteria/5",
+    "text": "Phase 6 Cancel · Set the proposed weights before publication.",
+    "tag": "P",
+    "cls": ""
+  },
+  {
+    "path": "/Tenders/Criteria/5",
+    "text": "Published criteria",
+    "tag": "H2",
+    "cls": ""
+  },
+  {
+    "path": "/Tenders/Criteria/5",
+    "text": "Reviewers can use these weights or save their own selection and weights.",
+    "tag": "P",
+    "cls": ""
+  },
+  {
+    "path": "/Tenders/Criteria/5",
+    "text": "Technical criteria",
+    "tag": "SECTION",
+    "cls": "criterion-category"
+  },
+  {
+    "path": "/Tenders/Criteria/5",
+    "text": "Technical",
+    "tag": "H3",
+    "cls": "h6 mb-0"
+  },
+  {
+    "path": "/Tenders/Criteria/5",
+    "text": "Quality",
+    "tag": "STRONG",
+    "cls": ""
+  },
+  {
+    "path": "/Tenders/Criteria/5",
+    "text": "Financial criteria",
+    "tag": "SECTION",
+    "cls": "criterion-category"
+  },
+  {
+    "path": "/Tenders/Criteria/5",
+    "text": "Financial",
+    "tag": "H3",
+    "cls": "h6 mb-0"
+  },
+  {
+    "path": "/Clarifications?kind=tender&recordId=5",
+    "text": "There are no eligible recipients for a new clarification at this stage.",
+    "tag": "P",
+    "cls": "subtle"
+  }
+]

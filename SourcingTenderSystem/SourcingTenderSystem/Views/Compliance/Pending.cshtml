@@ -1,10 +1,10 @@
 @model List<CompliancePendingRow>
-@{ ViewData["Title"] = "Bid compliance"; }
-<header class="page-heading stms-hero"><div><p class="eyebrow">SOURCING WORKSPACE</p><h1>Bid compliance</h1><p>Close bidding before reviewing offers and sending a tender to evaluation.</p></div></header>
+@{ ViewData["Title"] = L.T("Bid compliance"); }
+<header class="page-heading stms-hero"><div><p class="eyebrow">@L.T("SOURCING WORKSPACE")</p><h1>@L.T("Bid compliance")</h1><p>@L.T("Close bidding before reviewing offers and sending a tender to evaluation.")</p></div></header>
 <partial name="~/Views/Bids/_Alerts.cshtml" />
-<section class="surface directory dept-directory" data-directory aria-label="Compliance queue">
-    <div class="dept-directory-heading"><h2>Compliance queue</h2><p>Open and closed tenders ready for your next action.</p></div>
-    @if (Model.Count == 0) { <div class="empty-state"><h2>No tenders in the compliance queue</h2></div> }
+<section class="surface directory dept-directory" data-directory aria-label="@L.T("Compliance queue")">
+    <div class="dept-directory-heading"><h2>@L.T("Compliance queue")</h2><p>@L.T("Open and closed tenders ready for your next action.")</p></div>
+    @if (Model.Count == 0) { <div class="empty-state"><h2>@L.T("No tenders in the compliance queue")</h2></div> }
     else
     {
         <partial name="_ListFilters" model='@("Search compliance queue", Model.Select(r => r.Tender.Status))' />
@@ -15,9 +15,9 @@
             var isOpen = row.Tender.Status == "Open";
             var state = isOpen ? "Open" : row.ReadyForEvaluation ? "Ready for evaluation" : row.SubmittedCount > 0 ? $"{row.SubmittedCount} to check" : "No compliant bid";
             <article class="record-card" data-record data-status="@row.Tender.Status">
-                <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("shield")' /></span><span>@row.Tender.Title<small>Tender #@row.Tender.Id · Closes @row.Tender.CloseDate.ToString("dd MMM yyyy HH:mm") UTC</small></span></div>
-                <dl class="record-facts"><div><dt>State</dt><dd><partial name="_Status" model="state" /></dd></div><div><dt>To check</dt><dd>@(isOpen ? "—" : row.SubmittedCount.ToString())</dd></div><div><dt>Compliant</dt><dd>@(isOpen ? "—" : row.CompliantCount.ToString())</dd></div><div><dt>Non-compliant</dt><dd>@(isOpen ? "—" : row.NonCompliantCount.ToString())</dd></div></dl>
-                <div class="record-action"><a class="record-icon-action" data-workspace-dialog="details" asp-action="Review" asp-route-tenderId="@row.Tender.Id" aria-label="Review and compare offers for @row.Tender.Title" data-tooltip="Review and compare"><partial name="_Icon" model='@("eye")' /></a></div>
+                <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("shield")' /></span><span>@row.Tender.Title<small>@L.F("Tender #{0}", row.Tender.Id) · @L.F("Closes {0} (UTC)", row.Tender.CloseDate.ToString("dd MMM yyyy HH:mm", L.DisplayCulture))</small></span></div>
+                <dl class="record-facts"><div><dt>@L.T("State")</dt><dd><partial name="_Status" model="state" /></dd></div><div><dt>@L.T("To check")</dt><dd>@(isOpen ? "—" : row.SubmittedCount.ToString())</dd></div><div><dt>@L.T("Compliant")</dt><dd>@(isOpen ? "—" : row.CompliantCount.ToString())</dd></div><div><dt>@L.T("Non-compliant")</dt><dd>@(isOpen ? "—" : row.NonCompliantCount.ToString())</dd></div></dl>
+                <div class="record-action"><a class="record-icon-action" data-workspace-dialog="details" asp-action="Review" asp-route-tenderId="@row.Tender.Id" aria-label="@L.F("Review and compare offers for {0}", row.Tender.Title)" data-tooltip="@L.T("Review and compare")"><partial name="_Icon" model='@("eye")' /></a></div>
             </article>
         }
         </div>

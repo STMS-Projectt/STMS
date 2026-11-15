@@ -39,18 +39,20 @@
     var fragment = (workspace || onboarding) && Context.Request.Headers["X-STMS-Fragment"] == "workspace";
     Context.Response.Headers.Append("Vary", "X-STMS-Fragment");
     if (fragment) Context.Response.Headers.CacheControl = "private, no-store";
-    var title = ViewData["Title"]?.ToString();
+    var title = L.T(ViewData["Title"]?.ToString());
+    var stylesheet = L.Arabic ? "~/lib/bootstrap/dist/css/bootstrap.rtl.min.css" : "~/lib/bootstrap/dist/css/bootstrap.min.css";
 }
 
-@if (!fragment) { @Html.Raw("<!DOCTYPE html><html lang='en'>") }
+@if (!fragment) { @Html.Raw($"<!DOCTYPE html><html lang='{L.Language}' dir='{L.Direction}'>") }
 @if (!fragment)
 {
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@title · Sourcing Desk</title>
+    <title>@title · @L.T("Sourcing Desk")</title>
+    <partial name="_DisplayHead" />
     <link rel="icon" type="image/svg+xml" href="~/sourcing-desk.svg" asp-append-version="true">
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="@stylesheet" asp-append-version="true">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true">
 
     @if (department)
@@ -60,6 +62,7 @@
     <link rel="stylesheet" href="~/css/workspace.css" asp-append-version="true">
     <link rel="stylesheet" href="~/css/stms-design.css" asp-append-version="true">
     <link rel="stylesheet" href="~/css/workspace-polish.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/display-preferences.css" asp-append-version="true">
 </head>
 }
 
@@ -69,8 +72,8 @@
         (!workspace && (controller is "Account" or "SupplierRegistration") ? " stms-auth-portal" : "");
     @Html.Raw("<body class='" + classes + "'>")
 }
-<div data-workspace-frame="@workspaceKey" data-page-title="@title · Sourcing Desk" hidden></div>
-    <a class="skip-link" href="#main">Skip to content</a>
+<div data-workspace-frame="@workspaceKey" data-page-title="@title · @L.T("Sourcing Desk")" hidden></div>
+    <a class="skip-link" href="#main">@L.T("Skip to content")</a>
 
     @if (sourcing)
     {
@@ -105,26 +108,27 @@
                     <a class="brand" asp-controller="Home" asp-action="Index">
                         <img src="~/images/stms-cube.svg" alt="" />
                         <strong>STMS</strong>
-                        <span>Sourcing &amp; Tender<br />Management System</span>
+                        <span>@L.T("Sourcing & Tender")<br />@L.T("Management System")</span>
                     </a>
 
-                    <nav class="portal-nav" aria-label="Account">
+                    <nav class="portal-nav" aria-label="@L.T("Account")">
+                        <partial name="_DisplayPreferences" />
                         @if (controller != "SupplierRegistration" && signedIn && !Roles.EmployeeRoles.Any(User.IsInRole))
                         {
                             <a class="portal-link"
                                asp-controller="SupplierRegistration"
-                               asp-action="RegistrationStatus">My application</a>
+                               asp-action="RegistrationStatus">@L.T("My application")</a>
                         }
 
                         @if (!signedIn)
                         {
                             <a class="portal-link"
                                asp-controller="Account"
-                               asp-action="Login" aria-current="@(controller == "Account" && action == "Login" ? "page" : null)">Sign in</a>
+                               asp-action="Login" aria-current="@(controller == "Account" && action == "Login" ? "page" : null)">@L.T("Sign in")</a>
 
                             <a class="btn btn-primary portal-register"
                                asp-controller="SupplierRegistration"
-                               asp-action="Register" aria-current="@(controller == "SupplierRegistration" && action == "Register" ? "page" : null)">Supplier registration</a>
+                               asp-action="Register" aria-current="@(controller == "SupplierRegistration" && action == "Register" ? "page" : null)">@L.T("Supplier registration")</a>
                         }
 
                         @if (controller != "SupplierRegistration") { <partial name="_LoginPartial" /> }
@@ -138,11 +142,11 @@
             {
                 <div class="notice notice-success" role="status">
                     <partial name="_Icon" model='@("check")' />
-                    <span>@message</span>
+                    <span>@L.T(message)</span>
                     <button class="icon-button"
                             type="button"
                             data-dismiss-notice
-                            aria-label="Dismiss notification">
+                            aria-label="@L.T("Dismiss notification")">
                         <partial name="_Icon" model='@("close")' />
                     </button>
                 </div>
@@ -152,12 +156,12 @@
         </main>
 
         <footer class="site-footer stms-footer">
-            <span><img src="~/images/stms-cube.svg" alt="" /> STMS <small>Sourcing &amp; Tender Management System</small></span>
+            <span><img src="~/images/stms-cube.svg" alt="" /> STMS <small>@L.T("Sourcing & Tender Management System")</small></span>
             <div class="stms-footer-actions">
-                <a asp-controller="Home" asp-action="Privacy">Privacy</a>
+                <a asp-controller="Home" asp-action="Privacy">@L.T("Privacy")</a>
                 @if (!fragment)
                 {
-                    <button class="stms-scroll-top" type="button" data-scroll-top aria-label="Back to top" title="Back to top" hidden><partial name="_Icon" model='@("back")' /></button>
+                    <button class="stms-scroll-top" type="button" data-scroll-top aria-label="@L.T("Back to top")" title="@L.T("Back to top")" hidden><partial name="_Icon" model='@("back")' /></button>
                 }
             </div>
         </footer>
@@ -177,28 +181,28 @@
             <dialog class="workspace-dialog sourcing-dialog" id="workspace-dialog" aria-labelledby="workspace-dialog-title">
                 <div class="workspace-dialog-bar">
                     <div class="workspace-dialog-heading">
-                        <button type="button" class="icon-button" data-dialog-back aria-label="Back to previous record" title="Back" hidden><partial name="_Icon" model='@("back")' /></button>
+                        <button type="button" class="icon-button" data-dialog-back aria-label="@L.T("Back to previous record")" title="@L.T("Back")" hidden><partial name="_Icon" model='@("back")' /></button>
                         <div class="workspace-dialog-caption">
-                            <span class="workspace-dialog-context" data-dialog-context data-root-context="@workspaceLabel">@workspaceLabel</span>
-                            <strong id="workspace-dialog-title" tabindex="-1">Record</strong>
+                            <span class="workspace-dialog-context" data-dialog-context data-root-context="@L.T(workspaceLabel)">@L.T(workspaceLabel)</span>
+                            <strong id="workspace-dialog-title" tabindex="-1">@L.T("Record")</strong>
                         </div>
                     </div>
-                    <button type="button" class="icon-button" data-dialog-close aria-label="Close dialog" title="Close"><partial name="_Icon" model='@("close")' /></button>
+                    <button type="button" class="icon-button" data-dialog-close aria-label="@L.T("Close dialog")" title="@L.T("Close")"><partial name="_Icon" model='@("close")' /></button>
                 </div>
-                <div class="workspace-dialog-loader" data-dialog-loader hidden role="status"><span class="workspace-spinner" aria-hidden="true"></span><span data-dialog-loader-label>Loading…</span></div>
+                <div class="workspace-dialog-loader" data-dialog-loader hidden role="status"><span class="workspace-spinner" aria-hidden="true"></span><span data-dialog-loader-label>@L.T("Loading…")</span></div>
                 <div data-dialog-content></div>
             </dialog>
             <dialog id="workspace-confirm" class="workspace-dialog workspace-confirm sourcing-confirm" aria-labelledby="workspace-confirm-title">
                 <form method="dialog" class="p-4">
-                    <h2 id="workspace-confirm-title">Confirm action</h2>
+                    <h2 id="workspace-confirm-title">@L.T("Confirm action")</h2>
                     <p class="mt-2" data-confirm-question></p>
                     <div class="button-row justify-content-end">
-                        <button class="btn btn-outline-secondary" value="cancel" autofocus>Cancel</button>
-                        <button class="btn btn-primary" value="confirm">Continue</button>
+                        <button class="btn btn-outline-secondary" value="cancel" autofocus>@L.T("Cancel")</button>
+                        <button class="btn btn-primary" value="confirm">@L.T("Continue")</button>
                     </div>
                 </form>
             </dialog>
-            <div class="workspace-progress" hidden role="status" aria-label="Loading"></div>
+            <div class="workspace-progress" hidden role="status" aria-label="@L.T("Loading")"></div>
             <div class="visually-hidden" aria-live="polite" data-workspace-status></div>
             @if (workspace) { <script src="~/js/stms-shell.js" asp-append-version="true" defer></script> }
             <script src="~/js/workspace.js" asp-append-version="true" defer></script>

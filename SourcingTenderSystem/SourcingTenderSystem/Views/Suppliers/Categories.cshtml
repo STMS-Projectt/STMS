@@ -1,21 +1,21 @@
 @model SupplierProfile
 @{
-    ViewData["Title"] = "Edit supplier categories";
+    ViewData["Title"] = L.T("Edit supplier categories");
     var categories = (IReadOnlyList<Category>)ViewBag.Categories;
     var selected = (ISet<int>?)ViewBag.SelectedCategoryIds ?? Model.Categories.Select(c => c.Id).ToHashSet();
 }
 <header class="page-heading admin-action-heading">
     <span class="icon-tile tone-teal"><partial name="_Icon" model='@("supplier")' /></span>
-    <div><p class="eyebrow">SUPPLIER DIRECTORY</p><h1>Edit supplier categories</h1><p>@Model.CompanyName</p></div>
+    <div><p class="eyebrow">@L.T("SUPPLIER DIRECTORY")</p><h1>@L.T("Edit supplier categories")</h1><p>@Model.CompanyName</p></div>
 </header>
 <form class="surface form-card admin-action-card supplier-category-form" asp-action="Categories" asp-route-id="@Model.Id" method="post">
     <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
     <fieldset aria-describedby="category-guidance">
-        <legend>Supply categories</legend>
-        <p class="field-hint" id="category-guidance">Choose one or more categories. They determine which tenders this supplier can be invited to.</p>
+        <legend>@L.T("Supply categories")</legend>
+        <p class="field-hint" id="category-guidance">@L.T("Choose one or more categories. They determine which tenders this supplier can be invited to.")</p>
         @if (categories.Count == 0)
         {
-            <p class="callout">Create a supply category before assigning it to this supplier.</p>
+            <p class="callout">@L.T("Create a supply category before assigning it to this supplier.")</p>
         }
         <div class="supplier-category-grid">
             @foreach (var category in categories)
@@ -27,5 +27,5 @@
             }
         </div>
     </fieldset>
-    <div class="form-actions"><a class="btn btn-outline-secondary" asp-action="Details" asp-route-id="@Model.Id">Cancel</a><button type="submit" class="btn btn-primary" disabled="@(categories.Count == 0)"><partial name="_Icon" model='@("check")' /> Save categories</button></div>
+    <div class="form-actions"><a class="btn btn-outline-secondary" asp-action="Details" asp-route-id="@Model.Id">@L.T("Cancel")</a><button type="submit" class="btn btn-primary" disabled="@(categories.Count == 0)"><partial name="_Icon" model='@("check")' /> @L.T("Save categories")</button></div>
 </form>

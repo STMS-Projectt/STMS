@@ -1,8 +1,8 @@
 @model ErrorViewModel
-@{ ViewData["Title"] = "Something went wrong"; }
+@{ ViewData["Title"] = L.T("Something went wrong"); }
 <section class="surface detail-card center-card">
-    <span class="icon-tile tone-amber mb-3"><partial name="_Icon" model='@("warning")' /></span><h1>Something went wrong</h1>
-    <p class="subtle">We couldn’t complete that request. Return to the home page and try again.</p>
-    @if (Model?.ShowRequestId == true) { <p class="subtle">Reference: <code>@Model.RequestId</code></p> }
-    <a class="btn btn-primary" asp-controller="Home" asp-action="Index">Return to the home page</a>
+    <span class="icon-tile tone-amber mb-3"><partial name="_Icon" model='@("warning")' /></span><h1>@L.T("Something went wrong")</h1>
+    <p class="subtle">@L.T("We couldn’t complete that request. Return to the home page and try again.")</p>
+    @if (Model?.ShowRequestId == true) { <p class="subtle">@L.T("Reference:") <code>@Model.RequestId</code></p> }
+    <a class="btn btn-primary" asp-controller="Home" asp-action="Index">@L.T("Return to the home page")</a>
 </section>

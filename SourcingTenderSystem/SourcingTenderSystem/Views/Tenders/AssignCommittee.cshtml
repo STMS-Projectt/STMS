@@ -1,13 +1,13 @@
 @model SourcingTenderSystem.Controllers.AssignCommitteeViewModel
 
 @{
-    ViewData["Title"] = "Assign Evaluation Committee";
+    ViewData["Title"] = L.T("Assign Evaluation Committee");
 }
 
-<header class="page-heading admin-action-heading"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("file")' /></span><div><p class="eyebrow">SOURCING WORKSPACE</p><h1>Assign Evaluation Committee</h1><p>Review the proposed members before confirming the committee.</p></div></header>
+<header class="page-heading admin-action-heading"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("file")' /></span><div><p class="eyebrow">@L.T("SOURCING WORKSPACE")</p><h1>@L.T("Assign Evaluation Committee")</h1><p>@L.T("Review the proposed members before confirming the committee.")</p></div></header>
 <p class="text-muted mb-3">
-    Tender: <strong>@Model.TenderTitle</strong>
-    &middot; Requesting department: <strong>@Model.DepartmentName</strong>
+    @L.T("Tender:") <strong>@Model.TenderTitle</strong>
+    &middot; @L.T("Requesting department:") <strong>@Model.DepartmentName</strong>
 </p>
 
 @if (Model.Problems.Any())
@@ -16,7 +16,7 @@
         <ul class="mb-0">
             @foreach (var problem in Model.Problems)
             {
-                <li>@problem</li>
+                <li>@L.SystemMessage(problem)</li>
             }
         </ul>
     </div>
@@ -25,10 +25,10 @@
 <div class="row">
     <div class="col-lg-8">
         <p>
-            The committee includes three evaluation employees and the employee who created the purchase request.
+            @L.T("The committee includes three evaluation employees and the employee who created the purchase request.")
             @if (Model.AlreadyAssigned)
             {
-                <span class="badge bg-success ms-1">Already assigned</span>
+                <span class="badge bg-success ms-1">@L.T("Already assigned")</span>
             }
         </p>
 
@@ -47,9 +47,9 @@
                         </small>
                     </div>
                     <div class="text-end">
-                        <span class="badge bg-primary">@member.Role</span>
+                        <span class="badge bg-primary">@L.T(member.Role)</span>
                         <span class="badge @(member.IsFixed ? "bg-secondary" : "bg-info text-dark")">
-                            @(member.IsFixed ? "Fixed" : "Requester")
+                            @L.T(member.IsFixed ? "Fixed" : "Requester")
                         </span>
                     </div>
                 </div>
@@ -58,18 +58,18 @@
 
         @if (!Model.IsOpen)
         {
-            <p class="subtle">Assigning the committee starts evaluation after the minimum offer count and compliance checks are complete.</p>
+            <p class="subtle">@L.T("Assigning the committee starts evaluation after the minimum offer count and compliance checks are complete.")</p>
         }
         @if (TempData["Error"] is string error)
         {
-            <div class="alert alert-warning" role="alert">@error</div>
+            <div class="alert alert-warning" role="alert">@L.T(error)</div>
         }
         <form asp-action="AssignCommittee" asp-route-id="@Model.TenderId" method="post">
             <div class="d-flex gap-2">
                 <button type="submit" class="btn btn-primary" disabled="@Model.Problems.Any()">
-                    @(Model.IsOpen ? "Update committee" : "Assign committee and start evaluation")
+                    @L.T(Model.IsOpen ? "Update committee" : "Assign committee and start evaluation")
                 </button>
-                <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                <a asp-action="Index" class="btn btn-outline-secondary">@L.T("Cancel")</a>
             </div>
         </form>
     </div>

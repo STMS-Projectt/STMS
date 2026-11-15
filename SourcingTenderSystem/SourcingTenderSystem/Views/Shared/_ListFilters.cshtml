@@ -3,17 +3,17 @@
     @{ var statuses = Model.Statuses.Where(s => !string.IsNullOrWhiteSpace(s)).Distinct().OrderBy(s => s).ToList(); }
     @if (statuses.Count > 1)
     {
-        <div class="directory-status-options" role="group" aria-label="Filter by status">
-            <button type="button" data-status-choice="" aria-pressed="true">All statuses</button>
-            @foreach (var status in statuses) { <button type="button" data-status-choice="@status" aria-pressed="false">@status</button> }
+        <div class="directory-status-options" role="group" aria-label="@L.T("Filter by status")">
+            <button type="button" data-status-choice="" aria-pressed="true">@L.T("All statuses")</button>
+            @foreach (var status in statuses) { <button type="button" data-status-choice="@status" aria-pressed="false">@L.T(status)</button> }
         </div>
     }
     <div class="directory-toolbar dept-filters">
         <div class="directory-search">
-            <label class="search-box"><partial name="_Icon" model='@("search")' /><span class="visually-hidden">@Model.Label</span><input class="form-control" type="search" data-filter-search placeholder="@Model.Label" /></label>
+            <label class="search-box"><partial name="_Icon" model='@("search")' /><span class="visually-hidden">@L.T(Model.Label)</span><input class="form-control" type="search" data-filter-search placeholder="@L.T(Model.Label)" /></label>
             <partial name="_DirectoryVoice" />
         </div>
-        <button type="button" class="btn btn-outline-secondary" data-filter-reset>Reset</button>
+        <button type="button" class="btn btn-outline-secondary" data-filter-reset>@L.T("Reset")</button>
         <span class="result-count" data-result-count aria-live="polite"></span>
     </div>
 </div>

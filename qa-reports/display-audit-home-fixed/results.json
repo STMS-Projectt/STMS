@@ -1,0 +1,31 @@
+{
+  "results": [
+    {
+      "id": "AR-dark-home-visible",
+      "status": "PASS"
+    }
+  ],
+  "errors": [],
+  "http": [
+    {
+      "path": "/",
+      "status": 200
+    },
+    {
+      "path": "/home/assets/contact-team.jpg",
+      "status": 200
+    },
+    {
+      "path": "/",
+      "status": 200
+    },
+    {
+      "path": "/home/assets/contact-team.jpg",
+      "status": 200
+    },
+    {
+      "path": "/home/assets/video/our-story.mp4",
+      "status": 404
+    }
+  ]
+}

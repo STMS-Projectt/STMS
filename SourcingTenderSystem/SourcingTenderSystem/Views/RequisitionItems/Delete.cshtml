@@ -1,11 +1,11 @@
 @model PurchaseRequisitionItem
-@{ ViewData["Title"] = "Remove item"; }
-<a class="back-link" asp-controller="PurchaseRequisitions" asp-action="Details" asp-route-id="@Model.PurchaseRequisitionId"><partial name="_Icon" model='@("back")' /> Request details</a>
-<header class="page-heading stms-hero"><div><p class="eyebrow">REQUEST PR-@Model.PurchaseRequisitionId</p><h1>Remove item</h1></div></header>
+@{ ViewData["Title"] = L.T("Remove item"); }
+<a class="back-link" asp-controller="PurchaseRequisitions" asp-action="Details" asp-route-id="@Model.PurchaseRequisitionId"><partial name="_Icon" model='@("back")' /> @L.T("Request details")</a>
+<header class="page-heading stms-hero"><div><p class="eyebrow">@L.F("Request PR-{0}", Model.PurchaseRequisitionId)</p><h1>@L.T("Remove item")</h1></div></header>
 <section class="surface form-card">
-    <h2>@Model.ItemName</h2><p>Remove this line (@Model.Quantity @Model.Unit) from the purchase request?</p>
+    <h2>@Model.ItemName</h2><p>@L.F("Remove this line ({0} {1}) from the purchase request?", Model.Quantity, Model.Unit)</p>
     <form asp-action="Delete" asp-route-id="@Model.Id" method="post" class="button-row">
-        <button class="btn btn-danger" type="submit">Remove item</button>
-        <a data-dialog-cancel class="btn btn-outline-secondary" asp-controller="PurchaseRequisitions" asp-action="Details" asp-route-id="@Model.PurchaseRequisitionId">Keep item</a>
+        <button class="btn btn-danger" type="submit">@L.T("Remove item")</button>
+        <a data-dialog-cancel class="btn btn-outline-secondary" asp-controller="PurchaseRequisitions" asp-action="Details" asp-route-id="@Model.PurchaseRequisitionId">@L.T("Keep item")</a>
     </form>
 </section>

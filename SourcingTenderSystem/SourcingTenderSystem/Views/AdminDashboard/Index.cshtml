@@ -1,6 +1,6 @@
 @model DashboardCounts
 @{
-    ViewData["Title"] = "Analytics & Statistics";
+    ViewData["Title"] = L.T("Analytics & Statistics");
     var tenderCounts = (Dictionary<string, int>)ViewBag.TenderCounts;
     var trend = ((string Month, int Tenders, int Requests)[])ViewBag.TenderTrend;
     var months = (int)ViewBag.TrendMonths;
@@ -16,14 +16,14 @@
 }
 <header class="page-heading stms-hero admin-overview">
     <div>
-        <p class="eyebrow">ADMIN WORKSPACE</p>
-        <h1>Analytics &amp; Statistics</h1>
-        <p>Track procurement activity, review supplier applications, and manage access.</p>
+        <p class="eyebrow">@L.T("ADMIN WORKSPACE")</p>
+        <h1>@L.T("Analytics & Statistics")</h1>
+        <p>@L.T("Track procurement activity, review supplier applications, and manage access.")</p>
     </div>
 </header>
 <div class="admin-analytics">
 <section aria-labelledby="snapshot-title">
-    <div class="section-heading"><h2 id="snapshot-title">Organization snapshot</h2><span>Current totals</span></div>
+    <div class="section-heading"><h2 id="snapshot-title">@L.T("Organization snapshot")</h2><span>@L.T("Current totals")</span></div>
     <div class="metrics-grid">
         @foreach (var item in new[] {
             ("Purchase requests", Model.Requests, "file", "blue", "AdminOperations", "Requests"),
@@ -31,9 +31,9 @@
             ("Suppliers", total, "supplier", "amber", "Suppliers", "Index"),
             ("Active employees", Model.ActiveEmployees, "users", "violet", "Employees", "Index") })
         {
-            <a class="metric surface admin-metric-link" asp-controller="@item.Item5" asp-action="@item.Item6" aria-label="View @item.Item1">
+            <a class="metric surface admin-metric-link" asp-controller="@item.Item5" asp-action="@item.Item6" aria-label="@L.F("View {0}", L.T(item.Item1))">
                 <span class="icon-tile tone-@item.Item4"><partial name="_Icon" model="item.Item3" /></span>
-                <strong data-count="@item.Item2">@item.Item2</strong><span>@item.Item1</span>
+                <strong data-count="@item.Item2">@item.Item2</strong><span>@L.T(item.Item1)</span>
                 <span class="admin-metric-arrow" aria-hidden="true"><partial name="_Icon" model='@("arrow")' /></span>
             </a>
         }
@@ -41,13 +41,13 @@
 </section>
 <div class="admin-chart-grid">
     <section class="surface dashboard-card admin-trend" data-procurement-chart>
-        <div class="card-heading"><div><h2>Procurement activity</h2><p>New requests and tenders · last @months months (UTC)</p></div></div>
-        <nav class="directory-status-options admin-chart-period" aria-label="Activity period">
+        <div class="card-heading"><div><h2>@L.T("Procurement activity")</h2><p>@L.F("New requests and tenders · last {0} months (UTC)", months)</p></div></div>
+        <nav class="directory-status-options admin-chart-period" aria-label="@L.T("Activity period")">
             @foreach (var period in new[] { 3, 6, 12 })
-            { <a asp-action="Index" asp-route-months="@period" aria-current="@(months == period ? "page" : null)">@period months</a> }
+            { <a asp-action="Index" asp-route-months="@period" aria-current="@(months == period ? "page" : null)">@L.F("{0} months", period)</a> }
         </nav>
-        <div class="admin-chart-legend"><span>Purchase requests</span><span>Tenders</span></div>
-        @if (high == 0) { <p class="admin-chart-empty">No requests or tenders were created in this period.</p> }
+        <div class="admin-chart-legend"><span>@L.T("Purchase requests")</span><span>@L.T("Tenders")</span></div>
+        @if (high == 0) { <p class="admin-chart-empty">@L.T("No requests or tenders were created in this period.")</p> }
         else
         {
             <div class="admin-chart-viewport" data-wide-chart="@(months == 12 ? "true" : null)">
@@ -55,13 +55,13 @@
                 <div class="admin-chart-axis" aria-hidden="true">
                     @for (var tick = 4; tick >= 0; tick--) { <span>@(tick * step)</span> }
                 </div>
-                <div class="admin-chart-plot" role="group" aria-label="Monthly request and tender counts" style="--month-count:@months">
+                <div class="admin-chart-plot" role="group" aria-label="@L.T("Monthly request and tender counts")" style="--month-count:@months">
                     @foreach (var point in trend)
                     {
                         var heights = FormattableString.Invariant($"--requests:{100 * point.Requests / trendMax:F3}%;--tenders:{100 * point.Tenders / trendMax:F3}%");
                         <button type="button" class="admin-chart-month" style="@heights" aria-pressed="@(point.Equals(latest) ? "true" : "false")"
                                 data-month="@point.Month" data-requests="@point.Requests" data-tenders="@point.Tenders"
-                                aria-label="@point.Month: @point.Requests requests, @point.Tenders tenders">
+                                aria-label="@L.F("{0}: {1} requests, {2} tenders", point.Month, point.Requests, point.Tenders)">
                             <span class="admin-chart-bars" aria-hidden="true"><i></i><i></i></span>
                             <span class="admin-chart-label" aria-hidden="true">@point.Month</span>
                         </button>
@@ -69,17 +69,17 @@
                 </div>
             </div>
             </div>
-            <output class="admin-chart-selection" data-chart-selection>@latest.Month · @latest.Requests requests · @latest.Tenders tenders</output>
+            <output class="admin-chart-selection" data-chart-selection>@L.F("{0} · {1} requests · {2} tenders", latest.Month, latest.Requests, latest.Tenders)</output>
         }
     </section>
     <section class="surface dashboard-card">
-        <div class="card-heading"><div><h2>Supplier status</h2><p>Application breakdown</p></div><a class="text-link" asp-controller="Suppliers" asp-action="Index">View suppliers <partial name="_Icon" model='@("arrow")' /></a></div>
+        <div class="card-heading"><div><h2>@L.T("Supplier status")</h2><p>@L.T("Application breakdown")</p></div><a class="text-link" asp-controller="Suppliers" asp-action="Index">@L.T("View suppliers") <partial name="_Icon" model='@("arrow")' /></a></div>
         <div class="status-overview">
-            <div class="donut @(total == 0 ? "donut-empty" : "")" style="@chart"><div><strong>@total</strong><span>Total</span></div></div>
+            <div class="donut @(total == 0 ? "donut-empty" : "")" style="@chart"><div><strong>@total</strong><span>@L.T("Total")</span></div></div>
             <div class="status-legend">
                 @foreach (var item in new[] { ("Pending", Model.PendingSuppliers, "waiting"), ("Approved", Model.ApprovedSuppliers, "positive"), ("Rejected", Model.RejectedSuppliers, "negative"), ("Suspended", Model.SuspendedSuppliers, "neutral") })
                 {
-                    <a asp-controller="Suppliers" asp-action="Index" asp-route-status="@item.Item1"><span class="legend-dot dot-@item.Item3"></span><span>@item.Item1</span><strong>@item.Item2</strong></a>
+                    <a asp-controller="Suppliers" asp-action="Index" asp-route-status="@item.Item1"><span class="legend-dot dot-@item.Item3"></span><span>@L.T(item.Item1)</span><strong>@item.Item2</strong></a>
                 }
             </div>
         </div>
@@ -87,31 +87,31 @@
 </div>
 <div class="dashboard-grid admin-secondary">
     <section class="surface dashboard-card">
-        <div class="card-heading"><div><h2>Quick actions</h2><p>Common administration tasks</p></div></div>
+        <div class="card-heading"><div><h2>@L.T("Quick actions")</h2><p>@L.T("Common administration tasks")</p></div></div>
         <div class="quick-actions">
-            <a data-workspace-dialog asp-controller="Departments" asp-action="Create"><span class="icon-tile tone-blue"><partial name="_Icon" model='@("building")' /></span><span><strong>Add department</strong><small>Organize employees by team</small></span><partial name="_Icon" model='@("arrow")' /></a>
-            <a data-workspace-dialog asp-controller="Employees" asp-action="Create"><span class="icon-tile tone-violet"><partial name="_Icon" model='@("users")' /></span><span><strong>Add employee</strong><small>Create an account and assign access</small></span><partial name="_Icon" model='@("arrow")' /></a>
-            <a asp-controller="Suppliers" asp-action="Index"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("supplier")' /></span><span><strong>Manage suppliers</strong><small>Review applications and documents</small></span><partial name="_Icon" model='@("arrow")' /></a>
+            <a data-workspace-dialog asp-controller="Departments" asp-action="Create"><span class="icon-tile tone-blue"><partial name="_Icon" model='@("building")' /></span><span><strong>@L.T("Add department")</strong><small>@L.T("Organize employees by team")</small></span><partial name="_Icon" model='@("arrow")' /></a>
+            <a data-workspace-dialog asp-controller="Employees" asp-action="Create"><span class="icon-tile tone-violet"><partial name="_Icon" model='@("users")' /></span><span><strong>@L.T("Add employee")</strong><small>@L.T("Create an account and assign access")</small></span><partial name="_Icon" model='@("arrow")' /></a>
+            <a asp-controller="Suppliers" asp-action="Index"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("supplier")' /></span><span><strong>@L.T("Manage suppliers")</strong><small>@L.T("Review applications and documents")</small></span><partial name="_Icon" model='@("arrow")' /></a>
         </div>
     </section>
 <section class="surface dashboard-card">
-    <div class="card-heading"><div><h2>Tenders by status</h2><p>Share of all recorded tenders</p></div><a class="text-link" asp-controller="AdminOperations" asp-action="Tenders">View tenders</a></div>
-    @if (Model.Tenders == 0) { <p class="subtle mb-0">Tender statistics will appear once a tender is created.</p> }
+    <div class="card-heading"><div><h2>@L.T("Tenders by status")</h2><p>@L.T("Share of all recorded tenders")</p></div><a class="text-link" asp-controller="AdminOperations" asp-action="Tenders">@L.T("View tenders")</a></div>
+    @if (Model.Tenders == 0) { <p class="subtle mb-0">@L.T("Tender statistics will appear once a tender is created.")</p> }
     @foreach (var row in tenderCounts)
     {
-        <div class="stms-stat-row"><a asp-controller="AdminOperations" asp-action="Tenders" asp-route-status="@row.Key">@row.Key</a><meter min="0" max="@Model.Tenders" value="@row.Value" aria-label="@row.Key"></meter><strong>@row.Value</strong></div>
+        <div class="stms-stat-row"><a asp-controller="AdminOperations" asp-action="Tenders" asp-route-status="@row.Key">@L.T(row.Key)</a><meter min="0" max="@Model.Tenders" value="@row.Value" aria-label="@L.T(row.Key)"></meter><strong>@row.Value</strong></div>
     }
 </section>
 </div>
 <section aria-labelledby="admin-totals">
-    <div class="section-heading"><h2 id="admin-totals">Workspace at a glance</h2><span>Current totals</span></div>
+    <div class="section-heading"><h2 id="admin-totals">@L.T("Workspace at a glance")</h2><span>@L.T("Current totals")</span></div>
     <div class="admin-total-grid">
         <a class="surface admin-total-card" asp-controller="Departments" asp-action="Index">
             <span class="icon-tile tone-blue"><partial name="_Icon" model='@("building")' /></span>
-            <span><strong data-count="@Model.Departments">@Model.Departments.ToString("N0")</strong><small>Departments</small></span>
+            <span><strong data-count="@Model.Departments">@Model.Departments.ToString("N0")</strong><small>@L.T("Departments")</small></span>
             <partial name="_Icon" model='@("arrow")' />
         </a>
-        <div class="surface admin-total-card"><span class="icon-tile tone-violet"><partial name="_Icon" model='@("users")' /></span><span><strong data-count="@Model.Users">@Model.Users.ToString("N0")</strong><small>All user accounts</small></span></div>
+        <div class="surface admin-total-card"><span class="icon-tile tone-violet"><partial name="_Icon" model='@("users")' /></span><span><strong data-count="@Model.Users">@Model.Users.ToString("N0")</strong><small>@L.T("All user accounts")</small></span></div>
     </div>
 </section>
 </div>

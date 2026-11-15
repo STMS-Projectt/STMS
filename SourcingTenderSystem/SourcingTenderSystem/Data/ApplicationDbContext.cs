@@ -11,6 +11,7 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser>
     {
     }
 
+    public DbSet<ContactMessage> ContactMessages => Set<ContactMessage>();
     public DbSet<Department> Departments => Set<Department>();
     public DbSet<Category> Categories => Set<Category>();
     public DbSet<EmployeeProfile> EmployeeProfiles => Set<EmployeeProfile>();
@@ -39,6 +40,7 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        modelBuilder.Entity<ContactMessage>().HasIndex(x => x.Receipt).IsUnique();
         modelBuilder.Entity<Category>().HasIndex(x => x.Name).IsUnique();
         modelBuilder.Entity<Category>().HasMany(x => x.Suppliers).WithMany(x => x.Categories)
             .UsingEntity("SupplierCategories");

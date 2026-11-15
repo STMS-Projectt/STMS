@@ -5,12 +5,13 @@ using Microsoft.EntityFrameworkCore;
 using SourcingTenderSystem.Data;
 using SourcingTenderSystem.Models;
 using SourcingTenderSystem.Security;
+using SourcingTenderSystem.Services;
 using SourcingTenderSystem.ViewModels;
 
 namespace SourcingTenderSystem.Controllers;
 
 [Authorize(Roles = Roles.Admin)]
-public sealed class AdminDashboardController(ApplicationDbContext db, UserManager<IdentityUser> users) : Controller
+public sealed class AdminDashboardController(ApplicationDbContext db, UserManager<IdentityUser> users, UiText ui) : Controller
 {
     [HttpGet]
     public async Task<IActionResult> Index(int months = 6)
@@ -33,7 +34,7 @@ public sealed class AdminDashboardController(ApplicationDbContext db, UserManage
             .GroupBy(r => new { r.CreatedAt.Year, r.CreatedAt.Month })
             .Select(g => new { g.Key.Year, g.Key.Month, Count = g.Count() }).ToListAsync();
         ViewBag.TenderTrend = Enumerable.Range(0, months).Select(i => firstMonth.AddMonths(i))
-            .Select(date => (date.ToString("MMM yyyy"),
+            .Select(date => (date.ToString("MMM yyyy", ui.DisplayCulture),
                 trend.FirstOrDefault(t => t.Year == date.Year && t.Month == date.Month)?.Count ?? 0,
                 requests.FirstOrDefault(r => r.Year == date.Year && r.Month == date.Month)?.Count ?? 0)).ToArray();
         return View(new DashboardCounts(

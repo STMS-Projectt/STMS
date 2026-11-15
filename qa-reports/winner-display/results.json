@@ -1,0 +1,1579 @@
+{
+  "results": [
+    {
+      "id": "P6-A-award",
+      "status": "PASS"
+    },
+    {
+      "id": "Winner-sidebars-all-roles",
+      "status": "PASS"
+    },
+    {
+      "id": "Winner-display-TopCommittee",
+      "status": "FAIL",
+      "reason": "Timed out: language control ",
+      "page": "/EvaluationWorkflow/PrintWinnerBrief/1"
+    },
+    {
+      "id": "Winner-display-Admin",
+      "status": "FAIL",
+      "reason": "Timed out: login form ",
+      "page": "/EvaluationWorkflow"
+    }
+  ],
+  "errors": [],
+  "http": [
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Dashboard",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/MyRequests",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Create",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/RequisitionItems/Create",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/RequisitionItems/Create",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/SourcingDashboard",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/RequisitionReviews/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Tenders/Create",
+      "status": 200
+    },
+    {
+      "path": "/RequisitionReviews/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Tenders",
+      "status": 200
+    },
+    {
+      "path": "/Tenders/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Tenders",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Tenders/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Tenders/Edit/1",
+      "status": 200
+    },
+    {
+      "path": "/Tenders/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Tenders/Criteria/1",
+      "status": 200
+    },
+    {
+      "path": "/Tenders/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Tenders/Criteria/1",
+      "status": 200
+    },
+    {
+      "path": "/Tenders/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Tenders/Criteria/1",
+      "status": 200
+    },
+    {
+      "path": "/Tenders/Criteria/1",
+      "status": 200
+    },
+    {
+      "path": "/Tenders/Criteria/1",
+      "status": 200
+    },
+    {
+      "path": "/Tenders/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Tenders/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Invitations/Create",
+      "status": 200
+    },
+    {
+      "path": "/Invitations",
+      "status": 200
+    },
+    {
+      "path": "/Invitations/Details/3",
+      "status": 200
+    },
+    {
+      "path": "/Tenders/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/SupplierWorkspace",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/SupplierWorkspace/Invitations",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/SupplierWorkspace/Invitations",
+      "status": 200
+    },
+    {
+      "path": "/SupplierWorkspace/Invitations",
+      "status": 200
+    },
+    {
+      "path": "/Bids/Create",
+      "status": 200
+    },
+    {
+      "path": "/Bids/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/SupplierWorkspace/Invitations",
+      "status": 200
+    },
+    {
+      "path": "/Bids/MyBids",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Bids/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/BidItems/Create",
+      "status": 200
+    },
+    {
+      "path": "/Bids/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Bids/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/BidItems/Create",
+      "status": 200
+    },
+    {
+      "path": "/Bids/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Bids/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Bids/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/BidDocuments/Upload",
+      "status": 200
+    },
+    {
+      "path": "/Bids/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Bids/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Bids/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Bids/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Bids/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/SupplierWorkspace",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/SupplierWorkspace/Invitations",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/SupplierWorkspace/Invitations",
+      "status": 200
+    },
+    {
+      "path": "/SupplierWorkspace/Invitations",
+      "status": 200
+    },
+    {
+      "path": "/Bids/Create",
+      "status": 200
+    },
+    {
+      "path": "/Bids/Details/2",
+      "status": 200
+    },
+    {
+      "path": "/BidItems/Create",
+      "status": 200
+    },
+    {
+      "path": "/Bids/Details/2",
+      "status": 200
+    },
+    {
+      "path": "/BidItems/Create",
+      "status": 200
+    },
+    {
+      "path": "/Bids/Details/2",
+      "status": 200
+    },
+    {
+      "path": "/BidDocuments/Upload",
+      "status": 200
+    },
+    {
+      "path": "/Bids/Details/2",
+      "status": 200
+    },
+    {
+      "path": "/Bids/Details/2",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Bids/Details/2",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/SupplierWorkspace",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/SupplierWorkspace/Invitations",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/SupplierWorkspace/Invitations",
+      "status": 200
+    },
+    {
+      "path": "/SupplierWorkspace/Invitations",
+      "status": 200
+    },
+    {
+      "path": "/Bids/Create",
+      "status": 200
+    },
+    {
+      "path": "/Bids/Details/3",
+      "status": 200
+    },
+    {
+      "path": "/BidItems/Create",
+      "status": 200
+    },
+    {
+      "path": "/Bids/Details/3",
+      "status": 200
+    },
+    {
+      "path": "/BidItems/Create",
+      "status": 200
+    },
+    {
+      "path": "/Bids/Details/3",
+      "status": 200
+    },
+    {
+      "path": "/BidDocuments/Upload",
+      "status": 200
+    },
+    {
+      "path": "/Bids/Details/3",
+      "status": 200
+    },
+    {
+      "path": "/Bids/Details/3",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Bids/Details/3",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/SourcingDashboard",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Tenders",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Tenders/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Tenders",
+      "status": 200
+    },
+    {
+      "path": "/Compliance/Review",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Compliance/Pending",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Compliance/Review",
+      "status": 200
+    },
+    {
+      "path": "/Compliance/MarkNonCompliant/1",
+      "status": 200
+    },
+    {
+      "path": "/Compliance/Review",
+      "status": 200
+    },
+    {
+      "path": "/Tenders",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Tenders/AssignCommittee/1",
+      "status": 200
+    },
+    {
+      "path": "/Compliance/Review",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Clarifications/Create",
+      "status": 200
+    },
+    {
+      "path": "/Clarifications/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/SupplierWorkspace",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Clarifications/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Clarifications/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/SourcingDashboard",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Compliance/Review",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Clarifications/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Clarifications/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Compliance/Review",
+      "status": 200
+    },
+    {
+      "path": "/Compliance/Review",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Compliance/Review",
+      "status": 200
+    },
+    {
+      "path": "/Compliance/Review",
+      "status": 200
+    },
+    {
+      "path": "/Compliance/Review",
+      "status": 200
+    },
+    {
+      "path": "/Tenders/AssignCommittee/1",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Tenders",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Dashboard",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Committee",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews/Weights/1",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews/SuggestWeights/1",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews/Weights/1",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Committee",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Dashboard",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews/Bid/1",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews/Bid/1",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews/Bid/2",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews/Bid/2",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews/Bid/3",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews/Bid/3",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews/Bid/1",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews/Bid/1",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews/Bid/2",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews/Bid/2",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews/Bid/3",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews/Bid/3",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews/Bid/1",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews/Bid/1",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews/Bid/2",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews/Bid/2",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews/Bid/3",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews/Bid/3",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews/Assignments",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews/Bid/1",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews/Bid/1",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/EvaluationWorkflow/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews/Assignments",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews/Bid/1",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews/Bid/1",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews/Bid/2",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews/Bid/2",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews/Bid/3",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews/Bid/3",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/EvaluationWorkflow/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/EvaluationWorkflow/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/SourcingDashboard",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/EvaluationWorkflow/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/EvaluationWorkflow",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/EvaluationWorkflow/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/EvaluationWorkflow/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/EvaluationWorkflow/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/EvaluationWorkflow/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/EvaluationWorkflow/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/EvaluationWorkflow",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/EvaluationWorkflow/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/EvaluationWorkflow",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/EvaluationWorkflow/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/EvaluationWorkflow/Reject/1",
+      "status": 200
+    },
+    {
+      "path": "/EvaluationWorkflow/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/EvaluationWorkflow/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/EvaluationWorkflow/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/EvaluationWorkflow",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/EvaluationWorkflow/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/EvaluationWorkflow/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/EvaluationWorkflow",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/EvaluationWorkflow/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/EvaluationWorkflow/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/EvaluationWorkflow",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/EvaluationWorkflow/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/EvaluationWorkflow/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/SupplierWorkspace",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Bids/MyBids",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Bids/Details/1",
+      "status": 404
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/SupplierWorkspace",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Bids/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/SupplierWorkspace",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Bids/MyBids",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/BidDocuments/Download/1",
+      "status": 404
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/AdminDashboard",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/AdminDashboard",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/SupplierWorkspace",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Bids/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/SupplierWorkspace",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Bids/Details/2",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/SupplierWorkspace",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Bids/Details/3",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/AdminDashboard",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/AdminDashboard",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Dashboard",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Dashboard",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Dashboard",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/SourcingDashboard",
+      "status": 200
+    },
+    {
+      "path": "/SourcingDashboard",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/SourcingDashboard",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/SupplierWorkspace",
+      "status": 200
+    },
+    {
+      "path": "/SupplierWorkspace",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/SupplierWorkspace",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/CommitteeReviews",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/EvaluationWorkflow",
+      "status": 200
+    },
+    {
+      "path": "/EvaluationWorkflow",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/EvaluationWorkflow",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/EvaluationWorkflow",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/EvaluationWorkflow",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/EvaluationWorkflow/Winner/1",
+      "status": 200
+    },
+    {
+      "path": "/EvaluationWorkflow/WinnerBrief/1",
+      "status": 200
+    },
+    {
+      "path": "/EvaluationWorkflow/PrintWinnerBrief/1",
+      "status": 200
+    },
+    {
+      "path": "/EvaluationWorkflow",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    }
+  ]
+}

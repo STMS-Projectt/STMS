@@ -2,24 +2,24 @@
 @{ bool canEdit = ViewBag.CanEdit == true; }
 @if (Model.Count == 0)
 {
-    <div class="empty-state"><h3>No items yet</h3><p>Items appear here once they are added to the request.</p></div>
+    <div class="empty-state"><h3>@L.T("No items yet")</h3><p>@L.T("Items appear here once they are added to the request.")</p></div>
 }
 else
 {
-    <div class="record-list record-list-inset" aria-label="Requested items">
+    <div class="record-list record-list-inset" aria-label="@L.T("Requested items")">
         @foreach (var item in Model.OrderBy(x => x.Id))
         {
             <article class="record-card">
                 <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("inbox")' /></span><span>@item.ItemName</span></div>
                 <dl class="record-facts">
-                    <div><dt>Quantity</dt><dd>@item.Quantity @item.Unit</dd></div>
-                    @if (!string.IsNullOrWhiteSpace(item.Specifications)) { <div><dt>Specifications</dt><dd class="request-prose">@item.Specifications</dd></div> }
+                    <div><dt>@L.T("Quantity")</dt><dd>@item.Quantity @item.Unit</dd></div>
+                    @if (!string.IsNullOrWhiteSpace(item.Specifications)) { <div><dt>@L.T("Specifications")</dt><dd class="request-prose">@item.Specifications</dd></div> }
                 </dl>
                 @if (canEdit)
                 {
                     <div class="record-action">
-                        <a class="record-icon-action" data-workspace-dialog asp-controller="RequisitionItems" asp-action="Edit" asp-route-id="@item.Id" aria-label="Edit @item.ItemName" data-tooltip="Edit item"><partial name="_Icon" model='@("edit")' /></a>
-                        <a class="record-icon-action record-icon-danger" data-workspace-dialog asp-controller="RequisitionItems" asp-action="Delete" asp-route-id="@item.Id" aria-label="Remove @item.ItemName" data-tooltip="Remove item"><partial name="_Icon" model='@("trash")' /></a>
+                        <a class="record-icon-action" data-workspace-dialog asp-controller="RequisitionItems" asp-action="Edit" asp-route-id="@item.Id" aria-label="@L.F("Edit {0}", item.ItemName)" data-tooltip="@L.T("Edit item")"><partial name="_Icon" model='@("edit")' /></a>
+                        <a class="record-icon-action record-icon-danger" data-workspace-dialog asp-controller="RequisitionItems" asp-action="Delete" asp-route-id="@item.Id" aria-label="@L.F("Remove {0}", item.ItemName)" data-tooltip="@L.T("Remove item")"><partial name="_Icon" model='@("trash")' /></a>
                     </div>
                 }
             </article>

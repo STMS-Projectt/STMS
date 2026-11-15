@@ -56,10 +56,10 @@
     if (voice) {
         voice.hidden = false;
         voice.addEventListener("click", () => {
-            if (recognition) { stopVoice(); announceVoice("Voice search stopped."); return; }
+            if (recognition) { stopVoice(); announceVoice(window.stmsT("Voice search stopped.")); return; }
             const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (!Recognition) {
-                announceVoice("Voice search is unavailable in this browser. Type your search instead.", true);
+                announceVoice(window.stmsT("Voice search is unavailable in this browser. Type your search instead."), true);
                 return;
             }
             let session;
@@ -70,31 +70,31 @@
                     if (recognition !== session) return;
                     results.hidden = true;
                     voice.setAttribute("aria-pressed", "true");
-                    announceVoice("Listening…", true);
+                    announceVoice(window.stmsT("Listening…"), true);
                 };
                 session.onresult = event => {
                     if (recognition !== session) return;
                     input.value = event.results[0][0].transcript;
                     input.focus();
                     search();
-                    announceVoice("Search results updated.");
+                    announceVoice(window.stmsT("Search results updated."));
                 };
                 session.onerror = event => {
                     if (recognition !== session) return;
                     announceVoice(event.error === "not-allowed" || event.error === "service-not-allowed"
-                        ? "Microphone access was denied. Type your search instead."
-                        : "Voice search could not hear a query. Try again or type your search.", true);
+                        ? window.stmsT("Microphone access was denied. Type your search instead.")
+                        : window.stmsT("Voice search could not hear a query. Try again or type your search."), true);
                 };
                 session.onend = () => {
                     if (recognition !== session) return;
                     recognition = null;
                     voice.setAttribute("aria-pressed", "false");
-                    if (voiceStatus.textContent === "Listening…") announceVoice("Voice search ended.");
+                    if (voiceStatus.textContent === window.stmsT("Listening…")) announceVoice(window.stmsT("Voice search ended."));
                 };
                 session.start();
             } catch {
                 recognition = null;
-                announceVoice("Could not start voice search. Type your search instead.", true);
+                announceVoice(window.stmsT("Could not start voice search. Type your search instead."), true);
             }
         });
         window.addEventListener("pagehide", stopVoice);
@@ -129,7 +129,7 @@
         }
         if (!results.childElementCount) {
             const message = document.createElement("p");
-            message.textContent = "No matching workspace pages.";
+            message.textContent = window.stmsT("No matching workspace pages.");
             results.append(message);
         }
     }
