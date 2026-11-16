@@ -2,34 +2,102 @@
 @{
     var win = Model.Winner;
     var output = Model.Output;
+    var print = ViewData["WinnerPrint"] is true;
+    var scorePercent = win.Total is decimal t ? Math.Clamp(t, 0m, 100m) : 0m;
 }
 @if (!Model.AiGenerated)
 {
-    <div class="alert alert-warning" role="status"><strong>@L.T("AI unavailable — showing recorded facts only.")</strong> @L.T(Model.Notice) @if (ViewData["WinnerPrint"] is not true) { <button type="button" class="btn btn-outline-secondary btn-sm ms-2" data-winner-retry>@L.T("Try again")</button> }</div>
+    <div class="wb-alert" role="status">
+        <partial name="_Icon" model='@("warning")' />
+        <div><strong>@L.T("AI unavailable — showing recorded facts only.")</strong> @L.T(Model.Notice)</div>
+        @if (!print) { <button type="button" class="btn btn-outline-secondary btn-sm" data-winner-retry><partial name="_Icon" model='@("refresh")' /> @L.T("Try again")</button> }
+    </div>
 }
-<div class="ai-pick">
-    <p class="ai-label">@L.T("Winning offer")</p>
-    <h3>@win.Supplier</h3>
-    <p class="ai-pick-meta">@win.TotalPrice.ToString("N2") @win.Currency · @L.F("Delivery in {0} days", win.DeliveryDays) · @L.F("Valid for {0} days", win.ValidityDays) @if (win.Total is decimal total) { <text> · @L.F("Score {0:0.##} / 100", total)</text> }</p>
-    <p class="ai-headline">@output.SupplierDescription</p>
+<article class="wb-hero">
+    <div class="wb-hero-top">
+        <span class="wb-trophy" aria-hidden="true"><partial name="_Icon" model='@("trophy")' /></span>
+        <div class="wb-hero-title">
+            <p class="wb-kicker">@L.T("Winning offer")</p>
+            <h3><bdi>@win.Supplier</bdi></h3>
+        </div>
+        @if (win.Total is decimal total)
+        {
+            <div class="wb-score" style="--score:@(scorePercent.ToString(System.Globalization.CultureInfo.InvariantCulture))" role="img" aria-label="@L.F("Score {0:0.##} / 100", total)">
+                <span><strong>@total.ToString("0.##")</strong><small>/ 100</small></span>
+            </div>
+        }
+    </div>
+    @if (!string.IsNullOrWhiteSpace(output.SupplierDescription))
+    {
+        <p class="wb-hero-text">@output.SupplierDescription</p>
+    }
+</article>
+
+<dl class="wb-stats">
+    <div class="wb-stat">
+        <dt><partial name="_Icon" model='@("briefcase")' /> @L.T("Total price")</dt>
+        <dd>@win.TotalPrice.ToString("N2") <small>@win.Currency</small></dd>
+    </div>
+    <div class="wb-stat">
+        <dt><partial name="_Icon" model='@("clock")' /> @L.T("Delivery")</dt>
+        <dd>@win.DeliveryDays <small>@L.T("days")</small></dd>
+    </div>
+    <div class="wb-stat">
+        <dt><partial name="_Icon" model='@("calendar")' /> @L.T("Validity")</dt>
+        <dd>@win.ValidityDays <small>@L.T("days")</small></dd>
+    </div>
+    @if (win.Technical is not null || win.Financial is not null)
+    {
+        <div class="wb-stat">
+            <dt><partial name="_Icon" model='@("chart")' /> @L.T("Technical / financial")</dt>
+            <dd>@(win.Technical?.ToString("0.##") ?? "—") <small>/</small> @(win.Financial?.ToString("0.##") ?? "—")</dd>
+        </div>
+    }
+</dl>
+
+@if (!string.IsNullOrWhiteSpace(output.OfferSummary))
+{
+    <section class="wb-section">
+        <h4 class="wb-section-title"><span class="wb-section-icon"><partial name="_Icon" model='@("file")' /></span> @L.T("The offer")</h4>
+        <p class="wb-section-text">@output.OfferSummary</p>
+    </section>
+}
+
+<div class="wb-grid">
+    @if (output.WhyWon.Count > 0)
+    {
+        <section class="wb-section">
+            <h4 class="wb-section-title"><span class="wb-section-icon"><partial name="_Icon" model='@("trophy")' /></span> @L.T("Why it won")</h4>
+            <ul class="wb-list">@foreach (var reason in output.WhyWon) { <li>@reason</li> }</ul>
+        </section>
+    }
+    @if (output.Differentiators.Count > 0)
+    {
+        <section class="wb-section">
+            <h4 class="wb-section-title"><span class="wb-section-icon tone-blue"><partial name="_Icon" model='@("chart")' /></span> @L.T("What sets it apart")</h4>
+            <ul class="wb-list wb-list-blue">@foreach (var item in output.Differentiators) { <li>@item</li> }</ul>
+        </section>
+    }
 </div>
-<h3 class="h6 mt-3">@L.T("The offer")</h3>
-<p>@output.OfferSummary</p>
-<h3 class="h6 mt-3">@L.T("Why it won")</h3>
-<ul class="ai-reasons">@foreach (var reason in output.WhyWon) { <li>@reason</li> }</ul>
-<h3 class="h6 mt-3">@L.T("What sets it apart")</h3>
-<ul class="ai-reasons">@foreach (var item in output.Differentiators) { <li>@item</li> }</ul>
+
 @if (output.PointsToVerify.Count > 0)
 {
-    <h3 class="h6 mt-3">@L.T("Points to verify before voting")</h3>
-    <ul class="ai-reasons">@foreach (var item in output.PointsToVerify) { <li>@item</li> }</ul>
+    <section class="wb-section wb-verify">
+        <h4 class="wb-section-title"><span class="wb-section-icon tone-amber"><partial name="_Icon" model='@("warning")' /></span> @L.T("Points to verify before voting")</h4>
+        <ul class="wb-list wb-list-amber">@foreach (var item in output.PointsToVerify) { <li>@item</li> }</ul>
+    </section>
 }
-@if (ViewData["WinnerPrint"] is not true)
-{
-<div class="ai-actions">
-    @if (L.Arabic) { <a class="btn btn-outline-secondary" asp-action="PrintWinnerBrief" asp-route-id="@Model.Input.TenderId" target="_blank" rel="noopener">@L.T("Print Arabic summary or save as PDF")</a> }
-    <a class="btn btn-primary" asp-action="DownloadWinnerBrief" asp-route-id="@Model.Input.TenderId"><partial name="_Icon" model='@("download")' /> @L.T(L.Arabic ? "Download English PDF summary" : "Download PDF summary")</a>
-</div>
-}
-<div class="ai-actions"><span class="subtle small">@(Model.AiGenerated ? L.F("Generated {0} · {1}", Model.GeneratedAtUtc.ToLocalTime().ToString("g", L.DisplayCulture), Model.Model) : L.T("Facts only")) · @L.F("{0} compliant bids compared", Model.Input.Bids.Count)</span>
-</div>
+
+<footer class="wb-footer">
+    <span class="wb-meta">
+        @if (Model.AiGenerated) { <span class="wb-ai-chip">AI</span> }
+        @(Model.AiGenerated ? L.F("Generated {0} · {1}", Model.GeneratedAtUtc.ToLocalTime().ToString("g", L.DisplayCulture), Model.Model) : L.T("Facts only")) · @L.F("{0} compliant bids compared", Model.Input.Bids.Count)
+    </span>
+    @if (!print)
+    {
+        <div class="wb-actions">
+            @if (L.Arabic) { <a class="btn btn-outline-secondary" asp-action="PrintWinnerBrief" asp-route-id="@Model.Input.TenderId" target="_blank" rel="noopener">@L.T("Print Arabic summary or save as PDF")</a> }
+            <a class="btn btn-primary" asp-action="DownloadWinnerBrief" asp-route-id="@Model.Input.TenderId"><partial name="_Icon" model='@("download")' /> @L.T(L.Arabic ? "Download English PDF summary" : "Download PDF summary")</a>
+        </div>
+    }
+</footer>
