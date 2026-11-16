@@ -65,6 +65,10 @@
 .bid-evidence>summary{font-weight:740;color:light-dark(#214f49, #c1e1dd)}
 .bid-evidence>summary>.record-panel-label{margin-inline-start:6px}
 .bid-evidence[open]>p{margin-top:12px}
+/* In the narrow reference sidebar, stack each card so long item names keep full
+   width instead of collapsing into one character per line. */
+.review-references .record-card{display:flex;flex-direction:column;align-items:stretch}
+.review-references .record-card .record-name{align-items:center}
 @media(max-width:700px){.checklist-columns{grid-template-columns:1fr}}
 @media(max-width:500px){.tender-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.tender-actions form>.btn{width:100%}}
 @media(prefers-reduced-motion:no-preference){.checklist-entry{transition:background-color .18s ease,border-color .18s ease}}
@@ -119,8 +123,11 @@
     #main>.public-hero,#main>.steps-grid,#main>.confirmation,#main>.auth-shell{animation:stms-surface-arrival .32s ease-out both}
     @keyframes stms-surface-arrival{from{opacity:.55}to{opacity:1}}
     .application-dropzone,.application-steps li,.supplier-category-option,.record-action .record-icon-action,.application-remove-file{transition:background-color .16s ease,border-color .16s ease,box-shadow .16s ease,translate .16s ease}
-    .record-action .record-icon-action:hover{translate:0 -2px}
-    .record-action .record-icon-action:active{translate:0 0}
+    /* Lift only the icon glyph, not the button: the tooltip lives on the button,
+       so translating the button rasterized its text and made it look blurry. */
+    .record-action .record-icon-action svg{transition:translate .16s ease}
+    .record-action .record-icon-action:hover svg{translate:0 -2px}
+    .record-action .record-icon-action:active svg{translate:0 0}
     .application-file-list li{animation:stms-surface-arrival .2s ease-out both}
     .workspace-dialog details[open]>:not(summary){animation:stms-surface-arrival .18s ease-out both}
 }

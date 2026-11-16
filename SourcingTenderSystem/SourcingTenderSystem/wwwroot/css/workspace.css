@@ -15,9 +15,9 @@ body.workspace .sidebar {background:light-dark(#f0f1f5, #191d2c);color:light-dar
 .workspace h1 {letter-spacing:-.045em}
 .form-control,.form-select {border-radius:11px}
 a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible {outline-color:light-dark(#0066cc, #0066cc)}
-.workspace-dialog {width:min(680px,calc(100vw - 24px));max-height:calc(100dvh - 24px);border:1px solid var(--line);border-radius:24px;padding:0;color:var(--ink);background:light-dark(#fff, #1b2936);box-shadow:0 24px 100px #1d24364a}
+.workspace-dialog {width:min(680px,calc(100vw - 24px));max-height:calc(100dvh - 24px);overflow:auto;overscroll-behavior:contain;border:1px solid var(--line);border-radius:24px;padding:0;color:var(--ink);background:light-dark(#fff, #1b2936);box-shadow:0 24px 100px #1d24364a}
 .workspace-dialog::backdrop {background:light-dark(#19213365, #19213365);backdrop-filter:blur(6px)}
-.workspace-dialog-bar {display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:2;background:light-dark(#fff, #1b2125);border-bottom:1px solid var(--line);padding:12px 22px}
+.workspace-dialog-bar {display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10;background:light-dark(#fff, #1b2125);border-bottom:1px solid var(--line);padding:12px 22px}
 [data-dialog-content] {padding:20px 24px 24px}
 [data-dialog-content] .form-shell {display:block}
 [data-dialog-content] .helper-card,[data-dialog-content] .back-link {display:none}

@@ -149,7 +149,10 @@ else if (report == null && User.IsInRole("SourcingManager"))
         }
         @if (tender.Status == "Cancelled" && report.TenderApprovals.Where(a => a.Decision == "Top Committee Rejected").OrderByDescending(a => a.DecidedAt).FirstOrDefault() is { } rejection)
         {
-            <p class="alert alert-warning">@L.F("Cancelled by {0}. Reason: {1}", rejection.ApproverEmployeeProfile.FullName, rejection.Comments)</p>
+            <div class="alert alert-warning">
+                <strong>@L.F("Cancelled by {0}", rejection.ApproverEmployeeProfile.FullName)</strong>
+                <br />@L.F("Reason: {0}", rejection.Comments)
+            </div>
         }
         @if (report.ResultsSnapshot is null)
         {
