@@ -4,7 +4,7 @@
     ViewData["Title"] = L.T("Supplier dashboard");
     var trading = Model.Status == SupplierStatus.Approved && User.IsInRole(Roles.Supplier);
 }
-<header class="page-heading stms-hero" aria-labelledby="supplier-heading">
+<header class="page-heading stms-hero supplier-hero" aria-labelledby="supplier-heading">
     <div>
         <p class="eyebrow">@L.T("SUPPLIER WORKSPACE")</p>
         <h1 id="supplier-heading">@Model.Company</h1>
@@ -20,13 +20,13 @@
 </header>
 @if (trading && Model.NextInvitation is { } next)
 {
-    <section class="surface detail-card vote-queue" aria-label="@L.T("Next invitation deadline")">
+    <section class="surface detail-card vote-queue supplier-next" aria-label="@L.T("Next invitation deadline")">
         <div class="record-section-heading"><div><h2>@L.T("Next invitation to review")</h2><p>@next.Tender · @L.T("Respond by") <time datetime="@next.Deadline.ToString("O")">@next.Deadline.ToString("dd MMM yyyy · HH:mm", L.DisplayCulture) UTC</time></p></div>
             <a data-workspace-dialog="details" class="btn btn-primary" asp-action="Invitations" asp-route-invitationId="@next.Id">@L.T("Review invitation")</a>
         </div>
     </section>
 }
-<section class="metrics-grid stms-metrics" aria-label="@L.T("Supplier statistics")">
+<section class="metrics-grid stms-metrics supplier-metrics" aria-label="@L.T("Supplier statistics")">
     <article class="surface metric">
         <span class="icon-tile tone-teal"><partial name="_Icon" model='@("shield")' /></span>
         <strong>@L.T(Model.ApplicationDraft ? "Draft" : Model.Status)</strong>
@@ -43,11 +43,11 @@
         <article class="surface metric"><span class="icon-tile tone-blue"><partial name="_Icon" model='@("file")' /></span><strong>@Model.Documents</strong><span>@L.T("Application documents")</span></article>
     }
 </section>
-<section class="surface detail-card">
+<section class="surface detail-card supplier-guide">
     <h2>@L.T(trading ? "How to submit a bid" : "What happens next")</h2>
     @if (trading)
     {
-        <ol class="mb-0"><li>@L.T("Review and accept an invitation while the tender is open.")</li><li>@L.T("Create a bid, enter your prices, and attach supporting documents.")</li><li>@L.T("Submit before the deadline and track the bid in") <a asp-controller="Bids" asp-action="MyBids">@L.T("My bids")</a>.</li></ol>
+        <ol class="mb-0 supplier-steps"><li>@L.T("Review and accept an invitation while the tender is open.")</li><li>@L.T("Create a bid, enter your prices, and attach supporting documents.")</li><li>@L.T("Submit before the deadline and track the bid in") <a asp-controller="Bids" asp-action="MyBids">@L.T("My bids")</a>.</li></ol>
     }
     else if (Model.ApplicationDraft)
     {
