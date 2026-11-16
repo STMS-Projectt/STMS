@@ -72,3 +72,7 @@ STMS connects internal department purchase requisitions, supplier bidding, Ollam
    ```bash
    git clone [https://github.com/amneh-01/sourcing-tender-management-system.git](https://github.com/amneh-01/sourcing-tender-management-system.git)
    cd sourcing-tender-management-system
+
+
+Trello :https://trello.com/invite/b/6afaaf7d92cc13dfa0efbaf5/ATTI3ea421f514efa759122987b0fbb4c36d9FC4CF2F/stms-project
+Figma :https://www.figma.com/design/69T7gMJl1zdPzUxWz17UyU/STMS?node-id=36-32&p=f&t=brsvmSKpAOg8bnW3-0
