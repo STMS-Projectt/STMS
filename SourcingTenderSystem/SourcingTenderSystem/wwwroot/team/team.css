@@ -146,7 +146,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--gold-thread); o
   font-weight: 850;
   letter-spacing: -0.05em;
 }
-.intro-text h1 span { color: var(--gold-thread); text-decoration: underline wavy var(--copper) 2px; }
+.intro-text h1 span { color: var(--gold-thread); }
 .intro-sub {
   margin-top: 8px;
   font-size: 13.5px;
@@ -725,3 +725,12 @@ button.stitch-progress-hud { border: 0; background: transparent; }
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
+
+/* Title block: pill eyebrow, gradient highlight, short stitched rule. */
+.intro-text{display:flex;flex-direction:column;align-items:center}
+.intro-text .eyebrow{display:inline-flex;align-items:center;gap:10px;margin:0 0 14px;padding:6px 14px;border:1px solid #8bdcba40;border-radius:99px;
+  background:#8bdcba12;color:#9fe5c3;font-size:10.5px;letter-spacing:.24em;backdrop-filter:blur(6px)}
+.intro-text .eyebrow::before{content:"";width:6px;height:6px;border-radius:50%;background:#5fd3a5;box-shadow:0 0 0 3px #5fd3a526}
+.intro-text h1{color:#f4fbf8;text-shadow:0 10px 30px #0006}
+.intro-text h1 span{background:linear-gradient(100deg,#b8f3da 0%,#7fdcb6 45%,#3fbf95 100%);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none}
+.intro-text h1::after{content:"";display:block;width:84px;height:0;margin:16px auto 0;border-top:2px dashed #8bdcba80}
