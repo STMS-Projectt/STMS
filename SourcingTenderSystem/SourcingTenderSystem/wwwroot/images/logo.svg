@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="340 100 350 380" width="350" height="380" role="img" aria-label="STMS">
+<style>
+.hanger,.edge{fill:none;stroke:#12284a;stroke-linecap:round;stroke-linejoin:round}.hanger{stroke-width:8}.edge{stroke-width:7}
+.guide{fill:none;stroke:#5de0a0;stroke-width:2.5;stroke-linecap:round;stroke-dasharray:3 7;opacity:.55}
+.shadow{opacity:.16}.sp{fill:#5de0a0}
+</style>
+<defs>
+<radialGradient id="gGlow"><stop offset="0" stop-color="#3cdc96" stop-opacity=".3"/><stop offset="1" stop-color="#3cdc96" stop-opacity="0"/></radialGradient>
+<linearGradient id="gTop" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3fd49a"/><stop offset="1" stop-color="#1f9d6b"/></linearGradient>
+<linearGradient id="gL" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#22a874"/><stop offset="1" stop-color="#127a52"/></linearGradient>
+<linearGradient id="gR" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#178a5e"/><stop offset="1" stop-color="#0e6444"/></linearGradient>
+<linearGradient id="gP" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9af5c4"/><stop offset="1" stop-color="#2fd08e"/></linearGradient>
+<clipPath id="cT"><path d="M512 250 L607 305 L512 355 L412 305Z"/></clipPath>
+<clipPath id="cL"><path d="M412 305 L512 355 L512 455 L412 405Z"/></clipPath>
+<clipPath id="cR"><path d="M512 355 L607 305 L607 405 L512 455Z"/></clipPath>
+<clipPath id="cAll"><path d="M512 250 L607 305 L607 405 L512 455 L412 405 L412 305Z"/></clipPath>
+</defs>
+<ellipse class="t glow" cx="515" cy="335" rx="165" ry="170" fill="url(#gGlow)"/>
+<ellipse class="t shadow" cx="512" cy="478" rx="62" ry="8" fill="#000"/>
+<!-- hanger -->
+<path class="hanger" pathLength="1" d="M512 214 C512 196 532 192 537 175 C542 154 525 140 508 142 C491 144 485 160 492 172"/>
+<path class="hanger" pathLength="1" d="M512 214 L372 290 Q360 298 366 310 Q372 320 388 318 L412 318"/>
+<path class="hanger" pathLength="1" d="M512 214 L650 286 Q662 294 658 306 Q652 318 636 318 L608 318"/>
+<!-- box -->
+<g class="float"><g class="t box">
+<path d="M512 250 L607 305 L512 355 L412 305Z" fill="url(#gTop)"/>
+<path d="M412 305 L512 355 L512 455 L412 405Z" fill="url(#gL)"/>
+<path d="M512 355 L607 305 L607 405 L512 455Z" fill="url(#gR)"/>
+<g class="rib" fill="none" stroke="#9af5c4" stroke-width="18">
+<g clip-path="url(#cT)"><path d="M462 277 L560 330M560 277 L462 330"/></g>
+<g clip-path="url(#cL)"><path d="M462 320 L462 440M400 352 L520 410"/></g>
+<g clip-path="url(#cR)"><path d="M560 320 L560 440M502 410 L620 352"/></g>
+</g>
+<path class="edge" d="M512 250 L607 305 L607 405 L512 455 L412 405 L412 305Z"/>
+<path class="edge" d="M412 305 L512 355 L607 305M512 355 L512 455"/>
+</g></g>
+<!-- plane -->
+<path class="guide" d="M526 218 C566 246 620 236 624 204 C628 172 586 168 590 192 C594 216 626 190 650 140"/>
+<g transform="translate(648 141) rotate(-64)"><g>
+<g transform="scale(1.1)">
+<path d="M32 0 L-26 -22 L-8 -1Z" fill="#9af5c4"/>
+<path d="M32 0 L-8 -1 L-26 22Z" fill="url(#gP)"/>
+<path d="M-8 -1 L-26 22 L-10 12Z" fill="#1f9d6b"/>
+</g></g></g>
+<!-- sparkles -->
+<path class="sp t" d="M690 140 l3 8 8 3 -8 3 -3 8 -3 -8 -8 -3 8 -3z"/>
+<path class="sp t" d="M560 112 l2 6 6 2 -6 2 -2 6 -2 -6 -6 -2 6 -2z"/>
+<path class="sp t" d="M640 215 l2 5 5 2 -5 2 -2 5 -2 -5 -5 -2 5 -2z"/>
+</svg>

@@ -18,8 +18,8 @@ body.workspace .sidebar{background:linear-gradient(140deg,light-dark(#fff, #1b21
 body.workspace .sidebar .side-link{border-radius:14px}
 body.workspace .sidebar .side-link:hover{color:light-dark(#075a47, #b5f0e2);background:light-dark(#e6f5ef, #163227)}
 body.workspace .sidebar .side-link.is-current{color:light-dark(#fff, #fff);background:linear-gradient(135deg,light-dark(#159d77, #1c9674),light-dark(#007658, #12644f));box-shadow:0 5px 12px #00846125}
-.sidebar .brand-mark{background:transparent url('../images/stms-cube.svg') center/contain no-repeat;box-shadow:none}
-.sidebar .brand-mark svg{visibility:hidden}
+.sidebar .brand-mark{background:transparent;box-shadow:none}
+.sidebar .brand-mark .stms-brand-image{width:100%;height:100%}
 .workspace-bar{margin:14px clamp(12px,2vw,28px) 0;padding:9px clamp(12px,1.8vw,25px);border:1px solid light-dark(#fff, #354345);border-radius:24px;background:linear-gradient(145deg,light-dark(#fff, #1b2125),light-dark(#edf4f9, #142531));box-shadow:var(--stms-shadow);gap:12px}
 .workspace-bar .bar-context{flex:1;min-width:0}
 .workspace-bar .bar-profile{background:light-dark(#ffffffb8, #1b2125b8);border:1px solid white;border-radius:100px;padding:5px 12px 5px 5px;min-width:0}
@@ -831,3 +831,18 @@ body:has(.dept-directory) [data-scroll-top]{bottom:18px}
 .sourcing-request-communication .button-row{display:flex;flex-wrap:wrap}
 @media(max-width:850px){.sourcing-request-layout{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:360px){.sourcing-request-decisions,.sourcing-request-facts{grid-template-columns:minmax(0,1fr)}}
+/* Public header: sidebar-style links (Clarifications, Notifications, Sign out) stay compact on one line. */
+.stms-public-header .portal-nav{flex-wrap:nowrap;gap:6px}
+.stms-public-header .portal-nav :is(.portal-link,.side-link,.btn){white-space:nowrap;flex:none}
+.stms-public-header .portal-nav .side-link{width:auto;min-height:40px;padding:8px 12px;gap:8px;border-radius:12px;color:light-dark(#1d3340, #c7d6e2);font-weight:650}
+.stms-public-header .portal-nav .side-link:hover{color:light-dark(#075a47, #b5f0e2);background:light-dark(#e6f5ef, #163227)}
+.stms-public-header .portal-nav .side-link.is-current{color:light-dark(#00634b, #b0f4e3);background:light-dark(#e6f5ef, #163227);box-shadow:none}
+.stms-public-header .portal-nav .side-link .icon{width:18px;height:18px}
+.stms-public-header .portal-nav .portal-link{padding:8px 10px}
+.stms-public-header .portal-nav form{margin:0}
+.stms-public-header .portal-nav form .btn{display:inline-flex;align-items:center;gap:7px;min-height:40px;padding:6px 14px;border-radius:12px}
+.stms-public-header .portal-nav form .btn .icon{width:17px;height:17px}
+@media(max-width:900px){
+ .stms-public-header .portal-nav{flex-wrap:wrap;justify-content:flex-end}
+ .stms-public-header .portal-nav .side-link{padding:7px 9px;font-size:.8rem}
+}

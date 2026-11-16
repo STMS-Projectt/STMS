@@ -1,0 +1,43 @@
+{
+  "results": [
+    {
+      "id": "BR-shared-brand-desktop-mobile-dark",
+      "status": "PASS"
+    }
+  ],
+  "errors": [],
+  "http": [
+    {
+      "path": "/",
+      "status": 200
+    },
+    {
+      "path": "/home/assets/contact-team.jpg",
+      "status": 200
+    },
+    {
+      "path": "/Home/Team",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/AdminDashboard",
+      "status": 200
+    },
+    {
+      "path": "/AdminDashboard",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    }
+  ]
+}

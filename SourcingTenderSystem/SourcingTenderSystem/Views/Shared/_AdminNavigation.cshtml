@@ -20,7 +20,7 @@
     };
 }
 <aside class="sidebar" id="workspace-nav" aria-label="@L.T("Administration")">
-    <a class="brand" asp-controller="AdminDashboard" asp-action="Index"><span class="brand-mark"><partial name="_Icon" model='@("brand")' /></span><span>@L.T("Sourcing Desk")<small>@L.T("Administration")</small></span></a>
+    <a class="brand" asp-controller="AdminDashboard" asp-action="Index"><span class="brand-mark"><partial name="_BrandIcon" /></span><span>@L.T("Sourcing Desk")<small>@L.T("Administration")</small></span></a>
     <nav class="side-nav" aria-label="@L.T("Administration pages")">
         @foreach (var (group, entries) in groups)
         {

@@ -1,2 +1,95 @@
 .receipt-login{direction:ltr!important;grid-template-columns:1fr 1fr!important;max-width:1240px!important;align-items:stretch}.receipt-login .auth-aside{display:flex!important;flex-direction:column;padding:32px 38px!important}.receipt-login .auth-panel{padding:42px!important;min-width:0}.receipt-login .login-brand{margin-bottom:24px}.receipt-login .auth-aside h2{font-size:clamp(24px,2.7vw,36px);max-width:20ch;line-height:1.15;letter-spacing:-.03em}.receipt-login .auth-aside p:not(.eyebrow){font-size:14px;line-height:1.6}.receipt-login .auth-panel h1{font-size:40px}.receipt-login .login-benefits{margin-top:22px!important}.receipt-printer{position:relative;width:min(100%,350px);margin:22px auto 0;padding:12px 10px 8px;overflow:hidden;filter:drop-shadow(0 12px 14px #17534020)}.receipt-printer:before{content:'';position:absolute;z-index:2;top:0;left:0;right:0;height:16px;border-radius:7px;background:linear-gradient(#71928a,#153c32 45%,#103027 65%,#72978a)}.receipt-paper{padding:23px 24px 25px;background:#fffdf3;color:#1c4035;clip-path:polygon(0 0,100% 0,100% 98%,95% 100%,90% 98%,85% 100%,80% 98%,75% 100%,70% 98%,65% 100%,60% 98%,55% 100%,50% 98%,45% 100%,40% 98%,35% 100%,30% 98%,25% 100%,20% 98%,15% 100%,10% 98%,5% 100%,0 98%);transition:transform .85s ease}.receipt-paper header{text-align:center;border-bottom:2px dashed #b4c5b8;padding-bottom:17px}.receipt-paper header strong{display:block;font:900 26px monospace;letter-spacing:3px}.receipt-paper small{font:9px monospace;letter-spacing:1px}.receipt-paper dl{margin:12px 0}.receipt-paper dl>div{display:flex;justify-content:space-between;align-items:center;gap:15px;padding:11px 0;border-bottom:1px dashed #c6d1c6;font-size:11px}.receipt-paper dt{font:10px monospace;color:#677f71}.receipt-paper dd{margin:0;max-width:190px;overflow-wrap:anywhere;text-align:right}.receipt-paper [hidden]{display:none!important}.receipt-login .receipt-state{font-size:12px!important;text-align:center;font-weight:700;padding:12px 4px;margin:10px 0!important;border-radius:5px;background:#edf3e9}.receipt-barcode{height:27px;margin:14px 15px 9px;background:repeating-linear-gradient(90deg,#254538 0 2px,transparent 2px 4px,#254538 4px 5px,transparent 5px 8px,#254538 8px 12px,transparent 12px 15px)}.receipt-paper footer{text-align:center;font:9px monospace;letter-spacing:1px}.receipt-paper img{display:block;width:95px;height:95px;object-fit:cover;filter:grayscale(1);margin:12px auto;border:5px solid #fff;box-shadow:0 0 0 1px #b1c6b9}.receipt-finger{position:relative;width:90px;margin:12px auto;overflow:hidden;color:#098363}.receipt-finger svg{width:90px;height:100px}.receipt-finger path{stroke-dasharray:100;animation:receipt-draw 2s ease both}.receipt-finger i{position:absolute;left:0;right:0;height:2px;background:#40dba5;box-shadow:0 0 8px #13b980;animation:receipt-laser 2s infinite}.receipt-printer[data-state=success] .receipt-paper{animation:receipt-green .65s;transform:translateY(-110%);transition-delay:.7s}.receipt-printer[data-state=failure] .receipt-paper{animation:receipt-red .65s}.receipt-printer[data-state=failure] .receipt-state{background:#fce4e1;color:#9b302c}.receipt-printer[data-state=success] .receipt-state{background:#c8f2db;color:#006944}@keyframes receipt-draw{from{stroke-dashoffset:100}to{stroke-dashoffset:0}}@keyframes receipt-laser{from{top:5%}to{top:95%}}@keyframes receipt-green{40%{background:#a6edc5}}@keyframes receipt-red{40%{background:#f6bdb8}}@media(max-width:800px){.receipt-login{grid-template-columns:1fr!important}.receipt-login .auth-panel{grid-row:1;padding:26px!important}.receipt-login .auth-aside{padding:26px!important}.receipt-login .login-benefits{display:flex!important}.receipt-login .auth-aside h2{max-width:none}}@media(prefers-reduced-motion:reduce){.receipt-paper,.receipt-finger path,.receipt-finger i{animation:none!important;transition:none!important}}
 .receipt-paper img{width:120px;height:125px;object-fit:contain;background:transparent;border:0;box-shadow:none;filter:grayscale(1);}
+/* Thermal receipt finish. Scoped to preserve the profile cutout and auth flows. */
+.receipt-printer{perspective:1000px;padding-bottom:16px;filter:drop-shadow(0 20px 25px rgba(0,0,0,.08)) drop-shadow(0 8px 10px rgba(0,0,0,.04))}
+.receipt-printer:before{height:17px;background:linear-gradient(180deg,#4b7469 0%,#17372e 28%,#061d17 55%,#31594d 90%,#94baad 100%);box-shadow:inset 0 4px 5px #0008,inset 0 -1px 1px #d5f8e5a6,0 2px 3px #16392d25;border:1px solid #3d6558}
+.receipt-paper{background:#fcfcfd;color:#111827;font-family:'Cascadia Code','SFMono-Regular',Consolas,'Liberation Mono',monospace;transform:rotateX(1.5deg);transform-origin:center top;box-shadow:inset 0 14px 12px -14px #102b2855;animation:receipt-entrance 1s cubic-bezier(.16,1,.3,1) both;clip-path:polygon(0 0,100% 0,100% calc(100% - 5px),96% 100%,92% calc(100% - 6px),88% calc(100% - 1px),84% calc(100% - 5px),80% 100%,76% calc(100% - 6px),72% calc(100% - 1px),68% calc(100% - 5px),64% 100%,60% calc(100% - 6px),56% 100%,52% calc(100% - 4px),48% calc(100% - 1px),44% calc(100% - 6px),40% 100%,36% calc(100% - 5px),32% calc(100% - 1px),28% calc(100% - 6px),24% 100%,20% calc(100% - 5px),16% calc(100% - 1px),12% calc(100% - 6px),8% 100%,4% calc(100% - 4px),0 100%)}
+.receipt-paper header{padding-bottom:13px;border-bottom:1px dashed #a7b0bc}.receipt-paper img.receipt-logo{width:84px;height:91px;margin:0 auto 10px;filter:none;border:0;box-shadow:none;object-fit:contain}.receipt-paper small{display:block;font-size:9px;color:#374151;letter-spacing:1px}.receipt-paper dt{color:#374151;font-size:10px;font-weight:600}.receipt-paper dd{color:#111827;font-size:11px}.receipt-paper dl>div{border-color:#cbd0d7}.receipt-login .receipt-state{font-family:inherit;background:#eef5f2;color:#254c40}.receipt-paper .receipt-barcode{display:block;width:calc(100% - 30px);height:28px;margin:14px 15px 9px;background:none;fill:#111827;shape-rendering:crispEdges}.receipt-paper footer{color:#374151;font-size:9px}.receipt-printer[data-state=success] .receipt-paper{animation:receipt-green .65s;transform:translateY(-110%)}.receipt-printer[data-state=failure] .receipt-paper{animation:receipt-red .65s}
+@keyframes receipt-entrance{from{transform:translateY(-105%) rotateX(0)}to{transform:translateY(0) rotateX(1.5deg)}}
+@media(prefers-reduced-motion:reduce){.receipt-paper{animation:none!important;transform:none}.receipt-printer[data-state=success] .receipt-paper{transform:none}}
+/* Use a dedicated success animation so entrance keyframes cannot override retraction. */
+.receipt-printer[data-state=success] .receipt-paper{animation:receipt-approved-retract 1.5s cubic-bezier(.65,0,.35,1) forwards;transition:none;transform:translateY(-110%)}
+@keyframes receipt-approved-retract{0%{transform:translateY(0) rotateX(1.5deg);background:#fcfcfd}22%{transform:translateY(0) rotateX(1.5deg);background:#a6edc5}42%{transform:translateY(0) rotateX(1.5deg);background:#fcfcfd}100%{transform:translateY(-110%) rotateX(0);background:#fcfcfd}}
+@media(prefers-reduced-motion:reduce){.receipt-printer[data-state=success] .receipt-paper{animation:none!important;transform:translateY(-110%);transition:none}}
+/* Single Google provider: one full-width button. */
+.receipt-login .login-provider-grid{grid-template-columns:1fr}
+/* Desktop: the whole sign-in page fits the viewport, both halves share one height. */
+@media(min-width:801px) and (min-height:600px){
+body:has(.receipt-login) .site-body{height:100dvh;min-height:0}
+body:has(.receipt-login) .stms-public-header{flex:none}
+body:has(.receipt-login) .page-content{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;padding-block:clamp(8px,1.4vh,14px)}
+body:has(.receipt-login) .site-footer{flex:none;padding-block:4px 8px}
+.receipt-login{flex:1 1 auto;width:100%;min-height:0;max-height:100%;height:100%;grid-template-rows:minmax(0,1fr)}
+.receipt-login .auth-aside,.receipt-login .auth-panel{min-height:0;padding:clamp(20px,3.4vh,36px) clamp(26px,3vw,46px)!important;justify-content:flex-start}
+.receipt-login .auth-panel{overflow-y:auto;scrollbar-width:thin}
+.receipt-login .login-brand{margin-bottom:clamp(8px,1.6vh,18px)}
+.receipt-login .auth-aside h2{font-size:clamp(1.55rem,3.9vh,2.4rem);margin:clamp(6px,1.2vh,12px) 0}
+.receipt-login .auth-aside p:not(.eyebrow){font-size:clamp(13px,1.7vh,15px)}
+.receipt-printer{flex:none;width:min(100%,clamp(240px,34vh,330px));margin:auto;padding-top:10px}
+.receipt-login .auth-aside>p:not(.eyebrow){margin-bottom:clamp(8px,1.6vh,16px)!important}
+.receipt-paper{padding:clamp(12px,2vh,22px) clamp(16px,2vw,24px) clamp(14px,2.2vh,24px)}
+.receipt-paper header{padding-bottom:clamp(6px,1.2vh,13px)}
+.receipt-paper img.receipt-logo{width:auto;height:clamp(34px,5vh,76px);margin-bottom:clamp(4px,.8vh,10px)}
+.receipt-paper dl{margin:clamp(4px,.8vh,12px) 0}
+.receipt-paper dl>div{padding:clamp(4px,.8vh,10px) 0}
+.receipt-login .receipt-state{padding:clamp(6px,1.1vh,12px) 4px;margin:clamp(4px,.8vh,10px) 0!important}
+.receipt-paper .receipt-barcode{height:clamp(18px,2.8vh,28px);margin:clamp(6px,1.2vh,14px) 15px clamp(4px,.8vh,9px)}
+.receipt-paper img[data-receipt-photo]{width:clamp(70px,11vh,120px);height:clamp(72px,11.5vh,125px);margin:clamp(6px,1vh,12px) auto}
+.receipt-finger{margin:clamp(6px,1vh,12px) auto}.receipt-finger svg{height:clamp(60px,9vh,100px)}
+.receipt-login .login-benefits{flex:none;margin-top:0!important;padding-top:clamp(6px,1.2vh,12px);gap:6px}
+.receipt-login .login-benefits span{gap:3px;font-size:.85rem}
+.receipt-login .login-benefits .icon{width:clamp(26px,3.6vh,33px);height:clamp(26px,3.6vh,33px)}
+.receipt-login .auth-panel h1{font-size:clamp(1.9rem,4.6vh,2.6rem)}
+.receipt-login .auth-methods{margin:clamp(10px,1.8vh,16px) 0 clamp(10px,2vh,18px)}
+.receipt-login #password-sign-in{gap:clamp(4px,.7vh,7px)}
+.receipt-login .form-control{min-height:clamp(40px,5vh,46px)}
+.receipt-login .login-providers{margin-top:clamp(12px,2.2vh,22px)}
+.receipt-login .login-provider-divider{margin-bottom:clamp(8px,1.4vh,14px)}
+.receipt-login .login-provider{min-height:clamp(42px,5.4vh,52px)}
+}
+@media(min-width:801px) and (min-height:600px) and (max-height:760px){
+.receipt-login .login-brand{display:none}
+.receipt-login .login-benefits span{font-size:.8rem}
+.receipt-login .receipt-paper small{font-size:8px}
+body:has(.receipt-login) .site-footer{display:none}
+.receipt-login .auth-panel>.eyebrow{display:none}
+.receipt-login .login-provider-note{margin-top:6px}
+}
+/* ===== Modern bento sign-in: dark emerald story card + clean form panel ===== */
+body:has(.receipt-login){background:radial-gradient(900px 500px at 85% -10%,light-dark(#d5f3e8,#123a30) 0,transparent 60%),radial-gradient(700px 500px at -10% 110%,light-dark(#dcebf7,#14283a) 0,transparent 60%),light-dark(#f5f8f7,#0f1a1f)}
+body:has(.receipt-login):before{content:"";position:fixed;inset:0;pointer-events:none;background-image:radial-gradient(light-dark(#0f5a4514,#ffffff0d) 1px,transparent 1px);background-size:22px 22px;mask-image:linear-gradient(#000,transparent 70%)}
+body:has(.receipt-login) .stms-public-header{background:light-dark(#ffffffcc,#18232acc);backdrop-filter:blur(14px);border:1px solid light-dark(#e3ece9,#2a3a3f);box-shadow:0 1px 2px #0b2a2208,0 8px 24px #0b2a220a;border-radius:20px}
+body:has(.receipt-login) .stms-footer{background:transparent;box-shadow:none;border:0}
+.receipt-login.auth-shell{position:relative;background:light-dark(#fff,#162026);border:1px solid light-dark(#e2ebe8,#2a3a3f);border-radius:30px;padding:10px;gap:10px;box-shadow:0 1px 2px #0b2a220a,0 24px 60px -12px light-dark(#0b3a2c2e,#0006)}
+@media(min-width:801px){.receipt-login.auth-shell{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important}}
+.receipt-login .auth-aside{position:relative;isolation:isolate;border-radius:22px!important;color:#e6f5ef;background:radial-gradient(420px 300px at 85% 95%,#1fb48a55,transparent 70%),radial-gradient(380px 260px at 0% 0%,#2a8f7333,transparent 70%),linear-gradient(160deg,#0d4637 0%,#082c23 55%,#06201a 100%)}
+.receipt-login .auth-aside:before{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;background-image:linear-gradient(#ffffff0a 1px,transparent 1px),linear-gradient(90deg,#ffffff0a 1px,transparent 1px);background-size:36px 36px;mask-image:radial-gradient(ellipse at 30% 20%,#000 0,transparent 75%)}
+.receipt-login .login-brand strong{color:#fff}.receipt-login .login-brand span{color:#a9cfc2;border-color:#ffffff26}
+.receipt-login .auth-aside .eyebrow{background:#ffffff14;color:#8ff0cc;border:1px solid #ffffff1f;backdrop-filter:blur(6px)}
+.receipt-login .auth-aside h2{color:#fff;letter-spacing:-.04em}
+.receipt-login .auth-aside p:not(.eyebrow){color:#b5d3c8}
+.receipt-login .auth-aside .receipt-paper p.receipt-state{color:#1f4a3d;background:#eaf6f1}
+.receipt-login .receipt-printer[data-state=success] p.receipt-state{background:#c8f2db;color:#006944}
+.receipt-login .receipt-printer[data-state=failure] p.receipt-state{background:#fce4e1;color:#9b302c}
+.receipt-login .receipt-printer{filter:drop-shadow(0 24px 30px #00000059)}
+.receipt-login .receipt-printer:before{background:linear-gradient(180deg,#3a5f55,#0a1e19 50%,#1d3b33);border-color:#ffffff1a}
+.receipt-login .login-benefits{gap:8px!important}
+.receipt-login .login-benefits span{flex-direction:row;display:flex;align-items:center;justify-content:center;gap:7px;white-space:nowrap;padding:9px 8px;border-radius:12px;background:#ffffff0d;border:1px solid #ffffff17;color:#d5ece4;font-size:.78rem;font-weight:600}
+.receipt-login .login-benefits .icon{width:22px!important;height:22px!important;padding:4px;border:0;border-radius:7px;background:#1fb48a33;color:#8ff0cc}
+.receipt-login .auth-panel{background:light-dark(#fff,#162026);padding-inline:clamp(28px,4vw,64px)!important}
+.receipt-login .auth-panel>.eyebrow{color:light-dark(#0b8a66,#7fe6c2);font-size:.7rem}
+.receipt-login .auth-panel h1{color:light-dark(#0b1f1a,#eef6f3);letter-spacing:-.045em;font-weight:750}
+.receipt-login .auth-methods{background:light-dark(#f1f5f4,#1d2a30);border:1px solid light-dark(#e4ecea,#2a3a3f);border-radius:14px;padding:4px}
+.receipt-login .auth-methods [role=tab]{border:0;border-radius:10px;color:light-dark(#5b6f69,#a9bdb6);font-weight:600;font-size:.9rem}
+.receipt-login .auth-methods [role=tab][aria-selected=true]{background:light-dark(#fff,#24363a);color:light-dark(#0b5c46,#9ff2d4);box-shadow:0 1px 2px #0b2a2214,0 4px 12px #0b2a2212}
+.receipt-login .field{font-size:.84rem;font-weight:600;color:light-dark(#26403a,#cfe0da)}
+.receipt-login .form-control{background:light-dark(#fbfdfc,#1a262c);border:1px solid light-dark(#dbe5e2,#2e4046);border-radius:12px;transition:border-color .15s,box-shadow .15s}
+.receipt-login .form-control:focus{border-color:#10a37f;box-shadow:0 0 0 4px #10a37f1f;background:light-dark(#fff,#1d2b31)}
+.receipt-login #password-sign-in .btn-primary{border:0;border-radius:12px;background:linear-gradient(180deg,#0f8f6d,#0a6e54);box-shadow:inset 0 1px 0 #ffffff33,0 10px 22px -8px #0a6e5499;font-weight:650;transition:transform .15s,box-shadow .15s}
+.receipt-login #password-sign-in .btn-primary:hover{transform:translateY(-1px);box-shadow:inset 0 1px 0 #ffffff33,0 14px 26px -8px #0a6e54b3}
+.receipt-login .login-provider{background:light-dark(#fff,#1a262c);border:1px solid light-dark(#dbe5e2,#2e4046);border-radius:12px;box-shadow:0 1px 2px #0b2a220d;color:light-dark(#13241f,#e3eeea)}
+.receipt-login .login-provider-divider{font-size:.78rem;color:light-dark(#7b8e88,#93a8a1);text-transform:uppercase;letter-spacing:.08em}
+.receipt-login .login-provider-divider:before,.receipt-login .login-provider-divider:after{background:light-dark(#e4ecea,#2a3a3f)}
+.receipt-login .login-provider-note{color:light-dark(#7b8e88,#93a8a1)}
+@media(max-width:800px){.receipt-login.auth-shell{padding:8px;gap:8px;border-radius:24px}.receipt-login .auth-panel{border-radius:18px}.receipt-login .login-benefits{flex-wrap:wrap}.receipt-login .login-benefits span{flex:1 1 auto;font-size:.74rem}}
+@media(prefers-reduced-motion:reduce){.receipt-login #password-sign-in .btn-primary{transition:none}.receipt-login #password-sign-in .btn-primary:hover{transform:none}}

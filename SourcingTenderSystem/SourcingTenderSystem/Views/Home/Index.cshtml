@@ -13,6 +13,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@@0,500;0,600;1,500&family=Inter:wght@@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="~/home/css/style.css" asp-append-version="true">
+  <partial name="_BrandHead" />
   <partial name="_DisplayHead" />
   <link rel="stylesheet" href="~/css/display-preferences.css" asp-append-version="true">
 
@@ -31,7 +32,7 @@
   <!-- ================= LOADER ================= -->
   <div id="loader" aria-live="polite">
     <div class="loader-inner">
-      <div class="brand-mark">L</div>
+      <div class="brand-mark"><partial name="_BrandIcon" /></div>
       <div class="loader-title serif">Little Threads</div>
       <div class="loader-bar"><span id="loaderBar"></span></div>
       <div class="loader-text" id="loaderText">@L.T("Opening the store…")</div>
@@ -43,7 +44,7 @@
     <nav class="navbar" id="navbar">
       <partial name="_DisplayPreferences" />
       <a href="#home" class="logo" aria-label="@L.T("Little Threads home")">
-        <span class="brand-mark">L</span>
+        <span class="brand-mark"><partial name="_BrandIcon" /></span>
         <span class="logo-text"><b>Little Threads</b><small>@L.T("KIDSWEAR SUPPLY")</small></span>
       </a>
       <button class="burger" id="burger" aria-label="@L.T("Open menu")" aria-expanded="false"><span></span><span></span></button>
@@ -228,38 +229,20 @@
 
   <!-- ================= FOOTER ================= -->
   <footer class="site-footer">
-    <div class="container ft-top">
-      <div>
-        <div class="ft-big serif">@L.T("Dressing the next generation,") <em>@L.T("together.")</em></div>
-        <p>@L.T("Get monthly kidswear trends, new suppliers and sourcing tips — straight to your inbox.")</p>
-        <form class="ft-news" id="newsForm" novalidate>
-          <input type="email" name="email" placeholder="@L.T("Enter your email")" aria-label="@L.T("Email address")" required>
-          <button class="btn btn-dark btn-lg" type="submit">@L.T("Subscribe")</button>
-        </form>
-        <div class="ft-note" id="newsNote" role="status"></div>
-      </div>
-      <nav class="ft-cols" aria-label="@L.T("Footer")">
-        <div><h5>@L.T("Explore")</h5><ul><li><a href="#home">@L.T("Home")</a></li><li><a href="#about">@L.T("About")</a></li><li><a href="#how-it-works">@L.T("How It Works")</a></li><li><a href="#contact">@L.T("Contact")</a></li></ul></div>
-        <div><h5>@L.T("Suppliers")</h5><ul><li><a asp-controller="SupplierRegistration" asp-action="Register">@L.T("Registration")</a></li><li><a asp-controller="Account" asp-action="Login">@L.T("Login")</a></li><li><a href="#">@L.T("Guidelines")</a></li><li><a href="#">@L.T("Pricing")</a></li></ul></div>
-        <div><h5>@L.T("Departments")</h5><ul><li><a href="#home">@L.T("Girls & Baby")</a></li><li><a href="#home">@L.T("Boys")</a></li><li><a href="#home">@L.T("Accessories")</a></li><li><a href="#home">@L.T("Our Team")</a></li></ul></div>
+    <div class="container ft-row">
+      <a href="#home" class="logo"><span class="brand-mark"><partial name="_BrandIcon" /></span><span class="logo-text"><b>Little Threads</b><small>@L.T("KIDSWEAR SUPPLY")</small></span></a>
+      <nav class="ft-links" aria-label="@L.T("Footer")">
+        <a href="#home">@L.T("Home")</a>
+        <a href="#about">@L.T("About")</a>
+        <a href="#how-it-works">@L.T("How It Works")</a>
+        <a href="#contact">@L.T("Contact")</a>
+        <a asp-controller="Home" asp-action="Team">@L.T("Development team")</a>
       </nav>
     </div>
-    <div class="container ft-mid">
-      <a href="#home" class="logo"><span class="brand-mark">L</span><span class="logo-text"><b>Little Threads</b><small>@L.T("KIDSWEAR SUPPLY")</small></span></a>
-      <div class="ft-contact">
-        <div><b>@L.T("CALL")</b><a href="tel:+0000000000">+000 000 0000</a></div>
-        <div><b>@L.T("EMAIL")</b><a href="mailto:hello@@littlethreads.com">hello@@littlethreads.com</a></div>
-        <div><b>@L.T("VISIT")</b><span>@L.T("Main St. 12, Your City")</span></div>
-      </div>
-      <div class="ft-social">
-        <a href="#" aria-label="Instagram"><svg class="i"><use href="#i-ig"/></svg></a>
-        <a href="#" aria-label="LinkedIn"><svg class="i"><use href="#i-li"/></svg></a>
-        <a href="#" aria-label="Facebook"><svg class="i"><use href="#i-fb"/></svg></a>
-        <a href="#" aria-label="TikTok"><svg class="i"><use href="#i-tk"/></svg></a>
-      </div>
+    <div class="container ft-bottom">
+      <span>© <span id="year"></span> @L.T("Little Threads. All rights reserved.")</span>
+      <a href="mailto:hello@@littlethreads.com">hello@@littlethreads.com</a>
     </div>
-    <div class="ft-marquee serif" aria-hidden="true"><span>Little Threads · Kidswear Supply · Little Threads · Kidswear Supply ·&nbsp;</span><span>Little Threads · Kidswear Supply · Little Threads · Kidswear Supply ·&nbsp;</span></div>
-    <div class="ft-strip"><div class="container"><span>© <span id="year"></span> @L.T("Little Threads. All rights reserved.")</span><span><a href="#">@L.T("Privacy")</a> · <a href="#">@L.T("Terms")</a> · <a href="#">@L.T("Cookies")</a></span><span>@L.T("Made with care for little ones")</span></div></div>
   </footer>
 
   <!-- icon sprite -->
