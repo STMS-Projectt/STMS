@@ -157,6 +157,8 @@ function bind(root) {
             if (result.redirectUrl) {
                 release();
                 setState("success", "Face verified. Signing you in…", "success");
+                await window.stmsReceipt?.profilePhoto();
+                await window.stmsReceipt?.approve();
                 window.location.assign(result.redirectUrl);
             } else if (result.complete) {
                 release();
