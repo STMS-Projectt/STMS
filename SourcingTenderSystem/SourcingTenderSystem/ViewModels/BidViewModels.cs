@@ -91,6 +91,7 @@ public class BidDocumentUploadViewModel
 public class CompliancePendingRow
 {
     public Tender Tender { get; set; } = new Tender();
+    public int ReceivedCount { get; set; }        // bids that arrived while the tender is still open (content stays sealed)
     public int SubmittedCount { get; set; }       // still waiting for the compliance check
     public int CompliantCount { get; set; }
     public int NonCompliantCount { get; set; }

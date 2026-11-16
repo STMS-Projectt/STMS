@@ -35,7 +35,10 @@ public class ComplianceController : Controller
         {
             if (tender.Status == "Open")
             {
-                rows.Add(new CompliancePendingRow { Tender = tender });
+                // Tender still open: only show HOW MANY bids arrived so far. The content
+                // (prices, suppliers, documents) stays sealed until the tender is closed.
+                int received = await EvaluationRules.Unresolved(_context, tender.Id).CountAsync();
+                rows.Add(new CompliancePendingRow { Tender = tender, ReceivedCount = received });
                 continue;
             }
             int submitted = await EvaluationRules.Unresolved(_context, tender.Id).CountAsync();

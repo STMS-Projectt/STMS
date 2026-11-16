@@ -7,13 +7,6 @@
 {
     <p class="alert alert-success">@L.F("Submitted on {0} UTC. Your scores are read-only.", submission.SubmittedAt.ToString("yyyy-MM-dd HH:mm", L.DisplayCulture))</p>
 }
-else if (Model.Tender.Status == "Under Evaluation")
-{
-    <form asp-action="SubmitEvaluation" asp-route-id="@Model.Tender.Id" method="post" class="mb-3"
-          data-workspace-confirm="@L.T("Submit your evaluation? Scores will become read-only.")">
-        <button type="submit" class="btn btn-primary">@L.T("Submit evaluation")</button>
-    </form>
-}
 @if (User.IsInRole("SourcingManager"))
 {
     <p><a class="btn btn-outline-secondary" data-workspace-dialog="details" asp-controller="EvaluationWorkflow" asp-action="Details" asp-route-id="@Model.Tender.Id"><partial name="_Icon" model='@("file")' /> @L.T("Evaluation progress and final report")</a></p>
@@ -102,6 +95,14 @@ else if (Model.Tender.Status == "Under Evaluation")
 }
 
 <div class="record-reference-actions">
+    @* Submit is the final step; it shares this row with the reference links. *@
+    @if (Model.Tender.Status == "Under Evaluation" && ViewBag.Submission is not EvaluationSubmission)
+    {
+        <form asp-action="SubmitEvaluation" asp-route-id="@Model.Tender.Id" method="post"
+              data-workspace-confirm="@L.T("Submit your evaluation? Scores will become read-only.")">
+            <button type="submit" class="btn btn-primary">@L.T("Submit evaluation")</button>
+        </form>
+    }
     <a class="btn btn-outline-secondary" data-workspace-dialog="details" asp-controller="Clarifications" asp-action="Index" asp-route-kind="tender" asp-route-recordId="@Model.Tender.Id"><partial name="_Icon" model='@("mail")' /> @L.T("Clarification history")</a>
     <partial name="_RecordQr" model='@(Url.Action("Details", new { id = Model.Tender.Id })!)' />
 </div>

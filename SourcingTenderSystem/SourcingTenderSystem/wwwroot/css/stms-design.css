@@ -482,8 +482,21 @@ a.admin-total-card:hover{background:light-dark(#f1faf7, #143027);color:light-dar
 .record-facts>div:has(.record-field-icon){display:flex;align-items:center;gap:7px}
 .record-action .record-icon-action{position:relative;display:grid;place-items:center;width:44px;height:44px;border:1px solid light-dark(#d5e8e2, #305c4e);border-radius:11px;background:light-dark(#eff8f5, #162f27);color:light-dark(#006a56, #b0f4e7)}
 .record-icon-action:is(:hover,:focus-visible){background:light-dark(#dff3eb, #163428);color:light-dark(#004c3e, #b3f4e8)}
-.record-icon-action:is(:hover,:focus-visible)::after{content:attr(data-tooltip);position:absolute;z-index:3;inset-inline-end:0;bottom:calc(100% + 5px);padding:5px 9px;border-radius:6px;background:light-dark(#163d41, #163d41);color:white;white-space:nowrap;font-size:.76rem;pointer-events:none}
+.record-icon-action:is(:hover,:focus-visible)::after{content:attr(data-tooltip);position:absolute;z-index:20;inset-inline-end:0;bottom:calc(100% + 5px);padding:5px 9px;border-radius:6px;background:light-dark(#163d41, #163d41);color:white;white-space:nowrap;font-size:.76rem;pointer-events:none}
+/* File picker button: full height + consistent hover so no blank strip shows */
+.form-control[type=file]::file-selector-button{height:calc(100% + 2px);margin-block:-1px;margin-inline:-1px 12px;display:inline-flex;align-items:center;padding-block:0;border:0;border-inline-end:1px solid light-dark(#d5e8e2, #305c4e);background:light-dark(#eff8f5, #1a3630);color:light-dark(#00533e, #b0f4e7);transition:background .15s ease}
+.form-control[type=file]:hover::file-selector-button,.form-control[type=file]::file-selector-button:hover{background:light-dark(#dff3eb, #21473c)}
 .record-action:has(.record-icon-action){display:flex;justify-content:flex-end}
+/* Reference actions (submit + clarification history + QR disclosure) sit in one wrapping row */
+.record-reference-actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:18px}
+.record-reference-actions>form{margin:0}
+/* When the QR opens it becomes a card, so give it the whole row */
+.record-reference-actions>.record-qr[open]{flex-basis:100%}
+/* QR disclosure should match the sibling outline button while collapsed, then open into a card */
+.record-reference-actions>.record-qr{margin:0!important;padding:0;border:0;background:none;box-shadow:none}
+.record-reference-actions>.record-qr>summary{display:inline-flex;align-items:center;gap:8px;min-height:41px;padding:.51rem .9rem;border:1px solid light-dark(#d6dfe9,#30455c);border-radius:10px;background:light-dark(#fff,#1b2125);font-size:.87rem;font-weight:700;color:light-dark(#33445b,#2a384b);cursor:pointer}
+.record-reference-actions>.record-qr[open]{border:1px solid var(--line);border-radius:12px;padding:14px;background:light-dark(#fff,#1b2936)}
+.record-reference-actions>.record-qr[open]>summary{border-color:transparent;background:none;padding-inline-start:0;margin-bottom:10px}
 @media(min-width:1001px){
     .record-list{grid-template-columns:minmax(0,1fr);gap:9px}
     .record-card{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1.9fr) 44px;align-items:center;padding:12px 16px}

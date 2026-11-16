@@ -69,7 +69,10 @@ else
                     <th scope="col">@L.T("Supplier")</th>
                     @foreach (var bid in Model.Bids)
                     {
-                        <th scope="col">@bid.SupplierProfile.CompanyName</th>
+                        <th scope="col">
+                            @bid.SupplierProfile.CompanyName
+                            <br /><small class="text-muted fw-normal">@L.F("Bid #{0}", bid.Id)</small>
+                        </th>
                     }
                 </tr>
             </thead>
