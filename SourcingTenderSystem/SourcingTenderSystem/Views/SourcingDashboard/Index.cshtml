@@ -13,7 +13,7 @@
     var trendMax = 4d * step;
 }
 <header class="page-heading stms-hero admin-overview">
-    <div><p class="eyebrow">@L.T("SOURCING WORKSPACE")</p><h1>@L.T("Sourcing dashboard")</h1><p>@Model.OfficerName · Review requests, coordinate tenders, and check supplier bids.</p></div>
+    <div><p class="eyebrow">@L.T("SOURCING WORKSPACE")</p><h1>@L.T("Sourcing dashboard")</h1><p>@Model.OfficerName · @L.T("Review requests, coordinate tenders, and check supplier bids.")</p></div>
     <a class="btn btn-primary" asp-controller="RequisitionReviews" asp-action="Pending">@L.T("Open review queue") <partial name="_Icon" model='@("arrow")' /></a>
 </header>
 <div class="admin-analytics sourcing-analytics">

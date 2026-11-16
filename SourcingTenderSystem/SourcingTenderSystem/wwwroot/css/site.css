@@ -265,6 +265,78 @@ textarea.form-control {min-height:91px}
 .ai-actions {display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:1rem}
 .ai-actions .btn {display:inline-flex;align-items:center;gap:6px}
 
+/* Winning supplier AI brief (EvaluationWorkflow/Winner) */
+.wb-shell {--wb-accent:var(--brand);--wb-soft:light-dark(#eef8f6, #16302c);--wb-card:light-dark(#fff, #1b2936);display:grid;gap:18px}
+.wb-intro {display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:18px 22px;border-radius:18px;background:linear-gradient(120deg,light-dark(#f2faf8, #15282c),light-dark(#f7f9fc, #18243a));border:1px solid var(--line)}
+.wb-tender-id {display:inline-block;font-size:.68rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--brand-dark);background:light-dark(#dff3ee, #173a34);border-radius:999px;padding:.2rem .65rem;margin-bottom:.45rem}
+.wb-tender-title {margin:0;font-size:clamp(1.15rem,2.4vw,1.45rem);font-weight:750;color:var(--ink)}
+.wb-banner {display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border-radius:14px;background:light-dark(#f6f8fb, #172433);border:1px dashed light-dark(#cfd9e6, #33475f)}
+.wb-banner-icon {flex:none;display:grid;place-items:center;width:36px;height:36px;border-radius:10px;background:light-dark(#e3f4ef, #16332a);color:var(--brand-dark)}
+.wb-banner-title {margin:0;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.wb-banner-text {margin:.2rem 0 0;color:var(--muted);font-size:.88rem;line-height:1.55}
+.wb-ai-chip {display:inline-flex;align-items:center;font-size:.64rem;font-weight:850;letter-spacing:.08em;color:#fff;background:linear-gradient(135deg,#0f8f80,#5b5bd6);border-radius:6px;padding:.12rem .42rem;line-height:1.4}
+.wb-body {display:grid;gap:16px}
+.wb-hero {position:relative;overflow:hidden;isolation:isolate;padding:clamp(18px,3vw,26px);border-radius:20px;color:#fff;background:linear-gradient(125deg,#0d2d3f 0%,#0f4c4d 55%,#0c766b 100%);box-shadow:0 18px 40px -22px #0b3b3a}
+.wb-hero::after {content:"";position:absolute;inset-inline-end:-80px;top:-90px;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,#3fe0c455,transparent 70%);z-index:-1}
+.wb-hero-top {display:flex;align-items:center;gap:14px}
+.wb-trophy {flex:none;display:grid;place-items:center;width:52px;height:52px;border-radius:15px;background:linear-gradient(145deg,#ffd77a,#f0a930);color:#5a3a00;box-shadow:0 8px 18px -8px #f0a930}
+.wb-trophy .icon {width:26px;height:26px}
+.wb-hero-title {flex:1;min-width:0}
+.wb-kicker {margin:0 0 .15rem;font-size:.68rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#9ff3e0}
+.wb-hero h3 {margin:0;font-size:clamp(1.3rem,3vw,1.75rem);font-weight:800;color:#fff;overflow-wrap:anywhere}
+.wb-score {flex:none;width:78px;height:78px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(#5ff0d2 calc(var(--score)*1%),#ffffff26 0)}
+.wb-score>span {width:62px;height:62px;border-radius:50%;display:grid;place-content:center;text-align:center;background:#0e3a44;line-height:1}
+.wb-score strong {font-size:1.2rem;font-weight:800}
+.wb-score small {font-size:.62rem;color:#b9dcd8;margin-top:2px}
+.wb-hero-text {margin:16px 0 0;padding-top:14px;border-top:1px solid #ffffff24;color:#d9ecef;line-height:1.65}
+.wb-stats {display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:0}
+.wb-stat {padding:14px 16px;border-radius:14px;background:var(--wb-card);border:1px solid var(--line);box-shadow:var(--shadow)}
+.wb-stat dt {display:flex;align-items:center;gap:6px;font-size:.74rem;font-weight:650;color:var(--muted)}
+.wb-stat dt .icon {width:15px;height:15px;color:var(--brand-dark)}
+.wb-stat dd {margin:.35rem 0 0;font-size:1.25rem;font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums}
+.wb-stat dd small {font-size:.75rem;font-weight:600;color:var(--muted)}
+.wb-grid {display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:16px}
+.wb-section {padding:18px 20px;border-radius:16px;background:var(--wb-card);border:1px solid var(--line);box-shadow:var(--shadow)}
+.wb-section-title {display:flex;align-items:center;gap:10px;margin:0 0 .75rem;font-size:1rem;font-weight:750;color:var(--ink)}
+.wb-section-icon {flex:none;display:grid;place-items:center;width:32px;height:32px;border-radius:10px;background:light-dark(#e2f6ee, #153327);color:light-dark(#096d5b, #b3efe4)}
+.wb-section-icon .icon {width:17px;height:17px}
+.wb-section-icon.tone-blue {background:light-dark(#e9f1ff, #141e31);color:light-dark(#315fa1, #b3c6e1)}
+.wb-section-icon.tone-amber {background:light-dark(#fff2dd, #332715);color:light-dark(#8a550b, #eed4af)}
+.wb-section-text {margin:0;color:var(--ink);line-height:1.7}
+.wb-list {list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.wb-list li {position:relative;padding-inline-start:28px;line-height:1.6;color:var(--ink)}
+.wb-list li::before {content:"";position:absolute;inset-inline-start:0;top:.3em;width:18px;height:18px;border-radius:50%;background:light-dark(#d9f2ea, #1a3f37) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8.3l2.6 2.5L12 5.4' fill='none' stroke='%23089078' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/12px no-repeat}
+.wb-list-blue li::before {background-color:light-dark(#e3ecff, #1a2744);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 3l1.5 3.2 3.5.4-2.6 2.4.7 3.5L8 10.8l-3.1 1.7.7-3.5L3 6.6l3.5-.4z' fill='%233f6fc4'/%3E%3C/svg%3E")}
+.wb-list-amber li::before {background-color:light-dark(#fff0d6, #3a2c14);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 4v5' stroke='%23b8700f' stroke-width='2' stroke-linecap='round'/%3E%3Ccircle cx='8' cy='12' r='1.2' fill='%23b8700f'/%3E%3C/svg%3E")}
+.wb-verify {background:light-dark(#fffaf0, #241e12);border-color:light-dark(#f3dfb4, #5a4722)}
+.wb-footer {display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-top:14px;border-top:1px solid var(--line)}
+.wb-meta {display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:.8rem;color:var(--muted)}
+.wb-actions {display:flex;gap:10px;flex-wrap:wrap}
+.wb-actions .btn,.wb-alert .btn {display:inline-flex;align-items:center;gap:6px;border-radius:10px}
+.wb-alert {display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 16px;border-radius:14px;background:light-dark(#fff6e5, #2e2412);border:1px solid light-dark(#f2d48f, #6a5527);color:light-dark(#6b4500, #f3dcb3)}
+.wb-alert>div {flex:1;min-width:200px}
+.wb-alert>.icon {flex:none;width:20px;height:20px}
+.wb-loading {display:grid;gap:12px}
+.wb-loading-label {display:flex;align-items:center;gap:10px;color:var(--muted);font-size:.9rem}
+.wb-skeleton {height:82px;border-radius:14px;background:linear-gradient(90deg,light-dark(#eef2f7, #1c2a3a) 25%,light-dark(#f7f9fc, #24364a) 50%,light-dark(#eef2f7, #1c2a3a) 75%);background-size:200% 100%}
+.wb-skeleton-hero {height:150px;border-radius:20px}
+.wb-skeleton-block {height:120px}
+.wb-skeleton-row {display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media(prefers-reduced-motion:no-preference) {
+    .wb-skeleton {animation:wb-shimmer 1.4s ease-in-out infinite}
+    .wb-body>* {animation:wb-rise .35s ease-out both}
+    .wb-body>*:nth-child(2) {animation-delay:.05s}.wb-body>*:nth-child(3) {animation-delay:.1s}.wb-body>*:nth-child(4) {animation-delay:.15s}.wb-body>*:nth-child(n+5) {animation-delay:.2s}
+}
+@keyframes wb-shimmer {from {background-position:200% 0} to {background-position:-200% 0}}
+@keyframes wb-rise {from {opacity:0;transform:translateY(6px)} to {opacity:1;transform:none}}
+@media(max-width:575px) {
+    .wb-intro {padding:14px 16px}
+    .wb-stats {grid-template-columns:repeat(2,minmax(0,1fr))}.wb-stat {padding:12px}.wb-stat dd {font-size:1.05rem}
+    .wb-hero-top {flex-wrap:wrap}
+    .wb-score {width:64px;height:64px}.wb-score>span {width:50px;height:50px}.wb-score strong {font-size:1rem}
+    .wb-footer {flex-direction:column;align-items:stretch}.wb-actions .btn {justify-content:center;flex:1}
+}
+
 /* Sign-in methods and face recognition (shared tokens; no separate theme) */
 .notice-muted {border-color:var(--line);background:light-dark(#f6f8fb, #151f2e);color:var(--muted)}
 .notice-muted .icon {color:light-dark(#8a550b, #eed4af);flex:none}

@@ -66,9 +66,17 @@
         menu("More", panel.querySelector("label:has([data-filter-sort])"));
         const search = panel.querySelector("[data-directory-search-form], form, .directory-search");
         menu("Search", search?.hidden ? null : search);
-        menu("Pages", directory.querySelector("[data-register-pages]"));
-        const pages = directory.querySelector("[data-dept-pagination]");
-        if (pages) dock.append(pages);
+        // Record pagination becomes a horizontal bar BELOW the list instead of a dock popover.
+        const pagination = directory.querySelector("[data-dept-pagination]");
+        if (pagination) {
+            pagination.classList.add("directory-bottom-pagination");
+            pagination.removeAttribute("data-dept-menu");
+            pagination.querySelector(".dept-dock-button")?.remove();
+            const pop = pagination.querySelector(".dept-filter-popover");
+            if (pop) { pop.hidden = false; pop.classList.remove("dept-filter-popover"); pop.querySelector("strong")?.remove(); }
+            const list = directory.querySelector("[data-record-list]") || directory.querySelector(".table-responsive, .directory-table");
+            if (list) list.after(pagination); else directory.append(pagination);
+        }
         const reset = panel.querySelector("[data-filter-reset]");
         if (reset) { decorate(reset, "Reset"); dock.append(reset); }
         const clear = panel.querySelector("[data-directory-clear]");

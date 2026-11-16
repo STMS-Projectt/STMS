@@ -39,6 +39,9 @@ body.workspace .sidebar .side-link.is-current{color:light-dark(#fff, #fff);backg
 .stms-metrics{margin-bottom:1.25rem}
 .stms-stat-row{display:grid;grid-template-columns:minmax(7rem,1fr) minmax(3rem,3fr) 2.5rem;align-items:center;gap:.85rem;padding:.65rem 0;border-bottom:1px solid light-dark(#e8eef2, #2e4656)}
 .stms-stat-row meter{width:100%;accent-color:#008564}.stms-stat-row meter::-webkit-meter-optimum-value{background:light-dark(#0a9270, #188469)}
+/* Status labels are links: no underline, readable colour, brand-green on hover */
+.stms-stat-row>a{text-decoration:none;color:light-dark(#20405a, #c6d7e3);font-weight:600}
+.stms-stat-row>a:is(:hover,:focus-visible){color:light-dark(#007a5e, #4fd0b2)}
 .workspace .directory .table{margin:0}.workspace .directory .table th{background:light-dark(#f2f6fa, #142230);color:light-dark(#263b50, #c2d1df)}
 body:has(.auth-shell){background:radial-gradient(ellipse at 95% 0%,light-dark(#d9f5ee, #16352d),transparent 68%),radial-gradient(ellipse at 25% 80%,light-dark(#dbeef5, #162c35),transparent 65%),light-dark(#f3f7fa, #15242f)}
 .auth-shell{max-width:1260px;border-radius:44px;overflow:hidden;border:3px solid light-dark(#fff, #354345);background:light-dark(#ffffffa8, #1b2125a8);box-shadow:0 25px 65px #27677a26;min-height:590px}
@@ -675,6 +678,17 @@ body:has(.dept-directory) [data-scroll-top]{bottom:18px}
 [data-page-status]{font-size:.69rem;white-space:nowrap;padding-inline:0}
 /* Final page menu sizing overrides the shared popover button rules. */
 [data-dept-pagination] [data-page-options] button{display:flex;align-items:center;justify-content:center;flex:0 0 38px;box-sizing:border-box;width:38px;height:38px;min-width:38px;min-height:38px;max-width:38px;padding:0;margin-inline:auto;line-height:1;text-align:center;font-variant-numeric:tabular-nums}
+/* Record pagination shown as a horizontal bar below the list (not inside the filter dock). */
+.directory-bottom-pagination{position:static;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:12px;margin:6px 18px 16px;padding:14px 12px 4px;border-top:1px solid light-dark(#e4eeeb, #31564b)}
+.directory-bottom-pagination[hidden]{display:none!important}
+.directory-bottom-pagination>div{position:static;display:flex;flex-direction:row;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px;min-width:0;max-height:none;padding:0;margin:0;border:0;background:none;box-shadow:none;overflow:visible;animation:none;transform:none;translate:none}
+.directory-bottom-pagination [data-page-options]{display:flex;flex-direction:row;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;grid-template-columns:none}
+.directory-bottom-pagination[data-dept-pagination] [data-page-options] button{margin:0}
+.directory-bottom-pagination [data-page-status]{padding:0;border:0;white-space:nowrap}
+/* Server-side register pagination as a bottom bar (not inside the filter dock). */
+.dept-directory>[data-register-pages]{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin:6px 18px 16px;padding:14px 12px 4px;border-top:1px solid light-dark(#e4eeeb, #31564b)}
+.dept-directory>[data-register-pages]>a{display:grid;place-items:center;min-width:40px;min-height:40px;padding:6px 14px;font-variant-numeric:tabular-nums}
+.dept-directory>[data-register-pages]>span[aria-current=page]{display:grid;place-items:center;min-width:40px;height:40px;padding:0 12px;border-radius:11px;background:light-dark(#008265, #146e5a);color:#fff;font-weight:800;font-variant-numeric:tabular-nums}
 .directory-filter-panel[hidden]{display:none!important}
 .admin-dock-panel .directory-status-options,.admin-dock-panel [data-register-pages],.admin-dock-panel [data-register-pages] .button-row{display:grid;gap:6px;padding:0}
 .admin-dock-panel .directory-status-options a{display:block}
