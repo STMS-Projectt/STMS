@@ -55,3 +55,41 @@ body:has(.receipt-login) .site-footer{display:none}
 .receipt-login .auth-panel>.eyebrow{display:none}
 .receipt-login .login-provider-note{margin-top:6px}
 }
+/* ===== Modern bento sign-in: dark emerald story card + clean form panel ===== */
+body:has(.receipt-login){background:radial-gradient(900px 500px at 85% -10%,light-dark(#d5f3e8,#123a30) 0,transparent 60%),radial-gradient(700px 500px at -10% 110%,light-dark(#dcebf7,#14283a) 0,transparent 60%),light-dark(#f5f8f7,#0f1a1f)}
+body:has(.receipt-login):before{content:"";position:fixed;inset:0;pointer-events:none;background-image:radial-gradient(light-dark(#0f5a4514,#ffffff0d) 1px,transparent 1px);background-size:22px 22px;mask-image:linear-gradient(#000,transparent 70%)}
+body:has(.receipt-login) .stms-public-header{background:light-dark(#ffffffcc,#18232acc);backdrop-filter:blur(14px);border:1px solid light-dark(#e3ece9,#2a3a3f);box-shadow:0 1px 2px #0b2a2208,0 8px 24px #0b2a220a;border-radius:20px}
+body:has(.receipt-login) .stms-footer{background:transparent;box-shadow:none;border:0}
+.receipt-login.auth-shell{position:relative;background:light-dark(#fff,#162026);border:1px solid light-dark(#e2ebe8,#2a3a3f);border-radius:30px;padding:10px;gap:10px;box-shadow:0 1px 2px #0b2a220a,0 24px 60px -12px light-dark(#0b3a2c2e,#0006)}
+@media(min-width:801px){.receipt-login.auth-shell{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important}}
+.receipt-login .auth-aside{position:relative;isolation:isolate;border-radius:22px!important;color:#e6f5ef;background:radial-gradient(420px 300px at 85% 95%,#1fb48a55,transparent 70%),radial-gradient(380px 260px at 0% 0%,#2a8f7333,transparent 70%),linear-gradient(160deg,#0d4637 0%,#082c23 55%,#06201a 100%)}
+.receipt-login .auth-aside:before{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;background-image:linear-gradient(#ffffff0a 1px,transparent 1px),linear-gradient(90deg,#ffffff0a 1px,transparent 1px);background-size:36px 36px;mask-image:radial-gradient(ellipse at 30% 20%,#000 0,transparent 75%)}
+.receipt-login .login-brand strong{color:#fff}.receipt-login .login-brand span{color:#a9cfc2;border-color:#ffffff26}
+.receipt-login .auth-aside .eyebrow{background:#ffffff14;color:#8ff0cc;border:1px solid #ffffff1f;backdrop-filter:blur(6px)}
+.receipt-login .auth-aside h2{color:#fff;letter-spacing:-.04em}
+.receipt-login .auth-aside p:not(.eyebrow){color:#b5d3c8}
+.receipt-login .auth-aside .receipt-paper p.receipt-state{color:#1f4a3d;background:#eaf6f1}
+.receipt-login .receipt-printer[data-state=success] p.receipt-state{background:#c8f2db;color:#006944}
+.receipt-login .receipt-printer[data-state=failure] p.receipt-state{background:#fce4e1;color:#9b302c}
+.receipt-login .receipt-printer{filter:drop-shadow(0 24px 30px #00000059)}
+.receipt-login .receipt-printer:before{background:linear-gradient(180deg,#3a5f55,#0a1e19 50%,#1d3b33);border-color:#ffffff1a}
+.receipt-login .login-benefits{gap:8px!important}
+.receipt-login .login-benefits span{flex-direction:row;display:flex;align-items:center;justify-content:center;gap:7px;white-space:nowrap;padding:9px 8px;border-radius:12px;background:#ffffff0d;border:1px solid #ffffff17;color:#d5ece4;font-size:.78rem;font-weight:600}
+.receipt-login .login-benefits .icon{width:22px!important;height:22px!important;padding:4px;border:0;border-radius:7px;background:#1fb48a33;color:#8ff0cc}
+.receipt-login .auth-panel{background:light-dark(#fff,#162026);padding-inline:clamp(28px,4vw,64px)!important}
+.receipt-login .auth-panel>.eyebrow{color:light-dark(#0b8a66,#7fe6c2);font-size:.7rem}
+.receipt-login .auth-panel h1{color:light-dark(#0b1f1a,#eef6f3);letter-spacing:-.045em;font-weight:750}
+.receipt-login .auth-methods{background:light-dark(#f1f5f4,#1d2a30);border:1px solid light-dark(#e4ecea,#2a3a3f);border-radius:14px;padding:4px}
+.receipt-login .auth-methods [role=tab]{border:0;border-radius:10px;color:light-dark(#5b6f69,#a9bdb6);font-weight:600;font-size:.9rem}
+.receipt-login .auth-methods [role=tab][aria-selected=true]{background:light-dark(#fff,#24363a);color:light-dark(#0b5c46,#9ff2d4);box-shadow:0 1px 2px #0b2a2214,0 4px 12px #0b2a2212}
+.receipt-login .field{font-size:.84rem;font-weight:600;color:light-dark(#26403a,#cfe0da)}
+.receipt-login .form-control{background:light-dark(#fbfdfc,#1a262c);border:1px solid light-dark(#dbe5e2,#2e4046);border-radius:12px;transition:border-color .15s,box-shadow .15s}
+.receipt-login .form-control:focus{border-color:#10a37f;box-shadow:0 0 0 4px #10a37f1f;background:light-dark(#fff,#1d2b31)}
+.receipt-login #password-sign-in .btn-primary{border:0;border-radius:12px;background:linear-gradient(180deg,#0f8f6d,#0a6e54);box-shadow:inset 0 1px 0 #ffffff33,0 10px 22px -8px #0a6e5499;font-weight:650;transition:transform .15s,box-shadow .15s}
+.receipt-login #password-sign-in .btn-primary:hover{transform:translateY(-1px);box-shadow:inset 0 1px 0 #ffffff33,0 14px 26px -8px #0a6e54b3}
+.receipt-login .login-provider{background:light-dark(#fff,#1a262c);border:1px solid light-dark(#dbe5e2,#2e4046);border-radius:12px;box-shadow:0 1px 2px #0b2a220d;color:light-dark(#13241f,#e3eeea)}
+.receipt-login .login-provider-divider{font-size:.78rem;color:light-dark(#7b8e88,#93a8a1);text-transform:uppercase;letter-spacing:.08em}
+.receipt-login .login-provider-divider:before,.receipt-login .login-provider-divider:after{background:light-dark(#e4ecea,#2a3a3f)}
+.receipt-login .login-provider-note{color:light-dark(#7b8e88,#93a8a1)}
+@media(max-width:800px){.receipt-login.auth-shell{padding:8px;gap:8px;border-radius:24px}.receipt-login .auth-panel{border-radius:18px}.receipt-login .login-benefits{flex-wrap:wrap}.receipt-login .login-benefits span{flex:1 1 auto;font-size:.74rem}}
+@media(prefers-reduced-motion:reduce){.receipt-login #password-sign-in .btn-primary{transition:none}.receipt-login #password-sign-in .btn-primary:hover{transform:none}}
