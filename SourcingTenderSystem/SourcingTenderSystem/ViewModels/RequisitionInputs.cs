@@ -5,6 +5,8 @@ namespace SourcingTenderSystem.ViewModels;
 // الحقول التي يدخلها الموظف فقط؛ الحالة والموظف والقسم يحددها الكنترولر.
 public class RequisitionInput
 {
+    [Required(ErrorMessage = "Select a category.")]
+    public int? CategoryId { get; set; }
     [Required, StringLength(200)]
     public string Title { get; set; } = "";
 

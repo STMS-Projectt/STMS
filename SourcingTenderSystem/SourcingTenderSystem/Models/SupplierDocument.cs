@@ -11,6 +11,7 @@ public class SupplierDocument
     public int SupplierProfileId { get; set; }
     public string DocumentType { get; set; } = string.Empty;
     public string FilePath { get; set; } = string.Empty;
+    public string? FileName { get; set; }
     public DateTime? ExpiryDate { get; set; }
     public DateTime UploadedAt { get; set; }
 

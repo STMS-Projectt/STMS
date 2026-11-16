@@ -18,8 +18,10 @@ public class SupplierProfile
     public string Status { get; set; } = string.Empty;
     public string? StatusReason { get; set; }
     public DateTime CreatedAt { get; set; }
+    public DateTime? ApplicationSubmittedAt { get; set; }
 
     public IdentityUser User { get; set; } = null!;
+    public ICollection<Category> Categories { get; set; } = new List<Category>();
     public ICollection<SupplierDocument> SupplierDocuments { get; set; } = new List<SupplierDocument>();
     public ICollection<Invitation> Invitations { get; set; } = new List<Invitation>();
     public ICollection<Bid> Bids { get; set; } = new List<Bid>();

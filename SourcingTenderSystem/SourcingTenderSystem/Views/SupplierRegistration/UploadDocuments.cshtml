@@ -1,27 +1,38 @@
-@model UploadInput
-@{ ViewData["Title"] = "Upload supplier document"; }
-<h1>Upload supplier document</h1>
-<form method="post" asp-antiforgery="true" class="admin-form" enctype="multipart/form-data">
-    <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
-    <p>Upload one PDF at a time, up to 10 MB per file.</p>
-<div class="mb-3">
-    <label asp-for="DocumentType" class="form-label"></label>
-    <select asp-for="DocumentType" class="form-select"><option value="">Select a type</option>
-        @foreach (var type in SupplierFileStore.DocumentTypes) { <option value="@type">@type</option> }
-    </select>
-    <span asp-validation-for="DocumentType" class="text-danger"></span>
+@model SupplierProfile
+@{ ViewData["Title"] = L.T("Application documents"); }
+<header class="page-heading stms-hero application-hero"><div><p class="eyebrow">@L.T("SUPPLIER APPLICATION")</p><h1>@L.T("Application documents")</h1><p>@L.T("Add each PDF with its own document type and expiry date.")</p></div><span class="icon-tile tone-teal"><partial name="_Icon" model='@("file")' /></span></header>
+<partial name="_ApplicationSteps" model="2" />
+@if (TempData["ApplicationError"] is string error) { <p class="alert alert-warning" role="alert">@L.T(error)</p> }
+<div class="form-shell application-shell">
+    <section class="surface detail-card">
+        <div class="record-section-heading">
+            <div><h2>@L.T("Supporting documents")</h2><p>@Model.SupplierDocuments.Count in this draft</p></div>
+            <a asp-action="AddDocument" data-workspace-dialog class="btn btn-primary"><partial name="_Icon" model='@("plus")' /> @L.T("Add a document")</a>
+        </div>
+        @if (Model.SupplierDocuments.Count == 0)
+        {
+            <div class="empty-state"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("upload")' /></span><h2>@L.T("No documents added yet")</h2><p>@L.T("Add at least one supporting PDF to submit your application.")</p></div>
+        }
+        else
+        {
+            <div class="record-list record-list-inset">
+                @foreach (var document in Model.SupplierDocuments.OrderByDescending(d => d.UploadedAt))
+                {
+                    <article class="record-card">
+                        <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("file")' /></span><span>@L.T(document.DocumentType)<small>@(document.FileName ?? "PDF")</small></span></div>
+                        <dl class="record-facts"><div><dt>@L.T("Expiry date")</dt><dd>@(document.ExpiryDate?.ToString("dd MMM yyyy", L.DisplayCulture) ?? "No expiry date")</dd></div></dl>
+                        <div class="record-action">
+                            <a class="record-icon-action" asp-action="DownloadDocument" asp-route-id="@document.Id" aria-label="@L.F("Download {0}", L.T(document.DocumentType))" data-tooltip="@L.T("Download")"><partial name="_Icon" model='@("download")' /></a>
+                            <form asp-action="RemoveDocument" asp-route-id="@document.Id" method="post" data-workspace-confirm="@L.T("Remove this document from your draft?")" onsubmit="return window.stmsWorkspaceReady || confirm(this.dataset.workspaceConfirm);"><button type="submit" class="record-icon-action record-icon-danger" aria-label="@L.F("Remove {0}", L.T(document.DocumentType))" data-tooltip="@L.T("Remove from draft")"><partial name="_Icon" model='@("trash")' /></button></form>
+                        </div>
+                    </article>
+                }
+            </div>
+        }
+    </section>
+    <aside class="surface helper-card application-assist">
+        <span class="icon-tile tone-teal"><partial name="_Icon" model='@("shield")' /></span><h2>@L.T("Ready for review?")</h2>
+        <p>@L.T("After submission, you can track the application and read requests for additional documents from your dashboard.")</p>
+        <form asp-action="SubmitApplication" method="post"><button type="submit" class="btn btn-primary" disabled="@(Model.SupplierDocuments.Count == 0)">@L.T("Submit application") <partial name="_Icon" model='@("arrow")' /></button></form>
+    </aside>
 </div>
-<div class="mb-3">
-    <label asp-for="ExpiryDate" class="form-label"></label>
-    <input asp-for="ExpiryDate" class="form-control" >
-    <span asp-validation-for="ExpiryDate" class="text-danger"></span>
-</div>
-<div class="mb-3">
-    <label asp-for="File" class="form-label"></label>
-    <input asp-for="File" class="form-control" type="file" accept=".pdf,application/pdf">
-    <span asp-validation-for="File" class="text-danger"></span>
-</div>
-    <button class="btn btn-primary" type="submit">Upload</button>
-</form>
-<p class="mt-3"><a asp-action="RegistrationStatus">Back to registration status</a></p>
-@section Scripts { <partial name="_ValidationScriptsPartial" /> }

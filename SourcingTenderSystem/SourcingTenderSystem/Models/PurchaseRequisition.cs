@@ -14,6 +14,8 @@ public class PurchaseRequisition
     public DateTime TargetDate { get; set; }
     public string Status { get; set; } = string.Empty;
     public int DepartmentId { get; set; }
+    public int? CategoryId { get; set; }
+    public Category? Category { get; set; }
     public int CreatedByEmployeeProfileId { get; set; }
     public int? ReviewedByEmployeeProfileId { get; set; }
     public string? ReviewNotes { get; set; }
@@ -23,6 +25,6 @@ public class PurchaseRequisition
     public EmployeeProfile CreatedByEmployeeProfile { get; set; } = null!;
     public EmployeeProfile? ReviewedByEmployeeProfile { get; set; }
     public ICollection<PurchaseRequisitionItem> Items { get; set; } = new List<PurchaseRequisitionItem>();
-    public Tender? Tender { get; set; }
+    public ICollection<Tender> Tenders { get; set; } = new List<Tender>();
     public ICollection<ClarificationRequest> ClarificationRequests { get; set; } = new List<ClarificationRequest>();
 }

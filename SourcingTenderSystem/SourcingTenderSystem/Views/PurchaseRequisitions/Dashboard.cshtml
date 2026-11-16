@@ -1,0 +1,94 @@
+@model DepartmentDashboard
+@{
+    ViewData["Title"] = "Department dashboard";
+    var stats = new[] {
+        (Model.Total, "Purchase requests", "file", "blue", (string?)null),
+        (Model.Count("Draft"), "Drafts", "edit", "violet", "Draft"),
+        (Model.Count("Under Review"), "Under review", "clock", "teal", "Under Review"),
+        (Model.Count("Returned"), "Returned for changes", "warning", "amber", "Returned")
+    };
+    var step = Math.Max(1, (int)Math.Ceiling(Model.Trend.Max(point => point.Count) / 4d));
+    var editable = (ISet<int>)ViewBag.EditableRequestIds;
+    var stages = new[] { ("Draft", "edit", "violet"), ("Submitted", "mail", "blue"),
+        ("Under Review", "clock", "blue"), ("Returned", "back", "amber"), ("Approved", "check", "teal"),
+        ("Rejected", "close", "amber"), ("Converted to Tender", "briefcase", "teal") };
+}
+<header class="page-heading stms-hero admin-overview">
+    <div><p class="eyebrow">@L.T("DEPARTMENT WORKSPACE")</p><h1>@L.F("{0} dashboard", Model.Department)</h1><p>@L.T("Track your department’s purchase requests from draft to decision.")</p></div>
+    <a class="btn btn-primary" asp-action="Create"><partial name="_Icon" model='@("plus")' /> @L.T("New request")</a>
+</header>
+<div class="admin-analytics department-analytics">
+    <section aria-labelledby="department-snapshot">
+        <div class="section-heading"><h2 id="department-snapshot">@L.T("Department snapshot")</h2><span>@L.T("Current totals")</span></div>
+        <div class="metrics-grid">
+            @foreach (var (count, label, icon, tone, status) in stats)
+            {
+                <a class="metric surface admin-metric-link" asp-action="MyRequests" asp-route-status="@status">
+                    <span class="icon-tile tone-@tone"><partial name="_Icon" model="icon" /></span>
+                    <strong data-count="@count">@count</strong><span>@L.T(label)</span>
+                    <span class="admin-metric-arrow" aria-hidden="true"><partial name="_Icon" model='@("arrow")' /></span>
+                </a>
+            }
+        </div>
+    </section>
+    <div class="admin-chart-grid">
+        <section class="surface dashboard-card admin-trend">
+            <div class="card-heading"><div><h2>@L.T("Request activity")</h2><p>@L.T("Created in the last six months (UTC)")</p></div></div>
+            @if (Model.Trend.All(point => point.Count == 0)) { <p class="admin-chart-empty">@L.T("No requests were created in this period.")</p> }
+            else
+            {
+                <div class="admin-chart">
+                    <div class="admin-chart-axis" aria-hidden="true">@for (var tick = 4; tick >= 0; tick--) { <span>@(tick * step)</span> }</div>
+                    <div class="admin-chart-plot" role="group" aria-label="@L.T("Monthly purchase request counts")">
+                        @foreach (var (month, count) in Model.Trend)
+                        {
+                            var label = month.ToString("MMM yy", L.DisplayCulture);
+                            var height = FormattableString.Invariant($"--requests:{100d * count / (4d * step):F3}%");
+                            <div class="admin-chart-month" style="@height" tabindex="0" aria-label="@L.F("{0}: {1} purchase requests", label, count)">
+                                <div class="admin-chart-bars" aria-hidden="true"><i></i></div>
+                                <span class="admin-chart-label" aria-hidden="true">@label</span>
+                                <span class="admin-chart-popup" aria-hidden="true">@L.F("{0}: {1} purchase requests", label, count)</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </section>
+        <section class="surface dashboard-card department-status-card">
+            <div class="card-heading"><div><h2>@L.T("Requests by status")</h2><p>@L.T("Select a status to view matching requests.")</p></div><span class="department-status-total">@L.F("{0} total", Model.Total)</span></div>
+            <div class="department-status-list">
+                @foreach (var (status, icon, tone) in stages)
+                {
+                    var count = Model.Count(status);
+                    var ratio = Model.Total == 0 ? 0 : 100d * count / Model.Total;
+                    <a class="department-status-row" asp-action="MyRequests" asp-route-status="@status" aria-label="@L.T(status): @count requests">
+                        <span class="icon-tile tone-@tone"><partial name="_Icon" model="icon" /></span>
+                        <span class="department-status-info"><strong>@L.T(status)</strong><span class="department-status-track" aria-hidden="true"><span style="@FormattableString.Invariant($"--share:{ratio:F2}%")"></span></span></span>
+                        <span class="department-status-count">@count</span><partial name="_Icon" model='@("arrow")' />
+                    </a>
+                }
+            </div>
+        </section>
+    </div>
+    <section class="surface directory department-recent">
+        <div class="directory-toolbar"><h2 class="mb-0">@L.T("Recent requests")</h2><a class="text-link" asp-action="MyRequests">@L.T("View all") <partial name="_Icon" model='@("arrow")' /></a></div>
+        @if (Model.Recent.Count > 0)
+        {
+            <div class="record-list">
+                @foreach (var request in Model.Recent)
+                {
+                    <article class="record-card">
+                        <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("file")' /></span><span>@request.Title<small>PR-@request.Id</small>
+                            @if (request.Status == "Returned" && !string.IsNullOrWhiteSpace(request.ReviewNotes)) { <small class="request-return-preview">@L.F("Changes requested: {0}", request.ReviewNotes)</small> }
+                        </span></div>
+                        <dl class="record-facts"><div><dt>@L.T("Target date")</dt><dd>@request.TargetDate.ToString("dd MMM yyyy", L.DisplayCulture)</dd></div><div><dt>@L.T("Status")</dt><dd><partial name="_RequestStatus" model="request.Status" /></dd></div></dl>
+                        <div class="record-action"><partial name="_RequestActions" model="@( (request.Id, editable.Contains(request.Id)) )" />
+                        </div>
+                    </article>
+                }
+            </div>
+        }
+        else { <div class="empty-state"><h3>@L.T("No requests yet")</h3><p>@L.T("Create your first draft to get started.")</p></div> }
+    </section>
+</div>
+@section Scripts { <script src="~/js/admin-dashboard.js" asp-append-version="true" defer></script> }

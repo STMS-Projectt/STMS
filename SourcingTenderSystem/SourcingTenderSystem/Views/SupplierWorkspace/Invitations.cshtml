@@ -1,0 +1,29 @@
+@model SupplierInvitationList
+@{ ViewData["Title"] = L.T("Tender invitations"); }
+<header class="page-heading stms-hero"><div><p class="eyebrow">@L.T("TENDER OPPORTUNITIES")</p><h1>@L.T("Tender invitations")</h1><p>@L.T("Review the tenders your company has been invited to bid on.")</p></div></header>
+@if (TempData["InvitationError"] is string error) { <div class="alert alert-warning" role="alert">@L.T(error)</div> }
+@if (Model.Invitations.Count == 0)
+{
+    <section class="surface empty-state"><span class="icon-tile tone-blue"><partial name="_Icon" model='@("supplier")' /></span><h2>@L.T("No invitations yet")</h2><p>@L.T("Invitations sent to your company will appear here.")</p></section>
+}
+else
+{
+    <section class="surface directory dept-directory" data-directory>
+    <div class="dept-directory-heading"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("mail")' /></span><div><h2>@L.T("Invitation register")</h2><p>@L.T("Find a tender or filter invitations by status.")</p></div></div>
+    <partial name="_ListFilters" model='@("Search tender invitations", Model.Invitations.Select(i => i.Status == "Pending" && i.ExpiresAt <= Model.Now ? "Expired" : i.Status))' />
+    <partial name="_DirectoryPages" model='@("Invitation pages")' />
+<div class="record-list" data-record-list>
+        @foreach (var invitation in Model.Invitations)
+        {
+            var tender = invitation.Tender;
+            var status = invitation.Status == "Pending" && invitation.ExpiresAt <= Model.Now ? "Expired" : invitation.Status;
+            <article class="record-card" data-record data-tender-id="@tender.Id" data-status="@status">
+                <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("mail")' /></span><span>@tender.Title<small>@L.F("Tender #{0}", tender.Id) · @L.F("Round {0}", invitation.RoundNumber?.ToString() ?? L.T("Legacy"))</small></span></div>
+                <dl class="record-facts"><div><dt>@L.T("Status")</dt><dd><partial name="_Status" model="status" /></dd></div><div><dt>@L.T("Expires (UTC)")</dt><dd>@invitation.ExpiresAt.ToString("dd MMM yyyy HH:mm", L.DisplayCulture)</dd></div></dl>
+                <div class="record-action"><a data-workspace-dialog="details" class="record-icon-action" asp-action="Invitations" asp-route-invitationId="@invitation.Id" aria-label="@L.F("View invitation for {0}", tender.Title)" data-tooltip="@L.T("View invitation")"><partial name="_Icon" model='@("eye")' /></a></div>
+            </article>
+        }
+    </div>
+    <partial name="_ListFilterEmpty" />
+</section>
+}

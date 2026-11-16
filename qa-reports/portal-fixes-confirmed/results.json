@@ -1,0 +1,199 @@
+{
+  "results": [
+    {
+      "id": "Portal-contact-save-reply-and-private-receipt",
+      "status": "PASS"
+    },
+    {
+      "id": "Portal-request-and-tender-navigation-and-alignment",
+      "status": "PASS"
+    },
+    {
+      "id": "Portal-supplier-full-validation",
+      "status": "PASS"
+    }
+  ],
+  "errors": [],
+  "http": [
+    {
+      "path": "/",
+      "status": 200
+    },
+    {
+      "path": "/home/assets/contact-team.jpg",
+      "status": 200
+    },
+    {
+      "path": "/home/assets/store-front.jpg",
+      "status": 200
+    },
+    {
+      "path": "/home/assets/about-team.jpg",
+      "status": 200
+    },
+    {
+      "path": "/Home/Contact",
+      "status": 400
+    },
+    {
+      "path": "/Home/ContactStatus",
+      "status": 200
+    },
+    {
+      "path": "/Home/ContactStatus",
+      "status": 404
+    },
+    {
+      "path": "/home/assets/video/our-story.mp4",
+      "status": 404
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Dashboard",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Account/AccessDenied",
+      "status": 403
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/AdminDashboard",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/ContactInbox",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/ContactInbox",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/Home/ContactStatus",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Dashboard",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Clarifications/StartRequest/1",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/SourcingDashboard",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/RequisitionReviews/Pending",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/RequisitionReviews/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Clarifications",
+      "status": 200
+    },
+    {
+      "path": "/Tenders",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Tenders/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Clarifications",
+      "status": 200
+    },
+    {
+      "path": "/Clarifications",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/SupplierRegistration/Register",
+      "status": 200
+    },
+    {
+      "path": "/SupplierRegistration/Register",
+      "status": 200
+    },
+    {
+      "path": "/SupplierRegistration/UploadDocuments",
+      "status": 200
+    }
+  ]
+}

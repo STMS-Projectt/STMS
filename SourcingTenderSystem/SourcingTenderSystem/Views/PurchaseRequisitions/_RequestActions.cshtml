@@ -1,0 +1,12 @@
+@model (int Id, bool CanEdit)
+<a class="record-icon-action" data-workspace-dialog="details" asp-controller="PurchaseRequisitions" asp-action="Details" asp-route-id="@Model.Id" asp-route-panel="overview" aria-label="@L.F("Details for PR-{0}", Model.Id)" data-tooltip="@L.T("Details")"><partial name="_Icon" model='@("eye")' /></a>
+@if (Model.CanEdit)
+{
+    <a class="record-icon-action" data-workspace-dialog asp-controller="PurchaseRequisitions" asp-action="Edit" asp-route-id="@Model.Id" aria-label="@L.F("Edit PR-{0}", Model.Id)" data-tooltip="@L.T("Edit")"><partial name="_Icon" model='@("edit")' /></a>
+}
+<a class="record-icon-action" data-workspace-dialog asp-controller="PurchaseRequisitions" asp-action="Details" asp-route-id="@Model.Id" asp-route-panel="items" aria-label="@L.F("Items for PR-{0}", Model.Id)" data-tooltip="@L.T("Items")"><partial name="_Icon" model='@("inbox")' /></a>
+<a class="record-icon-action" data-workspace-dialog asp-controller="PurchaseRequisitions" asp-action="Details" asp-route-id="@Model.Id" asp-route-panel="qr" aria-label="@L.F("QR code for PR-{0}", Model.Id)" data-tooltip="@L.T("QR code")"><partial name="_Icon" model='@("qr")' /></a>
+@if (ViewData["ClarificationRequestIds"] is ISet<int> startable && startable.Contains(Model.Id))
+{
+    <a data-workspace-page class="record-icon-action" asp-controller="Clarifications" asp-action="StartRequest" asp-route-id="@Model.Id" aria-label="@L.F("Start a clarification for PR-{0}", Model.Id)" data-tooltip="@L.T("Clarification")"><partial name="_Icon" model='@("mail")' /></a>
+}

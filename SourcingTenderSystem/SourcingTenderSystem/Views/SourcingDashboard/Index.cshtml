@@ -1,0 +1,108 @@
+@model SourcingDashboard
+@{
+    ViewData["Title"] = L.T("Sourcing dashboard");
+    var metrics = new[] {
+        (Model.PendingRequests, "Requests awaiting review", "clock", "amber", "RequisitionReviews", "Pending"),
+        (Model.Tenders, "Total tenders", "briefcase", "teal", "Tenders", "Index"),
+        (Model.Invitations, "Supplier invitations", "mail", "violet", "Invitations", "Index"),
+        (Model.ComplianceQueue, "Closed tenders with bids", "shield", "blue", "Compliance", "Pending")
+    };
+    var trend = Model.Trend;
+    var high = trend.Max(t => Math.Max(t.Tenders, t.Requests));
+    var step = Math.Max(1, (int)Math.Ceiling(high / 4d));
+    var trendMax = 4d * step;
+}
+<header class="page-heading stms-hero admin-overview">
+    <div><p class="eyebrow">@L.T("SOURCING WORKSPACE")</p><h1>@L.T("Sourcing dashboard")</h1><p>@Model.OfficerName · Review requests, coordinate tenders, and check supplier bids.</p></div>
+    <a class="btn btn-primary" asp-controller="RequisitionReviews" asp-action="Pending">@L.T("Open review queue") <partial name="_Icon" model='@("arrow")' /></a>
+</header>
+<div class="admin-analytics sourcing-analytics">
+    <section aria-labelledby="sourcing-snapshot">
+        <div class="section-heading"><h2 id="sourcing-snapshot">@L.T("Sourcing snapshot")</h2><span>@L.T("Current totals")</span></div>
+        <div class="metrics-grid">
+            @foreach (var (count, label, icon, tone, target, action) in metrics)
+            {
+                <a class="metric surface admin-metric-link" asp-controller="@target" asp-action="@action">
+                    <span class="icon-tile tone-@tone"><partial name="_Icon" model="icon" /></span>
+                    <strong data-count="@count">@count</strong><span>@L.T(label)</span>
+                    <span class="admin-metric-arrow" aria-hidden="true"><partial name="_Icon" model='@("arrow")' /></span>
+                </a>
+            }
+        </div>
+    </section>
+    <div class="admin-chart-grid">
+    <section class="surface dashboard-card admin-trend">
+        <div class="card-heading"><div><h2>@L.T("Sourcing activity")</h2><p>@L.T("New purchase requests and tenders · last six months (UTC)")</p></div></div>
+        <div class="admin-chart-legend"><span>@L.T("Purchase requests")</span><span>@L.T("Tenders")</span></div>
+        @if (high == 0) { <p class="admin-chart-empty">@L.T("No requests or tenders were created in this period.")</p> }
+        else
+        {
+            <div class="admin-chart">
+                <div class="admin-chart-axis" aria-hidden="true">
+                    @for (var tick = 4; tick >= 0; tick--) { <span>@(tick * step)</span> }
+                </div>
+                <div class="admin-chart-plot" role="group" aria-label="@L.T("Monthly request and tender counts")">
+                    @foreach (var point in trend)
+                    {
+                        var month = point.Month.ToString("MMM yy", L.DisplayCulture);
+                        var heights = FormattableString.Invariant($"--requests:{100 * point.Requests / trendMax:F3}%;--tenders:{100 * point.Tenders / trendMax:F3}%");
+                        <div class="admin-chart-month" style="@heights" tabindex="0" aria-label="@L.F("{0}: {1} requests, {2} tenders", month, point.Requests, point.Tenders)">
+                            <div class="admin-chart-bars" aria-hidden="true"><i></i><i></i></div>
+                            <span class="admin-chart-label" aria-hidden="true">@month</span>
+                            <span class="admin-chart-popup" aria-hidden="true">@month · @point.Requests requests · @point.Tenders tenders</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </section>
+        <section class="surface dashboard-card department-status-card">
+            <div class="card-heading"><div><h2>@L.T("Tender pipeline")</h2><p>@L.T("Current distribution by status")</p></div><span class="department-status-total">@L.F("{0} total", Model.Tenders)</span></div>
+            @if (Model.Tenders == 0) { <p class="admin-chart-empty">@L.T("Tender statuses will appear once the first tender is created.")</p> }
+            else
+            {
+                <div class="department-status-list">
+                    @foreach (var row in Model.TenderStatuses.OrderByDescending(x => x.Value).ThenBy(x => x.Key))
+                    {
+                        var percent = 100d * row.Value / Model.Tenders;
+                        <div class="department-status-row sourcing-pipeline-row">
+                            <span class="icon-tile tone-teal"><partial name="_Icon" model='@("briefcase")' /></span>
+                            <span class="department-status-info"><strong>@L.T(row.Key)</strong><span class="department-status-track" aria-hidden="true"><span style="@FormattableString.Invariant($"--share:{percent:F2}%")"></span></span></span>
+                            <span class="department-status-count">@row.Value</span>
+                        </div>
+                    }
+                </div>
+            }
+        </section>
+    </div>
+    <div class="dashboard-grid admin-secondary">
+        <section class="surface dashboard-card">
+            <div class="card-heading"><div><h2>@L.T("Requests to review")</h2><p>@L.T("Highest priority first, then closest target date.")</p></div><a class="text-link" asp-controller="RequisitionReviews" asp-action="Pending">@L.T("View queue")</a></div>
+            @if (Model.Requests.Count == 0) { <div class="empty-state"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("check")' /></span><h3>@L.T("No requests awaiting review")</h3><p>@L.T("Submitted requests will appear here.")</p></div> }
+            else
+            {
+                <div class="sourcing-queue">
+                    @foreach (var request in Model.Requests)
+                    {
+                        <article class="sourcing-queue-row record-card">
+                            <span class="icon-tile tone-blue"><partial name="_Icon" model='@("file")' /></span>
+                            <div><strong>@request.Title</strong><small>PR-@request.Id · @request.Department · @L.F("Priority: {0} · Due {1}", L.T(request.Priority), request.TargetDate.ToString("dd MMM", L.DisplayCulture))</small></div>
+                            <span class="status-pill status-waiting"><span aria-hidden="true"></span>@L.T(request.Status)</span>
+                            <div class="record-action"><a class="record-icon-action" data-workspace-dialog="details" asp-controller="RequisitionReviews" asp-action="Details" asp-route-id="@request.Id" aria-label="@L.F("Review request PR-{0}", request.Id)" data-tooltip="@L.T("Review request")"><partial name="_Icon" model='@("eye")' /></a></div>
+                        </article>
+                    }
+                </div>
+            }
+        </section>
+        <section class="surface dashboard-card">
+            <div class="card-heading"><div><h2>@L.T("Quick actions")</h2><p>@L.T("Continue your sourcing work")</p></div></div>
+            <div class="quick-actions">
+                <a asp-controller="Tenders" asp-action="Index"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("briefcase")' /></span><span><strong>@L.T("Manage tenders")</strong><small>@L.T("Review tender stages and deadlines")</small></span><partial name="_Icon" model='@("arrow")' /></a>
+                <a asp-controller="Invitations" asp-action="Index"><span class="icon-tile tone-violet"><partial name="_Icon" model='@("mail")' /></span><span><strong>@L.T("Supplier invitations")</strong><small>@L.T("Track invitations and responses")</small></span><partial name="_Icon" model='@("arrow")' /></a>
+                <a asp-controller="Compliance" asp-action="Pending"><span class="icon-tile tone-blue"><partial name="_Icon" model='@("shield")' /></span><span><strong>@L.T("Check bid compliance")</strong><small>@L.T("Review bids and outstanding clarifications")</small></span><partial name="_Icon" model='@("arrow")' /></a>
+                <a asp-controller="EvaluationWorkflow" asp-action="Index"><span class="icon-tile tone-amber"><partial name="_Icon" model='@("check")' /></span><span><strong>@L.T("Track evaluations")</strong><small>@L.T("Follow committee progress and reports")</small></span><partial name="_Icon" model='@("arrow")' /></a>
+            </div>
+        </section>
+    </div>
+</div>
+@section Scripts { <script src="~/js/admin-dashboard.js" asp-append-version="true" defer></script> }

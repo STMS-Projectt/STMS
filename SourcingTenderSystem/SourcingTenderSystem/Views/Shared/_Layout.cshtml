@@ -1,55 +1,213 @@
-<!DOCTYPE html>
-<html lang="en">
+@using SourcingTenderSystem.Security
+@using System.Security.Claims
+@using Microsoft.EntityFrameworkCore
+@inject SourcingTenderSystem.Data.ApplicationDbContext WorkspaceDb
+
+@{
+    var admin = User.IsInRole(Roles.Admin);
+    var sourcing = !admin && User.IsInRole(Roles.SourcingOfficer);
+    var department = !admin && !sourcing && User.IsInRole("RequestingDepartment");
+    var manager = User.IsInRole(Roles.SourcingManager);
+    var topCommittee = User.IsInRole(Roles.TopCommittee);
+    var committee = !admin && !sourcing && !department && (User.IsInRole(Roles.TechnicalCommittee) || User.IsInRole(Roles.FinancialCommittee) || manager || topCommittee);
+    var signedIn = User.Identity?.IsAuthenticated == true;
+    var supplierStatus = signedIn && !Roles.EmployeeRoles.Any(User.IsInRole)
+        ? await WorkspaceDb.SupplierProfiles.AsNoTracking().Where(s => s.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier))
+            .Select(s => s.Status).SingleOrDefaultAsync()
+        : null;
+    var supplier = supplierStatus != null;
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+    var action = ViewContext.RouteData.Values["action"]?.ToString();
+
+    // Public auth pages and first-time verification onboarding use the portal shell; Sign-in security for an
+    // already verified account renders inside the user's normal role workspace.
+    if (controller == "SupplierRegistration" && ViewData["ApplicationWorkspace"] is not true ||
+        controller == "Account" && (action == "BiometricVerify" || action == "Login" ||
+        action == "BiometricSetup" && ViewData["BiometricOnboarding"] is true))
+    {
+        admin = false;
+        sourcing = false;
+        committee = false;
+        department = false;
+        supplier = false;
+    }
+
+    var workspace = admin || department || sourcing || supplier || committee;
+    var onboarding = !workspace && supplierStatus != null && controller == "SupplierRegistration";
+    var workspaceKey = admin ? "admin" : department ? "department" : sourcing ? "sourcing" : supplier ? "supplier" : committee ? "committee" : onboarding ? "supplier-onboarding" : "portal";
+    var workspaceLabel = onboarding ? "Supplier application" : admin ? "Administration" : department ? "Department workspace" : sourcing ? "Sourcing workspace" : supplier ? "Supplier workspace" : manager ? "Sourcing manager" : topCommittee ? "Top Committee" : "Evaluation committee";
+    var fragment = (workspace || onboarding) && Context.Request.Headers["X-STMS-Fragment"] == "workspace";
+    Context.Response.Headers.Append("Vary", "X-STMS-Fragment");
+    if (fragment) Context.Response.Headers.CacheControl = "private, no-store";
+    var title = L.T(ViewData["Title"]?.ToString());
+    var stylesheet = L.Arabic ? "~/lib/bootstrap/dist/css/bootstrap.rtl.min.css" : "~/lib/bootstrap/dist/css/bootstrap.min.css";
+}
+
+@if (!fragment) { @Html.Raw($"<!DOCTYPE html><html lang='{L.Language}' dir='{L.Direction}'>") }
+@if (!fragment)
+{
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - SourcingTenderSystem</title>
-    <script type="importmap"></script>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/SourcingTenderSystem.styles.css" asp-append-version="true" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@title · @L.T("Sourcing Desk")</title>
+    <partial name="_DisplayHead" />
+    <link rel="icon" type="image/svg+xml" href="~/sourcing-desk.svg" asp-append-version="true">
+    <link rel="stylesheet" href="@stylesheet" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true">
+
+    @if (department)
+    {
+        <link rel="stylesheet" href="~/css/department.css" asp-append-version="true">
+    }
+    <link rel="stylesheet" href="~/css/workspace.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/stms-design.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/workspace-polish.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/display-preferences.css" asp-append-version="true">
 </head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-controller="Home" asp-action="Index">SourcingTenderSystem</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
-                    <partial name="_LoginPartial" />
+}
+
+@if (!fragment)
+{
+    var classes = (workspace ? "workspace" : "portal") + (department ? " department-workspace" : "") +
+        (!workspace && (controller is "Account" or "SupplierRegistration") ? " stms-auth-portal" : "");
+    @Html.Raw("<body class='" + classes + "'>")
+}
+<div data-workspace-frame="@workspaceKey" data-page-title="@title · @L.T("Sourcing Desk")" hidden></div>
+    <a class="skip-link" href="#main">@L.T("Skip to content")</a>
+
+    @if (sourcing)
+    {
+        <partial name="_SourcingNavigation" />
+    }
+    else if (committee)
+    {
+        <partial name="_CommitteeNavigation" />
+    }
+    else if (department)
+    {
+        <partial name="_DepartmentNavigation" />
+    }
+    else if (supplier)
+    {
+        <partial name="_SupplierNavigation" model="supplierStatus" />
+    }
+    else if (admin)
+    {
+        <partial name="_AdminNavigation" />
+    }
+
+    <div class="site-body">
+        @if (workspace)
+        {
+            <partial name="_WorkspaceHeader" model='@(admin ? "Administrator" : sourcing ? "Sourcing officer" : supplier ? "Supplier" : department ? "Department employee" : manager || topCommittee ? workspaceLabel : "Committee reviewer")' />
+        }
+        else
+        {
+            <header class="portal-bar stms-public-header">
+                <div class="portal-bar-inner">
+                    <a class="brand" asp-controller="Home" asp-action="Index">
+                        <img src="~/images/stms-cube.svg" alt="" />
+                        <strong>STMS</strong>
+                        <span>@L.T("Sourcing & Tender")<br />@L.T("Management System")</span>
+                    </a>
+
+                    <nav class="portal-nav" aria-label="@L.T("Account")">
+                        <partial name="_DisplayPreferences" />
+                        @if (controller != "SupplierRegistration" && signedIn && !Roles.EmployeeRoles.Any(User.IsInRole))
+                        {
+                            <a class="portal-link"
+                               asp-controller="SupplierRegistration"
+                               asp-action="RegistrationStatus">@L.T("My application")</a>
+                        }
+
+                        @if (!signedIn)
+                        {
+                            <a class="portal-link"
+                               asp-controller="Account"
+                               asp-action="Login" aria-current="@(controller == "Account" && action == "Login" ? "page" : null)">@L.T("Sign in")</a>
+
+                            <a class="btn btn-primary portal-register"
+                               asp-controller="SupplierRegistration"
+                               asp-action="Register" aria-current="@(controller == "SupplierRegistration" && action == "Register" ? "page" : null)">@L.T("Supplier registration")</a>
+                        }
+
+                        @if (controller != "SupplierRegistration") { <partial name="_LoginPartial" /> }
+                    </nav>
                 </div>
-            </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
+            </header>
+        }
+
+        <main id="main" class="page-content" tabindex="-1">
             @if (TempData["Message"] is string message)
             {
-                <div class="alert alert-success" role="status">@message</div>
+                <div class="notice notice-success" role="status">
+                    <partial name="_Icon" model='@("check")' />
+                    <span>@L.T(message)</span>
+                    <button class="icon-button"
+                            type="button"
+                            data-dismiss-notice
+                            aria-label="@L.T("Dismiss notification")">
+                        <partial name="_Icon" model='@("close")' />
+                    </button>
+                </div>
             }
+
             @RenderBody()
         </main>
+
+        <footer class="site-footer stms-footer">
+            <span><img src="~/images/stms-cube.svg" alt="" /> STMS <small>@L.T("Sourcing & Tender Management System")</small></span>
+            <div class="stms-footer-actions">
+                <a asp-controller="Home" asp-action="Privacy">@L.T("Privacy")</a>
+                @if (!fragment)
+                {
+                    <button class="stms-scroll-top" type="button" data-scroll-top aria-label="@L.T("Back to top")" title="@L.T("Back to top")" hidden><partial name="_Icon" model='@("back")' /></button>
+                }
+            </div>
+        </footer>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - SourcingTenderSystem - <a asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
-</body>
-</html>
+    @if (!fragment)
+    {
+        <script src="~/lib/jquery/dist/jquery.min.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="~/js/site.js" asp-append-version="true"></script>
+        <script src="~/js/supplier-application.js" asp-append-version="true" defer></script>
+        <script src="~/js/admin-directory-voice-search.js" asp-append-version="true" defer></script>
+        @if (workspace) { <script src="~/js/departments.js" asp-append-version="true" defer></script> }
+        @if (signedIn) { <script src="~/js/notifications.js" asp-append-version="true" defer></script> }
+        @if (workspace || onboarding)
+        {
+            <dialog class="workspace-dialog sourcing-dialog" id="workspace-dialog" aria-labelledby="workspace-dialog-title">
+                <div class="workspace-dialog-bar">
+                    <div class="workspace-dialog-heading">
+                        <button type="button" class="icon-button" data-dialog-back aria-label="@L.T("Back to previous record")" title="@L.T("Back")" hidden><partial name="_Icon" model='@("back")' /></button>
+                        <div class="workspace-dialog-caption">
+                            <span class="workspace-dialog-context" data-dialog-context data-root-context="@L.T(workspaceLabel)">@L.T(workspaceLabel)</span>
+                            <strong id="workspace-dialog-title" tabindex="-1">@L.T("Record")</strong>
+                        </div>
+                    </div>
+                    <button type="button" class="icon-button" data-dialog-close aria-label="@L.T("Close dialog")" title="@L.T("Close")"><partial name="_Icon" model='@("close")' /></button>
+                </div>
+                <div class="workspace-dialog-loader" data-dialog-loader hidden role="status"><span class="workspace-spinner" aria-hidden="true"></span><span data-dialog-loader-label>@L.T("Loading…")</span></div>
+                <div data-dialog-content></div>
+            </dialog>
+            <dialog id="workspace-confirm" class="workspace-dialog workspace-confirm sourcing-confirm" aria-labelledby="workspace-confirm-title">
+                <form method="dialog" class="p-4">
+                    <h2 id="workspace-confirm-title">@L.T("Confirm action")</h2>
+                    <p class="mt-2" data-confirm-question></p>
+                    <div class="button-row justify-content-end">
+                        <button class="btn btn-outline-secondary" value="cancel" autofocus>@L.T("Cancel")</button>
+                        <button class="btn btn-primary" value="confirm">@L.T("Continue")</button>
+                    </div>
+                </form>
+            </dialog>
+            <div class="workspace-progress" hidden role="status" aria-label="@L.T("Loading")"></div>
+            <div class="visually-hidden" aria-live="polite" data-workspace-status></div>
+            @if (workspace) { <script src="~/js/stms-shell.js" asp-append-version="true" defer></script> }
+            <script src="~/js/workspace.js" asp-append-version="true" defer></script>
+            <script src="~/js/evaluation-weights.js" asp-append-version="true" defer></script>
+        }
+    }
+    <div data-page-scripts hidden>@await RenderSectionAsync("Scripts", required: false)</div>
+@if (!fragment) { @Html.Raw("</body></html>") }

@@ -10,49 +10,84 @@ using SourcingTenderSystem.ViewModels;
 
 namespace SourcingTenderSystem.Controllers;
 
-[Authorize(Roles = Roles.Admin)]
+[Authorize(Roles = Roles.Admin + "," + Roles.SourcingOfficer)]
 public sealed class SuppliersController(ApplicationDbContext db, UserManager<IdentityUser> users,
     SupplierFileStore files) : Controller
 {
     [HttpGet]
     public async Task<IActionResult> Index(string? status)
     {
-        var query = db.SupplierProfiles.AsNoTracking();
+        var query = Reviewable().AsNoTracking();
+        ViewBag.SupplierCounts = await query.GroupBy(x => x.Status)
+            .Select(g => new { Status = g.Key, Count = g.Count() }).ToDictionaryAsync(x => x.Status, x => x.Count);
         if (SupplierStatus.All.Contains(status)) query = query.Where(x => x.Status == status);
         ViewBag.Status = status;
         return View(await query.OrderByDescending(x => x.CreatedAt).ToListAsync());
     }
 
+    private IQueryable<SupplierProfile> Reviewable() => db.SupplierProfiles
+        .Where(s => s.Status != SupplierStatus.Pending || s.ApplicationSubmittedAt != null);
+
     [HttpGet]
     public async Task<IActionResult> Details(int id)
     {
-        var supplier = await db.SupplierProfiles.AsNoTracking().Include(x => x.SupplierDocuments)
+        var supplier = await Reviewable().AsNoTracking().Include(x => x.SupplierDocuments).Include(x => x.Categories)
             .Include(x => x.User).SingleOrDefaultAsync(x => x.Id == id);
         return supplier is null ? NotFound() : View(supplier);
+    }
+
+    [HttpGet, Authorize(Roles = Roles.Admin)]
+    public async Task<IActionResult> Categories(int id)
+    {
+        var supplier = await Reviewable().AsNoTracking().Include(s => s.Categories).SingleOrDefaultAsync(s => s.Id == id);
+        if (supplier is null) return NotFound();
+        ViewBag.Categories = await db.Categories.AsNoTracking().OrderBy(c => c.Name).ToListAsync();
+        return View(supplier);
+    }
+
+    [HttpPost, Authorize(Roles = Roles.Admin)]
+    public async Task<IActionResult> Categories(int id, List<int> categoryIds)
+    {
+        if (!ModelState.IsValid) return BadRequest();
+        var supplier = await Reviewable().Include(s => s.Categories).SingleOrDefaultAsync(s => s.Id == id);
+        if (supplier is null) return NotFound();
+        var ids = categoryIds.Distinct().ToArray();
+        var categories = await db.Categories.Where(c => ids.Contains(c.Id)).ToListAsync();
+        if (ids.Length == 0 || categories.Count != ids.Length)
+        {
+            ModelState.AddModelError("", "Select at least one valid category.");
+            ViewBag.SelectedCategoryIds = ids.ToHashSet();
+            return await Categories(id);
+        }
+        supplier.Categories = categories;
+        await db.SaveChangesAsync();
+        return RedirectToAction(nameof(Details), new { id });
     }
 
     [HttpGet]
     public async Task<IActionResult> DownloadDocument(int id)
     {
-        var document = await db.SupplierDocuments.AsNoTracking().SingleOrDefaultAsync(x => x.Id == id);
+        var document = await Reviewable().SelectMany(s => s.SupplierDocuments).AsNoTracking().SingleOrDefaultAsync(x => x.Id == id);
         if (document is null || files.Open(document.FilePath) is not { } stream) return NotFound();
         return File(stream, "application/pdf", $"supplier-document-{id}.pdf");
     }
 
     [HttpGet] public Task<IActionResult> Approve(int id) => DecisionPageAsync(id, SupplierStatus.Approved, new());
-    [HttpGet] public Task<IActionResult> Reject(int id) => DecisionPageAsync(id, SupplierStatus.Rejected, new());
-    [HttpGet] public Task<IActionResult> Suspend(int id) => DecisionPageAsync(id, SupplierStatus.Suspended, new());
+    [HttpGet, Authorize(Roles = Roles.Admin)] public Task<IActionResult> Reject(int id) => DecisionPageAsync(id, SupplierStatus.Rejected, new());
+    [HttpGet, Authorize(Roles = Roles.Admin)] public Task<IActionResult> Suspend(int id) => DecisionPageAsync(id, SupplierStatus.Suspended, new());
 
     [HttpPost] public Task<IActionResult> Approve(int id, DecisionInput input) => DecideAsync(id, SupplierStatus.Approved, input);
-    [HttpPost] public Task<IActionResult> Reject(int id, DecisionInput input) => DecideAsync(id, SupplierStatus.Rejected, input);
-    [HttpPost] public Task<IActionResult> Suspend(int id, DecisionInput input) => DecideAsync(id, SupplierStatus.Suspended, input);
+    [HttpPost, Authorize(Roles = Roles.Admin)] public Task<IActionResult> Reject(int id, DecisionInput input) => DecideAsync(id, SupplierStatus.Rejected, input);
+    [HttpPost, Authorize(Roles = Roles.Admin)] public Task<IActionResult> Suspend(int id, DecisionInput input) => DecideAsync(id, SupplierStatus.Suspended, input);
 
     private async Task<IActionResult> DecisionPageAsync(int id, string next, DecisionInput input)
     {
-        var supplier = await db.SupplierProfiles.AsNoTracking().SingleOrDefaultAsync(x => x.Id == id);
+        var supplier = await Reviewable().AsNoTracking().SingleOrDefaultAsync(x => x.Id == id);
         if (supplier is null) return NotFound();
         ViewBag.Supplier = supplier;
         ViewBag.Decision = next;
+        ViewBag.MissingApprovalDocuments = next == SupplierStatus.Approved &&
+            !await db.SupplierProfiles.AnyAsync(x => x.Id == id && x.SupplierDocuments.Any());
         return View("Decision", input);
     }
 
@@ -60,7 +95,7 @@ public sealed class SuppliersController(ApplicationDbContext db, UserManager<Ide
     {
         if (!ModelState.IsValid) return await DecisionPageAsync(id, next, input);
 
-        var supplier = await db.SupplierProfiles.AsNoTracking().SingleOrDefaultAsync(x => x.Id == id);
+        var supplier = await Reviewable().AsNoTracking().SingleOrDefaultAsync(x => x.Id == id);
         if (supplier is null) return NotFound();
         var previous = supplier.Status;
         var allowed = next switch
@@ -74,7 +109,7 @@ public sealed class SuppliersController(ApplicationDbContext db, UserManager<Ide
 
         await using var transaction = await db.Database.BeginTransactionAsync();
         var reason = input.Reason.Trim();
-        var application = db.SupplierProfiles.Where(x => x.Id == id && x.Status == previous);
+        var application = Reviewable().Where(x => x.Id == id && x.Status == previous);
         if (next == SupplierStatus.Approved)
             application = application.Where(x => x.SupplierDocuments.Any());
         var changed = await application.ExecuteUpdateAsync(update => update

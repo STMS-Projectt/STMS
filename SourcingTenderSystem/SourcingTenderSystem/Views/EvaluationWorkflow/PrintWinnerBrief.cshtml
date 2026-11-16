@@ -1,0 +1,33 @@
+@model WinnerBrief
+@{
+    Layout = null;
+    ViewData["WinnerPrint"] = true;
+}
+<!doctype html>
+<html lang="@L.Language" dir="@L.Direction">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@L.T("Winning supplier brief")</title>
+    <style>
+        :root { color-scheme:light; background:white; color:#132e43; font-family:system-ui,sans-serif }
+        body { margin:2rem auto; max-width:48rem; padding-inline:1rem; line-height:1.6; overflow-wrap:anywhere }
+        header { border-block-end:2px solid #08766c; }
+        h1,h2,h3 { line-height:1.25 }
+        .ai-pick { background:#eef8f6; border-inline-start:4px solid #08766c; padding:.75rem 1rem; break-inside:avoid }
+        .ai-reasons { padding-inline-start:1.5rem }
+        a,button { font:inherit }
+        @@media print { body { margin:0; padding:0 } .print-action { display:none } h2,h3 { break-after:avoid } }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>@L.T("Winning supplier brief")</h1>
+        <p>@L.F("Tender #{0}", Model.Input.TenderId) · <bdi>@Model.Input.TenderTitle</bdi></p>
+        <p>@L.T("Advisory only.") · @L.F("Prepared for {0}", User.Identity?.Name ?? "")</p>
+        <button class="print-action" type="button" onclick="window.print()">@L.T("Print summary")</button>
+    </header>
+    <main><partial name="_WinnerBrief" model="Model" /></main>
+</body>
+</html>
+

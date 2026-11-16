@@ -1,0 +1,12 @@
+@model SourcingTenderSystem.ViewModels.Biometrics.BiometricVerifyViewModel
+@{
+    var first = !Model.HasFace && !Model.HasFingerprint;
+    ViewData["Title"] = Model.Manage ? "Set up verification" : first ? "Set up verification" : "Verify your identity";
+    ViewData["BiometricOnboarding"] = true;
+}
+<header class="page-heading"><div>
+    <p class="eyebrow">@L.T("STEP 2 OF 2")</p><h1>@L.T(ViewData["Title"]?.ToString())</h1>
+    <p>@L.T(first ? "Set up at least one method before opening your workspace. You can add another in Account settings." : "Use one of your registered methods to continue.")</p>
+</div></header>
+<partial name="_SignInMethods" model="Model" />
+@section Scripts { <script src="~/js/biometrics.js" asp-append-version="true" defer></script><script src="~/js/face-lab.js" asp-append-version="true" defer></script> }

@@ -1,3 +1,4 @@
+using SourcingTenderSystem.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -79,6 +80,9 @@ public class BidItemsController : Controller
         }
 
         // Check everything again on POST (never trust that the GET page was used)
+        var tenderId = await _context.Bids.Where(b => b.Id == bidId && b.SupplierProfileId == supplier.Id).Select(b => (int?)b.TenderId).SingleOrDefaultAsync();
+        if (tenderId is null) return NotFound();
+        await using var tx = await TenderRules.LockAsync(_context, tenderId.Value);
         var bid = await GetMyBidAsync(bidId, supplier.Id);
         if (bid == null)
         {
@@ -131,6 +135,7 @@ public class BidItemsController : Controller
 
         await RecalculateTotalAsync(bid);
 
+        await tx.CommitAsync();
         TempData["Msg"] = $"Price added for {requestedItem.ItemName}.";
         return BackToBid(bid.Id);
     }
@@ -179,6 +184,9 @@ public class BidItemsController : Controller
             return NotApprovedView(supplier);
         }
 
+        var tenderId = await _context.BidItems.Where(x => x.Id == id && x.Bid.SupplierProfileId == supplier.Id).Select(x => (int?)x.Bid.TenderId).SingleOrDefaultAsync();
+        if (tenderId is null) return NotFound();
+        await using var tx = await TenderRules.LockAsync(_context, tenderId.Value);
         var bidItem = await GetMyBidItemAsync(id, supplier.Id);
         if (bidItem == null)
         {
@@ -210,6 +218,7 @@ public class BidItemsController : Controller
 
         await RecalculateTotalAsync(bidItem.Bid);
 
+        await tx.CommitAsync();
         TempData["Msg"] = $"Price updated for {bidItem.PurchaseRequisitionItem.ItemName}.";
         return BackToBid(bidItem.BidId);
     }
@@ -225,6 +234,9 @@ public class BidItemsController : Controller
             return NotApprovedView(supplier);
         }
 
+        var tenderId = await _context.BidItems.Where(x => x.Id == id && x.Bid.SupplierProfileId == supplier.Id).Select(x => (int?)x.Bid.TenderId).SingleOrDefaultAsync();
+        if (tenderId is null) return NotFound();
+        await using var tx = await TenderRules.LockAsync(_context, tenderId.Value);
         var bidItem = await GetMyBidItemAsync(id, supplier.Id);
         if (bidItem == null)
         {
@@ -246,6 +258,7 @@ public class BidItemsController : Controller
 
         await RecalculateTotalAsync(bid);
 
+        await tx.CommitAsync();
         TempData["Msg"] = $"Price removed for {itemName}.";
         return BackToBid(bid.Id);
     }

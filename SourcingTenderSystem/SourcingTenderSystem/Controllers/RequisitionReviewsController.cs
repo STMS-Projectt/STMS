@@ -18,7 +18,7 @@ public class RequisitionReviewsController : RequisitionBaseController
     {
         if (await CurrentEmployeeAsync() == null) return Forbid();
         var requests = await Db.PurchaseRequisitions.AsNoTracking().Include(x => x.Department)
-            .Include(x => x.CreatedByEmployeeProfile)
+            .Include(x => x.CreatedByEmployeeProfile).Include(x => x.Tenders).ThenInclude(t => t.EvaluationReport)
             .OrderBy(x => x.CreatedAt).ToListAsync();
         return View(requests);
     }
@@ -50,6 +50,12 @@ public class RequisitionReviewsController : RequisitionBaseController
     }
 
     [HttpPost]
+    public Task<IActionResult> ApproveAndCreateTender(int id, RequisitionReviewInput input)
+    {
+        return DecideAsync(id, input, "Approved", createTender: true);
+    }
+
+    [HttpPost]
     public Task<IActionResult> Return(int id, RequisitionReviewInput input)
     {
         return DecideAsync(id, input, "Returned");
@@ -62,13 +68,14 @@ public class RequisitionReviewsController : RequisitionBaseController
     }
 
     // القرارات الثلاثة لها نفس التحقق والحفظ؛ الاختلاف فقط في الحالة الجديدة.
-    private async Task<IActionResult> DecideAsync(int id, RequisitionReviewInput input, string status)
+    private async Task<IActionResult> DecideAsync(int id, RequisitionReviewInput input, string status, bool createTender = false)
     {
         var employee = await CurrentEmployeeAsync();
         if (employee == null) return Forbid();
         await using var transaction = await Db.Database.BeginTransactionAsync(IsolationLevel.Serializable);
         var request = await ReviewableRequests().SingleOrDefaultAsync(x => x.Id == id);
         if (request == null) return NotFound();
+        if (request.ReviewedByEmployeeProfileId is int reviewer && reviewer != employee.Id) return Forbid();
         if (request.CreatedByEmployeeProfileId == employee.Id) return Forbid();
         if (request.Status != "Submitted" && request.Status != "Under Review")
             return Conflict("This request has already been decided. Refresh the pending list.");
@@ -92,13 +99,21 @@ public class RequisitionReviewsController : RequisitionBaseController
         });
         await Db.SaveChangesAsync();
         await transaction.CommitAsync();
+        if (createTender)
+        {
+            TempData["Success"] = "Request approved. Complete the tender details below.";
+            return RedirectToAction("Create", "Tenders", new { purchaseRequisitionId = id });
+        }
+
         TempData["Message"] = "Request " + status.ToLowerInvariant() + ".";
-        return RedirectToAction(nameof(Pending));
+        return status == "Approved"
+            ? RedirectToAction(nameof(Details), new { id })
+            : RedirectToAction(nameof(Pending));
     }
 
     private IQueryable<PurchaseRequisition> ReviewableRequests()
     {
-        return RequestDetails().Where(x => x.Status == "Submitted" || x.Status == "Under Review" ||
+        return RequestDetails().Include(x => x.Tenders).ThenInclude(t => t.EvaluationReport).Where(x => x.Status == "Submitted" || x.Status == "Under Review" ||
             x.Status == "Approved" || x.Status == "Returned" || x.Status == "Rejected" ||
             x.Status == "Converted to Tender");
     }

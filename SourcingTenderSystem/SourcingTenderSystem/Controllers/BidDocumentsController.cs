@@ -1,3 +1,4 @@
+using SourcingTenderSystem.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -21,12 +22,12 @@ public class BidDocumentsController : Controller
     private readonly IWebHostEnvironment _environment;
 
     // Who may call Download (a supplier is also checked to be the owner, inside the action)
-    private const string DownloadRoles = Roles.Supplier + ",SourcingOfficer,EvaluationCommittee,SourcingManager,TopCommittee";
+    private const string DownloadRoles = Roles.Supplier + ",SourcingOfficer,TechnicalCommittee,FinancialCommittee,RequestingDepartment,SourcingManager,TopCommittee";
 
     private const long MaxFileBytes = 10 * 1024 * 1024; // 10 MB
 
     // Fixed list of document types
-    private static readonly string[] DocumentTypes = { "Quotation", "Technical Offer", "Certificate", "Other" };
+    private static readonly IReadOnlyList<string> DocumentTypes = BidDocument.DocumentTypes;
 
     private const string CannotChangeMessage = "You can only change documents of a draft bid while the tender is still open.";
 
@@ -80,6 +81,9 @@ public class BidDocumentsController : Controller
         }
 
         // Check everything again on POST (never trust that the GET page was used)
+        var tenderId = await _context.Bids.Where(b => b.Id == bidId && b.SupplierProfileId == supplier.Id).Select(b => (int?)b.TenderId).SingleOrDefaultAsync();
+        if (tenderId is null) return NotFound();
+        await using var tx = await TenderRules.LockAsync(_context, tenderId.Value);
         var bid = await GetMyBidAsync(bidId, supplier.Id);
         if (bid == null)
         {
@@ -135,6 +139,7 @@ public class BidDocumentsController : Controller
 
         _context.BidDocuments.Add(document);
         await _context.SaveChangesAsync();
+        await tx.CommitAsync();
 
         TempData["Msg"] = $"Document \"{document.FileName}\" uploaded.";
         return BackToBid(bid.Id);
@@ -143,34 +148,12 @@ public class BidDocumentsController : Controller
     // GET: /BidDocuments/Download/3
     [HttpGet]
     [Authorize(Roles = DownloadRoles)]
-    public async Task<IActionResult> Download(int id)
+    public async Task<IActionResult> Download(int id, [FromServices] SourcingTenderSystem.Services.ProtectedPdf pdf, [FromServices] SourcingTenderSystem.Services.BidDocumentAccess access, bool preview = false)
     {
-        var document = await _context.BidDocuments
-            .Include(d => d.Bid)
+        var document = await _context.BidDocuments.AsNoTracking()
+            .Include(d => d.Bid).ThenInclude(b => b.Tender)
             .FirstOrDefaultAsync(d => d.Id == id);
-        if (document == null)
-        {
-            return NotFound();
-        }
-
-        if (User.IsInRole(Roles.Supplier))
-        {
-            // A supplier can download only the documents of their own bids
-            var supplier = await GetCurrentSupplierAsync();
-            if (supplier == null || document.Bid.SupplierProfileId != supplier.Id)
-            {
-                return NotFound();
-            }
-        }
-        else
-        {
-            // Staff can't see a draft: it is still private to the supplier
-            if (document.Bid.Status == "Draft")
-            {
-                return NotFound();
-            }
-        }
-
+        if (document is null || !await access.CanRead(User, document.Bid)) return NotFound();
         string fullPath = GetFullPath(document);
 
         // The file may be missing (for example, the demo rows have fake paths)
@@ -179,7 +162,7 @@ public class BidDocumentsController : Controller
             return NotFound();
         }
 
-        return PhysicalFile(fullPath, "application/pdf", document.FileName);
+        return await pdf.Serve(this, System.IO.File.OpenRead(fullPath), document.FileName, preview);
     }
 
     // POST: /BidDocuments/Delete/3
@@ -195,6 +178,9 @@ public class BidDocumentsController : Controller
         }
 
         // Only a document of MY bid
+        var tenderId = await _context.BidDocuments.Where(x => x.Id == id && x.Bid.SupplierProfileId == supplier.Id).Select(x => (int?)x.Bid.TenderId).SingleOrDefaultAsync();
+        if (tenderId is null) return NotFound();
+        await using var tx = await TenderRules.LockAsync(_context, tenderId.Value);
         var document = await _context.BidDocuments
             .Include(d => d.Bid.Tender)
             .FirstOrDefaultAsync(d => d.Id == id && d.Bid.SupplierProfileId == supplier.Id);
@@ -217,6 +203,7 @@ public class BidDocumentsController : Controller
         // 1) Remove the row
         _context.BidDocuments.Remove(document);
         await _context.SaveChangesAsync();
+        await tx.CommitAsync();
 
         // 2) Remove the file from the disk (if it is there)
         if (System.IO.File.Exists(fullPath))

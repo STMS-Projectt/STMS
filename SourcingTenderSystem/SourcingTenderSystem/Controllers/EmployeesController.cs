@@ -10,6 +10,7 @@ using SourcingTenderSystem.ViewModels;
 
 namespace SourcingTenderSystem.Controllers;
 
+[Authorize(Roles = Roles.Admin)]
 public sealed class EmployeesController(ApplicationDbContext db, UserManager<IdentityUser> users) : Controller
 {
     private IQueryable<EmployeeProfile> Employees => db.EmployeeProfiles.Include(x => x.User).Include(x => x.Department);
@@ -117,6 +118,44 @@ public sealed class EmployeesController(ApplicationDbContext db, UserManager<Ide
         return RedirectToAction(nameof(Details), new { id });
     }
 
+    [HttpGet]
+    public async Task<IActionResult> ResetPassword(int id)
+    {
+        var employee = await Employees.AsNoTracking().SingleOrDefaultAsync(x => x.Id == id);
+        return employee is null ? NotFound() : PasswordForm(employee, new());
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> ResetPassword(int id, AdminPasswordInput input)
+    {
+        var employee = await Employees.SingleOrDefaultAsync(x => x.Id == id);
+        if (employee is null) return NotFound();
+        if (!ModelState.IsValid) return PasswordForm(employee, input);
+
+        await using var tx = await db.Database.BeginTransactionAsync();
+        if (string.IsNullOrEmpty(employee.User.SecurityStamp) && !Accept(await users.UpdateSecurityStampAsync(employee.User)))
+            return PasswordForm(employee, input);
+        var token = await users.GeneratePasswordResetTokenAsync(employee.User);
+        if (!Accept(await users.ResetPasswordAsync(employee.User, token, input.Password)))
+            return PasswordForm(employee, input);
+        db.AuditLogs.Add(new AuditLog
+        {
+            EmployeeProfileId = await db.EmployeeProfiles.Where(x => x.UserId == users.GetUserId(User))
+                .Select(x => (int?)x.Id).SingleOrDefaultAsync(),
+            Action = "Password reset", EntityName = nameof(EmployeeProfile), EntityId = id, CreatedAt = DateTime.UtcNow
+        });
+        await db.SaveChangesAsync();
+        await tx.CommitAsync();
+        TempData["Message"] = "Employee password reset.";
+        return RedirectToAction(nameof(Details), new { id });
+    }
+
+    private IActionResult PasswordForm(EmployeeProfile employee, AdminPasswordInput input)
+    {
+        ViewData["EmployeeName"] = employee.FullName;
+        ViewData["EmployeeId"] = employee.Id;
+        return View(input);
+    }
     private async Task ValidateAsync(EmployeeInput input, int? currentDepartment = null)
     {
         if (!Roles.EmployeeRoles.Contains(input.Role))

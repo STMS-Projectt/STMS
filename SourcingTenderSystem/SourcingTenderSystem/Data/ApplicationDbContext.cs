@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using SourcingTenderSystem.Models;
@@ -11,18 +11,23 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser>
     {
     }
 
+    public DbSet<ContactMessage> ContactMessages => Set<ContactMessage>();
     public DbSet<Department> Departments => Set<Department>();
+    public DbSet<Category> Categories => Set<Category>();
     public DbSet<EmployeeProfile> EmployeeProfiles => Set<EmployeeProfile>();
     public DbSet<SupplierProfile> SupplierProfiles => Set<SupplierProfile>();
     public DbSet<SupplierDocument> SupplierDocuments => Set<SupplierDocument>();
     public DbSet<PurchaseRequisition> PurchaseRequisitions => Set<PurchaseRequisition>();
     public DbSet<PurchaseRequisitionItem> PurchaseRequisitionItems => Set<PurchaseRequisitionItem>();
+    public DbSet<TenderRound> TenderRounds => Set<TenderRound>();
     public DbSet<Tender> Tenders => Set<Tender>();
     public DbSet<TenderCommitteeMember> TenderCommitteeMembers => Set<TenderCommitteeMember>();
     public DbSet<Invitation> Invitations => Set<Invitation>();
     public DbSet<BidItem> BidItems => Set<BidItem>();
     public DbSet<Bid> Bids => Set<Bid>();
     public DbSet<BidDocument> BidDocuments => Set<BidDocument>();
+    public DbSet<EvaluationSubmission> EvaluationSubmissions => Set<EvaluationSubmission>();
+    public DbSet<EvaluationWeightPlan> EvaluationWeightPlans => Set<EvaluationWeightPlan>();
     public DbSet<EvaluationCriterion> EvaluationCriteria => Set<EvaluationCriterion>();
     public DbSet<TechnicalEvaluation> TechnicalEvaluations => Set<TechnicalEvaluation>();
     public DbSet<FinancialEvaluation> FinancialEvaluations => Set<FinancialEvaluation>();
@@ -35,6 +40,12 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        modelBuilder.Entity<ContactMessage>().HasIndex(x => x.Receipt).IsUnique();
+        modelBuilder.Entity<Category>().HasIndex(x => x.Name).IsUnique();
+        modelBuilder.Entity<Category>().HasMany(x => x.Suppliers).WithMany(x => x.Categories)
+            .UsingEntity("SupplierCategories");
+        modelBuilder.Entity<PurchaseRequisition>().HasOne(x => x.Category).WithMany()
+            .HasForeignKey(x => x.CategoryId).OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<EmployeeProfile>()
             .HasOne(x => x.User)
@@ -86,8 +97,8 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser>
 
         modelBuilder.Entity<Tender>()
             .HasOne(x => x.PurchaseRequisition)
-            .WithOne(x => x.Tender)
-            .HasForeignKey<Tender>(x => x.PurchaseRequisitionId)
+            .WithMany(x => x.Tenders)
+            .HasForeignKey(x => x.PurchaseRequisitionId)
             .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<Tender>()
@@ -112,7 +123,7 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser>
             .HasOne(x => x.Tender)
             .WithMany(x => x.Invitations)
             .HasForeignKey(x => x.TenderId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<Invitation>()
             .HasOne(x => x.SupplierProfile)
@@ -298,6 +309,13 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser>
             .HasIndex(x => x.Name)
             .IsUnique();
 
+        modelBuilder.Entity<ClarificationRequest>().HasOne(r => r.SupplierApplication).WithMany()
+            .HasForeignKey(r => r.SupplierApplicationId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<ClarificationRequest>().Property(r => r.RequestedDocumentType).HasMaxLength(80);
+        modelBuilder.Entity<ClarificationRequest>().Property(r => r.AttachmentName).HasMaxLength(255);
+        modelBuilder.Entity<ClarificationRequest>().Property(r => r.AttachmentKey).HasMaxLength(32);
+        modelBuilder.Entity<SupplierDocument>().Property(d => d.FileName).HasMaxLength(255);
+
         modelBuilder.Entity<SupplierProfile>()
             .HasIndex(x => x.TaxNumber)
             .IsUnique();
@@ -305,6 +323,46 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser>
         modelBuilder.Entity<Bid>()
             .HasIndex(x => new { x.TenderId, x.SupplierProfileId })
             .IsUnique();
+
+        modelBuilder.Entity<EvaluationSubmission>(s =>
+        {
+            s.HasKey(x => new { x.TenderId, x.EmployeeProfileId });
+            s.HasOne(x => x.Tender).WithMany().HasForeignKey(x => x.TenderId).OnDelete(DeleteBehavior.Restrict);
+            s.HasOne(x => x.EmployeeProfile).WithMany().HasForeignKey(x => x.EmployeeProfileId).OnDelete(DeleteBehavior.Restrict);
+        });
+        modelBuilder.Entity<EvaluationWeightPlan>(p =>
+        {
+            p.HasKey(x => new { x.TenderId, x.EmployeeProfileId });
+            p.HasOne(x => x.Tender).WithMany().HasForeignKey(x => x.TenderId).OnDelete(DeleteBehavior.Restrict);
+            p.HasOne(x => x.EmployeeProfile).WithMany().HasForeignKey(x => x.EmployeeProfileId).OnDelete(DeleteBehavior.Restrict);
+        });
+        modelBuilder.Entity<Bid>().HasOne(b => b.ComplianceClarification).WithMany()
+            .HasForeignKey(b => b.ComplianceClarificationId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<TenderApproval>().Property(a => a.Decision).HasMaxLength(450);
+        modelBuilder.Entity<TenderApproval>().HasIndex(a => new { a.EvaluationReportId, a.ApproverEmployeeProfileId })
+            .HasFilter("[Decision] IN ('Top Committee Approved', 'Top Committee Rejected')").IsUnique();
+        modelBuilder.Entity<Bid>().Property(b => b.TotalPrice).HasPrecision(18, 2);
+        modelBuilder.Entity<BidItem>().Property(b => b.UnitPrice).HasPrecision(18, 2);
+        modelBuilder.Entity<EvaluationCriterion>().Property(c => c.WeightPercent).HasPrecision(18, 2);
+        modelBuilder.Entity<TechnicalEvaluation>().Property(e => e.Score).HasPrecision(18, 2);
+        modelBuilder.Entity<FinancialEvaluation>().Property(e => e.Score).HasPrecision(18, 2);
+        modelBuilder.Entity<FinancialEvaluation>().Property(e => e.TotalCost).HasPrecision(18, 2);
+        modelBuilder.Entity<FinancialEvaluation>().Property(e => e.TaxesAndFees).HasPrecision(18, 2);
+        modelBuilder.Entity<FinancialEvaluation>().Property(e => e.ExtraCosts).HasPrecision(18, 2);
+        modelBuilder.Entity<TenderRound>(round =>
+        {
+            round.ToTable("TenderRounds", t => t.HasCheckConstraint("CK_TenderRounds_Number", "[Number] BETWEEN 1 AND 3"));
+            round.HasKey(r => new { r.TenderId, r.Number });
+            round.Property(r => r.ReopenReason).HasMaxLength(500);
+            round.Property(r => r.ClosingOutcome).HasMaxLength(40);
+            round.HasOne(r => r.Tender).WithMany().HasForeignKey(r => r.TenderId).OnDelete(DeleteBehavior.Restrict);
+            round.HasOne(r => r.Officer).WithMany().HasForeignKey(r => r.OfficerId).OnDelete(DeleteBehavior.Restrict);
+        });
+        modelBuilder.Entity<Invitation>().HasOne(i => i.Round).WithMany()
+            .HasForeignKey(i => new { i.TenderId, i.RoundNumber }).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<Invitation>().HasIndex(i => new { i.TenderId, i.RoundNumber, i.SupplierProfileId }).IsUnique();
+        modelBuilder.Entity<Bid>().HasOne(b => b.SubmittedRound).WithMany()
+            .HasForeignKey(b => new { b.TenderId, b.SubmittedRoundNumber }).OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<Tender>()
             .Property(x => x.Counter)

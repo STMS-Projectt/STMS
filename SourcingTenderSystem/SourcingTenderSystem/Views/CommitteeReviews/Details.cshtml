@@ -1,0 +1,108 @@
+@model CommitteeTender
+@{ ViewData["Title"] = L.T("Tender evaluation"); }
+<a class="back-link" asp-action="Assignments"><partial name="_Icon" model='@("back")' /> @L.T("My assignments")</a>
+<header class="page-heading stms-hero admin-record-hero"><div><p class="eyebrow">@L.F("Tender #{0}", Model.Tender.Id)</p><h1>@Model.Tender.Title</h1><p>@L.T("Open a compliant bid to review its details and score it.")</p></div><partial name="_Status" model="Model.Tender.Status" /></header>
+@if (TempData["ReviewError"] is string error) { <div class="alert alert-warning" role="alert">@L.T(error)</div> }
+@if (ViewBag.Submission is EvaluationSubmission submission)
+{
+    <p class="alert alert-success">@L.F("Submitted on {0} UTC. Your scores are read-only.", submission.SubmittedAt.ToString("yyyy-MM-dd HH:mm", L.DisplayCulture))</p>
+}
+@if (User.IsInRole("SourcingManager"))
+{
+    <p><a class="btn btn-outline-secondary" data-workspace-dialog="details" asp-controller="EvaluationWorkflow" asp-action="Details" asp-route-id="@Model.Tender.Id"><partial name="_Icon" model='@("file")' /> @L.T("Evaluation progress and final report")</a></p>
+}
+@if (Model.Tender.Bids.Count > 0)
+{
+    <details class="surface detail-card mb-3 review-disclosure" data-ai-box data-ai-url="@Url.Action("AiRecommendation", new { id = Model.Tender.Id })">
+        <summary>@L.T("AI recommendation") <span class="record-panel-label">@L.T("Advisory only")</span></summary>
+        <p class="ai-note">@L.T("The AI compared the compliant bids before you start scoring. It does not score or decide. Your own evaluation and the committee's decision always come first.")</p>
+        <div data-ai-body aria-live="polite">
+            <div class="ai-box-state" role="status"><span class="spinner-border spinner-border-sm" aria-hidden="true"></span> @L.T("Analysing the bids. This can take up to a minute the first time.")</div>
+        </div>
+    </details>
+}
+<section class="surface directory dept-directory mb-3" data-directory>
+    <div class="dept-directory-heading"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("inbox")' /></span><div><h2>@L.T("Compliant bids")</h2><p>@L.T("Open a supplier offer to view documents or save scores.")</p></div></div>
+    @if (Model.Tender.Bids.Count == 0) { <div class="empty-state">@L.T("No compliant bids to review.")</div> }
+    else
+    {
+        <partial name="_ListFilters" model='@("Search compliant bids", Enumerable.Empty<string>())' />
+        <partial name="_DirectoryPages" model='@("Compliant bid pages")' />
+        <div class="record-list" data-record-list>
+            @foreach (var bid in Model.Tender.Bids.OrderBy(b => b.SupplierProfile.CompanyName))
+            {
+                <article class="record-card" data-record>
+                    <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("supplier")' /></span><span>@bid.SupplierProfile.CompanyName<small>@L.F("Bid #{0}", bid.Id)</small></span></div>
+                    <dl class="record-facts"><div><dt>@L.T("Quoted total")</dt><dd>@bid.TotalPrice.ToString("N2") @bid.Currency</dd></div>
+                        <div><dt>@L.T("Criteria scored")</dt><dd>@Model.ReviewedCriteria.GetValueOrDefault(bid.Id) / @Model.Weights.Count</dd></div></dl>
+                    <div class="record-action"><a class="record-icon-action" data-workspace-dialog="details" asp-action="Bid" asp-route-id="@bid.Id" aria-label="@L.F("Review bid from {0}", bid.SupplierProfile.CompanyName)" data-tooltip="@L.T("Review bid")"><partial name="_Icon" model='@("eye")' /></a></div>
+                </article>
+            }
+        </div>
+        <partial name="_ListFilterEmpty" />
+    }
+</section>
+<details class="surface detail-card mb-3 review-disclosure">
+    <summary>@L.T("My evaluation criteria") <span class="record-panel-label">@L.F("{0} selected", Model.Weights.Count)</span></summary>
+    <div class="record-section-heading">
+        <div><p>@L.T("These weights apply to every compliant bid you review.")</p></div>
+        @if (Model.CanEditWeights)
+        {
+            <a data-workspace-dialog class="btn btn-outline-secondary" asp-action="Weights" asp-route-id="@Model.Tender.Id"><partial name="_Icon" model='@("filter")' /> @L.T("Select criteria and weights")</a>
+        }
+    </div>
+    @if (Model.Tender.EvaluationCriteria.Count == 0) { <p class="subtle">@L.T("No published criteria are available for this tender.")</p> }
+    else
+    {
+        <div class="record-list record-list-inset">
+            @foreach (var criterion in Model.Tender.EvaluationCriteria.OrderBy(c => c.Type).ThenBy(c => c.Id))
+            {
+                var used = Model.Weights.TryGetValue(criterion.Id, out var weight);
+                <article class="record-card">
+                    <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("check")' /></span><span>@criterion.Name<small>@L.T(criterion.Type) · @L.F("{0} points", criterion.MaxScore)</small></span></div>
+                    <dl class="record-facts"><div><dt>@L.T("Officer proposed")</dt><dd>@criterion.WeightPercent.ToString("0.##")%</dd></div><div><dt>@L.T("My weight")</dt><dd>@(used ? $"{weight:0.##}%" : L.T("Not selected"))</dd></div></dl>
+                </article>
+            }
+        </div>
+    }
+</details>
+@section Scripts {
+<script>
+(() => {
+    const box = (document.querySelector("#workspace-dialog[open] [data-dialog-content]") || document.querySelector("#main"))?.querySelector("[data-ai-box]");
+    if (!box) return;
+    const body = box.querySelector("[data-ai-body]");
+    const loading = body.innerHTML;
+    const load = async () => {
+        body.innerHTML = loading;
+        try {
+            const response = await fetch(box.dataset.aiUrl, { headers: { "X-Requested-With": "fetch" } });
+            if (!response.ok) throw new Error(response.status);
+            body.innerHTML = await response.text();
+        } catch {
+            body.innerHTML = '<div class="ai-box-state" role="status"><div><strong>' + window.stmsT("The AI recommendation could not be loaded.") + '</strong> <button type="button" class="btn btn-outline-secondary btn-sm ms-2" data-ai-retry>' + window.stmsT("Try again") + '</button></div></div>';
+        }
+    };
+    body.addEventListener("click", event => { if (event.target.closest("[data-ai-retry]")) load(); });
+    box.addEventListener("toggle", () => {
+        if (box.open && !box.dataset.loaded) {
+            box.dataset.loaded = "true";
+            load();
+        }
+    });
+})();
+</script>
+}
+
+<div class="record-reference-actions">
+    @* Submit is the final step; it shares this row with the reference links. *@
+    @if (Model.Tender.Status == "Under Evaluation" && ViewBag.Submission is not EvaluationSubmission)
+    {
+        <form asp-action="SubmitEvaluation" asp-route-id="@Model.Tender.Id" method="post"
+              data-workspace-confirm="@L.T("Submit your evaluation? Scores will become read-only.")">
+            <button type="submit" class="btn btn-primary">@L.T("Submit evaluation")</button>
+        </form>
+    }
+    <a class="btn btn-outline-secondary" data-workspace-dialog="details" asp-controller="Clarifications" asp-action="Index" asp-route-kind="tender" asp-route-recordId="@Model.Tender.Id"><partial name="_Icon" model='@("mail")' /> @L.T("Clarification history")</a>
+    <partial name="_RecordQr" model='@(Url.Action("Details", new { id = Model.Tender.Id })!)' />
+</div>

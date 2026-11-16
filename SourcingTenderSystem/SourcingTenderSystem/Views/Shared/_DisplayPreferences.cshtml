@@ -1,0 +1,16 @@
+@{
+    var next = L.Arabic ? "en" : "ar";
+    var language = L.Arabic ? "English" : "العربية";
+    var target = Context.Request.PathBase + Context.Request.Path + Context.Request.QueryString;
+}
+<div class="display-preferences" aria-label="@L.T("Display preferences")">
+    <form asp-controller="Preferences" asp-action="Language" method="post" data-full-page>
+        <input type="hidden" name="language" value="@next" />
+        <input type="hidden" name="returnUrl" value="@target" />
+        <button class="preference-control language-control" type="submit" lang="@next" aria-label="@language" title="@language">@next.ToUpperInvariant()</button>
+    </form>
+    <button class="preference-control theme-control" type="button" data-theme-toggle aria-pressed="false" aria-label="@L.T("Dark mode")" title="@L.T("Dark mode")">
+        <svg class="theme-moon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 15a8.5 8.5 0 0 1-11-11 8.6 8.6 0 1 0 11 11Z"/></svg>
+        <svg class="theme-sun" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg>
+    </button>
+</div>

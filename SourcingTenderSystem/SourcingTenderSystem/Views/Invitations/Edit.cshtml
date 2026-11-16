@@ -1,12 +1,12 @@
 @model SourcingTenderSystem.Models.Invitation
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = L.T("Edit");
 }
 
-<h1>Edit</h1>
+<h1>@L.T("Edit")</h1>
 
-<h4>Invitation</h4>
+<h4>@L.T("Invitation")</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -15,18 +15,18 @@
             <input type="hidden" asp-for="Id" />
 
             <div class="form-group">
-                <label asp-for="TenderId" class="control-label  fw-bold"> Tender</label>
+                <label asp-for="TenderId" class="control-label  fw-bold"> @L.T("Tender")</label>
                 <select asp-for="TenderId" class="form-control" asp-items="ViewBag.TenderId">
-                    <option value="">-- Select Tender --</option>
+                    <option value="">@L.T("-- Select Tender --")</option>
                 </select>
             </div>
 
             <div class="form-group mb-3">
-                <label class="control-label fw-bold">Suppliers:</label>
+                <label class="control-label fw-bold">@L.T("Suppliers:")</label>
                 <div class="dropdown">
                     <!--  dropdown -->
                     <button class="btn btn-outline-secondary dropdown-toggle w-100 text-start d-flex justify-content-between align-items-center" type="button" id="supplierDropdownButton" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
-                        <span id="dropdownButtonText">-- Select Suppliers --</span>
+                        <span id="dropdownButtonText">@L.T("-- Select Suppliers --")</span>
                     </button>
 
                     <!--  Checkboxes -->
@@ -47,7 +47,7 @@
                         }
                         else
                         {
-                            <li class="dropdown-item text-muted">No suppliers available</li>
+                            <li class="dropdown-item text-muted">@L.T("No suppliers available")</li>
                         }
                     </ul>
                 </div>
@@ -61,7 +61,7 @@
 
 
             <div class="form-group">
-                <label asp-for="ExpiresAt" class="control-label  fw-bold"> Expires Date</label>
+                <label asp-for="ExpiresAt" class="control-label  fw-bold"> @L.T("Expires Date")</label>
                 <input asp-for="ExpiresAt" class="form-control" />
                 <span asp-validation-for="ExpiresAt" class="text-danger"></span>
             </div>
@@ -92,7 +92,7 @@
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">@L.T("Back to List")</a>
 </div>
 
 @section Scripts {

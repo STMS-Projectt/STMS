@@ -1,1 +1,4 @@
 /SourcingTenderSystem/App_Data/
+# App settings
+appsettings.json
+appsettings.*.json

@@ -1,0 +1,113 @@
+{
+  "results": [
+    {
+      "id": "Portal-contact-save-reply-and-private-receipt",
+      "status": "FAIL",
+      "reason": "Timed out: /Home/ContactStatus?receipt=00000000-0000-0000-0000-000000000000 ",
+      "page": "/"
+    },
+    {
+      "id": "Portal-request-and-tender-navigation-and-alignment",
+      "status": "FAIL",
+      "reason": "Expected values to be strictly deep-equal:\n+ actual - expected\n\n  [\n+   470,\n+   652,\n+   835,\n+   1017\n-   474,\n-   654,\n-   834,\n-   1014\n  ]\n",
+      "page": "/Tenders"
+    },
+    {
+      "id": "Portal-supplier-full-validation",
+      "status": "FAIL",
+      "reason": "TypeError: Failed to construct 'FormData': parameter 1 is not of type 'HTMLFormElement'.\n    at <anonymous>:1:85\n    at <anonymous>:1:643",
+      "page": "/Account/AccessDenied"
+    }
+  ],
+  "errors": [],
+  "http": [
+    {
+      "path": "/",
+      "status": 200
+    },
+    {
+      "path": "/home/assets/contact-team.jpg",
+      "status": 200
+    },
+    {
+      "path": "/Home/Contact",
+      "status": 400
+    },
+    {
+      "path": "/Home/ContactStatus",
+      "status": 200
+    },
+    {
+      "path": "/Home/ContactStatus",
+      "status": 404
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Dashboard",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/PurchaseRequisitions/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Clarifications/StartRequest/1",
+      "status": 200
+    },
+    {
+      "path": "/Account/Login",
+      "status": 200
+    },
+    {
+      "path": "/SourcingDashboard",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/RequisitionReviews/Pending",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/RequisitionReviews/Details/1",
+      "status": 200
+    },
+    {
+      "path": "/Clarifications",
+      "status": 200
+    },
+    {
+      "path": "/Tenders",
+      "status": 200
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    },
+    {
+      "path": "/Account/AccessDenied",
+      "status": 403
+    },
+    {
+      "path": "/Notifications/Unread",
+      "status": 200
+    }
+  ]
+}

@@ -1,0 +1,104 @@
+using System.Security.Claims;
+using SourcingTenderSystem.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using SourcingTenderSystem.Data;
+using SourcingTenderSystem.Models;
+using SourcingTenderSystem.Security;
+using SourcingTenderSystem.ViewModels;
+
+namespace SourcingTenderSystem.Controllers;
+
+[Authorize]
+public sealed class SupplierWorkspaceController(ApplicationDbContext db) : Controller
+{
+    private IQueryable<SupplierProfile> OwnProfile() =>
+        db.SupplierProfiles.Where(s => s.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+    private IQueryable<Invitation> OwnInvitations(int supplierId) =>
+        db.Invitations.Where(i => i.SupplierProfileId == supplierId);
+
+    [HttpGet]
+    public async Task<IActionResult> Index()
+    {
+        var model = await OwnProfile().Select(s => new SupplierWorkspaceSummary(
+            s.CompanyName, s.Status, s.SupplierDocuments.Count, 0, 0, 0, 0,
+            s.Status == SupplierStatus.Pending && s.ApplicationSubmittedAt == null)).SingleOrDefaultAsync();
+        if (model is null) return Forbid();
+
+        if (model.Status == SupplierStatus.Approved && User.IsInRole(Roles.Supplier))
+        {
+            var id = await OwnProfile().Select(s => s.Id).SingleAsync();
+            var now = DateTime.UtcNow;
+            var invitations = OwnInvitations(id);
+            var bids = db.Bids.Where(b => b.SupplierProfileId == id);
+            var pending = invitations.Where(i => i.Status == "Pending" &&
+                (i.RoundNumber == i.Tender.Counter || i.RoundNumber == null && db.TenderRounds.Any(r => r.TenderId == i.TenderId && r.Number == i.Tender.Counter && r.Legacy)) &&
+                i.ExpiresAt > now && i.Tender.Status == "Open" && i.Tender.OpenDate <= now && i.Tender.CloseDate > now);
+            var next = await pending.OrderBy(i => i.ExpiresAt < i.Tender.CloseDate ? i.ExpiresAt : i.Tender.CloseDate)
+                .ThenBy(i => i.Id).Select(i => new SupplierInvitationDeadline(i.Id, i.Tender.Title,
+                    i.ExpiresAt < i.Tender.CloseDate ? i.ExpiresAt : i.Tender.CloseDate)).FirstOrDefaultAsync();
+            model = model with
+            {
+                Invitations = await invitations.CountAsync(),
+                AwaitingResponse = await pending.CountAsync(),
+                NextInvitation = next,
+                DraftBids = await bids.CountAsync(b => b.Status == "Draft"),
+                SentBids = await bids.CountAsync(b => b.SubmittedAt != null)
+            };
+        }
+
+        return View(model);
+    }
+
+    [HttpGet, Authorize(Roles = Roles.Supplier)]
+    public async Task<IActionResult> Invitations(int? invitationId)
+    {
+        var supplier = await OwnProfile().AsNoTracking().SingleOrDefaultAsync();
+        if (supplier?.Status != SupplierStatus.Approved) return Forbid();
+
+        var query = OwnInvitations(supplier.Id);
+        if (invitationId is int id) query = query.Where(i => i.Id == id);
+        var rows = await query.AsNoTracking().Include(i => i.Tender).Include(i => i.Round)
+            .OrderByDescending(i => i.SentAt).ThenByDescending(i => i.Id).ToListAsync();
+        if (invitationId.HasValue && rows.Count == 0) return NotFound();
+        var bidTenders = await db.Bids.Where(b => b.SupplierProfileId == supplier.Id)
+            .Select(b => b.TenderId).ToListAsync();
+        ViewBag.CurrentLegacyTenders = (await db.TenderRounds.Where(r => r.Legacy && r.Number == r.Tender.Counter &&
+            r.Tender.Invitations.Any(i => i.SupplierProfileId == supplier.Id && i.RoundNumber == null))
+            .Select(r => r.TenderId).ToListAsync()).ToHashSet();
+        return View(invitationId.HasValue ? "InvitationDetails" : "Invitations",
+            new SupplierInvitationList(rows, bidTenders.ToHashSet(), DateTime.UtcNow));
+    }
+
+    [HttpPost, Authorize(Roles = Roles.Supplier)]
+    public async Task<IActionResult> Respond(int id, string decision)
+    {
+        if (decision is not ("Accepted" or "Declined")) return BadRequest();
+        var supplier = await OwnProfile().AsNoTracking().SingleOrDefaultAsync();
+        if (supplier?.Status != SupplierStatus.Approved) return Forbid();
+
+        var ownInvitation = OwnInvitations(supplier.Id).Where(i => i.Id == id);
+        var tenderId = await ownInvitation.Select(i => (int?)i.TenderId).SingleOrDefaultAsync();
+        if (tenderId is null) return NotFound();
+        await using var tx = await TenderRules.LockAsync(db, tenderId.Value);
+
+        var now = DateTime.UtcNow;
+        var changed = await ownInvitation
+            .Where(i => i.Status == "Pending" &&
+                (i.RoundNumber == i.Tender.Counter || i.RoundNumber == null && db.TenderRounds.Any(r => r.TenderId == i.TenderId && r.Number == i.Tender.Counter && r.Legacy)) &&
+                i.ExpiresAt > now && i.Tender.Status == "Open" &&
+                i.Tender.OpenDate <= now && i.Tender.CloseDate > now &&
+                i.SupplierProfile.Status == SupplierStatus.Approved)
+            .ExecuteUpdateAsync(set => set.SetProperty(i => i.Status, decision)
+                .SetProperty(i => i.RespondedAt, now));
+        await tx.CommitAsync();
+        if (changed == 0)
+            TempData["InvitationError"] = "This invitation is no longer available for a response.";
+        else
+            TempData["Message"] = decision == "Accepted" ? "Invitation accepted. You can now prepare a bid." : "Invitation declined.";
+
+        return RedirectToAction(nameof(Invitations), new { invitationId = id });
+    }
+}

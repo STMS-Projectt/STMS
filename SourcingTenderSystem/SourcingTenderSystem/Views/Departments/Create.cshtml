@@ -1,10 +1,16 @@
 @model DepartmentInput
-@{ ViewData["Title"] = "Add department"; }
-<h1>Add department</h1>
-<form method="post" asp-antiforgery="true" class="admin-form" >
-    <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
-    <partial name="_Fields" model="Model" />
-    <button class="btn btn-primary" type="submit">Create department</button>
-</form>
-
+@{ ViewData["Title"] = L.T("Add department"); }
+<a class="back-link" asp-action="Index" ><partial name="_Icon" model='@("back")' /> @L.T("Departments")</a>
+<header class="page-heading dept-create-heading">
+    <span class="icon-tile tone-teal"><partial name="_Icon" model='@("building")' /></span>
+    <div><p class="eyebrow">@L.T("ORGANIZATION")</p><h1>@L.T("Add department")</h1><p>@L.T("Set up a team so you can assign employees to it.")</p></div>
+</header>
+<div class="form-shell">
+    <form method="post" asp-antiforgery="true" class="surface form-card dept-create-card" >
+        <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+        <partial name="_Fields" model="Model" />
+        <div class="form-actions"><button class="btn btn-primary" type="submit">@L.T("Create department") <partial name="_Icon" model='@("arrow")' /></button><a class="btn btn-outline-secondary" asp-action="Index" data-dialog-cancel>@L.T("Cancel")</a></div>
+    </form>
+    <aside class="surface helper-card"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("building")' /></span><h2>@L.T("Department setup")</h2><p>@L.T("Use a short, distinct name that employees recognize.")</p><p>@L.T("Active departments appear when assigning employees.")</p></aside>
+</div>
 @section Scripts { <partial name="_ValidationScriptsPartial" /> }

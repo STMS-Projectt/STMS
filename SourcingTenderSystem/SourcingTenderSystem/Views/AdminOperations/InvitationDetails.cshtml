@@ -1,0 +1,14 @@
+@model Invitation
+@{ ViewData["Title"] = "Invitation details"; }
+<a class="back-link" asp-action="Invitations">@L.T("Back to invitations")</a>
+<header class="page-heading stms-hero admin-record-hero"><div><p class="eyebrow">@L.F("Invitation #{0}", Model.Id)</p><h1>@Model.SupplierProfile.CompanyName</h1><p>@Model.Tender.Title</p></div><div class="record-action"><a data-workspace-dialog="details" class="record-icon-action" asp-action="Tender" asp-route-id="@Model.TenderId" aria-label="@L.T("View related tender")" data-tooltip="@L.T("View related tender")" title="@L.T("View related tender")"><partial name="_Icon" model='@("briefcase")' /></a></div></header>
+<section class="surface detail-card"><h2>@L.T("Invitation information")</h2>
+    <dl class="detail-grid">
+        <div><dt>@L.T("Status")</dt><dd><partial name="_Status" model="Model.Status" /></dd></div>
+        <div><dt>@L.T("Invitation round")</dt><dd>@(Model.RoundNumber?.ToString() ?? "—")</dd></div>
+        <div><dt>@L.T("Sent (UTC)")</dt><dd>@Model.SentAt.ToString("dd MMM yyyy HH:mm", L.DisplayCulture)</dd></div>
+        <div><dt>@L.T("Expires (UTC)")</dt><dd>@Model.ExpiresAt.ToString("dd MMM yyyy HH:mm", L.DisplayCulture)</dd></div>
+        <div><dt>@L.T("Responded (UTC)")</dt><dd>@(Model.RespondedAt?.ToString("dd MMM yyyy HH:mm", L.DisplayCulture) ?? "—")</dd></div>
+        @if (!string.IsNullOrWhiteSpace(Model.DeclineReason)) { <div><dt>@L.T("Decline reason")</dt><dd>@Model.DeclineReason</dd></div> }
+    </dl>
+</section>

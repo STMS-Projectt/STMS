@@ -1,0 +1,133 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
+using SourcingTenderSystem.Data;
+using SourcingTenderSystem.ViewModels;
+using SourcingTenderSystem.ViewModels.Biometrics;
+
+namespace SourcingTenderSystem.Controllers;
+
+[Authorize, ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
+public sealed class ProfileController(UserManager<IdentityUser> users, ApplicationDbContext db) : Controller
+{
+    private const string Provider = "Profile";
+    private const string PersonalKey = "Personal";
+    private const string PhotoKey = "Photo";
+    private const int MaxBytes = 1024 * 1024;
+
+    [HttpGet]
+    public async Task<IActionResult> Index(string? tab, string? returnUrl)
+    {
+        var user = await users.GetUserAsync(User);
+        if (user is null) return Forbid();
+        var security = string.Equals(tab, "security", StringComparison.OrdinalIgnoreCase);
+        if (security && (await users.IsLockedOutAsync(user) ||
+            await db.EmployeeProfiles.AnyAsync(e => e.UserId == user.Id && !e.IsActive)))
+            return Forbid();
+        var saved = await users.GetAuthenticationTokenAsync(user, Provider, PersonalKey);
+        var personal = saved is null ? new PersonalPreferences() :
+            JsonSerializer.Deserialize<PersonalPreferences>(saved) ?? new PersonalPreferences();
+        return View(await Settings(user, personal, security, returnUrl));
+    }
+
+    [HttpPost, ValidateAntiForgeryToken, RequestSizeLimit(16384)]
+    public async Task<IActionResult> SavePersonal([Bind(Prefix = "Personal")] PersonalPreferences personal)
+    {
+        var user = await users.GetUserAsync(User);
+        if (user is null || await db.SupplierProfiles.AnyAsync(s => s.UserId == user.Id)) return Forbid();
+        if (ModelState.IsValid)
+        {
+            personal.Trim();
+            var result = await users.SetAuthenticationTokenAsync(user, Provider, PersonalKey, JsonSerializer.Serialize(personal));
+            if (result.Succeeded)
+            {
+                TempData["PersonalDetailsFeedback"] = "Personal details saved.";
+                return RedirectToAction(nameof(Index));
+            }
+            ModelState.AddModelError("", "Could not save your personal details. Try again.");
+        }
+        return View(nameof(Index), await Settings(user, personal, false, null));
+    }
+
+    private async Task<AccountSettings> Settings(IdentityUser user, PersonalPreferences personal, bool security, string? returnUrl)
+    {
+        var employee = await db.EmployeeProfiles.AsNoTracking().Include(e => e.Department)
+            .SingleOrDefaultAsync(e => e.UserId == user.Id);
+        var supplier = employee is null ? await db.SupplierProfiles.AsNoTracking()
+            .SingleOrDefaultAsync(s => s.UserId == user.Id) : null;
+        var email = user.Email ?? user.UserName ?? "My account";
+        var displayName = employee?.FullName ?? supplier?.CompanyName ?? user.UserName ?? email;
+        return new AccountSettings(displayName, email, (await users.GetRolesAsync(user)).ToArray(),
+            employee, supplier, await users.GetAuthenticationTokenAsync(user, Provider, PhotoKey) != null, personal,
+            security ? new BiometricVerifyViewModel
+            {
+                Manage = true,
+                HasFingerprint = (await users.GetPasskeysAsync(user)).Count > 0,
+                ReturnUrl = Url.IsLocalUrl(returnUrl) ? returnUrl : null
+            } : null);
+    }
+
+    [HttpPost, RequestSizeLimit(MaxBytes + 65536)]
+    public async Task<IActionResult> Upload(IFormFile? photo)
+    {
+        var user = await users.GetUserAsync(User);
+        if (user is null || await db.SupplierProfiles.AnyAsync(s => s.UserId == user.Id)) return Forbid();
+        if (photo is null || photo.Length < 12 || photo.Length > MaxBytes)
+            return Fail("Choose a JPEG or PNG image up to 1 MB.");
+        using var buffer = new MemoryStream((int)photo.Length);
+        await photo.CopyToAsync(buffer, HttpContext.RequestAborted);
+        var bytes = buffer.ToArray();
+        var type = ImageType(bytes);
+        if (type is null) return Fail("Choose a valid JPEG or PNG image. SVG and other file types are not supported.");
+        var result = await users.SetAuthenticationTokenAsync(user, Provider, PhotoKey, Convert.ToBase64String(bytes));
+        if (!result.Succeeded) return Fail("Could not save your photo. Try again.");
+        TempData["ProfilePhotoFeedback"] = "Profile photo updated.";
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Photo()
+    {
+        var user = await users.GetUserAsync(User);
+        if (user is null) return Forbid();
+        var saved = await users.GetAuthenticationTokenAsync(user, Provider, PhotoKey);
+        if (string.IsNullOrEmpty(saved)) return NotFound();
+        byte[] bytes;
+        try { bytes = Convert.FromBase64String(saved); }
+        catch (FormatException) { return NotFound(); }
+        var mime = ImageType(bytes);
+        if (mime is null) return NotFound();
+        Response.Headers["X-Content-Type-Options"] = "nosniff";
+        return File(bytes, mime);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Remove()
+    {
+        var user = await users.GetUserAsync(User);
+        if (user is null || await db.SupplierProfiles.AnyAsync(s => s.UserId == user.Id)) return Forbid();
+        if (!(await users.RemoveAuthenticationTokenAsync(user, Provider, PhotoKey)).Succeeded)
+            return Fail("Could not remove your photo. Try again.");
+        TempData["ProfilePhotoFeedback"] = "Profile photo removed.";
+        return RedirectToAction(nameof(Index));
+    }
+
+    private IActionResult Fail(string message)
+    {
+        TempData["ProfileError"] = message;
+        return RedirectToAction(nameof(Index));
+    }
+
+    private static string? ImageType(byte[] bytes)
+    {
+        if (bytes.Length < 12) return null;
+        if (bytes.AsSpan().StartsWith(new byte[] { 137, 80, 78, 71, 13, 10, 26, 10 }) &&
+            bytes.AsSpan(12).StartsWith("IHDR"u8) && bytes.AsSpan().EndsWith(new byte[] { 73, 69, 78, 68, 174, 66, 96, 130 }))
+            return "image/png";
+        if (bytes.AsSpan().StartsWith(new byte[] { 255, 216, 255 }) && bytes.AsSpan().EndsWith(new byte[] { 255, 217 }))
+            return "image/jpeg";
+        return null;
+    }
+}

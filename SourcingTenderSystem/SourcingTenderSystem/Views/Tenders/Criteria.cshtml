@@ -1,0 +1,58 @@
+@using System.Globalization
+@model Tender
+@{ ViewData["Title"] = L.T("Evaluation criteria"); var draft = Model.Status == "Draft"; var total = Model.EvaluationCriteria.Sum(c => c.WeightPercent); }
+<header class="page-heading admin-action-heading"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("filter")' /></span><div><p class="eyebrow">@L.F("Tender #{0}", Model.Id)</p><h1>@L.T("Evaluation criteria")</h1><p>@Model.Title · @L.T("Set the proposed weights before publication.")</p></div></header>
+@if (TempData["Error"] is string error) { <p class="alert alert-warning" role="alert">@L.T(error)</p> }
+<section class="surface detail-card record-section">
+    <div class="record-section-heading"><div><h2>@L.T(draft ? "Proposed criteria" : "Published criteria")</h2><p>@L.T(draft ? "The proposed weights must total 100% before publication." : "Reviewers can use these weights or save their own selection and weights.")</p></div><span class="record-panel-label">@total.ToString("0.##") / 100%</span></div>
+    @if (Model.EvaluationCriteria.Count == 0) { <p class="subtle mb-0">@L.T("No criteria have been added.")</p> }
+    <div class="checklist-columns">
+    @foreach (var (type, icon) in new[] { ("Technical", "briefcase"), ("Financial", "chart") })
+    {
+        var criteria = Model.EvaluationCriteria.Where(c => c.Type == type).OrderBy(c => c.Id).ToList();
+        <section class="criterion-category" aria-label="@L.F("{0} criteria", L.T(type))">
+            <div class="record-section-heading"><h3 class="h6 mb-0"><partial name="_Icon" model="icon" /> @L.T(type)</h3><span class="record-panel-label">@criteria.Sum(c => c.WeightPercent).ToString("0.##")%</span></div>
+            @if (criteria.Count == 0) { <p class="subtle mb-0">@L.F("No {0} criteria yet.", L.T(type))</p> }
+            @foreach (var criterion in criteria)
+            {
+        <div class="weight-officer-criterion">
+            <div class="record-section-heading"><strong>@criterion.Name</strong><span class="record-panel-label">@criterion.WeightPercent.ToString("0.##")%</span></div>
+            @if (draft)
+            {
+                <details>
+                    <summary>@L.T("Edit criterion")</summary>
+                    <form asp-action="Criterion" asp-route-id="@Model.Id" method="post" class="my-3">
+                        <input type="hidden" name="edit" value="@criterion.Id" />
+                        <div class="form-grid">
+                            <label class="field">@L.T("Criterion name")<input class="form-control" name="Name" maxlength="120" value="@criterion.Name" required /></label>
+                            <label class="field">@L.T("Type")<select class="form-select" name="Type"><option value="Technical" selected="@(criterion.Type == "Technical")">@L.T("Technical")</option><option value="Financial" selected="@(criterion.Type == "Financial")">@L.T("Financial")</option></select></label>
+                            <input type="hidden" name="MaxScore" value="@criterion.MaxScore" />
+                            <label class="field">@L.T("Proposed weight (%)")<input class="form-control" name="WeightPercent" type="number" min=".01" max="100" step=".01" value="@criterion.WeightPercent.ToString(CultureInfo.InvariantCulture)" required /></label>
+                        </div>
+                        <button class="btn btn-outline-primary mt-3" type="submit">@L.T("Save changes")</button>
+                    </form>
+                    <form asp-action="Criterion" asp-route-id="@Model.Id" method="post" class="mb-2">
+                        <button class="btn btn-sm btn-outline-danger" type="submit" name="remove" value="@criterion.Id"><partial name="_Icon" model='@("trash")' /> @L.T("Remove criterion")</button>
+                    </form>
+                </details>
+            }
+        </div>
+            }
+        </section>
+    }
+    </div>
+</section>
+@if (draft)
+{
+    <form asp-action="Criterion" asp-route-id="@Model.Id" method="post" class="surface form-card" data-add-criterion>
+        <h2 class="h5 mb-1">@L.T("Add a checklist criterion")</h2><p class="field-hint mb-3">@L.T("Write a condition reviewers can check. For example, “Previously delivered comparable goods” or “Meets the payment terms”.")</p>
+        <div class="form-grid">
+            <label class="field">@L.T("Criterion name")<input class="form-control" name="Name" maxlength="120" required /></label>
+            <label class="field">@L.T("Type")<select class="form-select" name="Type"><option value="Technical">@L.T("Technical")</option><option value="Financial">@L.T("Financial")</option></select></label>
+            <input type="hidden" name="MaxScore" value="100" />
+            <label class="field">@L.T("Proposed weight (%)")<input class="form-control" name="WeightPercent" type="number" min=".01" max="100" step=".01" required /></label>
+        </div>
+        <div class="form-actions mt-3"><a data-dialog-cancel asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary">@L.T("Back to tender")</a><button class="btn btn-primary" type="submit"><partial name="_Icon" model='@("plus")' /> @L.T("Add criterion")</button></div>
+    </form>
+}
+else { <a data-dialog-cancel asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary">@L.T("Back to tender")</a> }

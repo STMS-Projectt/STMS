@@ -1,0 +1,190 @@
+[
+  {
+    "Id": 1,
+    "Title": "Phase 6 Award",
+    "Status": "Open",
+    "PurchaseRequisitionId": 2,
+    "Bids": [],
+    "Invitations": [
+      {
+        "RoundNumber": 1,
+        "Status": "Pending",
+        "SentAt": "2026-11-15T20:58:59.2237705"
+      },
+      {
+        "RoundNumber": 1,
+        "Status": "Pending",
+        "SentAt": "2026-11-15T20:58:59.2237705"
+      },
+      {
+        "RoundNumber": 1,
+        "Status": "Pending",
+        "SentAt": "2026-11-15T20:58:59.2237705"
+      }
+    ],
+    "Rounds": 1,
+    "Submissions": 0,
+    "Audit": [
+      "Create",
+      "DraftCriteriaChanged",
+      "DraftCriteriaChanged",
+      "Publish",
+      "InviteSuppliers"
+    ],
+    "Votes": 0,
+    "Notifications": []
+  },
+  {
+    "Id": 2,
+    "Title": "Phase 6 Rounds",
+    "Status": "Open",
+    "PurchaseRequisitionId": 3,
+    "Bids": [],
+    "Invitations": [
+      {
+        "RoundNumber": 1,
+        "Status": "Pending",
+        "SentAt": "2026-11-15T20:59:05.4291884"
+      },
+      {
+        "RoundNumber": 1,
+        "Status": "Pending",
+        "SentAt": "2026-11-15T20:59:05.4291884"
+      },
+      {
+        "RoundNumber": 1,
+        "Status": "Pending",
+        "SentAt": "2026-11-15T20:59:05.4291884"
+      }
+    ],
+    "Rounds": 1,
+    "Submissions": 0,
+    "Audit": [
+      "Create",
+      "DraftCriteriaChanged",
+      "Publish",
+      "InviteSuppliers"
+    ],
+    "Votes": 0,
+    "Notifications": []
+  },
+  {
+    "Id": 3,
+    "Title": "Phase 6 Rounds 1",
+    "Status": "Open",
+    "PurchaseRequisitionId": 4,
+    "Bids": [],
+    "Invitations": [
+      {
+        "RoundNumber": 1,
+        "Status": "Pending",
+        "SentAt": "2026-11-15T20:59:11.63857"
+      },
+      {
+        "RoundNumber": 1,
+        "Status": "Pending",
+        "SentAt": "2026-11-15T20:59:11.63857"
+      },
+      {
+        "RoundNumber": 1,
+        "Status": "Pending",
+        "SentAt": "2026-11-15T20:59:11.63857"
+      }
+    ],
+    "Rounds": 1,
+    "Submissions": 0,
+    "Audit": [
+      "Create",
+      "DraftCriteriaChanged",
+      "Publish",
+      "InviteSuppliers"
+    ],
+    "Votes": 0,
+    "Notifications": []
+  },
+  {
+    "Id": 4,
+    "Title": "Phase 6 Rounds 0",
+    "Status": "Closed",
+    "PurchaseRequisitionId": 5,
+    "Bids": [],
+    "Invitations": [
+      {
+        "RoundNumber": 1,
+        "Status": "Pending",
+        "SentAt": "2026-11-15T20:59:17.8279865"
+      },
+      {
+        "RoundNumber": 1,
+        "Status": "Pending",
+        "SentAt": "2026-11-15T20:59:17.8279865"
+      },
+      {
+        "RoundNumber": 1,
+        "Status": "Pending",
+        "SentAt": "2026-11-15T20:59:17.8279865"
+      },
+      {
+        "RoundNumber": 2,
+        "Status": "Pending",
+        "SentAt": "2026-11-15T20:59:21.6431959"
+      },
+      {
+        "RoundNumber": 3,
+        "Status": "Pending",
+        "SentAt": "2026-11-15T20:59:23.5178313"
+      }
+    ],
+    "Rounds": 3,
+    "Submissions": 0,
+    "Audit": [
+      "Create",
+      "DraftCriteriaChanged",
+      "Publish",
+      "InviteSuppliers",
+      "CloseEarly",
+      "Reopen",
+      "InviteSuppliers",
+      "CloseEarly",
+      "Reopen",
+      "InviteSuppliers",
+      "CloseEarly"
+    ],
+    "Votes": 0,
+    "Notifications": []
+  },
+  {
+    "Id": 5,
+    "Title": "Phase 6 Cancel",
+    "Status": "Open",
+    "PurchaseRequisitionId": 6,
+    "Bids": [],
+    "Invitations": [
+      {
+        "RoundNumber": 1,
+        "Status": "Pending",
+        "SentAt": "2026-11-15T20:59:29.9541901"
+      },
+      {
+        "RoundNumber": 1,
+        "Status": "Pending",
+        "SentAt": "2026-11-15T20:59:29.9541901"
+      },
+      {
+        "RoundNumber": 1,
+        "Status": "Pending",
+        "SentAt": "2026-11-15T20:59:29.9541901"
+      }
+    ],
+    "Rounds": 1,
+    "Submissions": 0,
+    "Audit": [
+      "Create",
+      "DraftCriteriaChanged",
+      "Publish",
+      "InviteSuppliers"
+    ],
+    "Votes": 0,
+    "Notifications": []
+  }
+]

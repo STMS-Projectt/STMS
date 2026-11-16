@@ -10,10 +10,6 @@ namespace SourcingTenderSystem.ViewModels;
 // TenderId, SupplierProfileId, Status, TotalPrice and dates are set in the controller, never from the form.
 public class BidFormViewModel
 {
-    [Required(ErrorMessage = "Please choose a currency.")]
-    [StringLength(3)]
-    public string Currency { get; set; } = "JOD";
-
     [Required(ErrorMessage = "Delivery days are required.")]
     [Range(1, 3650, ErrorMessage = "Delivery days must be between 1 and 3650.")]
     [Display(Name = "Delivery (days)")]
@@ -95,6 +91,7 @@ public class BidDocumentUploadViewModel
 public class CompliancePendingRow
 {
     public Tender Tender { get; set; } = new Tender();
+    public int ReceivedCount { get; set; }        // bids that arrived while the tender is still open (content stays sealed)
     public int SubmittedCount { get; set; }       // still waiting for the compliance check
     public int CompliantCount { get; set; }
     public int NonCompliantCount { get; set; }

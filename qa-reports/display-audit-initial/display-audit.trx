@@ -1,0 +1,990 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="e29a7854-2cd8-4992-9441-0c94b8744d52" name="Wessam@DESKTOP-9BCNB94 2026-11-15 23:55:32" runUser="DESKTOP-9BCNB94\CodexSandboxOffline" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-11-15T23:55:32.7722521+03:00" queuing="2026-11-15T23:55:32.7722522+03:00" start="2026-11-15T23:55:32.1734065+03:00" finish="2026-11-15T23:56:15.7418225+03:00" />
+  <TestSettings name="default" id="62ee2e02-cfbd-4203-8343-3af271044c58">
+    <Deployment runDeploymentRoot="Wessam_DESKTOP-9BCNB94_2026-11-15_23_55_32" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="16ec3068-99f5-4602-9109-4886392b4fc8" testId="c5d6d6e3-e0f4-2925-f3ff-e262eb3e0997" testName="FaceLabTests.Challenge_is_expiring_single_use_and_bound_to_account_and_stamp" computerName="DESKTOP-9BCNB94" duration="00:00:00.0029481" startTime="2026-11-15T23:55:37.4914712+03:00" endTime="2026-11-15T23:55:37.4944328+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="16ec3068-99f5-4602-9109-4886392b4fc8" />
+    <UnitTestResult executionId="90da50bf-6265-4317-8a80-21d751f4b850" testId="09d56923-41b1-e83a-2788-3f033b66e768" testName="CurrencyComparisonTests.Network_failure_returns_null" computerName="DESKTOP-9BCNB94" duration="00:00:00.0006328" startTime="2026-11-15T23:55:32.7535387+03:00" endTime="2026-11-15T23:55:32.7535672+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="90da50bf-6265-4317-8a80-21d751f4b850" />
+    <UnitTestResult executionId="2b034b7c-41e5-41ee-ba98-0235760d891e" testId="196b593d-0b3c-7a6f-23f2-10cf533775e0" testName="SecurityTests.Document_policy(role: &quot;Supplier&quot;, stage: &quot;Closed&quot;, status: &quot;Compliant&quot;, ownSupplier: False, active: True, exactEvaluationSeat: False, exactTopSeat: False, expected: False)" computerName="DESKTOP-9BCNB94" duration="00:00:00.0000024" startTime="2026-11-15T23:55:33.5063108+03:00" endTime="2026-11-15T23:55:33.5063450+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="2b034b7c-41e5-41ee-ba98-0235760d891e" />
+    <UnitTestResult executionId="f6f25f22-041f-4d70-b1a6-55360709f249" testId="3018d72d-c6c3-3755-9fdb-f44e5e8a525c" testName="SecurityTests.StaticJpegNeverAuthenticates(endpoint: &quot;DirectCamera&quot;)" computerName="DESKTOP-9BCNB94" duration="00:00:00.1212087" startTime="2026-11-15T23:55:33.6229620+03:00" endTime="2026-11-15T23:55:33.7445942+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f6f25f22-041f-4d70-b1a6-55360709f249" />
+    <UnitTestResult executionId="6492e42c-0f63-440c-a392-739eba1f4881" testId="fe6daa44-e305-7ffd-45f7-2d0304f42718" testName="CurrencyComparisonTests.Unavailable_rates_return_null_instead_of_a_guess(status: NotFound, body: &quot;{\&quot;status\&quot;:404,\&quot;message\&quot;:\&quot;not found\&quot;}&quot;)" computerName="DESKTOP-9BCNB94" duration="00:00:00.0096582" startTime="2026-11-15T23:55:32.7227482+03:00" endTime="2026-11-15T23:55:32.7509289+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="6492e42c-0f63-440c-a392-739eba1f4881" />
+    <UnitTestResult executionId="7486915e-809c-4b94-b0a1-8945fccfe013" testId="1159d323-a2eb-ce99-dfec-779993ce509f" testName="BrowserReleaseTests.Real_browser_identity_and_workspace" computerName="DESKTOP-9BCNB94" duration="00:00:15.1683319" startTime="2026-11-15T23:55:32.6999232+03:00" endTime="2026-11-15T23:55:47.8735535+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="7486915e-809c-4b94-b0a1-8945fccfe013">
+      <Output>
+        <ErrorInfo>
+          <Message>Microsoft.Data.SqlClient.SqlException : A network-related or instance-specific error occurred while establishing a connection to SQL Server. The server was not found or was not accessible. Verify that the instance name is correct and that SQL Server is configured to allow remote connections. (provider: SQL Network Interfaces, error: 50 - Local Database Runtime error occurred. Cannot create an automatic instance. See the Windows Application event log for error details.&#xD;
+)&#xD;
+---- System.ComponentModel.Win32Exception : Unknown error (0x89c50118)</Message>
+          <StackTrace>   at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)&#xD;
+   at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)&#xD;
+   at Microsoft.Data.SqlClient.TdsParser.Connect(ServerInfo serverInfo, SqlInternalConnectionTds connHandler, TimeoutTimer timeout, SqlConnectionString connectionOptions, Boolean withFailover)&#xD;
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.AttemptOneLogin(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, TimeoutTimer timeout, Boolean withFailover)&#xD;
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.LoginNoFailover(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString connectionOptions, SqlCredential credential, TimeoutTimer timeout)&#xD;
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.OpenLoginEnlist(TimeoutTimer timeout, SqlConnectionString connectionOptions, SqlCredential credential, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance)&#xD;
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds..ctor(DbConnectionPoolIdentity identity, SqlConnectionString connectionOptions, SqlCredential credential, Object providerInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString userConnectionOptions, SessionData reconnectSessionData, Boolean applyTransientFaultHandling, String accessToken, IDbConnectionPool pool, Func`3 accessTokenCallback)&#xD;
+   at Microsoft.Data.SqlClient.SqlConnectionFactory.CreateConnection(DbConnectionOptions options, DbConnectionPoolKey poolKey, DbConnectionPoolGroupProviderInfo poolGroupProviderInfo, IDbConnectionPool pool, DbConnection owningConnection, DbConnectionOptions userOptions)&#xD;
+   at Microsoft.Data.ProviderBase.DbConnectionFactory.CreateNonPooledConnection(DbConnection owningConnection, DbConnectionPoolGroup poolGroup, DbConnectionOptions userOptions)&#xD;
+   at Microsoft.Data.ProviderBase.DbConnectionFactory.&lt;&gt;c__DisplayClass28_0.&lt;CreateReplaceConnectionContinuation&gt;b__0(Task`1 _)&#xD;
+   at System.Threading.Tasks.ContinuationResultTaskFromResultTask`2.InnerInvoke()&#xD;
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)&#xD;
+--- End of stack trace from previous location ---&#xD;
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)&#xD;
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task&amp; currentTaskSlot, Thread threadPoolThread)&#xD;
+--- End of stack trace from previous location ---&#xD;
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)&#xD;
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)&#xD;
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenAsync(CancellationToken cancellationToken, Boolean errorsExpected)&#xD;
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerDatabaseCreator.&lt;&gt;c__DisplayClass20_0.&lt;&lt;ExistsAsync&gt;b__0&gt;d.MoveNext()&#xD;
+--- End of stack trace from previous location ---&#xD;
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerDatabaseCreator.&lt;&gt;c__DisplayClass20_0.&lt;&lt;ExistsAsync&gt;b__0&gt;d.MoveNext()&#xD;
+--- End of stack trace from previous location ---&#xD;
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerDatabaseCreator.&lt;&gt;c__DisplayClass20_0.&lt;&lt;ExistsAsync&gt;b__0&gt;d.MoveNext()&#xD;
+--- End of stack trace from previous location ---&#xD;
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)&#xD;
+   at Microsoft.EntityFrameworkCore.Storage.RelationalDatabaseCreator.EnsureDeletedAsync(CancellationToken cancellationToken)&#xD;
+   at BrowserReleaseTests.Real_browser_identity_and_workspace() in C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\BrowserReleaseTests.cs:line 162&#xD;
+   at BrowserReleaseTests.Real_browser_identity_and_workspace() in C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\BrowserReleaseTests.cs:line 162&#xD;
+--- End of stack trace from previous location ---&#xD;
+----- Inner Stack Trace -----&#xD;
+</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="9d42114a-0283-4f44-a1b9-1d6e3309bc91" testId="1454691f-be68-1939-d30b-cf7c0af8d8d4" testName="CurrencyComparisonTests.Legacy_comparison_snapshots_stay_readable_without_rates" computerName="DESKTOP-9BCNB94" duration="00:00:00.0413545" startTime="2026-11-15T23:55:32.7536347+03:00" endTime="2026-11-15T23:55:32.7734669+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="9d42114a-0283-4f44-a1b9-1d6e3309bc91" />
+    <UnitTestResult executionId="94182127-824b-4c88-8547-14b17fa93d89" testId="2979a5d1-dc2c-b730-24b9-b7c8c7da54dd" testName="SecurityTests.StaticJpegNeverAuthenticates(endpoint: &quot;Camera&quot;)" computerName="DESKTOP-9BCNB94" duration="00:00:00.1206026" startTime="2026-11-15T23:55:33.7447340+03:00" endTime="2026-11-15T23:55:33.8656767+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="94182127-824b-4c88-8547-14b17fa93d89" />
+    <UnitTestResult executionId="63aa1ff0-f059-49d9-8719-d31937827ccc" testId="efdc9de5-9d0a-6964-d881-ac9559735a15" testName="BiddingRoundTests.R17_R20_R21_Deadline_and_stage_are_exclusive" computerName="DESKTOP-9BCNB94" duration="00:00:00.0003144" startTime="2026-11-15T23:55:38.7797563+03:00" endTime="2026-11-15T23:55:38.7797878+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="63aa1ff0-f059-49d9-8719-d31937827ccc" />
+    <UnitTestResult executionId="1fe85238-ac40-4b44-9ff1-d3ec58cd0a63" testId="23d53aa9-55ea-c5c7-6ae8-011ebf1720b3" testName="SecurityTests.Document_policy(role: &quot;SourcingOfficer&quot;, stage: &quot;Closed&quot;, status: &quot;Submitted&quot;, ownSupplier: False, active: True, exactEvaluationSeat: False, exactTopSeat: False, expected: True)" computerName="DESKTOP-9BCNB94" duration="00:00:00.0000029" startTime="2026-11-15T23:55:33.5054018+03:00" endTime="2026-11-15T23:55:33.5054337+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="1fe85238-ac40-4b44-9ff1-d3ec58cd0a63" />
+    <UnitTestResult executionId="40564255-f009-4a62-b9e1-fc3d2908e306" testId="9ead1254-9fce-ff1e-5d3e-f14696ebd7a4" testName="SecurityTests.AnonymousDocumentIsChallenged(path: &quot;/BidDocuments/Download/42?preview=true&quot;)" computerName="DESKTOP-9BCNB94" duration="00:00:00.4291746" startTime="2026-11-15T23:55:32.6984184+03:00" endTime="2026-11-15T23:55:33.1337091+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="40564255-f009-4a62-b9e1-fc3d2908e306" />
+    <UnitTestResult executionId="4ed83c2f-f03b-4e87-b696-fb4249f5f4e5" testId="48f067a6-0b1b-29cb-0b13-c1108b6d9f96" testName="FaceLabTests.Incorrect_face_or_malformed_compare_is_rejected" computerName="DESKTOP-9BCNB94" duration="00:00:01.4293734" startTime="2026-11-15T23:55:34.5949148+03:00" endTime="2026-11-15T23:55:36.0244295+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="4ed83c2f-f03b-4e87-b696-fb4249f5f4e5" />
+    <UnitTestResult executionId="6300a9ca-4dd6-43f8-827b-c893f56f7dc2" testId="d62d3cde-fbc1-08cf-11e6-925d56826833" testName="BiddingRoundTests.Closed_round_threshold(scenario: &quot;R06&quot;, round: 3, bids: 1, evaluate: True, reopen: False)" computerName="DESKTOP-9BCNB94" duration="00:00:00.0000014" startTime="2026-11-15T23:55:32.7502525+03:00" endTime="2026-11-15T23:55:32.7502893+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="6300a9ca-4dd6-43f8-827b-c893f56f7dc2" />
+    <UnitTestResult executionId="bf8081b4-8396-4b54-bf18-255c6551dc6a" testId="e456bafb-7d09-7c62-bf11-f23a3a4493e3" testName="FaceLabTests.Mocked_provider_errors_have_safe_fallback(providerStatus: 503, expected: 503)" computerName="DESKTOP-9BCNB94" duration="00:00:00.0025283" startTime="2026-11-15T23:55:33.1286916+03:00" endTime="2026-11-15T23:55:33.1312473+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="bf8081b4-8396-4b54-bf18-255c6551dc6a" />
+    <UnitTestResult executionId="e1d63fe9-b8b7-4b8e-bfea-c3d456973ac7" testId="93ec5b19-3aa0-51b1-dd28-492479959b9e" testName="FaceLabTests.Enrollment_requires_confirmation_and_can_be_replaced_and_removed" computerName="DESKTOP-9BCNB94" duration="00:00:00.7287631" startTime="2026-11-15T23:55:33.8656404+03:00" endTime="2026-11-15T23:55:34.5946612+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e1d63fe9-b8b7-4b8e-bfea-c3d456973ac7" />
+    <UnitTestResult executionId="23a653ec-3a9a-427d-8b8d-1588b62e4ea8" testId="b9d97164-ec3a-a31c-31a0-83785cd639f0" testName="CurrencyComparisonTests.Usd_needs_no_lookup" computerName="DESKTOP-9BCNB94" duration="00:00:00.0026489" startTime="2026-11-15T23:55:32.7532495+03:00" endTime="2026-11-15T23:55:32.7532788+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="23a653ec-3a9a-427d-8b8d-1588b62e4ea8" />
+    <UnitTestResult executionId="ce745c27-2dc7-4ef6-a38a-3d87895b437e" testId="5324caa8-cda8-f92b-6bd1-7f906b92ac8e" testName="FaceLabTests.Demo_face_login_needs_explicit_flag_and_is_off_in_production(environment: &quot;Production&quot;, flag: &quot;true&quot;, production: &quot;true&quot;, expected: True)" computerName="DESKTOP-9BCNB94" duration="00:00:00.0004901" startTime="2026-11-15T23:55:37.4900932+03:00" endTime="2026-11-15T23:55:37.4904321+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="ce745c27-2dc7-4ef6-a38a-3d87895b437e" />
+    <UnitTestResult executionId="b989ef6d-916d-489b-9a9a-348aa238823f" testId="48df7879-9dc7-1336-34ca-3b2d72ea50bb" testName="FaceLoginHttpTests.Face_enrollment_and_demo_login_create_real_identity_sessions_only_on_match" computerName="DESKTOP-9BCNB94" duration="00:00:10.6291963" startTime="2026-11-15T23:55:32.6999619+03:00" endTime="2026-11-15T23:55:43.3348594+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b989ef6d-916d-489b-9a9a-348aa238823f">
+      <Output>
+        <ErrorInfo>
+          <Message>Microsoft.Data.SqlClient.SqlException : A network-related or instance-specific error occurred while establishing a connection to SQL Server. The server was not found or was not accessible. Verify that the instance name is correct and that SQL Server is configured to allow remote connections. (provider: SQL Network Interfaces, error: 50 - Local Database Runtime error occurred. Cannot create an automatic instance. See the Windows Application event log for error details.&#xD;
+)&#xD;
+---- System.ComponentModel.Win32Exception : Unknown error (0x89c50118)</Message>
+          <StackTrace>   at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)&#xD;
+   at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)&#xD;
+   at Microsoft.Data.SqlClient.TdsParser.Connect(ServerInfo serverInfo, SqlInternalConnectionTds connHandler, TimeoutTimer timeout, SqlConnectionString connectionOptions, Boolean withFailover)&#xD;
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.AttemptOneLogin(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, TimeoutTimer timeout, Boolean withFailover)&#xD;
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.LoginNoFailover(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString connectionOptions, SqlCredential credential, TimeoutTimer timeout)&#xD;
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.OpenLoginEnlist(TimeoutTimer timeout, SqlConnectionString connectionOptions, SqlCredential credential, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance)&#xD;
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds..ctor(DbConnectionPoolIdentity identity, SqlConnectionString connectionOptions, SqlCredential credential, Object providerInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString userConnectionOptions, SessionData reconnectSessionData, Boolean applyTransientFaultHandling, String accessToken, IDbConnectionPool pool, Func`3 accessTokenCallback)&#xD;
+   at Microsoft.Data.SqlClient.SqlConnectionFactory.CreateConnection(DbConnectionOptions options, DbConnectionPoolKey poolKey, DbConnectionPoolGroupProviderInfo poolGroupProviderInfo, IDbConnectionPool pool, DbConnection owningConnection, DbConnectionOptions userOptions)&#xD;
+   at Microsoft.Data.ProviderBase.DbConnectionFactory.CreateNonPooledConnection(DbConnection owningConnection, DbConnectionPoolGroup poolGroup, DbConnectionOptions userOptions)&#xD;
+   at Microsoft.Data.ProviderBase.DbConnectionFactory.&lt;&gt;c__DisplayClass28_0.&lt;CreateReplaceConnectionContinuation&gt;b__0(Task`1 _)&#xD;
+   at System.Threading.Tasks.ContinuationResultTaskFromResultTask`2.InnerInvoke()&#xD;
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)&#xD;
+--- End of stack trace from previous location ---&#xD;
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)&#xD;
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task&amp; currentTaskSlot, Thread threadPoolThread)&#xD;
+--- End of stack trace from previous location ---&#xD;
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)&#xD;
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)&#xD;
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenAsync(CancellationToken cancellationToken, Boolean errorsExpected)&#xD;
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerDatabaseCreator.&lt;&gt;c__DisplayClass20_0.&lt;&lt;ExistsAsync&gt;b__0&gt;d.MoveNext()&#xD;
+--- End of stack trace from previous location ---&#xD;
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerDatabaseCreator.&lt;&gt;c__DisplayClass20_0.&lt;&lt;ExistsAsync&gt;b__0&gt;d.MoveNext()&#xD;
+--- End of stack trace from previous location ---&#xD;
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerDatabaseCreator.&lt;&gt;c__DisplayClass20_0.&lt;&lt;ExistsAsync&gt;b__0&gt;d.MoveNext()&#xD;
+--- End of stack trace from previous location ---&#xD;
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)&#xD;
+   at Microsoft.EntityFrameworkCore.Storage.RelationalDatabaseCreator.EnsureDeletedAsync(CancellationToken cancellationToken)&#xD;
+   at FaceLoginHttpTests.Face_enrollment_and_demo_login_create_real_identity_sessions_only_on_match() in C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\FaceLoginHttpTests.cs:line 141&#xD;
+   at FaceLoginHttpTests.Face_enrollment_and_demo_login_create_real_identity_sessions_only_on_match() in C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\FaceLoginHttpTests.cs:line 142&#xD;
+--- End of stack trace from previous location ---&#xD;
+----- Inner Stack Trace -----&#xD;
+</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="ed01656a-aff3-469b-9f13-9f426a7447ee" testId="37c56036-29e8-676b-60fc-e25c8c877dc3" testName="BiddingRoundTests.Closed_round_threshold(scenario: &quot;R04&quot;, round: 1, bids: 3, evaluate: True, reopen: False)" computerName="DESKTOP-9BCNB94" duration="00:00:00.0003052" startTime="2026-11-15T23:55:32.7219223+03:00" endTime="2026-11-15T23:55:32.7227874+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="ed01656a-aff3-469b-9f13-9f426a7447ee" />
+    <UnitTestResult executionId="1ef0b1f5-3ae5-4d30-af8f-7575a3184f55" testId="96b5d658-a323-5b3d-765b-def7bfae783f" testName="BiddingRoundTests.Closed_round_threshold(scenario: &quot;R01&quot;, round: 1, bids: 0, evaluate: False, reopen: True)" computerName="DESKTOP-9BCNB94" duration="00:00:00.0036497" startTime="2026-11-15T23:55:32.6999483+03:00" endTime="2026-11-15T23:55:32.7103315+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="1ef0b1f5-3ae5-4d30-af8f-7575a3184f55" />
+    <UnitTestResult executionId="23971939-6bb3-4295-8052-302456ead6de" testId="6f553d4c-0562-d24f-84d9-5ad8338cf41e" testName="FaceLabTests.Demo_face_login_needs_explicit_flag_and_is_off_in_production(environment: &quot;Development&quot;, flag: &quot;false&quot;, production: null, expected: False)" computerName="DESKTOP-9BCNB94" duration="00:00:00.0000725" startTime="2026-11-15T23:55:37.4913794+03:00" endTime="2026-11-15T23:55:37.4914025+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="23971939-6bb3-4295-8052-302456ead6de" />
+    <UnitTestResult executionId="19e0034b-6e02-4c20-a7e9-cf8a31f76176" testId="39b81b05-51f2-5965-b0ad-878167b38b91" testName="CurrencyComparisonTests.Unavailable_rates_return_null_instead_of_a_guess(status: OK, body: &quot;not json&quot;)" computerName="DESKTOP-9BCNB94" duration="00:00:00.0014688" startTime="2026-11-15T23:55:32.7530657+03:00" endTime="2026-11-15T23:55:32.7530943+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="19e0034b-6e02-4c20-a7e9-cf8a31f76176" />
+    <UnitTestResult executionId="2ea5d332-858a-4f7a-928f-57629532e442" testId="a8cbb63c-7967-560d-adbf-47d0adc4510f" testName="BiddingRoundTests.Closed_round_threshold(scenario: &quot;R07&quot;, round: 3, bids: 2, evaluate: True, reopen: False)" computerName="DESKTOP-9BCNB94" duration="00:00:00.0000026" startTime="2026-11-15T23:55:32.7498787+03:00" endTime="2026-11-15T23:55:32.7499324+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="2ea5d332-858a-4f7a-928f-57629532e442" />
+    <UnitTestResult executionId="e1af938a-51dd-4a9e-9d08-8d70c5892ed7" testId="844b35cd-6374-ee45-f61d-13dae2ae9b8f" testName="CurrencyComparisonTests.Unavailable_rates_return_null_instead_of_a_guess(status: OK, body: &quot;{\&quot;date\&quot;:\&quot;2026-11-12\&quot;,\&quot;base\&quot;:\&quot;JOD\&quot;,\&quot;quote\&quot;···)" computerName="DESKTOP-9BCNB94" duration="00:00:00.0035884" startTime="2026-11-15T23:55:32.7509875+03:00" endTime="2026-11-15T23:55:32.7510198+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e1af938a-51dd-4a9e-9d08-8d70c5892ed7" />
+    <UnitTestResult executionId="6167f412-2b6e-4f14-b71a-93b191b9eb0a" testId="1142b8fe-5569-e3e2-04f7-19a27d43f056" testName="SecurityTests.Document_policy(role: &quot;TechnicalCommittee&quot;, stage: &quot;Under Evaluation&quot;, status: &quot;Compliant&quot;, ownSupplier: False, active: True, exactEvaluationSeat: False, exactTopSeat: False, expected: False)" computerName="DESKTOP-9BCNB94" duration="00:00:00.0005434" startTime="2026-11-15T23:55:33.5044156+03:00" endTime="2026-11-15T23:55:33.5048968+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="6167f412-2b6e-4f14-b71a-93b191b9eb0a" />
+    <UnitTestResult executionId="744bf6f5-5602-4e27-8d62-b011d80019f8" testId="9a149cb2-7a7d-9dd9-c893-4048aa1c5407" testName="BiddingRoundTests.Reviewer_totals_use_their_own_selection_and_contribute_equally" computerName="DESKTOP-9BCNB94" duration="00:00:00.0121007" startTime="2026-11-15T23:56:15.6647212+03:00" endTime="2026-11-15T23:56:15.6756534+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="744bf6f5-5602-4e27-8d62-b011d80019f8" />
+    <UnitTestResult executionId="0415fa55-f4f1-4251-8cbc-283c3a443e0a" testId="61076927-5331-d78f-97ef-19f4a95bcb51" testName="FaceLabTests.Enrolled_face_login_succeeds_only_for_the_challenged_account" computerName="DESKTOP-9BCNB94" duration="00:00:00.7326515" startTime="2026-11-15T23:55:36.0247081+03:00" endTime="2026-11-15T23:55:36.7576959+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="0415fa55-f4f1-4251-8cbc-283c3a443e0a" />
+    <UnitTestResult executionId="e632489c-73be-46ef-9b33-9ac219a308f5" testId="fe202621-bce0-6b5c-14fe-39fa0b1676f3" testName="BiddingRoundTests.Weighted_scores_normalize_then_round_once" computerName="DESKTOP-9BCNB94" duration="00:00:00.0072247" startTime="2026-11-15T23:55:32.7507815+03:00" endTime="2026-11-15T23:55:32.7508141+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e632489c-73be-46ef-9b33-9ac219a308f5" />
+    <UnitTestResult executionId="f8806219-223e-45dd-83cb-5391bd5b4946" testId="88778381-f971-4e60-c29d-062ac4d4d981" testName="BiddingRoundTests.Closed_round_threshold(scenario: &quot;R08/R09&quot;, round: 3, bids: 0, evaluate: False, reopen: False)" computerName="DESKTOP-9BCNB94" duration="00:00:00.0000009" startTime="2026-11-15T23:55:32.7504524+03:00" endTime="2026-11-15T23:55:32.7504956+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f8806219-223e-45dd-83cb-5391bd5b4946" />
+    <UnitTestResult executionId="31d8e649-0443-4743-87fc-6c75969bea6e" testId="df902ec4-6edb-2a38-92c4-e619eceea52e" testName="SecurityTests.Document_policy(role: &quot;Supplier&quot;, stage: &quot;Open&quot;, status: &quot;Draft&quot;, ownSupplier: True, active: True, exactEvaluationSeat: False, exactTopSeat: False, expected: True)" computerName="DESKTOP-9BCNB94" duration="00:00:00.0000035" startTime="2026-11-15T23:55:33.5052884+03:00" endTime="2026-11-15T23:55:33.5053252+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="31d8e649-0443-4743-87fc-6c75969bea6e" />
+    <UnitTestResult executionId="10b2ecfd-71bf-46ec-8da7-90c434b1866c" testId="99d0f40d-6b7b-d5b9-3a0c-b18ff4755ba3" testName="SecurityTests.ConfigurationContainsNoFaceCredentials" computerName="DESKTOP-9BCNB94" duration="00:00:00.1175305" startTime="2026-11-15T23:55:33.5064455+03:00" endTime="2026-11-15T23:55:33.6227328+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="10b2ecfd-71bf-46ec-8da7-90c434b1866c" />
+    <UnitTestResult executionId="53f678dc-c2db-4938-85c3-854356e7c923" testId="73685b84-4803-086c-f30c-54c26510a0c6" testName="SecurityTests.Document_policy(role: &quot;TopCommittee&quot;, stage: &quot;Awaiting Committee Decision&quot;, status: &quot;Compliant&quot;, ownSupplier: False, active: True, exactEvaluationSeat: False, exactTopSeat: True, expected: True)" computerName="DESKTOP-9BCNB94" duration="00:00:00.0000090" startTime="2026-11-15T23:55:33.5049516+03:00" endTime="2026-11-15T23:55:33.5049793+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="53f678dc-c2db-4938-85c3-854356e7c923" />
+    <UnitTestResult executionId="d53eec7f-107e-43c1-afc8-152e16cc2b0e" testId="4b8ca0e1-8c81-0567-161a-1ae2a7fbbbd5" testName="BiddingRoundTests.Evaluation_award_and_cancellation_http(ending: &quot;reject&quot;)" computerName="DESKTOP-9BCNB94" duration="00:00:09.2806438" startTime="2026-11-15T23:55:38.7798697+03:00" endTime="2026-11-15T23:55:48.0554606+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="d53eec7f-107e-43c1-afc8-152e16cc2b0e">
+      <Output>
+        <ErrorInfo>
+          <Message>Microsoft.Data.SqlClient.SqlException : A network-related or instance-specific error occurred while establishing a connection to SQL Server. The server was not found or was not accessible. Verify that the instance name is correct and that SQL Server is configured to allow remote connections. (provider: SQL Network Interfaces, error: 50 - Local Database Runtime error occurred. Cannot create an automatic instance. See the Windows Application event log for error details.&#xD;
+)&#xD;
+---- System.ComponentModel.Win32Exception : Unknown error (0x89c50118)</Message>
+          <StackTrace>   at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)&#xD;
+   at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)&#xD;
+   at Microsoft.Data.SqlClient.TdsParser.Connect(ServerInfo serverInfo, SqlInternalConnectionTds connHandler, TimeoutTimer timeout, SqlConnectionString connectionOptions, Boolean withFailover)&#xD;
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.AttemptOneLogin(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, TimeoutTimer timeout, Boolean withFailover)&#xD;
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.LoginNoFailover(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString connectionOptions, SqlCredential credential, TimeoutTimer timeout)&#xD;
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.OpenLoginEnlist(TimeoutTimer timeout, SqlConnectionString connectionOptions, SqlCredential credential, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance)&#xD;
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds..ctor(DbConnectionPoolIdentity identity, SqlConnectionString connectionOptions, SqlCredential credential, Object providerInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString userConnectionOptions, SessionData reconnectSessionData, Boolean applyTransientFaultHandling, String accessToken, IDbConnectionPool pool, Func`3 accessTokenCallback)&#xD;
+   at Microsoft.Data.SqlClient.SqlConnectionFactory.CreateConnection(DbConnectionOptions options, DbConnectionPoolKey poolKey, DbConnectionPoolGroupProviderInfo poolGroupProviderInfo, IDbConnectionPool pool, DbConnection owningConnection, DbConnectionOptions userOptions)&#xD;
+   at Microsoft.Data.ProviderBase.DbConnectionFactory.CreateNonPooledConnection(DbConnection owningConnection, DbConnectionPoolGroup poolGroup, DbConnectionOptions userOptions)&#xD;
+   at Microsoft.Data.ProviderBase.DbConnectionFactory.&lt;&gt;c__DisplayClass28_0.&lt;CreateReplaceConnectionContinuation&gt;b__0(Task`1 _)&#xD;
+   at System.Threading.Tasks.ContinuationResultTaskFromResultTask`2.InnerInvoke()&#xD;
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)&#xD;
+--- End of stack trace from previous location ---&#xD;
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)&#xD;
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task&amp; currentTaskSlot, Thread threadPoolThread)&#xD;
+--- End of stack trace from previous location ---&#xD;
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)&#xD;
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)&#xD;
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenAsync(CancellationToken cancellationToken, Boolean errorsExpected)&#xD;
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerDatabaseCreator.&lt;&gt;c__DisplayClass20_0.&lt;&lt;ExistsAsync&gt;b__0&gt;d.MoveNext()&#xD;
+--- End of stack trace from previous location ---&#xD;
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerDatabaseCreator.&lt;&gt;c__DisplayClass20_0.&lt;&lt;ExistsAsync&gt;b__0&gt;d.MoveNext()&#xD;
+--- End of stack trace from previous location ---&#xD;
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerDatabaseCreator.&lt;&gt;c__DisplayClass20_0.&lt;&lt;ExistsAsync&gt;b__0&gt;d.MoveNext()&#xD;
+--- End of stack trace from previous location ---&#xD;
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)&#xD;
+   at Microsoft.EntityFrameworkCore.Storage.RelationalDatabaseCreator.EnsureDeletedAsync(CancellationToken cancellationToken)&#xD;
+   at BiddingRoundTests.Evaluation_award_and_cancellation_http(String ending) in C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\EvaluationAwardTests.cs:line 336&#xD;
+   at BiddingRoundTests.Evaluation_award_and_cancellation_http(String ending) in C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\EvaluationAwardTests.cs:line 336&#xD;
+--- End of stack trace from previous location ---&#xD;
+----- Inner Stack Trace -----&#xD;
+</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="e6c57482-0216-45f4-8da9-1f8a5b72f423" testId="f35e0590-9a7f-474b-244f-1c28150f097e" testName="SecurityTests.Document_policy(role: &quot;TopCommittee&quot;, stage: &quot;Open&quot;, status: &quot;Compliant&quot;, ownSupplier: False, active: True, exactEvaluationSeat: False, exactTopSeat: True, expected: False)" computerName="DESKTOP-9BCNB94" duration="00:00:00.0000051" startTime="2026-11-15T23:55:33.5050271+03:00" endTime="2026-11-15T23:55:33.5050538+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e6c57482-0216-45f4-8da9-1f8a5b72f423" />
+    <UnitTestResult executionId="0d5e15e1-f5ba-495e-8e1d-7b67011c0795" testId="a5680416-f43b-1af5-8b7d-f0b42b8b19e8" testName="FaceLabTests.Mocked_provider_errors_have_safe_fallback(providerStatus: 429, expected: 429)" computerName="DESKTOP-9BCNB94" duration="00:00:00.0174335" startTime="2026-11-15T23:55:33.1313265+03:00" endTime="2026-11-15T23:55:33.1487804+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="0d5e15e1-f5ba-495e-8e1d-7b67011c0795" />
+    <UnitTestResult executionId="07c883c3-02f9-4063-846a-59999316ac90" testId="64641cbd-7287-7104-16aa-437e06a90aa4" testName="CurrencyComparisonTests.Unavailable_rates_return_null_instead_of_a_guess(status: OK, body: &quot;{\&quot;date\&quot;:\&quot;2026-11-10\&quot;,\&quot;base\&quot;:\&quot;JOD\&quot;,\&quot;quote\&quot;···)" computerName="DESKTOP-9BCNB94" duration="00:00:00.0001306" startTime="2026-11-15T23:55:32.7528432+03:00" endTime="2026-11-15T23:55:32.7528999+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="07c883c3-02f9-4063-846a-59999316ac90" />
+    <UnitTestResult executionId="94c78198-76e9-48ac-ab98-afc3a984d8ad" testId="6d86edde-9cac-73cc-812c-f1519d6b5d7d" testName="CurrencyComparisonTests.Reference_date_is_the_closing_date_never_the_future" computerName="DESKTOP-9BCNB94" duration="00:00:00.0049454" startTime="2026-11-15T23:55:32.6998876+03:00" endTime="2026-11-15T23:55:32.7139510+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="94c78198-76e9-48ac-ab98-afc3a984d8ad" />
+    <UnitTestResult executionId="f02634ce-a981-4eb2-90dc-0dcc1c38cef9" testId="68a1b711-fe9f-0556-343b-56478c553234" testName="FaceLabTests.Demo_face_login_needs_explicit_flag_and_is_off_in_production(environment: &quot;Development&quot;, flag: null, production: null, expected: False)" computerName="DESKTOP-9BCNB94" duration="00:00:00.0003240" startTime="2026-11-15T23:55:37.4909029+03:00" endTime="2026-11-15T23:55:37.4911927+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f02634ce-a981-4eb2-90dc-0dcc1c38cef9" />
+    <UnitTestResult executionId="329661f2-a0b9-446c-89dd-5910dc74e0e0" testId="ddb45af6-dc27-ab40-b8f9-65963c3b41e5" testName="SecurityTests.Document_policy(role: &quot;SourcingManager&quot;, stage: &quot;Awaiting Manager Review&quot;, status: &quot;Compliant&quot;, ownSupplier: False, active: True, exactEvaluationSeat: True, exactTopSeat: False, expected: True)" computerName="DESKTOP-9BCNB94" duration="00:00:00.0000035" startTime="2026-11-15T23:55:33.5052052+03:00" endTime="2026-11-15T23:55:33.5052354+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="329661f2-a0b9-446c-89dd-5910dc74e0e0" />
+    <UnitTestResult executionId="f841b84b-08cd-48d2-bafb-cbdacae97529" testId="adfc7d2f-6765-b54c-b00f-0108d3beaf77" testName="BiddingRoundTests.Evaluation_award_and_cancellation_http(ending: &quot;race&quot;)" computerName="DESKTOP-9BCNB94" duration="00:00:09.2294242" startTime="2026-11-15T23:56:06.4341007+03:00" endTime="2026-11-15T23:56:15.6634577+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f841b84b-08cd-48d2-bafb-cbdacae97529">
+      <Output>
+        <ErrorInfo>
+          <Message>Microsoft.Data.SqlClient.SqlException : A network-related or instance-specific error occurred while establishing a connection to SQL Server. The server was not found or was not accessible. Verify that the instance name is correct and that SQL Server is configured to allow remote connections. (provider: SQL Network Interfaces, error: 50 - Local Database Runtime error occurred. Cannot create an automatic instance. See the Windows Application event log for error details.&#xD;
+)&#xD;
+---- System.ComponentModel.Win32Exception : Unknown error (0x89c50118)</Message>
+          <StackTrace>   at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)&#xD;
+   at Microsoft.Data.SqlClient.TdsParser.Connect(ServerInfo serverInfo, SqlInternalConnectionTds connHandler, TimeoutTimer timeout, SqlConnectionString connectionOptions, Boolean withFailover)&#xD;
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.AttemptOneLogin(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, TimeoutTimer timeout, Boolean withFailover)&#xD;
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.LoginNoFailover(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString connectionOptions, SqlCredential credential, TimeoutTimer timeout)&#xD;
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.OpenLoginEnlist(TimeoutTimer timeout, SqlConnectionString connectionOptions, SqlCredential credential, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance)&#xD;
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds..ctor(DbConnectionPoolIdentity identity, SqlConnectionString connectionOptions, SqlCredential credential, Object providerInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString userConnectionOptions, SessionData reconnectSessionData, Boolean applyTransientFaultHandling, String accessToken, IDbConnectionPool pool, Func`3 accessTokenCallback)&#xD;
+   at Microsoft.Data.SqlClient.SqlConnectionFactory.CreateConnection(DbConnectionOptions options, DbConnectionPoolKey poolKey, DbConnectionPoolGroupProviderInfo poolGroupProviderInfo, IDbConnectionPool pool, DbConnection owningConnection, DbConnectionOptions userOptions)&#xD;
+   at Microsoft.Data.ProviderBase.DbConnectionFactory.CreateNonPooledConnection(DbConnection owningConnection, DbConnectionPoolGroup poolGroup, DbConnectionOptions userOptions)&#xD;
+   at Microsoft.Data.ProviderBase.DbConnectionFactory.&lt;&gt;c__DisplayClass28_0.&lt;CreateReplaceConnectionContinuation&gt;b__0(Task`1 _)&#xD;
+   at System.Threading.Tasks.ContinuationResultTaskFromResultTask`2.InnerInvoke()&#xD;
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)&#xD;
+--- End of stack trace from previous location ---&#xD;
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)&#xD;
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task&amp; currentTaskSlot, Thread threadPoolThread)&#xD;
+--- End of stack trace from previous location ---&#xD;
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)&#xD;
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)&#xD;
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenAsync(CancellationToken cancellationToken, Boolean errorsExpected)&#xD;
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerDatabaseCreator.&lt;&gt;c__DisplayClass20_0.&lt;&lt;ExistsAsync&gt;b__0&gt;d.MoveNext()&#xD;
+--- End of stack trace from previous location ---&#xD;
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerDatabaseCreator.&lt;&gt;c__DisplayClass20_0.&lt;&lt;ExistsAsync&gt;b__0&gt;d.MoveNext()&#xD;
+--- End of stack trace from previous location ---&#xD;
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerDatabaseCreator.&lt;&gt;c__DisplayClass20_0.&lt;&lt;ExistsAsync&gt;b__0&gt;d.MoveNext()&#xD;
+--- End of stack trace from previous location ---&#xD;
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)&#xD;
+   at Microsoft.EntityFrameworkCore.Storage.RelationalDatabaseCreator.EnsureDeletedAsync(CancellationToken cancellationToken)&#xD;
+   at BiddingRoundTests.Evaluation_award_and_cancellation_http(String ending) in C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\EvaluationAwardTests.cs:line 336&#xD;
+   at BiddingRoundTests.Evaluation_award_and_cancellation_http(String ending) in C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\EvaluationAwardTests.cs:line 336&#xD;
+--- End of stack trace from previous location ---&#xD;
+----- Inner Stack Trace -----&#xD;
+</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="26c5785d-e490-46c3-835d-6824b2e9c266" testId="9b618f6f-47e7-b059-43ba-c86eb6bc76a2" testName="CurrencyComparisonTests.Unavailable_rates_return_null_instead_of_a_guess(status: OK, body: &quot;{\&quot;date\&quot;:\&quot;2026-11-10\&quot;,\&quot;base\&quot;:\&quot;EUR\&quot;,\&quot;quote\&quot;···)" computerName="DESKTOP-9BCNB94" duration="00:00:00.0000349" startTime="2026-11-15T23:55:32.7529769+03:00" endTime="2026-11-15T23:55:32.7530105+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="26c5785d-e490-46c3-835d-6824b2e9c266" />
+    <UnitTestResult executionId="3b559724-3871-4056-aaa0-fe01488480b5" testId="4138a9f2-3aeb-9fe5-4038-ab4e830e263b" testName="CurrencyComparisonTests.Converts_with_decimal_math_and_records_rate_date_and_source" computerName="DESKTOP-9BCNB94" duration="00:00:00.0023014" startTime="2026-11-15T23:55:32.7533494+03:00" endTime="2026-11-15T23:55:32.7533787+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="3b559724-3871-4056-aaa0-fe01488480b5" />
+    <UnitTestResult executionId="5e54d50c-5ab5-4dd6-a46b-0d14c82b0ac3" testId="9f732ff1-a5b5-86a5-360f-6fe7397fb2e2" testName="SecurityTests.AnonymousCannotUseFaceLab(endpoint: &quot;/Account/FaceLabStart&quot;)" computerName="DESKTOP-9BCNB94" duration="00:00:00.1158731" startTime="2026-11-15T23:55:33.3848688+03:00" endTime="2026-11-15T23:55:33.5005224+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="5e54d50c-5ab5-4dd6-a46b-0d14c82b0ac3" />
+    <UnitTestResult executionId="184ddab6-9095-4fbc-a047-b8a6e8f427d8" testId="af101886-d07b-4128-c4e4-db510256f544" testName="BiddingRoundTests.SqlServer_upgrade_and_HTTP_bidding_lifecycle" computerName="DESKTOP-9BCNB94" duration="00:00:06.0436966" startTime="2026-11-15T23:55:32.7508972+03:00" endTime="2026-11-15T23:55:38.7736905+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="184ddab6-9095-4fbc-a047-b8a6e8f427d8">
+      <Output>
+        <ErrorInfo>
+          <Message>Microsoft.Data.SqlClient.SqlException : A network-related or instance-specific error occurred while establishing a connection to SQL Server. The server was not found or was not accessible. Verify that the instance name is correct and that SQL Server is configured to allow remote connections. (provider: SQL Network Interfaces, error: 50 - Local Database Runtime error occurred. Cannot create an automatic instance. See the Windows Application event log for error details.&#xD;
+)&#xD;
+---- System.ComponentModel.Win32Exception : Unknown error (0x89c50118)</Message>
+          <StackTrace>   at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)&#xD;
+   at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)&#xD;
+   at Microsoft.Data.SqlClient.TdsParser.Connect(ServerInfo serverInfo, SqlInternalConnectionTds connHandler, TimeoutTimer timeout, SqlConnectionString connectionOptions, Boolean withFailover)&#xD;
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.AttemptOneLogin(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, TimeoutTimer timeout, Boolean withFailover)&#xD;
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.LoginNoFailover(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString connectionOptions, SqlCredential credential, TimeoutTimer timeout)&#xD;
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.OpenLoginEnlist(TimeoutTimer timeout, SqlConnectionString connectionOptions, SqlCredential credential, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance)&#xD;
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds..ctor(DbConnectionPoolIdentity identity, SqlConnectionString connectionOptions, SqlCredential credential, Object providerInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString userConnectionOptions, SessionData reconnectSessionData, Boolean applyTransientFaultHandling, String accessToken, IDbConnectionPool pool, Func`3 accessTokenCallback)&#xD;
+   at Microsoft.Data.SqlClient.SqlConnectionFactory.CreateConnection(DbConnectionOptions options, DbConnectionPoolKey poolKey, DbConnectionPoolGroupProviderInfo poolGroupProviderInfo, IDbConnectionPool pool, DbConnection owningConnection, DbConnectionOptions userOptions)&#xD;
+   at Microsoft.Data.ProviderBase.DbConnectionFactory.CreateNonPooledConnection(DbConnection owningConnection, DbConnectionPoolGroup poolGroup, DbConnectionOptions userOptions)&#xD;
+   at Microsoft.Data.ProviderBase.DbConnectionFactory.&lt;&gt;c__DisplayClass28_0.&lt;CreateReplaceConnectionContinuation&gt;b__0(Task`1 _)&#xD;
+   at System.Threading.Tasks.ContinuationResultTaskFromResultTask`2.InnerInvoke()&#xD;
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)&#xD;
+--- End of stack trace from previous location ---&#xD;
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)&#xD;
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task&amp; currentTaskSlot, Thread threadPoolThread)&#xD;
+--- End of stack trace from previous location ---&#xD;
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)&#xD;
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)&#xD;
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenAsync(CancellationToken cancellationToken, Boolean errorsExpected)&#xD;
+   at Microsoft.EntityFrameworkCore.Migrations.Internal.MigrationCommandExecutor.ExecuteAsync(IReadOnlyList`1 migrationCommands, IRelationalConnection connection, MigrationExecutionState executionState, Boolean beginTransaction, Boolean commitTransaction, Nullable`1 isolationLevel, CancellationToken cancellationToken)&#xD;
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)&#xD;
+   at Microsoft.EntityFrameworkCore.Migrations.Internal.MigrationCommandExecutor.ExecuteNonQueryAsync(IReadOnlyList`1 migrationCommands, IRelationalConnection connection, MigrationExecutionState executionState, Boolean commitTransaction, Nullable`1 isolationLevel, CancellationToken cancellationToken)&#xD;
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerDatabaseCreator.CreateAsync(CancellationToken cancellationToken)&#xD;
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerDatabaseCreator.CreateAsync(CancellationToken cancellationToken)&#xD;
+   at BiddingRoundTests.SqlServer_upgrade_and_HTTP_bidding_lifecycle() in C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\BiddingRoundTests.cs:line 69&#xD;
+   at BiddingRoundTests.SqlServer_upgrade_and_HTTP_bidding_lifecycle() in C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\BiddingRoundTests.cs:line 268&#xD;
+   at BiddingRoundTests.SqlServer_upgrade_and_HTTP_bidding_lifecycle() in C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\BiddingRoundTests.cs:line 268&#xD;
+--- End of stack trace from previous location ---&#xD;
+----- Inner Stack Trace -----&#xD;
+</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="6617f80f-cd6c-4859-ab70-093d58c2529b" testId="89e24856-c2e4-ec4b-a7ac-2349475d9487" testName="BiddingRoundTests.Evaluation_award_and_cancellation_http(ending: &quot;notification-failure&quot;)" computerName="DESKTOP-9BCNB94" duration="00:00:09.1821900" startTime="2026-11-15T23:55:57.2505378+03:00" endTime="2026-11-15T23:56:06.4329732+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="6617f80f-cd6c-4859-ab70-093d58c2529b">
+      <Output>
+        <ErrorInfo>
+          <Message>Microsoft.Data.SqlClient.SqlException : A network-related or instance-specific error occurred while establishing a connection to SQL Server. The server was not found or was not accessible. Verify that the instance name is correct and that SQL Server is configured to allow remote connections. (provider: SQL Network Interfaces, error: 50 - Local Database Runtime error occurred. Cannot create an automatic instance. See the Windows Application event log for error details.&#xD;
+)&#xD;
+---- System.ComponentModel.Win32Exception : Unknown error (0x89c50118)</Message>
+          <StackTrace>   at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)&#xD;
+   at Microsoft.Data.SqlClient.TdsParser.Connect(ServerInfo serverInfo, SqlInternalConnectionTds connHandler, TimeoutTimer timeout, SqlConnectionString connectionOptions, Boolean withFailover)&#xD;
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.AttemptOneLogin(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, TimeoutTimer timeout, Boolean withFailover)&#xD;
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.LoginNoFailover(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString connectionOptions, SqlCredential credential, TimeoutTimer timeout)&#xD;
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.OpenLoginEnlist(TimeoutTimer timeout, SqlConnectionString connectionOptions, SqlCredential credential, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance)&#xD;
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds..ctor(DbConnectionPoolIdentity identity, SqlConnectionString connectionOptions, SqlCredential credential, Object providerInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString userConnectionOptions, SessionData reconnectSessionData, Boolean applyTransientFaultHandling, String accessToken, IDbConnectionPool pool, Func`3 accessTokenCallback)&#xD;
+   at Microsoft.Data.SqlClient.SqlConnectionFactory.CreateConnection(DbConnectionOptions options, DbConnectionPoolKey poolKey, DbConnectionPoolGroupProviderInfo poolGroupProviderInfo, IDbConnectionPool pool, DbConnection owningConnection, DbConnectionOptions userOptions)&#xD;
+   at Microsoft.Data.ProviderBase.DbConnectionFactory.CreateNonPooledConnection(DbConnection owningConnection, DbConnectionPoolGroup poolGroup, DbConnectionOptions userOptions)&#xD;
+   at Microsoft.Data.ProviderBase.DbConnectionFactory.&lt;&gt;c__DisplayClass28_0.&lt;CreateReplaceConnectionContinuation&gt;b__0(Task`1 _)&#xD;
+   at System.Threading.Tasks.ContinuationResultTaskFromResultTask`2.InnerInvoke()&#xD;
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)&#xD;
+--- End of stack trace from previous location ---&#xD;
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)&#xD;
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task&amp; currentTaskSlot, Thread threadPoolThread)&#xD;
+--- End of stack trace from previous location ---&#xD;
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)&#xD;
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)&#xD;
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenAsync(CancellationToken cancellationToken, Boolean errorsExpected)&#xD;
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerDatabaseCreator.&lt;&gt;c__DisplayClass20_0.&lt;&lt;ExistsAsync&gt;b__0&gt;d.MoveNext()&#xD;
+--- End of stack trace from previous location ---&#xD;
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerDatabaseCreator.&lt;&gt;c__DisplayClass20_0.&lt;&lt;ExistsAsync&gt;b__0&gt;d.MoveNext()&#xD;
+--- End of stack trace from previous location ---&#xD;
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerDatabaseCreator.&lt;&gt;c__DisplayClass20_0.&lt;&lt;ExistsAsync&gt;b__0&gt;d.MoveNext()&#xD;
+--- End of stack trace from previous location ---&#xD;
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)&#xD;
+   at Microsoft.EntityFrameworkCore.Storage.RelationalDatabaseCreator.EnsureDeletedAsync(CancellationToken cancellationToken)&#xD;
+   at BiddingRoundTests.Evaluation_award_and_cancellation_http(String ending) in C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\EvaluationAwardTests.cs:line 336&#xD;
+   at BiddingRoundTests.Evaluation_award_and_cancellation_http(String ending) in C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\EvaluationAwardTests.cs:line 336&#xD;
+--- End of stack trace from previous location ---&#xD;
+----- Inner Stack Trace -----&#xD;
+</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="bdcc0e9e-7121-4859-a71a-87a6e5cb1d06" testId="541965e4-f975-0892-0f7c-4d8c57f3365e" testName="CurrencyComparisonTests.Ai_facts_never_rank_raw_amounts_across_currencies" computerName="DESKTOP-9BCNB94" duration="00:00:00.0193422" startTime="2026-11-15T23:55:32.7736603+03:00" endTime="2026-11-15T23:55:32.7929050+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="bdcc0e9e-7121-4859-a71a-87a6e5cb1d06" />
+    <UnitTestResult executionId="8c8d4d0a-aaa5-4cff-b232-977e4e85115f" testId="984da1f7-4146-970c-78d6-23f9ed865fc7" testName="FaceLabTests.Provider_failure_and_quota_never_produce_a_login" computerName="DESKTOP-9BCNB94" duration="00:00:00.7159643" startTime="2026-11-15T23:55:33.1490760+03:00" endTime="2026-11-15T23:55:33.8654584+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="8c8d4d0a-aaa5-4cff-b232-977e4e85115f" />
+    <UnitTestResult executionId="a954e0da-85e2-402b-ade1-d94b91b6c066" testId="c7763142-554d-369f-8824-a0147c5b0579" testName="FaceLabTests.Unknown_or_unenrolled_accounts_get_an_indistinguishable_failing_decoy" computerName="DESKTOP-9BCNB94" duration="00:00:00.3613737" startTime="2026-11-15T23:55:32.7644180+03:00" endTime="2026-11-15T23:55:33.1274891+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="a954e0da-85e2-402b-ade1-d94b91b6c066" />
+    <UnitTestResult executionId="b67b0610-e8d6-4dad-9678-282c8016168d" testId="b2a39224-66a8-0e11-5cf1-52c527d00522" testName="BiddingRoundTests.Closed_round_threshold(scenario: &quot;R02&quot;, round: 1, bids: 1, evaluate: False, reopen: True)" computerName="DESKTOP-9BCNB94" duration="00:00:00.0000051" startTime="2026-11-15T23:55:32.7228709+03:00" endTime="2026-11-15T23:55:32.7229037+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b67b0610-e8d6-4dad-9678-282c8016168d" />
+    <UnitTestResult executionId="4934d596-d965-4eed-957b-ca3ceceb43a9" testId="6a55a1b9-e692-28be-d16e-5e9d2624fd5c" testName="SecurityTests.Document_policy(role: &quot;SourcingOfficer&quot;, stage: &quot;Open&quot;, status: &quot;Submitted&quot;, ownSupplier: False, active: True, exactEvaluationSeat: False, exactTopSeat: False, expected: False)" computerName="DESKTOP-9BCNB94" duration="00:00:00.0000033" startTime="2026-11-15T23:55:33.5051010+03:00" endTime="2026-11-15T23:55:33.5051272+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="4934d596-d965-4eed-957b-ca3ceceb43a9" />
+    <UnitTestResult executionId="0d25631d-8c99-4f5d-a8b4-e548480a149b" testId="12ec4e4b-7aed-2d78-166e-cb42df939045" testName="FaceLabTests.Demo_face_login_needs_explicit_flag_and_is_off_in_production(environment: &quot;Development&quot;, flag: &quot;true&quot;, production: null, expected: True)" computerName="DESKTOP-9BCNB94" duration="00:00:00.0003430" startTime="2026-11-15T23:55:37.4905135+03:00" endTime="2026-11-15T23:55:37.4908178+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="0d25631d-8c99-4f5d-a8b4-e548480a149b" />
+    <UnitTestResult executionId="e3b682a6-e31e-4a51-b818-c5cebf5affe3" testId="a7584744-27e8-9981-122c-86e8ec611202" testName="CurrencyComparisonTests.Weekend_request_keeps_the_provider_effective_date" computerName="DESKTOP-9BCNB94" duration="00:00:00.0005447" startTime="2026-11-15T23:55:32.7534439+03:00" endTime="2026-11-15T23:55:32.7534720+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e3b682a6-e31e-4a51-b818-c5cebf5affe3" />
+    <UnitTestResult executionId="7cdb8c7f-a509-4209-bbd4-19c1a587a4d3" testId="08b2bb49-04f1-9ace-9513-988d9ef3dc22" testName="BiddingRoundTests.Closed_round_threshold(scenario: &quot;R05&quot;, round: 2, bids: 2, evaluate: False, reopen: True)" computerName="DESKTOP-9BCNB94" duration="00:00:00.0000010" startTime="2026-11-15T23:55:32.7503605+03:00" endTime="2026-11-15T23:55:32.7503910+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="7cdb8c7f-a509-4209-bbd4-19c1a587a4d3" />
+    <UnitTestResult executionId="2adc9f1c-8ab2-41d8-b4d1-e7ea19f6c9f3" testId="6be0f630-f997-fc06-c738-07bab6dd8174" testName="FaceLabTests.Demo_face_login_needs_explicit_flag_and_is_off_in_production(environment: &quot;Production&quot;, flag: &quot;true&quot;, production: null, expected: False)" computerName="DESKTOP-9BCNB94" duration="00:00:00.0000908" startTime="2026-11-15T23:55:37.4912997+03:00" endTime="2026-11-15T23:55:37.4913270+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="2adc9f1c-8ab2-41d8-b4d1-e7ea19f6c9f3" />
+    <UnitTestResult executionId="fba0fdc7-f483-4234-ad51-c0ff6d5f27ef" testId="a7bbc34e-5b69-5df6-8aa9-3e8ca0ffc20e" testName="FaceLabTests.Mocked_provider_enrollment_then_match_and_mismatch" computerName="DESKTOP-9BCNB94" duration="00:00:01.4477077" startTime="2026-11-15T23:55:37.4945360+03:00" endTime="2026-11-15T23:55:38.9428896+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="fba0fdc7-f483-4234-ad51-c0ff6d5f27ef" />
+    <UnitTestResult executionId="9a1193da-9160-47cd-8d5a-a017e13bcca8" testId="7dbf01e7-322f-757e-9b71-c1bc830beefd" testName="SecurityTests.PasskeyChallengeStillRequiresUserVerification" computerName="DESKTOP-9BCNB94" duration="00:00:00.1275307" startTime="2026-11-15T23:55:33.8657774+03:00" endTime="2026-11-15T23:55:33.9934727+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="9a1193da-9160-47cd-8d5a-a017e13bcca8" />
+    <UnitTestResult executionId="9ab6bb06-b1aa-480d-bb97-ddeed60fade6" testId="a7c7f8a0-97bd-50a7-52df-422d07d2e266" testName="BiddingRoundTests.Evaluation_award_and_cancellation_http(ending: &quot;award&quot;)" computerName="DESKTOP-9BCNB94" duration="00:00:09.1930886" startTime="2026-11-15T23:55:48.0563828+03:00" endTime="2026-11-15T23:55:57.2495973+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="9ab6bb06-b1aa-480d-bb97-ddeed60fade6">
+      <Output>
+        <ErrorInfo>
+          <Message>Microsoft.Data.SqlClient.SqlException : A network-related or instance-specific error occurred while establishing a connection to SQL Server. The server was not found or was not accessible. Verify that the instance name is correct and that SQL Server is configured to allow remote connections. (provider: SQL Network Interfaces, error: 50 - Local Database Runtime error occurred. Cannot create an automatic instance. See the Windows Application event log for error details.&#xD;
+)&#xD;
+---- System.ComponentModel.Win32Exception : Unknown error (0x89c50118)</Message>
+          <StackTrace>   at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)&#xD;
+   at Microsoft.Data.SqlClient.TdsParser.Connect(ServerInfo serverInfo, SqlInternalConnectionTds connHandler, TimeoutTimer timeout, SqlConnectionString connectionOptions, Boolean withFailover)&#xD;
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.AttemptOneLogin(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, TimeoutTimer timeout, Boolean withFailover)&#xD;
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.LoginNoFailover(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString connectionOptions, SqlCredential credential, TimeoutTimer timeout)&#xD;
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.OpenLoginEnlist(TimeoutTimer timeout, SqlConnectionString connectionOptions, SqlCredential credential, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance)&#xD;
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds..ctor(DbConnectionPoolIdentity identity, SqlConnectionString connectionOptions, SqlCredential credential, Object providerInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString userConnectionOptions, SessionData reconnectSessionData, Boolean applyTransientFaultHandling, String accessToken, IDbConnectionPool pool, Func`3 accessTokenCallback)&#xD;
+   at Microsoft.Data.SqlClient.SqlConnectionFactory.CreateConnection(DbConnectionOptions options, DbConnectionPoolKey poolKey, DbConnectionPoolGroupProviderInfo poolGroupProviderInfo, IDbConnectionPool pool, DbConnection owningConnection, DbConnectionOptions userOptions)&#xD;
+   at Microsoft.Data.ProviderBase.DbConnectionFactory.CreateNonPooledConnection(DbConnection owningConnection, DbConnectionPoolGroup poolGroup, DbConnectionOptions userOptions)&#xD;
+   at Microsoft.Data.ProviderBase.DbConnectionFactory.&lt;&gt;c__DisplayClass28_0.&lt;CreateReplaceConnectionContinuation&gt;b__0(Task`1 _)&#xD;
+   at System.Threading.Tasks.ContinuationResultTaskFromResultTask`2.InnerInvoke()&#xD;
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)&#xD;
+--- End of stack trace from previous location ---&#xD;
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)&#xD;
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task&amp; currentTaskSlot, Thread threadPoolThread)&#xD;
+--- End of stack trace from previous location ---&#xD;
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)&#xD;
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)&#xD;
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenAsync(CancellationToken cancellationToken, Boolean errorsExpected)&#xD;
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerDatabaseCreator.&lt;&gt;c__DisplayClass20_0.&lt;&lt;ExistsAsync&gt;b__0&gt;d.MoveNext()&#xD;
+--- End of stack trace from previous location ---&#xD;
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerDatabaseCreator.&lt;&gt;c__DisplayClass20_0.&lt;&lt;ExistsAsync&gt;b__0&gt;d.MoveNext()&#xD;
+--- End of stack trace from previous location ---&#xD;
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerDatabaseCreator.&lt;&gt;c__DisplayClass20_0.&lt;&lt;ExistsAsync&gt;b__0&gt;d.MoveNext()&#xD;
+--- End of stack trace from previous location ---&#xD;
+   at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)&#xD;
+   at Microsoft.EntityFrameworkCore.Storage.RelationalDatabaseCreator.EnsureDeletedAsync(CancellationToken cancellationToken)&#xD;
+   at BiddingRoundTests.Evaluation_award_and_cancellation_http(String ending) in C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\EvaluationAwardTests.cs:line 336&#xD;
+   at BiddingRoundTests.Evaluation_award_and_cancellation_http(String ending) in C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\EvaluationAwardTests.cs:line 336&#xD;
+--- End of stack trace from previous location ---&#xD;
+----- Inner Stack Trace -----&#xD;
+</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="64f1d9a1-d7cc-4d9f-a68c-07e5313e1404" testId="f4149d2d-ab1f-e4a5-dce4-b887d5d4bffe" testName="FaceLabTests.Persisted_budget_stops_provider_requests" computerName="DESKTOP-9BCNB94" duration="00:00:00.0592341" startTime="2026-11-15T23:55:32.6999748+03:00" endTime="2026-11-15T23:55:32.7634456+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="64f1d9a1-d7cc-4d9f-a68c-07e5313e1404" />
+    <UnitTestResult executionId="dacc5869-e6bb-455f-ab41-807f284eea4c" testId="a8d0932e-7a11-e4cf-b65f-1f23143d9d7a" testName="SecurityTests.AnonymousDocumentIsChallenged(path: &quot;/BidDocuments/Download/42&quot;)" computerName="DESKTOP-9BCNB94" duration="00:00:00.1240328" startTime="2026-11-15T23:55:33.1338417+03:00" endTime="2026-11-15T23:55:33.2584416+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="dacc5869-e6bb-455f-ab41-807f284eea4c" />
+    <UnitTestResult executionId="53fdd1aa-0520-4993-b765-12eb47dd54a0" testId="932aa3ea-51cc-2775-3114-db8c105a7131" testName="BiddingRoundTests.Closed_round_threshold(scenario: &quot;R03&quot;, round: 1, bids: 2, evaluate: False, reopen: True)" computerName="DESKTOP-9BCNB94" duration="00:00:00.0000009" startTime="2026-11-15T23:55:32.7505650+03:00" endTime="2026-11-15T23:55:32.7506131+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="53fdd1aa-0520-4993-b765-12eb47dd54a0" />
+    <UnitTestResult executionId="fc8eb7e2-32d5-40bc-9eb9-0db357b7268d" testId="614de08d-e381-bfea-6b7e-59f24d5533c5" testName="CurrencyComparisonTests.Unavailable_rates_return_null_instead_of_a_guess(status: UnprocessableEntity, body: &quot;{\&quot;status\&quot;:422,\&quot;message\&quot;:\&quot;invalid currency: XY&quot;···)" computerName="DESKTOP-9BCNB94" duration="00:00:00.0000441" startTime="2026-11-15T23:55:32.7531455+03:00" endTime="2026-11-15T23:55:32.7531768+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="fc8eb7e2-32d5-40bc-9eb9-0db357b7268d" />
+    <UnitTestResult executionId="8c73463f-b8e3-4d6d-acd9-c3026a63cbe6" testId="d48d59c9-59b8-3c04-65f6-3c5312a8fe96" testName="FaceLabTests.Login_challenge_tokens_and_frames_cannot_be_replayed" computerName="DESKTOP-9BCNB94" duration="00:00:00.7312889" startTime="2026-11-15T23:55:36.7578828+03:00" endTime="2026-11-15T23:55:37.4897676+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="8c73463f-b8e3-4d6d-acd9-c3026a63cbe6" />
+    <UnitTestResult executionId="59f33fdf-c8a8-4866-8e5b-d57219d0b1df" testId="d763a786-b570-489e-effd-6b51e3fceb54" testName="SecurityTests.Document_policy(role: &quot;TechnicalCommittee&quot;, stage: &quot;Under Evaluation&quot;, status: &quot;Compliant&quot;, ownSupplier: False, active: True, exactEvaluationSeat: True, exactTopSeat: False, expected: True)" computerName="DESKTOP-9BCNB94" duration="00:00:00.0037670" startTime="2026-11-15T23:55:33.5006785+03:00" endTime="2026-11-15T23:55:33.5043095+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="59f33fdf-c8a8-4866-8e5b-d57219d0b1df" />
+    <UnitTestResult executionId="8a6ad39e-efc4-45b7-8723-7c0ce18a1748" testId="1c325bed-5976-5e3e-117e-9ea20f7adbf6" testName="SecurityTests.Document_policy(role: &quot;TopCommittee&quot;, stage: &quot;Awaiting Committee Decision&quot;, status: &quot;Compliant&quot;, ownSupplier: False, active: True, exactEvaluationSeat: False, exactTopSeat: False, expected: False)" computerName="DESKTOP-9BCNB94" duration="00:00:00.0000030" startTime="2026-11-15T23:55:33.5061583+03:00" endTime="2026-11-15T23:55:33.5062273+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="8a6ad39e-efc4-45b7-8723-7c0ce18a1748" />
+    <UnitTestResult executionId="94d75f70-2bb0-4324-a03c-c3aa0fe85a60" testId="70c7a8e9-39b9-1ae3-a038-eadbd348f253" testName="SecurityTests.AnonymousCannotUseFaceLab(endpoint: &quot;/Account/FaceLabCapture&quot;)" computerName="DESKTOP-9BCNB94" duration="00:00:00.1254654" startTime="2026-11-15T23:55:33.2586147+03:00" endTime="2026-11-15T23:55:33.3842543+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="94d75f70-2bb0-4324-a03c-c3aa0fe85a60" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="SecurityTests.Document_policy(role: &quot;TechnicalCommittee&quot;, stage: &quot;Under Evaluation&quot;, status: &quot;Compliant&quot;, ownSupplier: False, active: True, exactEvaluationSeat: False, exactTopSeat: False, expected: False)" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="1142b8fe-5569-e3e2-04f7-19a27d43f056">
+      <Execution id="6167f412-2b6e-4f14-b71a-93b191b9eb0a" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="SecurityTests" name="Document_policy" />
+    </UnitTest>
+    <UnitTest name="SecurityTests.AnonymousDocumentIsChallenged(path: &quot;/BidDocuments/Download/42&quot;)" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="a8d0932e-7a11-e4cf-b65f-1f23143d9d7a">
+      <Execution id="dacc5869-e6bb-455f-ab41-807f284eea4c" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="SecurityTests" name="AnonymousDocumentIsChallenged" />
+    </UnitTest>
+    <UnitTest name="CurrencyComparisonTests.Usd_needs_no_lookup" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="b9d97164-ec3a-a31c-31a0-83785cd639f0">
+      <Execution id="23a653ec-3a9a-427d-8b8d-1588b62e4ea8" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="CurrencyComparisonTests" name="Usd_needs_no_lookup" />
+    </UnitTest>
+    <UnitTest name="BiddingRoundTests.Evaluation_award_and_cancellation_http(ending: &quot;award&quot;)" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="a7c7f8a0-97bd-50a7-52df-422d07d2e266">
+      <Execution id="9ab6bb06-b1aa-480d-bb97-ddeed60fade6" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="BiddingRoundTests" name="Evaluation_award_and_cancellation_http" />
+    </UnitTest>
+    <UnitTest name="BiddingRoundTests.Closed_round_threshold(scenario: &quot;R02&quot;, round: 1, bids: 1, evaluate: False, reopen: True)" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="b2a39224-66a8-0e11-5cf1-52c527d00522">
+      <Execution id="b67b0610-e8d6-4dad-9678-282c8016168d" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="BiddingRoundTests" name="Closed_round_threshold" />
+    </UnitTest>
+    <UnitTest name="CurrencyComparisonTests.Unavailable_rates_return_null_instead_of_a_guess(status: OK, body: &quot;{\&quot;date\&quot;:\&quot;2026-11-10\&quot;,\&quot;base\&quot;:\&quot;EUR\&quot;,\&quot;quote\&quot;···)" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="9b618f6f-47e7-b059-43ba-c86eb6bc76a2">
+      <Execution id="26c5785d-e490-46c3-835d-6824b2e9c266" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="CurrencyComparisonTests" name="Unavailable_rates_return_null_instead_of_a_guess" />
+    </UnitTest>
+    <UnitTest name="SecurityTests.Document_policy(role: &quot;TechnicalCommittee&quot;, stage: &quot;Under Evaluation&quot;, status: &quot;Compliant&quot;, ownSupplier: False, active: True, exactEvaluationSeat: True, exactTopSeat: False, expected: True)" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="d763a786-b570-489e-effd-6b51e3fceb54">
+      <Execution id="59f33fdf-c8a8-4866-8e5b-d57219d0b1df" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="SecurityTests" name="Document_policy" />
+    </UnitTest>
+    <UnitTest name="BiddingRoundTests.Closed_round_threshold(scenario: &quot;R07&quot;, round: 3, bids: 2, evaluate: True, reopen: False)" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="a8cbb63c-7967-560d-adbf-47d0adc4510f">
+      <Execution id="2ea5d332-858a-4f7a-928f-57629532e442" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="BiddingRoundTests" name="Closed_round_threshold" />
+    </UnitTest>
+    <UnitTest name="FaceLabTests.Demo_face_login_needs_explicit_flag_and_is_off_in_production(environment: &quot;Development&quot;, flag: null, production: null, expected: False)" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="68a1b711-fe9f-0556-343b-56478c553234">
+      <Execution id="f02634ce-a981-4eb2-90dc-0dcc1c38cef9" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="FaceLabTests" name="Demo_face_login_needs_explicit_flag_and_is_off_in_production" />
+    </UnitTest>
+    <UnitTest name="FaceLoginHttpTests.Face_enrollment_and_demo_login_create_real_identity_sessions_only_on_match" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="48df7879-9dc7-1336-34ca-3b2d72ea50bb">
+      <Execution id="b989ef6d-916d-489b-9a9a-348aa238823f" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="FaceLoginHttpTests" name="Face_enrollment_and_demo_login_create_real_identity_sessions_only_on_match" />
+    </UnitTest>
+    <UnitTest name="SecurityTests.AnonymousDocumentIsChallenged(path: &quot;/BidDocuments/Download/42?preview=true&quot;)" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="9ead1254-9fce-ff1e-5d3e-f14696ebd7a4">
+      <Execution id="40564255-f009-4a62-b9e1-fc3d2908e306" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="SecurityTests" name="AnonymousDocumentIsChallenged" />
+    </UnitTest>
+    <UnitTest name="CurrencyComparisonTests.Unavailable_rates_return_null_instead_of_a_guess(status: OK, body: &quot;not json&quot;)" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="39b81b05-51f2-5965-b0ad-878167b38b91">
+      <Execution id="19e0034b-6e02-4c20-a7e9-cf8a31f76176" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="CurrencyComparisonTests" name="Unavailable_rates_return_null_instead_of_a_guess" />
+    </UnitTest>
+    <UnitTest name="CurrencyComparisonTests.Network_failure_returns_null" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="09d56923-41b1-e83a-2788-3f033b66e768">
+      <Execution id="90da50bf-6265-4317-8a80-21d751f4b850" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="CurrencyComparisonTests" name="Network_failure_returns_null" />
+    </UnitTest>
+    <UnitTest name="BiddingRoundTests.Reviewer_totals_use_their_own_selection_and_contribute_equally" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="9a149cb2-7a7d-9dd9-c893-4048aa1c5407">
+      <Execution id="744bf6f5-5602-4e27-8d62-b011d80019f8" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="BiddingRoundTests" name="Reviewer_totals_use_their_own_selection_and_contribute_equally" />
+    </UnitTest>
+    <UnitTest name="BiddingRoundTests.Evaluation_award_and_cancellation_http(ending: &quot;reject&quot;)" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="4b8ca0e1-8c81-0567-161a-1ae2a7fbbbd5">
+      <Execution id="d53eec7f-107e-43c1-afc8-152e16cc2b0e" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="BiddingRoundTests" name="Evaluation_award_and_cancellation_http" />
+    </UnitTest>
+    <UnitTest name="BiddingRoundTests.Closed_round_threshold(scenario: &quot;R06&quot;, round: 3, bids: 1, evaluate: True, reopen: False)" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="d62d3cde-fbc1-08cf-11e6-925d56826833">
+      <Execution id="6300a9ca-4dd6-43f8-827b-c893f56f7dc2" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="BiddingRoundTests" name="Closed_round_threshold" />
+    </UnitTest>
+    <UnitTest name="BiddingRoundTests.Closed_round_threshold(scenario: &quot;R01&quot;, round: 1, bids: 0, evaluate: False, reopen: True)" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="96b5d658-a323-5b3d-765b-def7bfae783f">
+      <Execution id="1ef0b1f5-3ae5-4d30-af8f-7575a3184f55" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="BiddingRoundTests" name="Closed_round_threshold" />
+    </UnitTest>
+    <UnitTest name="FaceLabTests.Mocked_provider_errors_have_safe_fallback(providerStatus: 429, expected: 429)" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="a5680416-f43b-1af5-8b7d-f0b42b8b19e8">
+      <Execution id="0d5e15e1-f5ba-495e-8e1d-7b67011c0795" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="FaceLabTests" name="Mocked_provider_errors_have_safe_fallback" />
+    </UnitTest>
+    <UnitTest name="FaceLabTests.Enrolled_face_login_succeeds_only_for_the_challenged_account" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="61076927-5331-d78f-97ef-19f4a95bcb51">
+      <Execution id="0415fa55-f4f1-4251-8cbc-283c3a443e0a" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="FaceLabTests" name="Enrolled_face_login_succeeds_only_for_the_challenged_account" />
+    </UnitTest>
+    <UnitTest name="CurrencyComparisonTests.Weekend_request_keeps_the_provider_effective_date" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="a7584744-27e8-9981-122c-86e8ec611202">
+      <Execution id="e3b682a6-e31e-4a51-b818-c5cebf5affe3" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="CurrencyComparisonTests" name="Weekend_request_keeps_the_provider_effective_date" />
+    </UnitTest>
+    <UnitTest name="FaceLabTests.Mocked_provider_errors_have_safe_fallback(providerStatus: 503, expected: 503)" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="e456bafb-7d09-7c62-bf11-f23a3a4493e3">
+      <Execution id="bf8081b4-8396-4b54-bf18-255c6551dc6a" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="FaceLabTests" name="Mocked_provider_errors_have_safe_fallback" />
+    </UnitTest>
+    <UnitTest name="FaceLabTests.Enrollment_requires_confirmation_and_can_be_replaced_and_removed" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="93ec5b19-3aa0-51b1-dd28-492479959b9e">
+      <Execution id="e1d63fe9-b8b7-4b8e-bfea-c3d456973ac7" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="FaceLabTests" name="Enrollment_requires_confirmation_and_can_be_replaced_and_removed" />
+    </UnitTest>
+    <UnitTest name="CurrencyComparisonTests.Ai_facts_never_rank_raw_amounts_across_currencies" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="541965e4-f975-0892-0f7c-4d8c57f3365e">
+      <Execution id="bdcc0e9e-7121-4859-a71a-87a6e5cb1d06" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="CurrencyComparisonTests" name="Ai_facts_never_rank_raw_amounts_across_currencies" />
+    </UnitTest>
+    <UnitTest name="BiddingRoundTests.Closed_round_threshold(scenario: &quot;R04&quot;, round: 1, bids: 3, evaluate: True, reopen: False)" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="37c56036-29e8-676b-60fc-e25c8c877dc3">
+      <Execution id="ed01656a-aff3-469b-9f13-9f426a7447ee" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="BiddingRoundTests" name="Closed_round_threshold" />
+    </UnitTest>
+    <UnitTest name="FaceLabTests.Incorrect_face_or_malformed_compare_is_rejected" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="48f067a6-0b1b-29cb-0b13-c1108b6d9f96">
+      <Execution id="4ed83c2f-f03b-4e87-b696-fb4249f5f4e5" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="FaceLabTests" name="Incorrect_face_or_malformed_compare_is_rejected" />
+    </UnitTest>
+    <UnitTest name="SecurityTests.AnonymousCannotUseFaceLab(endpoint: &quot;/Account/FaceLabStart&quot;)" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="9f732ff1-a5b5-86a5-360f-6fe7397fb2e2">
+      <Execution id="5e54d50c-5ab5-4dd6-a46b-0d14c82b0ac3" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="SecurityTests" name="AnonymousCannotUseFaceLab" />
+    </UnitTest>
+    <UnitTest name="SecurityTests.Document_policy(role: &quot;SourcingManager&quot;, stage: &quot;Awaiting Manager Review&quot;, status: &quot;Compliant&quot;, ownSupplier: False, active: True, exactEvaluationSeat: True, exactTopSeat: False, expected: True)" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="ddb45af6-dc27-ab40-b8f9-65963c3b41e5">
+      <Execution id="329661f2-a0b9-446c-89dd-5910dc74e0e0" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="SecurityTests" name="Document_policy" />
+    </UnitTest>
+    <UnitTest name="SecurityTests.StaticJpegNeverAuthenticates(endpoint: &quot;Camera&quot;)" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="2979a5d1-dc2c-b730-24b9-b7c8c7da54dd">
+      <Execution id="94182127-824b-4c88-8547-14b17fa93d89" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="SecurityTests" name="StaticJpegNeverAuthenticates" />
+    </UnitTest>
+    <UnitTest name="FaceLabTests.Challenge_is_expiring_single_use_and_bound_to_account_and_stamp" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="c5d6d6e3-e0f4-2925-f3ff-e262eb3e0997">
+      <Execution id="16ec3068-99f5-4602-9109-4886392b4fc8" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="FaceLabTests" name="Challenge_is_expiring_single_use_and_bound_to_account_and_stamp" />
+    </UnitTest>
+    <UnitTest name="FaceLabTests.Demo_face_login_needs_explicit_flag_and_is_off_in_production(environment: &quot;Development&quot;, flag: &quot;true&quot;, production: null, expected: True)" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="12ec4e4b-7aed-2d78-166e-cb42df939045">
+      <Execution id="0d25631d-8c99-4f5d-a8b4-e548480a149b" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="FaceLabTests" name="Demo_face_login_needs_explicit_flag_and_is_off_in_production" />
+    </UnitTest>
+    <UnitTest name="FaceLabTests.Login_challenge_tokens_and_frames_cannot_be_replayed" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="d48d59c9-59b8-3c04-65f6-3c5312a8fe96">
+      <Execution id="8c73463f-b8e3-4d6d-acd9-c3026a63cbe6" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="FaceLabTests" name="Login_challenge_tokens_and_frames_cannot_be_replayed" />
+    </UnitTest>
+    <UnitTest name="FaceLabTests.Demo_face_login_needs_explicit_flag_and_is_off_in_production(environment: &quot;Development&quot;, flag: &quot;false&quot;, production: null, expected: False)" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="6f553d4c-0562-d24f-84d9-5ad8338cf41e">
+      <Execution id="23971939-6bb3-4295-8052-302456ead6de" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="FaceLabTests" name="Demo_face_login_needs_explicit_flag_and_is_off_in_production" />
+    </UnitTest>
+    <UnitTest name="FaceLabTests.Provider_failure_and_quota_never_produce_a_login" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="984da1f7-4146-970c-78d6-23f9ed865fc7">
+      <Execution id="8c8d4d0a-aaa5-4cff-b232-977e4e85115f" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="FaceLabTests" name="Provider_failure_and_quota_never_produce_a_login" />
+    </UnitTest>
+    <UnitTest name="BiddingRoundTests.Closed_round_threshold(scenario: &quot;R05&quot;, round: 2, bids: 2, evaluate: False, reopen: True)" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="08b2bb49-04f1-9ace-9513-988d9ef3dc22">
+      <Execution id="7cdb8c7f-a509-4209-bbd4-19c1a587a4d3" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="BiddingRoundTests" name="Closed_round_threshold" />
+    </UnitTest>
+    <UnitTest name="FaceLabTests.Demo_face_login_needs_explicit_flag_and_is_off_in_production(environment: &quot;Production&quot;, flag: &quot;true&quot;, production: null, expected: False)" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="6be0f630-f997-fc06-c738-07bab6dd8174">
+      <Execution id="2adc9f1c-8ab2-41d8-b4d1-e7ea19f6c9f3" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="FaceLabTests" name="Demo_face_login_needs_explicit_flag_and_is_off_in_production" />
+    </UnitTest>
+    <UnitTest name="SecurityTests.Document_policy(role: &quot;TopCommittee&quot;, stage: &quot;Awaiting Committee Decision&quot;, status: &quot;Compliant&quot;, ownSupplier: False, active: True, exactEvaluationSeat: False, exactTopSeat: False, expected: False)" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="1c325bed-5976-5e3e-117e-9ea20f7adbf6">
+      <Execution id="8a6ad39e-efc4-45b7-8723-7c0ce18a1748" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="SecurityTests" name="Document_policy" />
+    </UnitTest>
+    <UnitTest name="BiddingRoundTests.Evaluation_award_and_cancellation_http(ending: &quot;notification-failure&quot;)" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="89e24856-c2e4-ec4b-a7ac-2349475d9487">
+      <Execution id="6617f80f-cd6c-4859-ab70-093d58c2529b" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="BiddingRoundTests" name="Evaluation_award_and_cancellation_http" />
+    </UnitTest>
+    <UnitTest name="SecurityTests.StaticJpegNeverAuthenticates(endpoint: &quot;DirectCamera&quot;)" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="3018d72d-c6c3-3755-9fdb-f44e5e8a525c">
+      <Execution id="f6f25f22-041f-4d70-b1a6-55360709f249" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="SecurityTests" name="StaticJpegNeverAuthenticates" />
+    </UnitTest>
+    <UnitTest name="FaceLabTests.Demo_face_login_needs_explicit_flag_and_is_off_in_production(environment: &quot;Production&quot;, flag: &quot;true&quot;, production: &quot;true&quot;, expected: True)" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="5324caa8-cda8-f92b-6bd1-7f906b92ac8e">
+      <Execution id="ce745c27-2dc7-4ef6-a38a-3d87895b437e" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="FaceLabTests" name="Demo_face_login_needs_explicit_flag_and_is_off_in_production" />
+    </UnitTest>
+    <UnitTest name="CurrencyComparisonTests.Converts_with_decimal_math_and_records_rate_date_and_source" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="4138a9f2-3aeb-9fe5-4038-ab4e830e263b">
+      <Execution id="3b559724-3871-4056-aaa0-fe01488480b5" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="CurrencyComparisonTests" name="Converts_with_decimal_math_and_records_rate_date_and_source" />
+    </UnitTest>
+    <UnitTest name="BiddingRoundTests.Evaluation_award_and_cancellation_http(ending: &quot;race&quot;)" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="adfc7d2f-6765-b54c-b00f-0108d3beaf77">
+      <Execution id="f841b84b-08cd-48d2-bafb-cbdacae97529" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="BiddingRoundTests" name="Evaluation_award_and_cancellation_http" />
+    </UnitTest>
+    <UnitTest name="BiddingRoundTests.Closed_round_threshold(scenario: &quot;R03&quot;, round: 1, bids: 2, evaluate: False, reopen: True)" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="932aa3ea-51cc-2775-3114-db8c105a7131">
+      <Execution id="53fdd1aa-0520-4993-b765-12eb47dd54a0" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="BiddingRoundTests" name="Closed_round_threshold" />
+    </UnitTest>
+    <UnitTest name="FaceLabTests.Persisted_budget_stops_provider_requests" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="f4149d2d-ab1f-e4a5-dce4-b887d5d4bffe">
+      <Execution id="64f1d9a1-d7cc-4d9f-a68c-07e5313e1404" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="FaceLabTests" name="Persisted_budget_stops_provider_requests" />
+    </UnitTest>
+    <UnitTest name="SecurityTests.Document_policy(role: &quot;TopCommittee&quot;, stage: &quot;Open&quot;, status: &quot;Compliant&quot;, ownSupplier: False, active: True, exactEvaluationSeat: False, exactTopSeat: True, expected: False)" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="f35e0590-9a7f-474b-244f-1c28150f097e">
+      <Execution id="e6c57482-0216-45f4-8da9-1f8a5b72f423" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="SecurityTests" name="Document_policy" />
+    </UnitTest>
+    <UnitTest name="FaceLabTests.Unknown_or_unenrolled_accounts_get_an_indistinguishable_failing_decoy" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="c7763142-554d-369f-8824-a0147c5b0579">
+      <Execution id="a954e0da-85e2-402b-ade1-d94b91b6c066" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="FaceLabTests" name="Unknown_or_unenrolled_accounts_get_an_indistinguishable_failing_decoy" />
+    </UnitTest>
+    <UnitTest name="SecurityTests.Document_policy(role: &quot;SourcingOfficer&quot;, stage: &quot;Open&quot;, status: &quot;Submitted&quot;, ownSupplier: False, active: True, exactEvaluationSeat: False, exactTopSeat: False, expected: False)" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="6a55a1b9-e692-28be-d16e-5e9d2624fd5c">
+      <Execution id="4934d596-d965-4eed-957b-ca3ceceb43a9" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="SecurityTests" name="Document_policy" />
+    </UnitTest>
+    <UnitTest name="CurrencyComparisonTests.Legacy_comparison_snapshots_stay_readable_without_rates" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="1454691f-be68-1939-d30b-cf7c0af8d8d4">
+      <Execution id="9d42114a-0283-4f44-a1b9-1d6e3309bc91" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="CurrencyComparisonTests" name="Legacy_comparison_snapshots_stay_readable_without_rates" />
+    </UnitTest>
+    <UnitTest name="SecurityTests.PasskeyChallengeStillRequiresUserVerification" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="7dbf01e7-322f-757e-9b71-c1bc830beefd">
+      <Execution id="9a1193da-9160-47cd-8d5a-a017e13bcca8" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="SecurityTests" name="PasskeyChallengeStillRequiresUserVerification" />
+    </UnitTest>
+    <UnitTest name="SecurityTests.Document_policy(role: &quot;TopCommittee&quot;, stage: &quot;Awaiting Committee Decision&quot;, status: &quot;Compliant&quot;, ownSupplier: False, active: True, exactEvaluationSeat: False, exactTopSeat: True, expected: True)" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="73685b84-4803-086c-f30c-54c26510a0c6">
+      <Execution id="53f678dc-c2db-4938-85c3-854356e7c923" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="SecurityTests" name="Document_policy" />
+    </UnitTest>
+    <UnitTest name="CurrencyComparisonTests.Unavailable_rates_return_null_instead_of_a_guess(status: UnprocessableEntity, body: &quot;{\&quot;status\&quot;:422,\&quot;message\&quot;:\&quot;invalid currency: XY&quot;···)" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="614de08d-e381-bfea-6b7e-59f24d5533c5">
+      <Execution id="fc8eb7e2-32d5-40bc-9eb9-0db357b7268d" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="CurrencyComparisonTests" name="Unavailable_rates_return_null_instead_of_a_guess" />
+    </UnitTest>
+    <UnitTest name="SecurityTests.AnonymousCannotUseFaceLab(endpoint: &quot;/Account/FaceLabCapture&quot;)" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="70c7a8e9-39b9-1ae3-a038-eadbd348f253">
+      <Execution id="94d75f70-2bb0-4324-a03c-c3aa0fe85a60" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="SecurityTests" name="AnonymousCannotUseFaceLab" />
+    </UnitTest>
+    <UnitTest name="SecurityTests.Document_policy(role: &quot;Supplier&quot;, stage: &quot;Closed&quot;, status: &quot;Compliant&quot;, ownSupplier: False, active: True, exactEvaluationSeat: False, exactTopSeat: False, expected: False)" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="196b593d-0b3c-7a6f-23f2-10cf533775e0">
+      <Execution id="2b034b7c-41e5-41ee-ba98-0235760d891e" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="SecurityTests" name="Document_policy" />
+    </UnitTest>
+    <UnitTest name="SecurityTests.Document_policy(role: &quot;Supplier&quot;, stage: &quot;Open&quot;, status: &quot;Draft&quot;, ownSupplier: True, active: True, exactEvaluationSeat: False, exactTopSeat: False, expected: True)" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="df902ec4-6edb-2a38-92c4-e619eceea52e">
+      <Execution id="31d8e649-0443-4743-87fc-6c75969bea6e" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="SecurityTests" name="Document_policy" />
+    </UnitTest>
+    <UnitTest name="BiddingRoundTests.Closed_round_threshold(scenario: &quot;R08/R09&quot;, round: 3, bids: 0, evaluate: False, reopen: False)" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="88778381-f971-4e60-c29d-062ac4d4d981">
+      <Execution id="f8806219-223e-45dd-83cb-5391bd5b4946" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="BiddingRoundTests" name="Closed_round_threshold" />
+    </UnitTest>
+    <UnitTest name="CurrencyComparisonTests.Unavailable_rates_return_null_instead_of_a_guess(status: NotFound, body: &quot;{\&quot;status\&quot;:404,\&quot;message\&quot;:\&quot;not found\&quot;}&quot;)" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="fe6daa44-e305-7ffd-45f7-2d0304f42718">
+      <Execution id="6492e42c-0f63-440c-a392-739eba1f4881" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="CurrencyComparisonTests" name="Unavailable_rates_return_null_instead_of_a_guess" />
+    </UnitTest>
+    <UnitTest name="SecurityTests.ConfigurationContainsNoFaceCredentials" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="99d0f40d-6b7b-d5b9-3a0c-b18ff4755ba3">
+      <Execution id="10b2ecfd-71bf-46ec-8da7-90c434b1866c" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="SecurityTests" name="ConfigurationContainsNoFaceCredentials" />
+    </UnitTest>
+    <UnitTest name="BrowserReleaseTests.Real_browser_identity_and_workspace" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="1159d323-a2eb-ce99-dfec-779993ce509f">
+      <Execution id="7486915e-809c-4b94-b0a1-8945fccfe013" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="BrowserReleaseTests" name="Real_browser_identity_and_workspace" />
+    </UnitTest>
+    <UnitTest name="SecurityTests.Document_policy(role: &quot;SourcingOfficer&quot;, stage: &quot;Closed&quot;, status: &quot;Submitted&quot;, ownSupplier: False, active: True, exactEvaluationSeat: False, exactTopSeat: False, expected: True)" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="23d53aa9-55ea-c5c7-6ae8-011ebf1720b3">
+      <Execution id="1fe85238-ac40-4b44-9ff1-d3ec58cd0a63" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="SecurityTests" name="Document_policy" />
+    </UnitTest>
+    <UnitTest name="BiddingRoundTests.R17_R20_R21_Deadline_and_stage_are_exclusive" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="efdc9de5-9d0a-6964-d881-ac9559735a15">
+      <Execution id="63aa1ff0-f059-49d9-8719-d31937827ccc" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="BiddingRoundTests" name="R17_R20_R21_Deadline_and_stage_are_exclusive" />
+    </UnitTest>
+    <UnitTest name="FaceLabTests.Mocked_provider_enrollment_then_match_and_mismatch" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="a7bbc34e-5b69-5df6-8aa9-3e8ca0ffc20e">
+      <Execution id="fba0fdc7-f483-4234-ad51-c0ff6d5f27ef" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="FaceLabTests" name="Mocked_provider_enrollment_then_match_and_mismatch" />
+    </UnitTest>
+    <UnitTest name="BiddingRoundTests.Weighted_scores_normalize_then_round_once" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="fe202621-bce0-6b5c-14fe-39fa0b1676f3">
+      <Execution id="e632489c-73be-46ef-9b33-9ac219a308f5" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="BiddingRoundTests" name="Weighted_scores_normalize_then_round_once" />
+    </UnitTest>
+    <UnitTest name="BiddingRoundTests.SqlServer_upgrade_and_HTTP_bidding_lifecycle" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="af101886-d07b-4128-c4e4-db510256f544">
+      <Execution id="184ddab6-9095-4fbc-a047-b8a6e8f427d8" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="BiddingRoundTests" name="SqlServer_upgrade_and_HTTP_bidding_lifecycle" />
+    </UnitTest>
+    <UnitTest name="CurrencyComparisonTests.Reference_date_is_the_closing_date_never_the_future" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="6d86edde-9cac-73cc-812c-f1519d6b5d7d">
+      <Execution id="94c78198-76e9-48ac-ab98-afc3a984d8ad" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="CurrencyComparisonTests" name="Reference_date_is_the_closing_date_never_the_future" />
+    </UnitTest>
+    <UnitTest name="CurrencyComparisonTests.Unavailable_rates_return_null_instead_of_a_guess(status: OK, body: &quot;{\&quot;date\&quot;:\&quot;2026-11-10\&quot;,\&quot;base\&quot;:\&quot;JOD\&quot;,\&quot;quote\&quot;···)" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="64641cbd-7287-7104-16aa-437e06a90aa4">
+      <Execution id="07c883c3-02f9-4063-846a-59999316ac90" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="CurrencyComparisonTests" name="Unavailable_rates_return_null_instead_of_a_guess" />
+    </UnitTest>
+    <UnitTest name="CurrencyComparisonTests.Unavailable_rates_return_null_instead_of_a_guess(status: OK, body: &quot;{\&quot;date\&quot;:\&quot;2026-11-12\&quot;,\&quot;base\&quot;:\&quot;JOD\&quot;,\&quot;quote\&quot;···)" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\release\net10.0\sourcingtendersystem.securitytests.dll" id="844b35cd-6374-ee45-f61d-13dae2ae9b8f">
+      <Execution id="e1af938a-51dd-4a9e-9d08-8d70c5892ed7" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\Release\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="CurrencyComparisonTests" name="Unavailable_rates_return_null_instead_of_a_guess" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="c5d6d6e3-e0f4-2925-f3ff-e262eb3e0997" executionId="16ec3068-99f5-4602-9109-4886392b4fc8" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="09d56923-41b1-e83a-2788-3f033b66e768" executionId="90da50bf-6265-4317-8a80-21d751f4b850" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="196b593d-0b3c-7a6f-23f2-10cf533775e0" executionId="2b034b7c-41e5-41ee-ba98-0235760d891e" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="3018d72d-c6c3-3755-9fdb-f44e5e8a525c" executionId="f6f25f22-041f-4d70-b1a6-55360709f249" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="fe6daa44-e305-7ffd-45f7-2d0304f42718" executionId="6492e42c-0f63-440c-a392-739eba1f4881" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="1159d323-a2eb-ce99-dfec-779993ce509f" executionId="7486915e-809c-4b94-b0a1-8945fccfe013" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="1454691f-be68-1939-d30b-cf7c0af8d8d4" executionId="9d42114a-0283-4f44-a1b9-1d6e3309bc91" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="2979a5d1-dc2c-b730-24b9-b7c8c7da54dd" executionId="94182127-824b-4c88-8547-14b17fa93d89" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="efdc9de5-9d0a-6964-d881-ac9559735a15" executionId="63aa1ff0-f059-49d9-8719-d31937827ccc" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="23d53aa9-55ea-c5c7-6ae8-011ebf1720b3" executionId="1fe85238-ac40-4b44-9ff1-d3ec58cd0a63" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="9ead1254-9fce-ff1e-5d3e-f14696ebd7a4" executionId="40564255-f009-4a62-b9e1-fc3d2908e306" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="48f067a6-0b1b-29cb-0b13-c1108b6d9f96" executionId="4ed83c2f-f03b-4e87-b696-fb4249f5f4e5" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="d62d3cde-fbc1-08cf-11e6-925d56826833" executionId="6300a9ca-4dd6-43f8-827b-c893f56f7dc2" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e456bafb-7d09-7c62-bf11-f23a3a4493e3" executionId="bf8081b4-8396-4b54-bf18-255c6551dc6a" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="93ec5b19-3aa0-51b1-dd28-492479959b9e" executionId="e1d63fe9-b8b7-4b8e-bfea-c3d456973ac7" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="b9d97164-ec3a-a31c-31a0-83785cd639f0" executionId="23a653ec-3a9a-427d-8b8d-1588b62e4ea8" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="5324caa8-cda8-f92b-6bd1-7f906b92ac8e" executionId="ce745c27-2dc7-4ef6-a38a-3d87895b437e" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="48df7879-9dc7-1336-34ca-3b2d72ea50bb" executionId="b989ef6d-916d-489b-9a9a-348aa238823f" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="37c56036-29e8-676b-60fc-e25c8c877dc3" executionId="ed01656a-aff3-469b-9f13-9f426a7447ee" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="96b5d658-a323-5b3d-765b-def7bfae783f" executionId="1ef0b1f5-3ae5-4d30-af8f-7575a3184f55" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="6f553d4c-0562-d24f-84d9-5ad8338cf41e" executionId="23971939-6bb3-4295-8052-302456ead6de" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="39b81b05-51f2-5965-b0ad-878167b38b91" executionId="19e0034b-6e02-4c20-a7e9-cf8a31f76176" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="a8cbb63c-7967-560d-adbf-47d0adc4510f" executionId="2ea5d332-858a-4f7a-928f-57629532e442" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="844b35cd-6374-ee45-f61d-13dae2ae9b8f" executionId="e1af938a-51dd-4a9e-9d08-8d70c5892ed7" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="1142b8fe-5569-e3e2-04f7-19a27d43f056" executionId="6167f412-2b6e-4f14-b71a-93b191b9eb0a" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="9a149cb2-7a7d-9dd9-c893-4048aa1c5407" executionId="744bf6f5-5602-4e27-8d62-b011d80019f8" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="61076927-5331-d78f-97ef-19f4a95bcb51" executionId="0415fa55-f4f1-4251-8cbc-283c3a443e0a" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="fe202621-bce0-6b5c-14fe-39fa0b1676f3" executionId="e632489c-73be-46ef-9b33-9ac219a308f5" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="88778381-f971-4e60-c29d-062ac4d4d981" executionId="f8806219-223e-45dd-83cb-5391bd5b4946" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="df902ec4-6edb-2a38-92c4-e619eceea52e" executionId="31d8e649-0443-4743-87fc-6c75969bea6e" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="99d0f40d-6b7b-d5b9-3a0c-b18ff4755ba3" executionId="10b2ecfd-71bf-46ec-8da7-90c434b1866c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="73685b84-4803-086c-f30c-54c26510a0c6" executionId="53f678dc-c2db-4938-85c3-854356e7c923" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="4b8ca0e1-8c81-0567-161a-1ae2a7fbbbd5" executionId="d53eec7f-107e-43c1-afc8-152e16cc2b0e" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="f35e0590-9a7f-474b-244f-1c28150f097e" executionId="e6c57482-0216-45f4-8da9-1f8a5b72f423" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="a5680416-f43b-1af5-8b7d-f0b42b8b19e8" executionId="0d5e15e1-f5ba-495e-8e1d-7b67011c0795" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="64641cbd-7287-7104-16aa-437e06a90aa4" executionId="07c883c3-02f9-4063-846a-59999316ac90" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="6d86edde-9cac-73cc-812c-f1519d6b5d7d" executionId="94c78198-76e9-48ac-ab98-afc3a984d8ad" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="68a1b711-fe9f-0556-343b-56478c553234" executionId="f02634ce-a981-4eb2-90dc-0dcc1c38cef9" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="ddb45af6-dc27-ab40-b8f9-65963c3b41e5" executionId="329661f2-a0b9-446c-89dd-5910dc74e0e0" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="adfc7d2f-6765-b54c-b00f-0108d3beaf77" executionId="f841b84b-08cd-48d2-bafb-cbdacae97529" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="9b618f6f-47e7-b059-43ba-c86eb6bc76a2" executionId="26c5785d-e490-46c3-835d-6824b2e9c266" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="4138a9f2-3aeb-9fe5-4038-ab4e830e263b" executionId="3b559724-3871-4056-aaa0-fe01488480b5" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="9f732ff1-a5b5-86a5-360f-6fe7397fb2e2" executionId="5e54d50c-5ab5-4dd6-a46b-0d14c82b0ac3" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="af101886-d07b-4128-c4e4-db510256f544" executionId="184ddab6-9095-4fbc-a047-b8a6e8f427d8" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="89e24856-c2e4-ec4b-a7ac-2349475d9487" executionId="6617f80f-cd6c-4859-ab70-093d58c2529b" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="541965e4-f975-0892-0f7c-4d8c57f3365e" executionId="bdcc0e9e-7121-4859-a71a-87a6e5cb1d06" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="984da1f7-4146-970c-78d6-23f9ed865fc7" executionId="8c8d4d0a-aaa5-4cff-b232-977e4e85115f" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="c7763142-554d-369f-8824-a0147c5b0579" executionId="a954e0da-85e2-402b-ade1-d94b91b6c066" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="b2a39224-66a8-0e11-5cf1-52c527d00522" executionId="b67b0610-e8d6-4dad-9678-282c8016168d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="6a55a1b9-e692-28be-d16e-5e9d2624fd5c" executionId="4934d596-d965-4eed-957b-ca3ceceb43a9" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="12ec4e4b-7aed-2d78-166e-cb42df939045" executionId="0d25631d-8c99-4f5d-a8b4-e548480a149b" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="a7584744-27e8-9981-122c-86e8ec611202" executionId="e3b682a6-e31e-4a51-b818-c5cebf5affe3" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="08b2bb49-04f1-9ace-9513-988d9ef3dc22" executionId="7cdb8c7f-a509-4209-bbd4-19c1a587a4d3" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="6be0f630-f997-fc06-c738-07bab6dd8174" executionId="2adc9f1c-8ab2-41d8-b4d1-e7ea19f6c9f3" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="a7bbc34e-5b69-5df6-8aa9-3e8ca0ffc20e" executionId="fba0fdc7-f483-4234-ad51-c0ff6d5f27ef" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="7dbf01e7-322f-757e-9b71-c1bc830beefd" executionId="9a1193da-9160-47cd-8d5a-a017e13bcca8" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="a7c7f8a0-97bd-50a7-52df-422d07d2e266" executionId="9ab6bb06-b1aa-480d-bb97-ddeed60fade6" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="f4149d2d-ab1f-e4a5-dce4-b887d5d4bffe" executionId="64f1d9a1-d7cc-4d9f-a68c-07e5313e1404" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="a8d0932e-7a11-e4cf-b65f-1f23143d9d7a" executionId="dacc5869-e6bb-455f-ab41-807f284eea4c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="932aa3ea-51cc-2775-3114-db8c105a7131" executionId="53fdd1aa-0520-4993-b765-12eb47dd54a0" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="614de08d-e381-bfea-6b7e-59f24d5533c5" executionId="fc8eb7e2-32d5-40bc-9eb9-0db357b7268d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="d48d59c9-59b8-3c04-65f6-3c5312a8fe96" executionId="8c73463f-b8e3-4d6d-acd9-c3026a63cbe6" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="d763a786-b570-489e-effd-6b51e3fceb54" executionId="59f33fdf-c8a8-4866-8e5b-d57219d0b1df" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="1c325bed-5976-5e3e-117e-9ea20f7adbf6" executionId="8a6ad39e-efc4-45b7-8723-7c0ce18a1748" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="70c7a8e9-39b9-1ae3-a038-eadbd348f253" executionId="94d75f70-2bb0-4324-a03c-c3aa0fe85a60" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="65" executed="65" passed="58" failed="7" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v3.1.4+50e68bbb8b (64-bit .NET 10.0.14)&#xD;
+[xUnit.net 00:00:00.07]   Discovering: SourcingTenderSystem.SecurityTests&#xD;
+[xUnit.net 00:00:00.12]   Discovered:  SourcingTenderSystem.SecurityTests&#xD;
+[xUnit.net 00:00:00.16]   Starting:    SourcingTenderSystem.SecurityTests&#xD;
+fail: Microsoft.AspNetCore.DataProtection.KeyManagement.KeyRingProvider[48]&#xD;
+      An error occurred while reading the key ring.&#xD;
+      System.UnauthorizedAccessException: Access to the path 'C:\Users\user\AppData\Local\ASP.NET\DataProtection-Keys' is denied.&#xD;
+         at System.IO.Enumeration.FileSystemEnumerator`1.CreateDirectoryHandle(String path, Boolean ignoreNotFound)&#xD;
+         at System.IO.Enumeration.FileSystemEnumerator`1.Init()&#xD;
+         at System.IO.Enumeration.FileSystemEnumerator`1..ctor(String directory, Boolean isNormalized, EnumerationOptions options, String expression)&#xD;
+         at System.IO.Enumeration.FileSystemEnumerable`1..ctor(String directory, FindTransform transform, EnumerationOptions options, Boolean isNormalized, String expression)&#xD;
+         at System.IO.Enumeration.FileSystemEnumerableFactory.FileSystemInfos(String directory, String expression, EnumerationOptions options, Boolean isNormalized)&#xD;
+         at System.IO.DirectoryInfo.InternalEnumerateInfos(String path, String searchPattern, SearchTarget searchTarget, EnumerationOptions enumerationOptions)&#xD;
+         at System.IO.DirectoryInfo.EnumerateFileSystemInfos(String searchPattern, SearchOption searchOption)&#xD;
+         at Microsoft.AspNetCore.DataProtection.Repositories.FileSystemXmlRepository.GetAllElementsCore()+MoveNext()&#xD;
+         at System.Collections.Generic.List`1..ctor(IEnumerable`1 collection)&#xD;
+         at System.Linq.Enumerable.ToList[TSource](IEnumerable`1 source)&#xD;
+         at Microsoft.AspNetCore.DataProtection.Repositories.FileSystemXmlRepository.GetAllElements()&#xD;
+         at Microsoft.AspNetCore.DataProtection.KeyManagement.XmlKeyManager.GetAllKeys()&#xD;
+         at Microsoft.AspNetCore.DataProtection.KeyManagement.KeyRingProvider.CreateCacheableKeyRingCore(DateTimeOffset now, IKey keyJustAdded)&#xD;
+         at Microsoft.AspNetCore.DataProtection.KeyManagement.KeyRingProvider.GetCurrentKeyRingCoreNew(DateTime utcNow, Boolean forceRefresh)&#xD;
+info: Microsoft.Hosting.Lifetime[14]&#xD;
+      Now listening on: http://127.0.0.1:64152&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Application started. Press Ctrl+C to shut down.&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Hosting environment: Development&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Content root path: C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem&#xD;
+[xUnit.net 00:00:06.26]       Microsoft.Data.SqlClient.SqlException : A network-related or instance-specific error occurred while establishing a connection to SQL Server. The server was not found or was not accessible. Verify that the instance name is correct and that SQL Server is configured to allow remote connections. (provider: SQL Network Interfaces, error: 50 - Local Database Runtime error occurred. Cannot create an automatic instance. See the Windows Application event log for error details.&#xD;
+[xUnit.net 00:00:06.26]       )&#xD;
+[xUnit.net 00:00:06.26]       ---- System.ComponentModel.Win32Exception : Unknown error (0x89c50118)&#xD;
+[xUnit.net 00:00:06.26]       Stack Trace:&#xD;
+[xUnit.net 00:00:06.26]            at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)&#xD;
+[xUnit.net 00:00:06.26]            at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)&#xD;
+[xUnit.net 00:00:06.26]            at Microsoft.Data.SqlClient.TdsParser.Connect(ServerInfo serverInfo, SqlInternalConnectionTds connHandler, TimeoutTimer timeout, SqlConnectionString connectionOptions, Boolean withFailover)&#xD;
+[xUnit.net 00:00:06.26]            at Microsoft.Data.SqlClient.SqlInternalConnectionTds.AttemptOneLogin(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, TimeoutTimer timeout, Boolean withFailover)&#xD;
+[xUnit.net 00:00:06.26]            at Microsoft.Data.SqlClient.SqlInternalConnectionTds.LoginNoFailover(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString connectionOptions, SqlCredential credential, TimeoutTimer timeout)&#xD;
+[xUnit.net 00:00:06.26]            at Microsoft.Data.SqlClient.SqlInternalConnectionTds.OpenLoginEnlist(TimeoutTimer timeout, SqlConnectionString connectionOptions, SqlCredential credential, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance)&#xD;
+[xUnit.net 00:00:06.26]            at Microsoft.Data.SqlClient.SqlInternalConnectionTds..ctor(DbConnectionPoolIdentity identity, SqlConnectionString connectionOptions, SqlCredential credential, Object providerInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString userConnectionOptions, SessionData reconnectSessionData, Boolean applyTransientFaultHandling, String accessToken, IDbConnectionPool pool, Func`3 accessTokenCallback)&#xD;
+[xUnit.net 00:00:06.26]            at Microsoft.Data.SqlClient.SqlConnectionFactory.CreateConnection(DbConnectionOptions options, DbConnectionPoolKey poolKey, DbConnectionPoolGroupProviderInfo poolGroupProviderInfo, IDbConnectionPool pool, DbConnection owningConnection, DbConnectionOptions userOptions)&#xD;
+[xUnit.net 00:00:06.26]            at Microsoft.Data.ProviderBase.DbConnectionFactory.CreateNonPooledConnection(DbConnection owningConnection, DbConnectionPoolGroup poolGroup, DbConnectionOptions userOptions)&#xD;
+[xUnit.net 00:00:06.26]            at Microsoft.Data.ProviderBase.DbConnectionFactory.&lt;&gt;c__DisplayClass28_0.&lt;CreateReplaceConnectionContinuation&gt;b__0(Task`1 _)&#xD;
+[xUnit.net 00:00:06.26]            at System.Threading.Tasks.ContinuationResultTaskFromResultTask`2.InnerInvoke()&#xD;
+[xUnit.net 00:00:06.26]            at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)&#xD;
+[xUnit.net 00:00:06.26]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:06.26]            at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)&#xD;
+[xUnit.net 00:00:06.26]            at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task&amp; currentTaskSlot, Thread threadPoolThread)&#xD;
+[xUnit.net 00:00:06.26]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:06.26]            at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:06.26]            at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:06.26]            at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenAsync(CancellationToken cancellationToken, Boolean errorsExpected)&#xD;
+[xUnit.net 00:00:06.26]            at Microsoft.EntityFrameworkCore.Migrations.Internal.MigrationCommandExecutor.ExecuteAsync(IReadOnlyList`1 migrationCommands, IRelationalConnection connection, MigrationExecutionState executionState, Boolean beginTransaction, Boolean commitTransaction, Nullable`1 isolationLevel, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:06.26]            at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:06.26]            at Microsoft.EntityFrameworkCore.Migrations.Internal.MigrationCommandExecutor.ExecuteNonQueryAsync(IReadOnlyList`1 migrationCommands, IRelationalConnection connection, MigrationExecutionState executionState, Boolean commitTransaction, Nullable`1 isolationLevel, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:06.26]            at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerDatabaseCreator.CreateAsync(CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:06.26]            at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerDatabaseCreator.CreateAsync(CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:06.26]         C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\BiddingRoundTests.cs(69,0): at BiddingRoundTests.SqlServer_upgrade_and_HTTP_bidding_lifecycle()&#xD;
+[xUnit.net 00:00:06.26]         C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\BiddingRoundTests.cs(268,0): at BiddingRoundTests.SqlServer_upgrade_and_HTTP_bidding_lifecycle()&#xD;
+[xUnit.net 00:00:06.26]         C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\BiddingRoundTests.cs(268,0): at BiddingRoundTests.SqlServer_upgrade_and_HTTP_bidding_lifecycle()&#xD;
+[xUnit.net 00:00:06.26]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:06.26]         ----- Inner Stack Trace -----&#xD;
+[xUnit.net 00:00:06.26]         &#xD;
+[xUnit.net 00:00:10.81]       Microsoft.Data.SqlClient.SqlException : A network-related or instance-specific error occurred while establishing a connection to SQL Server. The server was not found or was not accessible. Verify that the instance name is correct and that SQL Server is configured to allow remote connections. (provider: SQL Network Interfaces, error: 50 - Local Database Runtime error occurred. Cannot create an automatic instance. See the Windows Application event log for error details.&#xD;
+[xUnit.net 00:00:10.81]       )&#xD;
+[xUnit.net 00:00:10.81]       ---- System.ComponentModel.Win32Exception : Unknown error (0x89c50118)&#xD;
+[xUnit.net 00:00:10.81]       Stack Trace:&#xD;
+[xUnit.net 00:00:10.81]            at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)&#xD;
+[xUnit.net 00:00:10.81]            at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)&#xD;
+[xUnit.net 00:00:10.81]            at Microsoft.Data.SqlClient.TdsParser.Connect(ServerInfo serverInfo, SqlInternalConnectionTds connHandler, TimeoutTimer timeout, SqlConnectionString connectionOptions, Boolean withFailover)&#xD;
+[xUnit.net 00:00:10.81]            at Microsoft.Data.SqlClient.SqlInternalConnectionTds.AttemptOneLogin(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, TimeoutTimer timeout, Boolean withFailover)&#xD;
+[xUnit.net 00:00:10.81]            at Microsoft.Data.SqlClient.SqlInternalConnectionTds.LoginNoFailover(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString connectionOptions, SqlCredential credential, TimeoutTimer timeout)&#xD;
+[xUnit.net 00:00:10.81]            at Microsoft.Data.SqlClient.SqlInternalConnectionTds.OpenLoginEnlist(TimeoutTimer timeout, SqlConnectionString connectionOptions, SqlCredential credential, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance)&#xD;
+[xUnit.net 00:00:10.81]            at Microsoft.Data.SqlClient.SqlInternalConnectionTds..ctor(DbConnectionPoolIdentity identity, SqlConnectionString connectionOptions, SqlCredential credential, Object providerInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString userConnectionOptions, SessionData reconnectSessionData, Boolean applyTransientFaultHandling, String accessToken, IDbConnectionPool pool, Func`3 accessTokenCallback)&#xD;
+[xUnit.net 00:00:10.81]            at Microsoft.Data.SqlClient.SqlConnectionFactory.CreateConnection(DbConnectionOptions options, DbConnectionPoolKey poolKey, DbConnectionPoolGroupProviderInfo poolGroupProviderInfo, IDbConnectionPool pool, DbConnection owningConnection, DbConnectionOptions userOptions)&#xD;
+[xUnit.net 00:00:10.81]            at Microsoft.Data.ProviderBase.DbConnectionFactory.CreateNonPooledConnection(DbConnection owningConnection, DbConnectionPoolGroup poolGroup, DbConnectionOptions userOptions)&#xD;
+[xUnit.net 00:00:10.81]            at Microsoft.Data.ProviderBase.DbConnectionFactory.&lt;&gt;c__DisplayClass28_0.&lt;CreateReplaceConnectionContinuation&gt;b__0(Task`1 _)&#xD;
+[xUnit.net 00:00:10.81]            at System.Threading.Tasks.ContinuationResultTaskFromResultTask`2.InnerInvoke()&#xD;
+[xUnit.net 00:00:10.81]            at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)&#xD;
+[xUnit.net 00:00:10.81]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:10.81]            at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)&#xD;
+[xUnit.net 00:00:10.81]            at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task&amp; currentTaskSlot, Thread threadPoolThread)&#xD;
+[xUnit.net 00:00:10.81]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:10.81]            at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:10.81]            at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:10.81]            at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenAsync(CancellationToken cancellationToken, Boolean errorsExpected)&#xD;
+[xUnit.net 00:00:10.81]            at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerDatabaseCreator.&lt;&gt;c__DisplayClass20_0.&lt;&lt;ExistsAsync&gt;b__0&gt;d.MoveNext()&#xD;
+[xUnit.net 00:00:10.81]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:10.81]            at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerDatabaseCreator.&lt;&gt;c__DisplayClass20_0.&lt;&lt;ExistsAsync&gt;b__0&gt;d.MoveNext()&#xD;
+[xUnit.net 00:00:10.81]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:10.81]            at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerDatabaseCreator.&lt;&gt;c__DisplayClass20_0.&lt;&lt;ExistsAsync&gt;b__0&gt;d.MoveNext()&#xD;
+[xUnit.net 00:00:10.81]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:10.81]            at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:10.81]            at Microsoft.EntityFrameworkCore.Storage.RelationalDatabaseCreator.EnsureDeletedAsync(CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:10.82]         C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\FaceLoginHttpTests.cs(141,0): at FaceLoginHttpTests.Face_enrollment_and_demo_login_create_real_identity_sessions_only_on_match()&#xD;
+[xUnit.net 00:00:10.82]         C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\FaceLoginHttpTests.cs(142,0): at FaceLoginHttpTests.Face_enrollment_and_demo_login_create_real_identity_sessions_only_on_match()&#xD;
+[xUnit.net 00:00:10.82]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:10.82]         ----- Inner Stack Trace -----&#xD;
+[xUnit.net 00:00:10.82]         &#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Application is shutting down...&#xD;
+[xUnit.net 00:00:15.35]       Microsoft.Data.SqlClient.SqlException : A network-related or instance-specific error occurred while establishing a connection to SQL Server. The server was not found or was not accessible. Verify that the instance name is correct and that SQL Server is configured to allow remote connections. (provider: SQL Network Interfaces, error: 50 - Local Database Runtime error occurred. Cannot create an automatic instance. See the Windows Application event log for error details.&#xD;
+[xUnit.net 00:00:15.35]       )&#xD;
+[xUnit.net 00:00:15.35]       ---- System.ComponentModel.Win32Exception : Unknown error (0x89c50118)&#xD;
+[xUnit.net 00:00:15.35]       Stack Trace:&#xD;
+[xUnit.net 00:00:15.35]            at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)&#xD;
+[xUnit.net 00:00:15.35]            at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)&#xD;
+[xUnit.net 00:00:15.35]            at Microsoft.Data.SqlClient.TdsParser.Connect(ServerInfo serverInfo, SqlInternalConnectionTds connHandler, TimeoutTimer timeout, SqlConnectionString connectionOptions, Boolean withFailover)&#xD;
+[xUnit.net 00:00:15.35]            at Microsoft.Data.SqlClient.SqlInternalConnectionTds.AttemptOneLogin(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, TimeoutTimer timeout, Boolean withFailover)&#xD;
+[xUnit.net 00:00:15.35]            at Microsoft.Data.SqlClient.SqlInternalConnectionTds.LoginNoFailover(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString connectionOptions, SqlCredential credential, TimeoutTimer timeout)&#xD;
+[xUnit.net 00:00:15.35]            at Microsoft.Data.SqlClient.SqlInternalConnectionTds.OpenLoginEnlist(TimeoutTimer timeout, SqlConnectionString connectionOptions, SqlCredential credential, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance)&#xD;
+[xUnit.net 00:00:15.35]            at Microsoft.Data.SqlClient.SqlInternalConnectionTds..ctor(DbConnectionPoolIdentity identity, SqlConnectionString connectionOptions, SqlCredential credential, Object providerInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString userConnectionOptions, SessionData reconnectSessionData, Boolean applyTransientFaultHandling, String accessToken, IDbConnectionPool pool, Func`3 accessTokenCallback)&#xD;
+[xUnit.net 00:00:15.35]            at Microsoft.Data.SqlClient.SqlConnectionFactory.CreateConnection(DbConnectionOptions options, DbConnectionPoolKey poolKey, DbConnectionPoolGroupProviderInfo poolGroupProviderInfo, IDbConnectionPool pool, DbConnection owningConnection, DbConnectionOptions userOptions)&#xD;
+[xUnit.net 00:00:15.35]            at Microsoft.Data.ProviderBase.DbConnectionFactory.CreateNonPooledConnection(DbConnection owningConnection, DbConnectionPoolGroup poolGroup, DbConnectionOptions userOptions)&#xD;
+[xUnit.net 00:00:15.35]            at Microsoft.Data.ProviderBase.DbConnectionFactory.&lt;&gt;c__DisplayClass28_0.&lt;CreateReplaceConnectionContinuation&gt;b__0(Task`1 _)&#xD;
+[xUnit.net 00:00:15.35]            at System.Threading.Tasks.ContinuationResultTaskFromResultTask`2.InnerInvoke()&#xD;
+[xUnit.net 00:00:15.35]            at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)&#xD;
+[xUnit.net 00:00:15.35]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:15.35]            at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)&#xD;
+[xUnit.net 00:00:15.35]            at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task&amp; currentTaskSlot, Thread threadPoolThread)&#xD;
+[xUnit.net 00:00:15.35]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:15.35]            at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:15.35]            at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:15.35]            at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenAsync(CancellationToken cancellationToken, Boolean errorsExpected)&#xD;
+[xUnit.net 00:00:15.35]            at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerDatabaseCreator.&lt;&gt;c__DisplayClass20_0.&lt;&lt;ExistsAsync&gt;b__0&gt;d.MoveNext()&#xD;
+[xUnit.net 00:00:15.35]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:15.35]            at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerDatabaseCreator.&lt;&gt;c__DisplayClass20_0.&lt;&lt;ExistsAsync&gt;b__0&gt;d.MoveNext()&#xD;
+[xUnit.net 00:00:15.35]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:15.35]            at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerDatabaseCreator.&lt;&gt;c__DisplayClass20_0.&lt;&lt;ExistsAsync&gt;b__0&gt;d.MoveNext()&#xD;
+[xUnit.net 00:00:15.35]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:15.35]            at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:15.35]            at Microsoft.EntityFrameworkCore.Storage.RelationalDatabaseCreator.EnsureDeletedAsync(CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:15.35]         C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\BrowserReleaseTests.cs(162,0): at BrowserReleaseTests.Real_browser_identity_and_workspace()&#xD;
+[xUnit.net 00:00:15.35]         C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\BrowserReleaseTests.cs(162,0): at BrowserReleaseTests.Real_browser_identity_and_workspace()&#xD;
+[xUnit.net 00:00:15.35]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:15.35]         ----- Inner Stack Trace -----&#xD;
+[xUnit.net 00:00:15.35]         &#xD;
+[xUnit.net 00:00:15.53]       Microsoft.Data.SqlClient.SqlException : A network-related or instance-specific error occurred while establishing a connection to SQL Server. The server was not found or was not accessible. Verify that the instance name is correct and that SQL Server is configured to allow remote connections. (provider: SQL Network Interfaces, error: 50 - Local Database Runtime error occurred. Cannot create an automatic instance. See the Windows Application event log for error details.&#xD;
+[xUnit.net 00:00:15.53]       )&#xD;
+[xUnit.net 00:00:15.53]       ---- System.ComponentModel.Win32Exception : Unknown error (0x89c50118)&#xD;
+[xUnit.net 00:00:15.53]       Stack Trace:&#xD;
+[xUnit.net 00:00:15.53]            at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)&#xD;
+[xUnit.net 00:00:15.53]            at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)&#xD;
+[xUnit.net 00:00:15.53]            at Microsoft.Data.SqlClient.TdsParser.Connect(ServerInfo serverInfo, SqlInternalConnectionTds connHandler, TimeoutTimer timeout, SqlConnectionString connectionOptions, Boolean withFailover)&#xD;
+[xUnit.net 00:00:15.53]            at Microsoft.Data.SqlClient.SqlInternalConnectionTds.AttemptOneLogin(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, TimeoutTimer timeout, Boolean withFailover)&#xD;
+[xUnit.net 00:00:15.53]            at Microsoft.Data.SqlClient.SqlInternalConnectionTds.LoginNoFailover(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString connectionOptions, SqlCredential credential, TimeoutTimer timeout)&#xD;
+[xUnit.net 00:00:15.53]            at Microsoft.Data.SqlClient.SqlInternalConnectionTds.OpenLoginEnlist(TimeoutTimer timeout, SqlConnectionString connectionOptions, SqlCredential credential, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance)&#xD;
+[xUnit.net 00:00:15.53]            at Microsoft.Data.SqlClient.SqlInternalConnectionTds..ctor(DbConnectionPoolIdentity identity, SqlConnectionString connectionOptions, SqlCredential credential, Object providerInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString userConnectionOptions, SessionData reconnectSessionData, Boolean applyTransientFaultHandling, String accessToken, IDbConnectionPool pool, Func`3 accessTokenCallback)&#xD;
+[xUnit.net 00:00:15.53]            at Microsoft.Data.SqlClient.SqlConnectionFactory.CreateConnection(DbConnectionOptions options, DbConnectionPoolKey poolKey, DbConnectionPoolGroupProviderInfo poolGroupProviderInfo, IDbConnectionPool pool, DbConnection owningConnection, DbConnectionOptions userOptions)&#xD;
+[xUnit.net 00:00:15.53]            at Microsoft.Data.ProviderBase.DbConnectionFactory.CreateNonPooledConnection(DbConnection owningConnection, DbConnectionPoolGroup poolGroup, DbConnectionOptions userOptions)&#xD;
+[xUnit.net 00:00:15.53]            at Microsoft.Data.ProviderBase.DbConnectionFactory.&lt;&gt;c__DisplayClass28_0.&lt;CreateReplaceConnectionContinuation&gt;b__0(Task`1 _)&#xD;
+[xUnit.net 00:00:15.53]            at System.Threading.Tasks.ContinuationResultTaskFromResultTask`2.InnerInvoke()&#xD;
+[xUnit.net 00:00:15.53]            at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)&#xD;
+[xUnit.net 00:00:15.53]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:15.53]            at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)&#xD;
+[xUnit.net 00:00:15.53]            at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task&amp; currentTaskSlot, Thread threadPoolThread)&#xD;
+[xUnit.net 00:00:15.53]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:15.53]            at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:15.53]            at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:15.53]            at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenAsync(CancellationToken cancellationToken, Boolean errorsExpected)&#xD;
+[xUnit.net 00:00:15.53]            at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerDatabaseCreator.&lt;&gt;c__DisplayClass20_0.&lt;&lt;ExistsAsync&gt;b__0&gt;d.MoveNext()&#xD;
+[xUnit.net 00:00:15.53]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:15.53]            at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerDatabaseCreator.&lt;&gt;c__DisplayClass20_0.&lt;&lt;ExistsAsync&gt;b__0&gt;d.MoveNext()&#xD;
+[xUnit.net 00:00:15.53]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:15.53]            at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerDatabaseCreator.&lt;&gt;c__DisplayClass20_0.&lt;&lt;ExistsAsync&gt;b__0&gt;d.MoveNext()&#xD;
+[xUnit.net 00:00:15.53]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:15.53]            at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:15.53]            at Microsoft.EntityFrameworkCore.Storage.RelationalDatabaseCreator.EnsureDeletedAsync(CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:15.53]         C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\EvaluationAwardTests.cs(336,0): at BiddingRoundTests.Evaluation_award_and_cancellation_http(String ending)&#xD;
+[xUnit.net 00:00:15.53]         C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\EvaluationAwardTests.cs(336,0): at BiddingRoundTests.Evaluation_award_and_cancellation_http(String ending)&#xD;
+[xUnit.net 00:00:15.53]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:15.53]         ----- Inner Stack Trace -----&#xD;
+[xUnit.net 00:00:15.53]         &#xD;
+[xUnit.net 00:00:24.73]       Microsoft.Data.SqlClient.SqlException : A network-related or instance-specific error occurred while establishing a connection to SQL Server. The server was not found or was not accessible. Verify that the instance name is correct and that SQL Server is configured to allow remote connections. (provider: SQL Network Interfaces, error: 50 - Local Database Runtime error occurred. Cannot create an automatic instance. See the Windows Application event log for error details.&#xD;
+[xUnit.net 00:00:24.73]       )&#xD;
+[xUnit.net 00:00:24.73]       ---- System.ComponentModel.Win32Exception : Unknown error (0x89c50118)&#xD;
+[xUnit.net 00:00:24.73]       Stack Trace:&#xD;
+[xUnit.net 00:00:24.73]            at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)&#xD;
+[xUnit.net 00:00:24.73]            at Microsoft.Data.SqlClient.TdsParser.Connect(ServerInfo serverInfo, SqlInternalConnectionTds connHandler, TimeoutTimer timeout, SqlConnectionString connectionOptions, Boolean withFailover)&#xD;
+[xUnit.net 00:00:24.73]            at Microsoft.Data.SqlClient.SqlInternalConnectionTds.AttemptOneLogin(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, TimeoutTimer timeout, Boolean withFailover)&#xD;
+[xUnit.net 00:00:24.73]            at Microsoft.Data.SqlClient.SqlInternalConnectionTds.LoginNoFailover(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString connectionOptions, SqlCredential credential, TimeoutTimer timeout)&#xD;
+[xUnit.net 00:00:24.73]            at Microsoft.Data.SqlClient.SqlInternalConnectionTds.OpenLoginEnlist(TimeoutTimer timeout, SqlConnectionString connectionOptions, SqlCredential credential, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance)&#xD;
+[xUnit.net 00:00:24.73]            at Microsoft.Data.SqlClient.SqlInternalConnectionTds..ctor(DbConnectionPoolIdentity identity, SqlConnectionString connectionOptions, SqlCredential credential, Object providerInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString userConnectionOptions, SessionData reconnectSessionData, Boolean applyTransientFaultHandling, String accessToken, IDbConnectionPool pool, Func`3 accessTokenCallback)&#xD;
+[xUnit.net 00:00:24.73]            at Microsoft.Data.SqlClient.SqlConnectionFactory.CreateConnection(DbConnectionOptions options, DbConnectionPoolKey poolKey, DbConnectionPoolGroupProviderInfo poolGroupProviderInfo, IDbConnectionPool pool, DbConnection owningConnection, DbConnectionOptions userOptions)&#xD;
+[xUnit.net 00:00:24.73]            at Microsoft.Data.ProviderBase.DbConnectionFactory.CreateNonPooledConnection(DbConnection owningConnection, DbConnectionPoolGroup poolGroup, DbConnectionOptions userOptions)&#xD;
+[xUnit.net 00:00:24.73]            at Microsoft.Data.ProviderBase.DbConnectionFactory.&lt;&gt;c__DisplayClass28_0.&lt;CreateReplaceConnectionContinuation&gt;b__0(Task`1 _)&#xD;
+[xUnit.net 00:00:24.73]            at System.Threading.Tasks.ContinuationResultTaskFromResultTask`2.InnerInvoke()&#xD;
+[xUnit.net 00:00:24.73]            at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)&#xD;
+[xUnit.net 00:00:24.73]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:24.73]            at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)&#xD;
+[xUnit.net 00:00:24.73]            at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task&amp; currentTaskSlot, Thread threadPoolThread)&#xD;
+[xUnit.net 00:00:24.73]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:24.73]            at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:24.73]            at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:24.73]            at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenAsync(CancellationToken cancellationToken, Boolean errorsExpected)&#xD;
+[xUnit.net 00:00:24.73]            at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerDatabaseCreator.&lt;&gt;c__DisplayClass20_0.&lt;&lt;ExistsAsync&gt;b__0&gt;d.MoveNext()&#xD;
+[xUnit.net 00:00:24.73]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:24.73]            at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerDatabaseCreator.&lt;&gt;c__DisplayClass20_0.&lt;&lt;ExistsAsync&gt;b__0&gt;d.MoveNext()&#xD;
+[xUnit.net 00:00:24.73]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:24.73]            at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerDatabaseCreator.&lt;&gt;c__DisplayClass20_0.&lt;&lt;ExistsAsync&gt;b__0&gt;d.MoveNext()&#xD;
+[xUnit.net 00:00:24.73]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:24.73]            at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:24.73]            at Microsoft.EntityFrameworkCore.Storage.RelationalDatabaseCreator.EnsureDeletedAsync(CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:24.73]         C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\EvaluationAwardTests.cs(336,0): at BiddingRoundTests.Evaluation_award_and_cancellation_http(String ending)&#xD;
+[xUnit.net 00:00:24.73]         C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\EvaluationAwardTests.cs(336,0): at BiddingRoundTests.Evaluation_award_and_cancellation_http(String ending)&#xD;
+[xUnit.net 00:00:24.73]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:24.73]         ----- Inner Stack Trace -----&#xD;
+[xUnit.net 00:00:24.73]         &#xD;
+[xUnit.net 00:00:33.91]       Microsoft.Data.SqlClient.SqlException : A network-related or instance-specific error occurred while establishing a connection to SQL Server. The server was not found or was not accessible. Verify that the instance name is correct and that SQL Server is configured to allow remote connections. (provider: SQL Network Interfaces, error: 50 - Local Database Runtime error occurred. Cannot create an automatic instance. See the Windows Application event log for error details.&#xD;
+[xUnit.net 00:00:33.91]       )&#xD;
+[xUnit.net 00:00:33.91]       ---- System.ComponentModel.Win32Exception : Unknown error (0x89c50118)&#xD;
+[xUnit.net 00:00:33.91]       Stack Trace:&#xD;
+[xUnit.net 00:00:33.91]            at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)&#xD;
+[xUnit.net 00:00:33.91]            at Microsoft.Data.SqlClient.TdsParser.Connect(ServerInfo serverInfo, SqlInternalConnectionTds connHandler, TimeoutTimer timeout, SqlConnectionString connectionOptions, Boolean withFailover)&#xD;
+[xUnit.net 00:00:33.91]            at Microsoft.Data.SqlClient.SqlInternalConnectionTds.AttemptOneLogin(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, TimeoutTimer timeout, Boolean withFailover)&#xD;
+[xUnit.net 00:00:33.91]            at Microsoft.Data.SqlClient.SqlInternalConnectionTds.LoginNoFailover(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString connectionOptions, SqlCredential credential, TimeoutTimer timeout)&#xD;
+[xUnit.net 00:00:33.91]            at Microsoft.Data.SqlClient.SqlInternalConnectionTds.OpenLoginEnlist(TimeoutTimer timeout, SqlConnectionString connectionOptions, SqlCredential credential, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance)&#xD;
+[xUnit.net 00:00:33.91]            at Microsoft.Data.SqlClient.SqlInternalConnectionTds..ctor(DbConnectionPoolIdentity identity, SqlConnectionString connectionOptions, SqlCredential credential, Object providerInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString userConnectionOptions, SessionData reconnectSessionData, Boolean applyTransientFaultHandling, String accessToken, IDbConnectionPool pool, Func`3 accessTokenCallback)&#xD;
+[xUnit.net 00:00:33.91]            at Microsoft.Data.SqlClient.SqlConnectionFactory.CreateConnection(DbConnectionOptions options, DbConnectionPoolKey poolKey, DbConnectionPoolGroupProviderInfo poolGroupProviderInfo, IDbConnectionPool pool, DbConnection owningConnection, DbConnectionOptions userOptions)&#xD;
+[xUnit.net 00:00:33.91]            at Microsoft.Data.ProviderBase.DbConnectionFactory.CreateNonPooledConnection(DbConnection owningConnection, DbConnectionPoolGroup poolGroup, DbConnectionOptions userOptions)&#xD;
+[xUnit.net 00:00:33.91]            at Microsoft.Data.ProviderBase.DbConnectionFactory.&lt;&gt;c__DisplayClass28_0.&lt;CreateReplaceConnectionContinuation&gt;b__0(Task`1 _)&#xD;
+[xUnit.net 00:00:33.91]            at System.Threading.Tasks.ContinuationResultTaskFromResultTask`2.InnerInvoke()&#xD;
+[xUnit.net 00:00:33.91]            at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)&#xD;
+[xUnit.net 00:00:33.91]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:33.91]            at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)&#xD;
+[xUnit.net 00:00:33.91]            at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task&amp; currentTaskSlot, Thread threadPoolThread)&#xD;
+[xUnit.net 00:00:33.91]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:33.91]            at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:33.91]            at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:33.91]            at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenAsync(CancellationToken cancellationToken, Boolean errorsExpected)&#xD;
+[xUnit.net 00:00:33.91]            at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerDatabaseCreator.&lt;&gt;c__DisplayClass20_0.&lt;&lt;ExistsAsync&gt;b__0&gt;d.MoveNext()&#xD;
+[xUnit.net 00:00:33.91]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:33.91]            at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerDatabaseCreator.&lt;&gt;c__DisplayClass20_0.&lt;&lt;ExistsAsync&gt;b__0&gt;d.MoveNext()&#xD;
+[xUnit.net 00:00:33.91]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:33.91]            at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerDatabaseCreator.&lt;&gt;c__DisplayClass20_0.&lt;&lt;ExistsAsync&gt;b__0&gt;d.MoveNext()&#xD;
+[xUnit.net 00:00:33.91]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:33.91]            at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:33.91]            at Microsoft.EntityFrameworkCore.Storage.RelationalDatabaseCreator.EnsureDeletedAsync(CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:33.91]         C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\EvaluationAwardTests.cs(336,0): at BiddingRoundTests.Evaluation_award_and_cancellation_http(String ending)&#xD;
+[xUnit.net 00:00:33.91]         C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\EvaluationAwardTests.cs(336,0): at BiddingRoundTests.Evaluation_award_and_cancellation_http(String ending)&#xD;
+[xUnit.net 00:00:33.91]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:33.91]         ----- Inner Stack Trace -----&#xD;
+[xUnit.net 00:00:33.91]         &#xD;
+[xUnit.net 00:00:43.14]       Microsoft.Data.SqlClient.SqlException : A network-related or instance-specific error occurred while establishing a connection to SQL Server. The server was not found or was not accessible. Verify that the instance name is correct and that SQL Server is configured to allow remote connections. (provider: SQL Network Interfaces, error: 50 - Local Database Runtime error occurred. Cannot create an automatic instance. See the Windows Application event log for error details.&#xD;
+[xUnit.net 00:00:43.14]       )&#xD;
+[xUnit.net 00:00:43.14]       ---- System.ComponentModel.Win32Exception : Unknown error (0x89c50118)&#xD;
+[xUnit.net 00:00:43.14]       Stack Trace:&#xD;
+[xUnit.net 00:00:43.14]            at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)&#xD;
+[xUnit.net 00:00:43.14]            at Microsoft.Data.SqlClient.TdsParser.Connect(ServerInfo serverInfo, SqlInternalConnectionTds connHandler, TimeoutTimer timeout, SqlConnectionString connectionOptions, Boolean withFailover)&#xD;
+[xUnit.net 00:00:43.14]            at Microsoft.Data.SqlClient.SqlInternalConnectionTds.AttemptOneLogin(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, TimeoutTimer timeout, Boolean withFailover)&#xD;
+[xUnit.net 00:00:43.14]            at Microsoft.Data.SqlClient.SqlInternalConnectionTds.LoginNoFailover(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString connectionOptions, SqlCredential credential, TimeoutTimer timeout)&#xD;
+[xUnit.net 00:00:43.14]            at Microsoft.Data.SqlClient.SqlInternalConnectionTds.OpenLoginEnlist(TimeoutTimer timeout, SqlConnectionString connectionOptions, SqlCredential credential, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance)&#xD;
+[xUnit.net 00:00:43.14]            at Microsoft.Data.SqlClient.SqlInternalConnectionTds..ctor(DbConnectionPoolIdentity identity, SqlConnectionString connectionOptions, SqlCredential credential, Object providerInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString userConnectionOptions, SessionData reconnectSessionData, Boolean applyTransientFaultHandling, String accessToken, IDbConnectionPool pool, Func`3 accessTokenCallback)&#xD;
+[xUnit.net 00:00:43.14]            at Microsoft.Data.SqlClient.SqlConnectionFactory.CreateConnection(DbConnectionOptions options, DbConnectionPoolKey poolKey, DbConnectionPoolGroupProviderInfo poolGroupProviderInfo, IDbConnectionPool pool, DbConnection owningConnection, DbConnectionOptions userOptions)&#xD;
+[xUnit.net 00:00:43.14]            at Microsoft.Data.ProviderBase.DbConnectionFactory.CreateNonPooledConnection(DbConnection owningConnection, DbConnectionPoolGroup poolGroup, DbConnectionOptions userOptions)&#xD;
+[xUnit.net 00:00:43.14]            at Microsoft.Data.ProviderBase.DbConnectionFactory.&lt;&gt;c__DisplayClass28_0.&lt;CreateReplaceConnectionContinuation&gt;b__0(Task`1 _)&#xD;
+[xUnit.net 00:00:43.14]            at System.Threading.Tasks.ContinuationResultTaskFromResultTask`2.InnerInvoke()&#xD;
+[xUnit.net 00:00:43.14]            at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)&#xD;
+[xUnit.net 00:00:43.14]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:43.14]            at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)&#xD;
+[xUnit.net 00:00:43.14]            at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task&amp; currentTaskSlot, Thread threadPoolThread)&#xD;
+[xUnit.net 00:00:43.14]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:43.14]            at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:43.14]            at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenInternalAsync(Boolean errorsExpected, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:43.14]            at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.OpenAsync(CancellationToken cancellationToken, Boolean errorsExpected)&#xD;
+[xUnit.net 00:00:43.14]            at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerDatabaseCreator.&lt;&gt;c__DisplayClass20_0.&lt;&lt;ExistsAsync&gt;b__0&gt;d.MoveNext()&#xD;
+[xUnit.net 00:00:43.14]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:43.14]            at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerDatabaseCreator.&lt;&gt;c__DisplayClass20_0.&lt;&lt;ExistsAsync&gt;b__0&gt;d.MoveNext()&#xD;
+[xUnit.net 00:00:43.14]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:43.14]            at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerDatabaseCreator.&lt;&gt;c__DisplayClass20_0.&lt;&lt;ExistsAsync&gt;b__0&gt;d.MoveNext()&#xD;
+[xUnit.net 00:00:43.14]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:43.14]            at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:43.14]            at Microsoft.EntityFrameworkCore.Storage.RelationalDatabaseCreator.EnsureDeletedAsync(CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:43.14]         C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\EvaluationAwardTests.cs(336,0): at BiddingRoundTests.Evaluation_award_and_cancellation_http(String ending)&#xD;
+[xUnit.net 00:00:43.14]         C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\EvaluationAwardTests.cs(336,0): at BiddingRoundTests.Evaluation_award_and_cancellation_http(String ending)&#xD;
+[xUnit.net 00:00:43.14]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:43.14]         ----- Inner Stack Trace -----&#xD;
+[xUnit.net 00:00:43.14]         &#xD;
+[xUnit.net 00:00:43.16]   Finished:    SourcingTenderSystem.SecurityTests&#xD;
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="DESKTOP-9BCNB94" outcome="Error" timestamp="2026-11-15T23:55:38.7760045+03:00">
+        <Text>[xUnit.net 00:00:06.25]     BiddingRoundTests.SqlServer_upgrade_and_HTTP_bidding_lifecycle [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="DESKTOP-9BCNB94" outcome="Error" timestamp="2026-11-15T23:55:43.3354128+03:00">
+        <Text>[xUnit.net 00:00:10.81]     FaceLoginHttpTests.Face_enrollment_and_demo_login_create_real_identity_sessions_only_on_match [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="DESKTOP-9BCNB94" outcome="Error" timestamp="2026-11-15T23:55:47.8737654+03:00">
+        <Text>[xUnit.net 00:00:15.35]     BrowserReleaseTests.Real_browser_identity_and_workspace [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="DESKTOP-9BCNB94" outcome="Error" timestamp="2026-11-15T23:55:48.0557376+03:00">
+        <Text>[xUnit.net 00:00:15.53]     BiddingRoundTests.Evaluation_award_and_cancellation_http(ending: "reject") [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="DESKTOP-9BCNB94" outcome="Error" timestamp="2026-11-15T23:55:57.2498519+03:00">
+        <Text>[xUnit.net 00:00:24.73]     BiddingRoundTests.Evaluation_award_and_cancellation_http(ending: "award") [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="DESKTOP-9BCNB94" outcome="Error" timestamp="2026-11-15T23:56:06.4332498+03:00">
+        <Text>[xUnit.net 00:00:33.91]     BiddingRoundTests.Evaluation_award_and_cancellation_http(ending: "notification-failure") [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="DESKTOP-9BCNB94" outcome="Error" timestamp="2026-11-15T23:56:15.6639474+03:00">
+        <Text>[xUnit.net 00:00:43.14]     BiddingRoundTests.Evaluation_award_and_cancellation_http(ending: "race") [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>

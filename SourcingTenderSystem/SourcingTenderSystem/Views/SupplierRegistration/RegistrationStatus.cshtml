@@ -1,14 +1,61 @@
 @model SupplierProfile
-@{ ViewData["Title"] = "Registration status"; }
-<h1>@ViewData["Title"]</h1>
-<dl class="row">
-    <dt class="col-sm-4">Company</dt><dd class="col-sm-8">@Model.CompanyName</dd>
-    <dt class="col-sm-4">Status</dt><dd class="col-sm-8">@Model.Status</dd>
-    <dt class="col-sm-4">Decision reason</dt><dd class="col-sm-8">@(Model.StatusReason ?? "—")</dd>
-</dl>
-@if (Model.Status == SupplierStatus.Pending)
-{
-    <p>@(Model.SupplierDocuments.Count == 0 ? "Upload your supporting documents to make your application eligible for approval." : "Your application is awaiting review.")</p>
-    <p><a class="btn btn-primary" asp-action="UploadDocuments">Upload a document</a></p>
+@{
+    var workspace = ViewData["ApplicationWorkspace"] is true;
+    var panel = workspace ? Context.Request.Query["panel"].ToString() : "";
+    var draft = Model.Status == SupplierStatus.Pending && Model.ApplicationSubmittedAt is null;
+    ViewData["Title"] = panel == "documents" ? "Application documents" : "My application";
 }
-<partial name="_SupplierDocuments" model="Model.SupplierDocuments" />
+<header class="page-heading stms-hero admin-record-hero application-hero">
+    <div><p class="eyebrow">@L.T("SUPPLIER APPLICATION")</p><h1>@L.T(ViewData["Title"]?.ToString())</h1><p>@Model.CompanyName</p></div>
+    <partial name="_Status" model='@(draft ? "Draft" : Model.Status)' />
+</header>
+@if (!workspace) { <partial name="_ApplicationSteps" model="3" /> }
+@if (panel == "documents")
+{
+    <partial name="_SupplierDocuments" model="Model.SupplierDocuments" />
+}
+else
+{
+<div class="form-shell application-shell">
+    <div class="stack">
+        <section class="surface detail-card">
+            <h2>@L.T("Application status")</h2>
+            <dl class="detail-grid">
+                <div><dt>@L.T("Company")</dt><dd>@Model.CompanyName</dd></div>
+                <div><dt>@L.T("Current status")</dt><dd><partial name="_Status" model='@(draft ? "Draft" : Model.Status)' /></dd></div>
+                <div><dt>@L.T("Submitted (UTC)")</dt><dd>@(Model.ApplicationSubmittedAt?.ToString("dd MMM yyyy HH:mm", L.DisplayCulture) ?? "—")</dd></div>
+            </dl>
+            @if (!string.IsNullOrWhiteSpace(Model.StatusReason))
+            { <div class="callout mt-3 mb-0"><strong>@L.T("Decision note")</strong><p>@Model.StatusReason</p></div> }
+        </section>
+        <section class="surface detail-card">
+            <div class="record-section-heading"><div><h2>@L.T("Company profile")</h2><p>@L.T("Details supplied with your application.")</p></div></div>
+            <dl class="detail-grid">
+                <div><dt>@L.T("Commercial registration")</dt><dd>@Model.CommercialRegNo</dd></div>
+                <div><dt>@L.T("Tax number")</dt><dd>@Model.TaxNumber</dd></div>
+                <div><dt>@L.T("Contact email")</dt><dd>@Model.User.Email</dd></div>
+                <div><dt>@L.T("Phone")</dt><dd>@Model.ContactPhone</dd></div>
+                <div><dt>@L.T("Address")</dt><dd>@Model.Address</dd></div>
+                <div><dt>@L.T("Supply categories")</dt><dd>@string.Join(", ", Model.Categories.OrderBy(c => c.Name).Select(c => c.Name))</dd></div>
+            </dl>
+        </section>
+        @if (panel != "overview") { <partial name="_SupplierDocuments" model="Model.SupplierDocuments" /> }
+    </div>
+    <aside class="surface helper-card application-assist">
+        <span class="icon-tile tone-teal"><partial name="_Icon" model='@("clock")' /></span>
+        @if (Model.Status == SupplierStatus.Pending)
+        {
+            <h2>@L.T(draft ? "Application not submitted" : "Awaiting review")</h2>
+            <p>@L.T(draft ? "The sourcing team has not received this application yet." : "The sourcing team will contact you in Clarifications if a supporting document is needed.")</p>
+        }
+        else
+        {
+            <h2>@L.T("Review complete")</h2><p class="mb-0">@L.T("The latest decision and any note from the review team are shown on this page.")</p>
+        }
+    </aside>
+</div>
+}
+@if (draft && !workspace)
+{
+    <div class="form-actions mt-4"><a asp-action="UploadDocuments" class="btn btn-primary">@L.T("Continue registration")</a></div>
+}

@@ -1,0 +1,122 @@
+@using SourcingTenderSystem.Services
+@model SourcingTenderSystem.Models.Tender
+
+@{
+    var panel = Context.Request.Query["panel"].ToString();
+    var full = panel is not ("overview" or "rounds" or "qr");
+    var label = panel switch { "rounds" => "Bidding rounds", "qr" => "Tender QR code", _ => Model.Title };
+    ViewData["Title"] = full ? "Tender details" : label;
+    int count = ViewBag.OfferCount;
+    var rounds = (List<TenderRound>)ViewBag.Rounds;
+    var submitted = (List<string>)ViewBag.SubmittedSuppliers;
+    var invitable = (List<string>)ViewBag.InvitableSuppliers;
+    var isDraft = Model.Status == "Draft";
+    var now = DateTime.UtcNow;
+    var early = TenderRules.IsOpen(Model, now);
+    var canClose = early || Model.Status is ("Open" or "Published") && Model.CloseDate <= now;
+}
+
+<header class="page-heading stms-hero admin-record-hero">
+    <div><p class="eyebrow">@L.F("Tender #{0}", Model.Id)</p><h1>@(panel is "rounds" or "qr" ? L.T(label) : label)</h1><p>@(panel is "rounds" or "qr" ? Model.Title : $"{Model.PurchaseRequisition.Department.Name} · {Model.PurchaseRequisition.Title}")</p></div>
+    <span class="badge bg-secondary fs-6">@L.T(Model.Status)</span>
+</header>
+@if (TempData["Success"] is string success) { <p class="alert alert-success" role="status">@L.T(success)</p> }
+@if (TempData["Error"] is string error) { <p class="alert alert-warning" role="alert">@L.T(error)</p> }
+@if (full || panel == "overview")
+{
+<section class="surface detail-card tender-action-panel" aria-label="@L.T("Tender actions")">
+    <div class="record-section-heading"><div><h2>@L.T("Tender actions")</h2><p>@L.T("Closes") <time datetime="@Model.CloseDate.ToString("O")">@Model.CloseDate.ToString("dd MMM yyyy · HH:mm", L.DisplayCulture) UTC</time></p></div><span class="record-panel-label">@L.F("Round {0} of {1}", Model.Counter, TenderRules.MaxRounds)</span></div>
+    <div class="tender-actions">
+        @if (isDraft)
+        {
+            <form asp-action="Publish" asp-route-id="@Model.Id" method="post"><button class="btn btn-primary" type="submit"><partial name="_Icon" model='@("check")' /> @L.T("Submit tender")</button></form>
+        }
+        @if (canClose)
+        {
+            <form asp-action="Close" asp-route-id="@Model.Id" asp-route-panel="@panel" method="post"
+                  data-workspace-confirm="@(early ? L.T("Close bidding now? Suppliers will no longer be able to submit or change offers in this round.") : null)"
+                  onsubmit="return !this.dataset.workspaceConfirm || window.stmsWorkspaceReady || confirm(this.dataset.workspaceConfirm);">
+                <input type="hidden" name="confirmClose" value="@(early ? "true" : "false")" />
+                <button class="btn btn-outline-danger" type="submit"><partial name="_Icon" model='@("pause")' /> @L.T(early ? "Close bidding early" : "Close bidding")</button>
+            </form>
+        }
+        @if (TenderRules.CanEvaluate(Model, count))
+        {
+            <a data-workspace-dialog asp-action="AssignCommittee" asp-route-id="@Model.Id" class="btn btn-primary"><partial name="_Icon" model='@("users")' /> @L.T("Assign committee")</a>
+        }
+        <a data-workspace-dialog asp-action="Criteria" asp-route-id="@Model.Id" class="btn btn-outline-secondary"><partial name="_Icon" model='@("filter")' /> @L.T("Evaluation criteria")</a>
+    </div>
+    <details class="action-disclosure">
+        <summary>@L.T("More actions")</summary>
+        <div class="tender-actions">
+        @if (isDraft)
+        {
+            <a data-workspace-dialog asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-secondary"><partial name="_Icon" model='@("edit")' /> @L.T("Edit draft")</a>
+        }
+        <a data-workspace-dialog="details" asp-controller="Invitations" asp-action="Index" asp-route-tenderId="@Model.Id" class="btn btn-outline-secondary"><partial name="_Icon" model='@("supplier")' /> @L.T("Invitations")</a>
+        <a data-workspace-page class="btn btn-outline-secondary" asp-controller="Clarifications" asp-action="Index" asp-route-kind="tender" asp-route-recordId="@Model.Id"><partial name="_Icon" model='@("mail")' /> @L.T("Clarifications")</a>
+        <a asp-action="Index" data-dialog-cancel class="btn btn-outline-secondary"><partial name="_Icon" model='@("back")' /> @L.T("Back to tenders")</a>
+        </div>
+    </details>
+</section>
+<section class="surface detail-card tender-overview">
+    <div class="record-section-heading"><div><h2>@L.T("Tender overview")</h2><p>@L.T("Schedule, activity, and procurement requirements")</p></div></div>
+    <dl class="detail-grid tender-overview-facts">
+        <div><dt>@L.T("Opens (UTC)")</dt><dd>@Model.OpenDate.ToString("dd MMM yyyy HH:mm", L.DisplayCulture)</dd></div>
+        <div><dt>@L.T("Invitations")</dt><dd>@ViewBag.InvitationCount</dd></div>
+        <div><dt>@L.T("Bids")</dt><dd>@ViewBag.BidCount</dd></div>
+    </dl>
+    <h3 class="h6 mt-3">@L.T("Description")</h3><p class="record-terms">@Model.Description</p>
+    <details class="tender-terms"><summary>@L.T("Terms and record information")</summary>
+        <p class="mt-2 record-terms">@Model.Terms</p>
+        <p class="subtle mb-0">@L.F("Created by {0} · {1} UTC", Model.CreatedByEmployeeProfile.FullName, Model.CreatedAt.ToString("dd MMM yyyy HH:mm", L.DisplayCulture))</p>
+    </details>
+</section>
+}
+@if (full || panel == "qr")
+{
+    if (panel == "qr") ViewData["RecordQrOpen"] = true;
+    <partial name="_RecordQr" model='@(Url.Action("Details", new { id = Model.Id })!)' />
+}
+@if (full || panel == "rounds")
+{
+<section class="surface detail-card mt-3">
+    <h2>@L.F("Round {0} of {1}", Model.Counter, TenderRules.MaxRounds)</h2>
+    <p>@L.F("{0} distinct eligible suppliers · {1} required · {2} rounds remaining", count, TenderRules.Minimum(Model), TenderRules.MaxRounds - Model.Counter)</p>
+    @if (Model.Counter == TenderRules.MaxRounds)
+    {
+        <p>@L.T("Final round: one eligible bid is sufficient after closing, subject to compliance review. Zero bids always blocks evaluation.")</p>
+    }
+    @if (TenderRules.CanReopen(Model, count))
+    {
+        <a data-workspace-dialog asp-action="Reopen" asp-route-id="@Model.Id" class="btn btn-primary">@L.F("Open round {0}", Model.Counter + 1)</a>
+    }
+    else
+    {
+        <p class="subtle">@L.T(Model.Status != "Closed" ? "Reopening is available only after a round closes." : Model.Counter == TenderRules.MaxRounds ? "All three rounds have been used." : "The tender already has three eligible suppliers.")</p>
+    }
+    @if (Model.Status == "Closed")
+    {
+        <p>@L.T(TenderRules.CanEvaluate(Model, count) ? "Bid minimum met. Complete compliance review before assignment." : "Evaluation is blocked because the bid minimum has not been met.")</p>
+        <a asp-controller="Compliance" asp-action="Review" asp-route-tenderId="@Model.Id">@L.T("Compliance review")</a>
+    }
+    @if (Model.Status == "Open" && Model.OpenDate <= DateTime.UtcNow && Model.CloseDate > DateTime.UtcNow)
+    {
+        <a data-workspace-dialog asp-controller="Invitations" asp-action="Create" asp-route-tenderId="@Model.Id" class="btn btn-outline-primary">@L.T("Invite suppliers")</a>
+        <p class="mt-2">@L.F("Available to invite: {0}", invitable.Count == 0 ? L.T("None") : string.Join(", ", invitable))</p>
+    }
+    <p>@L.F("Previously submitted: {0}", submitted.Count == 0 ? L.T("None") : string.Join(", ", submitted))</p>
+    <div class="record-list record-list-inset">
+            @foreach (var round in rounds)
+            {
+                <article class="record-card">
+                    <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("clock")' /></span><span>@L.F("Round {0}", round.Number)<small>@L.T(round.ClosingOutcome ?? "Not closed") @if (round.EligibleSuppliersAtClose is int n) { <text> · @L.F("{0} eligible", n)</text> }</small></span></div>
+                    <dl class="record-facts"><div><dt>@L.T("Opens (UTC)")</dt><dd>@(round.OpensAt?.ToString("dd MMM yyyy HH:mm", L.DisplayCulture) ?? L.T("Unknown"))</dd></div>
+                        <div><dt>@L.T("Deadline (UTC)")</dt><dd>@(round.ClosesAt?.ToString("dd MMM yyyy HH:mm", L.DisplayCulture) ?? L.T("Unknown"))</dd></div>
+                        @if (!string.IsNullOrWhiteSpace(round.ReopenReason)) { <div><dt>@L.T("Reopening reason")</dt><dd>@round.ReopenReason</dd></div> }
+                    </dl>
+                </article>
+            }
+    </div>
+</section>
+}

@@ -1,0 +1,4268 @@
+{
+  "widths": [
+    1440,
+    1024,
+    768,
+    390,
+    320
+  ],
+  "pages": [
+    {
+      "role": "Guest",
+      "path": "/",
+      "checks": [
+        {
+          "w": 1440,
+          "scroll": 1430,
+          "main": 1240,
+          "h1": "Work with our\nsourcing team.",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        },
+        {
+          "w": 1024,
+          "scroll": 1014,
+          "main": 1014,
+          "h1": "Work with our\nsourcing team.",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        },
+        {
+          "w": 768,
+          "scroll": 768,
+          "main": 768,
+          "h1": "Work with our\nsourcing team.",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        },
+        {
+          "w": 390,
+          "scroll": 380,
+          "main": 380,
+          "h1": "Work with our sourcing team.",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        },
+        {
+          "w": 320,
+          "scroll": 310,
+          "main": 310,
+          "h1": "Work with our sourcing team.",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        }
+      ],
+      "effective": "/",
+      "status": 200
+    },
+    {
+      "role": "Guest",
+      "path": "/Account/Login",
+      "checks": [
+        {
+          "w": 1440,
+          "scroll": 1440,
+          "main": 1440,
+          "h1": "Sign in",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        },
+        {
+          "w": 1024,
+          "scroll": 1024,
+          "main": 1024,
+          "h1": "Sign in",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        },
+        {
+          "w": 768,
+          "scroll": 768,
+          "main": 768,
+          "h1": "Sign in",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        },
+        {
+          "w": 390,
+          "scroll": 380,
+          "main": 380,
+          "h1": "Sign in",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        },
+        {
+          "w": 320,
+          "scroll": 310,
+          "main": 310,
+          "h1": "Sign in",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        }
+      ],
+      "effective": "/Account/Login",
+      "status": 200
+    },
+    {
+      "role": "Guest",
+      "path": "/SupplierRegistration/Register",
+      "checks": [
+        {
+          "w": 1440,
+          "scroll": 1430,
+          "main": 1240,
+          "h1": "Register as a supplier",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        },
+        {
+          "w": 1024,
+          "scroll": 1014,
+          "main": 1014,
+          "h1": "Register as a supplier",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        },
+        {
+          "w": 768,
+          "scroll": 758,
+          "main": 758,
+          "h1": "Register as a supplier",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        },
+        {
+          "w": 390,
+          "scroll": 380,
+          "main": 380,
+          "h1": "Register as a supplier",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        },
+        {
+          "w": 320,
+          "scroll": 310,
+          "main": 310,
+          "h1": "Register as a supplier",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        }
+      ],
+      "effective": "/SupplierRegistration/Register",
+      "status": 200
+    },
+    {
+      "role": "Guest",
+      "path": "/Home/Privacy",
+      "checks": [
+        {
+          "w": 1440,
+          "scroll": 1440,
+          "main": 1240,
+          "h1": "Privacy",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        },
+        {
+          "w": 1024,
+          "scroll": 1024,
+          "main": 1024,
+          "h1": "Privacy",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        },
+        {
+          "w": 768,
+          "scroll": 768,
+          "main": 768,
+          "h1": "Privacy",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        },
+        {
+          "w": 390,
+          "scroll": 390,
+          "main": 390,
+          "h1": "Privacy",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        },
+        {
+          "w": 320,
+          "scroll": 320,
+          "main": 320,
+          "h1": "Privacy",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        }
+      ],
+      "effective": "/Home/Privacy",
+      "status": 200
+    },
+    {
+      "role": "Admin",
+      "path": "/AdminDashboard",
+      "checks": [
+        {
+          "w": 1440,
+          "scroll": 1430,
+          "main": 1336,
+          "h1": "Analytics & Statistics",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        },
+        {
+          "w": 1024,
+          "scroll": 1014,
+          "main": 920,
+          "h1": "Analytics & Statistics",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        },
+        {
+          "w": 768,
+          "scroll": 758,
+          "main": 758,
+          "h1": "Analytics & Statistics",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        },
+        {
+          "w": 390,
+          "scroll": 380,
+          "main": 380,
+          "h1": "Analytics & Statistics",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        },
+        {
+          "w": 320,
+          "scroll": 310,
+          "main": 310,
+          "h1": "Analytics & Statistics",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        }
+      ],
+      "effective": "/AdminDashboard",
+      "status": 200
+    },
+    {
+      "role": "Admin",
+      "path": "/Departments",
+      "checks": [
+        {
+          "w": 1440,
+          "scroll": 1440,
+          "main": 1346,
+          "h1": "Departments",
+          "tables": 0,
+          "cards": 1,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 1024,
+          "scroll": 1024,
+          "main": 930,
+          "h1": "Departments",
+          "tables": 0,
+          "cards": 1,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 768,
+          "scroll": 758,
+          "main": 758,
+          "h1": "Departments",
+          "tables": 0,
+          "cards": 1,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 390,
+          "scroll": 380,
+          "main": 380,
+          "h1": "Departments",
+          "tables": 0,
+          "cards": 1,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 320,
+          "scroll": 310,
+          "main": 310,
+          "h1": "Departments",
+          "tables": 0,
+          "cards": 1,
+          "nameless": 0,
+          "filter": true
+        }
+      ],
+      "effective": "/Departments",
+      "status": 200
+    },
+    {
+      "role": "Admin",
+      "path": "/Employees",
+      "checks": [
+        {
+          "w": 1440,
+          "scroll": 1430,
+          "main": 1336,
+          "h1": "Employees",
+          "tables": 0,
+          "cards": 11,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 1024,
+          "scroll": 1014,
+          "main": 920,
+          "h1": "Employees",
+          "tables": 0,
+          "cards": 11,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 768,
+          "scroll": 758,
+          "main": 758,
+          "h1": "Employees",
+          "tables": 0,
+          "cards": 11,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 390,
+          "scroll": 380,
+          "main": 380,
+          "h1": "Employees",
+          "tables": 0,
+          "cards": 11,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 320,
+          "scroll": 310,
+          "main": 310,
+          "h1": "Employees",
+          "tables": 0,
+          "cards": 11,
+          "nameless": 0,
+          "filter": true
+        }
+      ],
+      "effective": "/Employees",
+      "status": 200
+    },
+    {
+      "role": "Admin",
+      "path": "/Suppliers",
+      "checks": [
+        {
+          "w": 1440,
+          "scroll": 1430,
+          "main": 1336,
+          "h1": "Supplier Directory",
+          "tables": 0,
+          "cards": 3,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 1024,
+          "scroll": 1014,
+          "main": 920,
+          "h1": "Supplier Directory",
+          "tables": 0,
+          "cards": 3,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 768,
+          "scroll": 758,
+          "main": 758,
+          "h1": "Supplier Directory",
+          "tables": 0,
+          "cards": 3,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 390,
+          "scroll": 380,
+          "main": 380,
+          "h1": "Supplier Directory",
+          "tables": 0,
+          "cards": 3,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 320,
+          "scroll": 310,
+          "main": 310,
+          "h1": "Supplier Directory",
+          "tables": 0,
+          "cards": 3,
+          "nameless": 0,
+          "filter": true
+        }
+      ],
+      "effective": "/Suppliers",
+      "status": 200
+    },
+    {
+      "role": "Admin",
+      "path": "/Categories",
+      "checks": [
+        {
+          "w": 1440,
+          "scroll": 1440,
+          "main": 1346,
+          "h1": "Supply categories",
+          "tables": 0,
+          "cards": 2,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 1024,
+          "scroll": 1024,
+          "main": 930,
+          "h1": "Supply categories",
+          "tables": 0,
+          "cards": 2,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 768,
+          "scroll": 768,
+          "main": 768,
+          "h1": "Supply categories",
+          "tables": 0,
+          "cards": 2,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 390,
+          "scroll": 380,
+          "main": 380,
+          "h1": "Supply categories",
+          "tables": 0,
+          "cards": 2,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 320,
+          "scroll": 310,
+          "main": 310,
+          "h1": "Supply categories",
+          "tables": 0,
+          "cards": 2,
+          "nameless": 0,
+          "filter": true
+        }
+      ],
+      "effective": "/Categories",
+      "status": 200
+    },
+    {
+      "role": "Admin",
+      "path": "/AdminOperations/Requests",
+      "checks": [
+        {
+          "w": 1440,
+          "scroll": 1430,
+          "main": 1336,
+          "h1": "Purchase requests",
+          "tables": 0,
+          "cards": 6,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 1024,
+          "scroll": 1014,
+          "main": 920,
+          "h1": "Purchase requests",
+          "tables": 0,
+          "cards": 6,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 768,
+          "scroll": 758,
+          "main": 758,
+          "h1": "Purchase requests",
+          "tables": 0,
+          "cards": 6,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 390,
+          "scroll": 380,
+          "main": 380,
+          "h1": "Purchase requests",
+          "tables": 0,
+          "cards": 6,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 320,
+          "scroll": 310,
+          "main": 310,
+          "h1": "Purchase requests",
+          "tables": 0,
+          "cards": 6,
+          "nameless": 0,
+          "filter": true
+        }
+      ],
+      "effective": "/AdminOperations/Requests",
+      "status": 200
+    },
+    {
+      "role": "Admin",
+      "path": "/AdminOperations/Tenders",
+      "checks": [
+        {
+          "w": 1440,
+          "scroll": 1430,
+          "main": 1336,
+          "h1": "Tenders",
+          "tables": 0,
+          "cards": 6,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 1024,
+          "scroll": 1014,
+          "main": 920,
+          "h1": "Tenders",
+          "tables": 0,
+          "cards": 6,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 768,
+          "scroll": 758,
+          "main": 758,
+          "h1": "Tenders",
+          "tables": 0,
+          "cards": 6,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 390,
+          "scroll": 380,
+          "main": 380,
+          "h1": "Tenders",
+          "tables": 0,
+          "cards": 6,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 320,
+          "scroll": 310,
+          "main": 310,
+          "h1": "Tenders",
+          "tables": 0,
+          "cards": 6,
+          "nameless": 0,
+          "filter": true
+        }
+      ],
+      "effective": "/AdminOperations/Tenders",
+      "status": 200
+    },
+    {
+      "role": "Admin",
+      "path": "/AdminOperations/Invitations",
+      "checks": [
+        {
+          "w": 1440,
+          "scroll": 1430,
+          "main": 1336,
+          "h1": "Supplier invitations",
+          "tables": 0,
+          "cards": 21,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 1024,
+          "scroll": 1014,
+          "main": 920,
+          "h1": "Supplier invitations",
+          "tables": 0,
+          "cards": 21,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 768,
+          "scroll": 758,
+          "main": 758,
+          "h1": "Supplier invitations",
+          "tables": 0,
+          "cards": 21,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 390,
+          "scroll": 380,
+          "main": 380,
+          "h1": "Supplier invitations",
+          "tables": 0,
+          "cards": 21,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 320,
+          "scroll": 310,
+          "main": 310,
+          "h1": "Supplier invitations",
+          "tables": 0,
+          "cards": 21,
+          "nameless": 0,
+          "filter": true
+        }
+      ],
+      "effective": "/AdminOperations/Invitations",
+      "status": 200
+    },
+    {
+      "role": "Admin",
+      "path": "/AdminOperations/Bids",
+      "checks": [
+        {
+          "w": 1440,
+          "scroll": 1430,
+          "main": 1336,
+          "h1": "Supplier bids",
+          "tables": 0,
+          "cards": 9,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 1024,
+          "scroll": 1014,
+          "main": 920,
+          "h1": "Supplier bids",
+          "tables": 0,
+          "cards": 9,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 768,
+          "scroll": 758,
+          "main": 758,
+          "h1": "Supplier bids",
+          "tables": 0,
+          "cards": 9,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 390,
+          "scroll": 380,
+          "main": 380,
+          "h1": "Supplier bids",
+          "tables": 0,
+          "cards": 9,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 320,
+          "scroll": 310,
+          "main": 310,
+          "h1": "Supplier bids",
+          "tables": 0,
+          "cards": 9,
+          "nameless": 0,
+          "filter": true
+        }
+      ],
+      "effective": "/AdminOperations/Bids",
+      "status": 200
+    },
+    {
+      "role": "Admin",
+      "path": "/EvaluationWorkflow",
+      "checks": [
+        {
+          "w": 1440,
+          "scroll": 1440,
+          "main": 1346,
+          "h1": "Evaluation progress",
+          "tables": 0,
+          "cards": 4,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 1024,
+          "scroll": 1024,
+          "main": 930,
+          "h1": "Evaluation progress",
+          "tables": 0,
+          "cards": 4,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 768,
+          "scroll": 758,
+          "main": 758,
+          "h1": "Evaluation progress",
+          "tables": 0,
+          "cards": 4,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 390,
+          "scroll": 380,
+          "main": 380,
+          "h1": "Evaluation progress",
+          "tables": 0,
+          "cards": 4,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 320,
+          "scroll": 310,
+          "main": 310,
+          "h1": "Evaluation progress",
+          "tables": 0,
+          "cards": 4,
+          "nameless": 0,
+          "filter": true
+        }
+      ],
+      "effective": "/EvaluationWorkflow",
+      "status": 200
+    },
+    {
+      "role": "Admin",
+      "path": "/AdminOperations/Activity",
+      "checks": [
+        {
+          "w": 1440,
+          "scroll": 1430,
+          "main": 1336,
+          "h1": "Activity log",
+          "tables": 0,
+          "cards": 25,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 1024,
+          "scroll": 1014,
+          "main": 920,
+          "h1": "Activity log",
+          "tables": 0,
+          "cards": 25,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 768,
+          "scroll": 758,
+          "main": 758,
+          "h1": "Activity log",
+          "tables": 0,
+          "cards": 25,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 390,
+          "scroll": 380,
+          "main": 380,
+          "h1": "Activity log",
+          "tables": 0,
+          "cards": 25,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 320,
+          "scroll": 310,
+          "main": 310,
+          "h1": "Activity log",
+          "tables": 0,
+          "cards": 25,
+          "nameless": 0,
+          "filter": true
+        }
+      ],
+      "effective": "/AdminOperations/Activity",
+      "status": 200
+    },
+    {
+      "role": "Admin",
+      "path": "/Clarifications",
+      "checks": [
+        {
+          "w": 1440,
+          "scroll": 1440,
+          "main": 1346,
+          "h1": "Clarifications",
+          "tables": 0,
+          "cards": 1,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 1024,
+          "scroll": 1024,
+          "main": 930,
+          "h1": "Clarifications",
+          "tables": 0,
+          "cards": 1,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 768,
+          "scroll": 758,
+          "main": 758,
+          "h1": "Clarifications",
+          "tables": 0,
+          "cards": 1,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 390,
+          "scroll": 380,
+          "main": 380,
+          "h1": "Clarifications",
+          "tables": 0,
+          "cards": 1,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 320,
+          "scroll": 310,
+          "main": 310,
+          "h1": "Clarifications",
+          "tables": 0,
+          "cards": 1,
+          "nameless": 0,
+          "filter": true
+        }
+      ],
+      "effective": "/Clarifications",
+      "status": 200
+    },
+    {
+      "role": "Admin",
+      "path": "/Profile",
+      "checks": [
+        {
+          "w": 1440,
+          "scroll": 1430,
+          "main": 1336,
+          "h1": "Browser account",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        },
+        {
+          "w": 1024,
+          "scroll": 1014,
+          "main": 920,
+          "h1": "Browser account",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        },
+        {
+          "w": 768,
+          "scroll": 758,
+          "main": 758,
+          "h1": "Browser account",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        },
+        {
+          "w": 390,
+          "scroll": 380,
+          "main": 380,
+          "h1": "Browser account",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        },
+        {
+          "w": 320,
+          "scroll": 310,
+          "main": 310,
+          "h1": "Browser account",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        }
+      ],
+      "effective": "/Profile",
+      "status": 200
+    },
+    {
+      "role": "Admin",
+      "path": "/Profile?tab=security",
+      "checks": [
+        {
+          "w": 1440,
+          "scroll": 1430,
+          "main": 1336,
+          "h1": "Browser account",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        },
+        {
+          "w": 1024,
+          "scroll": 1014,
+          "main": 920,
+          "h1": "Browser account",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        },
+        {
+          "w": 768,
+          "scroll": 758,
+          "main": 758,
+          "h1": "Browser account",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        },
+        {
+          "w": 390,
+          "scroll": 380,
+          "main": 380,
+          "h1": "Browser account",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        },
+        {
+          "w": 320,
+          "scroll": 310,
+          "main": 310,
+          "h1": "Browser account",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        }
+      ],
+      "effective": "/Profile?tab=security",
+      "status": 200
+    },
+    {
+      "role": "Admin",
+      "path": "/Notifications",
+      "checks": [
+        {
+          "w": 1440,
+          "scroll": 1440,
+          "main": 1346,
+          "h1": "Notifications",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        },
+        {
+          "w": 1024,
+          "scroll": 1024,
+          "main": 930,
+          "h1": "Notifications",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        },
+        {
+          "w": 768,
+          "scroll": 768,
+          "main": 768,
+          "h1": "Notifications",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        },
+        {
+          "w": 390,
+          "scroll": 390,
+          "main": 390,
+          "h1": "Notifications",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        },
+        {
+          "w": 320,
+          "scroll": 320,
+          "main": 320,
+          "h1": "Notifications",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        }
+      ],
+      "effective": "/Notifications",
+      "status": 200
+    },
+    {
+      "role": "RequestingDepartment",
+      "path": "/PurchaseRequisitions/Dashboard",
+      "checks": [
+        {
+          "w": 1440,
+          "scroll": 1430,
+          "main": 1336,
+          "h1": "Browser QA dashboard",
+          "tables": 0,
+          "cards": 5,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 1024,
+          "scroll": 1014,
+          "main": 920,
+          "h1": "Browser QA dashboard",
+          "tables": 0,
+          "cards": 5,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 768,
+          "scroll": 758,
+          "main": 758,
+          "h1": "Browser QA dashboard",
+          "tables": 0,
+          "cards": 5,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 390,
+          "scroll": 380,
+          "main": 380,
+          "h1": "Browser QA dashboard",
+          "tables": 0,
+          "cards": 5,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 320,
+          "scroll": 310,
+          "main": 310,
+          "h1": "Browser QA dashboard",
+          "tables": 0,
+          "cards": 5,
+          "nameless": 0,
+          "filter": true
+        }
+      ],
+      "effective": "/PurchaseRequisitions/Dashboard",
+      "status": 200
+    },
+    {
+      "role": "RequestingDepartment",
+      "path": "/PurchaseRequisitions/MyRequests",
+      "checks": [
+        {
+          "w": 1440,
+          "scroll": 1430,
+          "main": 1336,
+          "h1": "My Requests",
+          "tables": 0,
+          "cards": 6,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 1024,
+          "scroll": 1014,
+          "main": 920,
+          "h1": "My Requests",
+          "tables": 0,
+          "cards": 6,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 768,
+          "scroll": 758,
+          "main": 758,
+          "h1": "My Requests",
+          "tables": 0,
+          "cards": 6,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 390,
+          "scroll": 380,
+          "main": 380,
+          "h1": "My Requests",
+          "tables": 0,
+          "cards": 6,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 320,
+          "scroll": 310,
+          "main": 310,
+          "h1": "My Requests",
+          "tables": 0,
+          "cards": 6,
+          "nameless": 0,
+          "filter": true
+        }
+      ],
+      "effective": "/PurchaseRequisitions/MyRequests",
+      "status": 200
+    },
+    {
+      "role": "RequestingDepartment",
+      "path": "/PurchaseRequisitions/Committee",
+      "checks": [
+        {
+          "w": 1440,
+          "scroll": 1440,
+          "main": 1346,
+          "h1": "My Committee",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        },
+        {
+          "w": 1024,
+          "scroll": 1024,
+          "main": 930,
+          "h1": "My Committee",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        },
+        {
+          "w": 768,
+          "scroll": 768,
+          "main": 768,
+          "h1": "My Committee",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        },
+        {
+          "w": 390,
+          "scroll": 390,
+          "main": 390,
+          "h1": "My Committee",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        },
+        {
+          "w": 320,
+          "scroll": 310,
+          "main": 310,
+          "h1": "My Committee",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        }
+      ],
+      "effective": "/PurchaseRequisitions/Committee",
+      "status": 200
+    },
+    {
+      "role": "RequestingDepartment",
+      "path": "/Clarifications",
+      "checks": [
+        {
+          "w": 1440,
+          "scroll": 1440,
+          "main": 1346,
+          "h1": "Clarifications",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        },
+        {
+          "w": 1024,
+          "scroll": 1024,
+          "main": 930,
+          "h1": "Clarifications",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        },
+        {
+          "w": 768,
+          "scroll": 768,
+          "main": 768,
+          "h1": "Clarifications",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        },
+        {
+          "w": 390,
+          "scroll": 380,
+          "main": 380,
+          "h1": "Clarifications",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        },
+        {
+          "w": 320,
+          "scroll": 310,
+          "main": 310,
+          "h1": "Clarifications",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        }
+      ],
+      "effective": "/Clarifications",
+      "status": 200
+    },
+    {
+      "role": "RequestingDepartment",
+      "path": "/Notifications",
+      "checks": [
+        {
+          "w": 1440,
+          "scroll": 1440,
+          "main": 1346,
+          "h1": "Notifications",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        },
+        {
+          "w": 1024,
+          "scroll": 1024,
+          "main": 930,
+          "h1": "Notifications",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        },
+        {
+          "w": 768,
+          "scroll": 768,
+          "main": 768,
+          "h1": "Notifications",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        },
+        {
+          "w": 390,
+          "scroll": 390,
+          "main": 390,
+          "h1": "Notifications",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        },
+        {
+          "w": 320,
+          "scroll": 320,
+          "main": 320,
+          "h1": "Notifications",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        }
+      ],
+      "effective": "/Notifications",
+      "status": 200
+    },
+    {
+      "role": "RequestingDepartment",
+      "path": "/PurchaseRequisitions/Create",
+      "checks": [
+        {
+          "w": 1440,
+          "scroll": 1430,
+          "main": 1336,
+          "h1": "New purchase request",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        },
+        {
+          "w": 1024,
+          "scroll": 1014,
+          "main": 920,
+          "h1": "New purchase request",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        },
+        {
+          "w": 768,
+          "scroll": 758,
+          "main": 758,
+          "h1": "New purchase request",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        },
+        {
+          "w": 390,
+          "scroll": 380,
+          "main": 380,
+          "h1": "New purchase request",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        },
+        {
+          "w": 320,
+          "scroll": 310,
+          "main": 310,
+          "h1": "New purchase request",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        }
+      ],
+      "effective": "/PurchaseRequisitions/Create",
+      "status": 200
+    },
+    {
+      "role": "SourcingOfficer",
+      "path": "/SourcingDashboard",
+      "checks": [
+        {
+          "w": 1440,
+          "scroll": 1430,
+          "main": 1336,
+          "h1": "Sourcing dashboard",
+          "tables": 0,
+          "cards": 1,
+          "nameless": 0,
+          "filter": false
+        },
+        {
+          "w": 1024,
+          "scroll": 1014,
+          "main": 920,
+          "h1": "Sourcing dashboard",
+          "tables": 0,
+          "cards": 1,
+          "nameless": 0,
+          "filter": false
+        },
+        {
+          "w": 768,
+          "scroll": 758,
+          "main": 758,
+          "h1": "Sourcing dashboard",
+          "tables": 0,
+          "cards": 1,
+          "nameless": 0,
+          "filter": false
+        },
+        {
+          "w": 390,
+          "scroll": 380,
+          "main": 380,
+          "h1": "Sourcing dashboard",
+          "tables": 0,
+          "cards": 1,
+          "nameless": 0,
+          "filter": false
+        },
+        {
+          "w": 320,
+          "scroll": 310,
+          "main": 310,
+          "h1": "Sourcing dashboard",
+          "tables": 0,
+          "cards": 1,
+          "nameless": 0,
+          "filter": false
+        }
+      ],
+      "effective": "/SourcingDashboard",
+      "status": 200
+    },
+    {
+      "role": "SourcingOfficer",
+      "path": "/RequisitionReviews/Pending",
+      "checks": [
+        {
+          "w": 1440,
+          "scroll": 1440,
+          "main": 1346,
+          "h1": "Requests awaiting review",
+          "tables": 0,
+          "cards": 1,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 1024,
+          "scroll": 1024,
+          "main": 930,
+          "h1": "Requests awaiting review",
+          "tables": 0,
+          "cards": 1,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 768,
+          "scroll": 768,
+          "main": 768,
+          "h1": "Requests awaiting review",
+          "tables": 0,
+          "cards": 1,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 390,
+          "scroll": 380,
+          "main": 380,
+          "h1": "Requests awaiting review",
+          "tables": 0,
+          "cards": 1,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 320,
+          "scroll": 310,
+          "main": 310,
+          "h1": "Requests awaiting review",
+          "tables": 0,
+          "cards": 1,
+          "nameless": 0,
+          "filter": true
+        }
+      ],
+      "effective": "/RequisitionReviews/Pending",
+      "status": 200
+    },
+    {
+      "role": "SourcingOfficer",
+      "path": "/RequisitionReviews",
+      "checks": [
+        {
+          "w": 1440,
+          "scroll": 1430,
+          "main": 1336,
+          "h1": "All purchase requests",
+          "tables": 0,
+          "cards": 6,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 1024,
+          "scroll": 1014,
+          "main": 920,
+          "h1": "All purchase requests",
+          "tables": 0,
+          "cards": 6,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 768,
+          "scroll": 758,
+          "main": 758,
+          "h1": "All purchase requests",
+          "tables": 0,
+          "cards": 6,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 390,
+          "scroll": 380,
+          "main": 380,
+          "h1": "All purchase requests",
+          "tables": 0,
+          "cards": 6,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 320,
+          "scroll": 310,
+          "main": 310,
+          "h1": "All purchase requests",
+          "tables": 0,
+          "cards": 6,
+          "nameless": 0,
+          "filter": true
+        }
+      ],
+      "effective": "/RequisitionReviews",
+      "status": 200
+    },
+    {
+      "role": "SourcingOfficer",
+      "path": "/Suppliers",
+      "checks": [
+        {
+          "w": 1440,
+          "scroll": 1430,
+          "main": 1336,
+          "h1": "Supplier Directory",
+          "tables": 0,
+          "cards": 3,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 1024,
+          "scroll": 1014,
+          "main": 920,
+          "h1": "Supplier Directory",
+          "tables": 0,
+          "cards": 3,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 768,
+          "scroll": 758,
+          "main": 758,
+          "h1": "Supplier Directory",
+          "tables": 0,
+          "cards": 3,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 390,
+          "scroll": 380,
+          "main": 380,
+          "h1": "Supplier Directory",
+          "tables": 0,
+          "cards": 3,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 320,
+          "scroll": 310,
+          "main": 310,
+          "h1": "Supplier Directory",
+          "tables": 0,
+          "cards": 3,
+          "nameless": 0,
+          "filter": true
+        }
+      ],
+      "effective": "/Suppliers",
+      "status": 200
+    },
+    {
+      "role": "SourcingOfficer",
+      "path": "/Tenders",
+      "checks": [
+        {
+          "w": 1440,
+          "scroll": 1430,
+          "main": 1336,
+          "h1": "Tender Management",
+          "tables": 0,
+          "cards": 6,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 1024,
+          "scroll": 1014,
+          "main": 920,
+          "h1": "Tender Management",
+          "tables": 0,
+          "cards": 6,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 768,
+          "scroll": 758,
+          "main": 758,
+          "h1": "Tender Management",
+          "tables": 0,
+          "cards": 6,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 390,
+          "scroll": 380,
+          "main": 380,
+          "h1": "Tender Management",
+          "tables": 0,
+          "cards": 6,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 320,
+          "scroll": 310,
+          "main": 310,
+          "h1": "Tender Management",
+          "tables": 0,
+          "cards": 6,
+          "nameless": 0,
+          "filter": true
+        }
+      ],
+      "effective": "/Tenders",
+      "status": 200
+    },
+    {
+      "role": "SourcingOfficer",
+      "path": "/Invitations",
+      "checks": [
+        {
+          "w": 1440,
+          "scroll": 1430,
+          "main": 1336,
+          "h1": "Supplier invitations",
+          "tables": 0,
+          "cards": 21,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 1024,
+          "scroll": 1014,
+          "main": 920,
+          "h1": "Supplier invitations",
+          "tables": 0,
+          "cards": 21,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 768,
+          "scroll": 758,
+          "main": 758,
+          "h1": "Supplier invitations",
+          "tables": 0,
+          "cards": 21,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 390,
+          "scroll": 380,
+          "main": 380,
+          "h1": "Supplier invitations",
+          "tables": 0,
+          "cards": 21,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 320,
+          "scroll": 310,
+          "main": 310,
+          "h1": "Supplier invitations",
+          "tables": 0,
+          "cards": 21,
+          "nameless": 0,
+          "filter": true
+        }
+      ],
+      "effective": "/Invitations",
+      "status": 200
+    },
+    {
+      "role": "SourcingOfficer",
+      "path": "/Compliance/Pending",
+      "checks": [
+        {
+          "w": 1440,
+          "scroll": 1440,
+          "main": 1346,
+          "h1": "Bid compliance",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        },
+        {
+          "w": 1024,
+          "scroll": 1024,
+          "main": 930,
+          "h1": "Bid compliance",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        },
+        {
+          "w": 768,
+          "scroll": 768,
+          "main": 768,
+          "h1": "Bid compliance",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        },
+        {
+          "w": 390,
+          "scroll": 390,
+          "main": 390,
+          "h1": "Bid compliance",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        },
+        {
+          "w": 320,
+          "scroll": 320,
+          "main": 320,
+          "h1": "Bid compliance",
+          "tables": 0,
+          "cards": 0,
+          "nameless": 0,
+          "filter": false
+        }
+      ],
+      "effective": "/Compliance/Pending",
+      "status": 200
+    },
+    {
+      "role": "SourcingOfficer",
+      "path": "/EvaluationWorkflow",
+      "checks": [
+        {
+          "w": 1440,
+          "scroll": 1440,
+          "main": 1346,
+          "h1": "Evaluation progress",
+          "tables": 0,
+          "cards": 4,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 1024,
+          "scroll": 1024,
+          "main": 930,
+          "h1": "Evaluation progress",
+          "tables": 0,
+          "cards": 4,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 768,
+          "scroll": 758,
+          "main": 758,
+          "h1": "Evaluation progress",
+          "tables": 0,
+          "cards": 4,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 390,
+          "scroll": 380,
+          "main": 380,
+          "h1": "Evaluation progress",
+          "tables": 0,
+          "cards": 4,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 320,
+          "scroll": 310,
+          "main": 310,
+          "h1": "Evaluation progress",
+          "tables": 0,
+          "cards": 4,
+          "nameless": 0,
+          "filter": true
+        }
+      ],
+      "effective": "/EvaluationWorkflow",
+      "status": 200
+    },
+    {
+      "role": "SourcingOfficer",
+      "path": "/Clarifications",
+      "checks": [
+        {
+          "w": 1440,
+          "scroll": 1440,
+          "main": 1346,
+          "h1": "Clarifications",
+          "tables": 0,
+          "cards": 1,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 1024,
+          "scroll": 1024,
+          "main": 930,
+          "h1": "Clarifications",
+          "tables": 0,
+          "cards": 1,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 768,
+          "scroll": 758,
+          "main": 758,
+          "h1": "Clarifications",
+          "tables": 0,
+          "cards": 1,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 390,
+          "scroll": 380,
+          "main": 380,
+          "h1": "Clarifications",
+          "tables": 0,
+          "cards": 1,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 320,
+          "scroll": 310,
+          "main": 310,
+          "h1": "Clarifications",
+          "tables": 0,
+          "cards": 1,
+          "nameless": 0,
+          "filter": true
+        }
+      ],
+      "effective": "/Clarifications",
+      "status": 200
+    },
+    {
+      "role": "SourcingOfficer",
+      "path": "/Notifications",
+      "checks": [
+        {
+          "w": 1440,
+          "scroll": 1440,
+          "main": 1346,
+          "h1": "Notifications",
+          "tables": 0,
+          "cards": 2,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 1024,
+          "scroll": 1024,
+          "main": 930,
+          "h1": "Notifications",
+          "tables": 0,
+          "cards": 2,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 768,
+          "scroll": 758,
+          "main": 758,
+          "h1": "Notifications",
+          "tables": 0,
+          "cards": 2,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 390,
+          "scroll": 380,
+          "main": 380,
+          "h1": "Notifications",
+          "tables": 0,
+          "cards": 2,
+          "nameless": 0,
+          "filter": true
+        },
+        {
+          "w": 320,
+          "scroll": 310,
+          "main": 310,
+          "h1": "Notifications",
+          "tables": 0,
+          "cards": 2,
+          "nameless": 0,
+          "filter": true
+        }
+      ],
+      "effective": "/Notifications",
+      "status": 200
+    }
+  ],
+  "modals": [
+    {
+      "role": "Admin",
+      "route": "/AdminDashboard",
+      "path": "/Departments/Create",
+      "name": "Add department\nOrganize employees by team",
+      "checks": [
+        {
+          "w": 1440,
+          "width": 768,
+          "x": 331,
+          "right": 1099,
+          "scroll": 766,
+          "content": 766,
+          "height": 641,
+          "contentHeight": 574,
+          "visibleHeight": 574,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 390,
+          "width": 344,
+          "x": 18,
+          "right": 362,
+          "scroll": 342,
+          "content": 342,
+          "height": 680,
+          "contentHeight": 613,
+          "visibleHeight": 613,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 320,
+          "width": 274,
+          "x": 18,
+          "right": 292,
+          "scroll": 262,
+          "content": 262,
+          "height": 724,
+          "contentHeight": 662,
+          "visibleHeight": 662,
+          "focus": true,
+          "close": true
+        }
+      ],
+      "samePage": true,
+      "heading": "Add department",
+      "escape": true,
+      "focusReturned": true
+    },
+    {
+      "role": "Admin",
+      "route": "/AdminDashboard",
+      "path": "/Employees/Create",
+      "name": "Add employee\nCreate an account and assign access",
+      "checks": [
+        {
+          "w": 1440,
+          "width": 768,
+          "x": 331,
+          "right": 1099,
+          "scroll": 756,
+          "content": 756,
+          "height": 876,
+          "contentHeight": 817,
+          "visibleHeight": 817,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 390,
+          "width": 344,
+          "x": 18,
+          "right": 362,
+          "scroll": 332,
+          "content": 332,
+          "height": 724,
+          "contentHeight": 1108,
+          "visibleHeight": 1108,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 320,
+          "width": 274,
+          "x": 18,
+          "right": 292,
+          "scroll": 262,
+          "content": 262,
+          "height": 724,
+          "contentHeight": 1176,
+          "visibleHeight": 1176,
+          "focus": true,
+          "close": true
+        }
+      ],
+      "samePage": true,
+      "heading": "Add employee",
+      "escape": true,
+      "focusReturned": true
+    },
+    {
+      "role": "Admin",
+      "route": "/Departments",
+      "path": "/Departments/Create",
+      "name": "Add department",
+      "checks": [
+        {
+          "w": 1440,
+          "width": 768,
+          "x": 336,
+          "right": 1104,
+          "scroll": 766,
+          "content": 766,
+          "height": 641,
+          "contentHeight": 574,
+          "visibleHeight": 574,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 390,
+          "width": 344,
+          "x": 18,
+          "right": 362,
+          "scroll": 342,
+          "content": 342,
+          "height": 680,
+          "contentHeight": 613,
+          "visibleHeight": 613,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 320,
+          "width": 274,
+          "x": 18,
+          "right": 292,
+          "scroll": 262,
+          "content": 262,
+          "height": 724,
+          "contentHeight": 662,
+          "visibleHeight": 662,
+          "focus": true,
+          "close": true
+        }
+      ],
+      "samePage": true,
+      "heading": "Add department",
+      "escape": true,
+      "focusReturned": true
+    },
+    {
+      "role": "Admin",
+      "route": "/Departments",
+      "path": "/Departments/Details/1",
+      "name": "View details for Browser QA",
+      "checks": [
+        {
+          "w": 1440,
+          "width": 1152,
+          "x": 144,
+          "right": 1296,
+          "scroll": 1150,
+          "content": 1150,
+          "height": 457,
+          "contentHeight": 391,
+          "visibleHeight": 391,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 390,
+          "width": 344,
+          "x": 18,
+          "right": 362,
+          "scroll": 332,
+          "content": 332,
+          "height": 724,
+          "contentHeight": 807,
+          "visibleHeight": 807,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 320,
+          "width": 274,
+          "x": 18,
+          "right": 292,
+          "scroll": 262,
+          "content": 262,
+          "height": 724,
+          "contentHeight": 807,
+          "visibleHeight": 807,
+          "focus": true,
+          "close": true
+        }
+      ],
+      "samePage": true,
+      "heading": "Browser QA",
+      "escape": true,
+      "focusReturned": true
+    },
+    {
+      "role": "Admin",
+      "route": "/Employees",
+      "path": "/Employees/Create",
+      "name": "Add employee",
+      "checks": [
+        {
+          "w": 1440,
+          "width": 768,
+          "x": 331,
+          "right": 1099,
+          "scroll": 756,
+          "content": 756,
+          "height": 876,
+          "contentHeight": 817,
+          "visibleHeight": 817,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 390,
+          "width": 344,
+          "x": 18,
+          "right": 362,
+          "scroll": 332,
+          "content": 332,
+          "height": 724,
+          "contentHeight": 1108,
+          "visibleHeight": 1108,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 320,
+          "width": 274,
+          "x": 18,
+          "right": 292,
+          "scroll": 262,
+          "content": 262,
+          "height": 724,
+          "contentHeight": 1176,
+          "visibleHeight": 1176,
+          "focus": true,
+          "close": true
+        }
+      ],
+      "samePage": true,
+      "heading": "Add employee",
+      "escape": true,
+      "focusReturned": true
+    },
+    {
+      "role": "Admin",
+      "route": "/Employees",
+      "path": "/Employees/Details/1",
+      "name": "View details for Admin",
+      "checks": [
+        {
+          "w": 1440,
+          "width": 1152,
+          "x": 139,
+          "right": 1291,
+          "scroll": 1150,
+          "content": 1150,
+          "height": 527,
+          "contentHeight": 460,
+          "visibleHeight": 460,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 390,
+          "width": 344,
+          "x": 18,
+          "right": 362,
+          "scroll": 342,
+          "content": 342,
+          "height": 683,
+          "contentHeight": 616,
+          "visibleHeight": 616,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 320,
+          "width": 274,
+          "x": 18,
+          "right": 292,
+          "scroll": 262,
+          "content": 262,
+          "height": 724,
+          "contentHeight": 692,
+          "visibleHeight": 692,
+          "focus": true,
+          "close": true
+        }
+      ],
+      "samePage": true,
+      "heading": "Admin",
+      "escape": true,
+      "focusReturned": true
+    },
+    {
+      "role": "Admin",
+      "route": "/Employees",
+      "path": "/Employees/Edit/1",
+      "name": "Edit employee",
+      "checks": [
+        {
+          "w": 1440,
+          "width": 768,
+          "x": 331,
+          "right": 1099,
+          "scroll": 766,
+          "content": 766,
+          "height": 687,
+          "contentHeight": 620,
+          "visibleHeight": 620,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 390,
+          "width": 344,
+          "x": 18,
+          "right": 362,
+          "scroll": 332,
+          "content": 332,
+          "height": 724,
+          "contentHeight": 827,
+          "visibleHeight": 827,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 320,
+          "width": 274,
+          "x": 18,
+          "right": 292,
+          "scroll": 262,
+          "content": 262,
+          "height": 724,
+          "contentHeight": 901,
+          "visibleHeight": 901,
+          "focus": true,
+          "close": true
+        }
+      ],
+      "samePage": true,
+      "heading": "Edit employee",
+      "escape": true,
+      "focusReturned": true
+    },
+    {
+      "role": "Admin",
+      "route": "/Suppliers",
+      "path": "/Suppliers/Details/3?panel=overview",
+      "name": "Open application for Supplier3",
+      "checks": [
+        {
+          "w": 1440,
+          "width": 1152,
+          "x": 139,
+          "right": 1291,
+          "scroll": 1150,
+          "content": 1150,
+          "height": 577,
+          "contentHeight": 511,
+          "visibleHeight": 511,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 390,
+          "width": 344,
+          "x": 18,
+          "right": 362,
+          "scroll": 332,
+          "content": 332,
+          "height": 724,
+          "contentHeight": 900,
+          "visibleHeight": 900,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 320,
+          "width": 274,
+          "x": 18,
+          "right": 292,
+          "scroll": 262,
+          "content": 262,
+          "height": 724,
+          "contentHeight": 925,
+          "visibleHeight": 925,
+          "focus": true,
+          "close": true
+        }
+      ],
+      "samePage": true,
+      "heading": "Supplier3",
+      "escape": true,
+      "focusReturned": true
+    },
+    {
+      "role": "Admin",
+      "route": "/Suppliers",
+      "path": "/Suppliers/Details/3?panel=documents",
+      "name": "View documents for Supplier3",
+      "checks": [
+        {
+          "w": 1440,
+          "width": 1152,
+          "x": 139,
+          "right": 1291,
+          "scroll": 1150,
+          "content": 1150,
+          "height": 362,
+          "contentHeight": 296,
+          "visibleHeight": 296,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 390,
+          "width": 344,
+          "x": 18,
+          "right": 362,
+          "scroll": 342,
+          "content": 342,
+          "height": 360,
+          "contentHeight": 293,
+          "visibleHeight": 293,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 320,
+          "width": 274,
+          "x": 18,
+          "right": 292,
+          "scroll": 272,
+          "content": 272,
+          "height": 383,
+          "contentHeight": 316,
+          "visibleHeight": 316,
+          "focus": true,
+          "close": true
+        }
+      ],
+      "samePage": true,
+      "heading": "Supplier documents",
+      "escape": true,
+      "focusReturned": true
+    },
+    {
+      "role": "Admin",
+      "route": "/Suppliers",
+      "path": "/Suppliers/Categories/3",
+      "name": "Edit categories for Supplier3",
+      "checks": [
+        {
+          "w": 1440,
+          "width": 768,
+          "x": 331,
+          "right": 1099,
+          "scroll": 766,
+          "content": 766,
+          "height": 447,
+          "contentHeight": 381,
+          "visibleHeight": 381,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 390,
+          "width": 344,
+          "x": 18,
+          "right": 362,
+          "scroll": 342,
+          "content": 342,
+          "height": 489,
+          "contentHeight": 423,
+          "visibleHeight": 423,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 320,
+          "width": 274,
+          "x": 18,
+          "right": 292,
+          "scroll": 272,
+          "content": 272,
+          "height": 575,
+          "contentHeight": 509,
+          "visibleHeight": 509,
+          "focus": true,
+          "close": true
+        }
+      ],
+      "samePage": true,
+      "heading": "Edit supplier categories",
+      "escape": true,
+      "focusReturned": true
+    },
+    {
+      "role": "Admin",
+      "route": "/Categories",
+      "path": "/Categories/Create",
+      "name": "Add category",
+      "checks": [
+        {
+          "w": 1440,
+          "width": 768,
+          "x": 336,
+          "right": 1104,
+          "scroll": 766,
+          "content": 766,
+          "height": 395,
+          "contentHeight": 329,
+          "visibleHeight": 329,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 390,
+          "width": 344,
+          "x": 18,
+          "right": 362,
+          "scroll": 342,
+          "content": 342,
+          "height": 434,
+          "contentHeight": 368,
+          "visibleHeight": 368,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 320,
+          "width": 274,
+          "x": 18,
+          "right": 292,
+          "scroll": 272,
+          "content": 272,
+          "height": 434,
+          "contentHeight": 368,
+          "visibleHeight": 368,
+          "focus": true,
+          "close": true
+        }
+      ],
+      "samePage": true,
+      "heading": "Add category",
+      "escape": true,
+      "focusReturned": true
+    },
+    {
+      "role": "Admin",
+      "route": "/AdminOperations/Requests",
+      "path": "/AdminOperations/RequestQr/6",
+      "name": "Show request QR code",
+      "checks": [
+        {
+          "w": 1440,
+          "width": 768,
+          "x": 331,
+          "right": 1099,
+          "scroll": 766,
+          "content": 766,
+          "height": 598,
+          "contentHeight": 531,
+          "visibleHeight": 531,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 390,
+          "width": 344,
+          "x": 18,
+          "right": 362,
+          "scroll": 342,
+          "content": 342,
+          "height": 624,
+          "contentHeight": 557,
+          "visibleHeight": 557,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 320,
+          "width": 274,
+          "x": 18,
+          "right": 292,
+          "scroll": 272,
+          "content": 272,
+          "height": 674,
+          "contentHeight": 607,
+          "visibleHeight": 607,
+          "focus": true,
+          "close": true
+        }
+      ],
+      "samePage": true,
+      "heading": "Record QR code",
+      "escape": true,
+      "focusReturned": true
+    },
+    {
+      "role": "Admin",
+      "route": "/AdminOperations/Tenders",
+      "path": "/AdminOperations/Tender/6?panel=overview",
+      "name": "Tender summary: Phase 6 Replacement",
+      "checks": [
+        {
+          "w": 1440,
+          "width": 1152,
+          "x": 139,
+          "right": 1291,
+          "scroll": 1150,
+          "content": 1150,
+          "height": 459,
+          "contentHeight": 392,
+          "visibleHeight": 392,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 390,
+          "width": 344,
+          "x": 18,
+          "right": 362,
+          "scroll": 342,
+          "content": 342,
+          "height": 549,
+          "contentHeight": 483,
+          "visibleHeight": 483,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 320,
+          "width": 274,
+          "x": 18,
+          "right": 292,
+          "scroll": 272,
+          "content": 272,
+          "height": 549,
+          "contentHeight": 483,
+          "visibleHeight": 483,
+          "focus": true,
+          "close": true
+        }
+      ],
+      "samePage": true,
+      "heading": "Tender summary",
+      "escape": true,
+      "focusReturned": true
+    },
+    {
+      "role": "Admin",
+      "route": "/AdminOperations/Tenders",
+      "path": "/AdminOperations/Tender/6?panel=committee",
+      "name": "Committee members: Phase 6 Replacement",
+      "checks": [
+        {
+          "w": 1440,
+          "width": 1152,
+          "x": 139,
+          "right": 1291,
+          "scroll": 1150,
+          "content": 1150,
+          "height": 344,
+          "contentHeight": 277,
+          "visibleHeight": 277,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 390,
+          "width": 344,
+          "x": 18,
+          "right": 362,
+          "scroll": 342,
+          "content": 342,
+          "height": 300,
+          "contentHeight": 234,
+          "visibleHeight": 234,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 320,
+          "width": 274,
+          "x": 18,
+          "right": 292,
+          "scroll": 272,
+          "content": 272,
+          "height": 300,
+          "contentHeight": 234,
+          "visibleHeight": 234,
+          "focus": true,
+          "close": true
+        }
+      ],
+      "samePage": true,
+      "heading": "Committee members",
+      "escape": true,
+      "focusReturned": true
+    },
+    {
+      "role": "Admin",
+      "route": "/AdminOperations/Tenders",
+      "path": "/AdminOperations/Tender/6?panel=invitations",
+      "name": "Tender invitations: Phase 6 Replacement",
+      "checks": [
+        {
+          "w": 1440,
+          "width": 1152,
+          "x": 139,
+          "right": 1291,
+          "scroll": 1150,
+          "content": 1150,
+          "height": 367,
+          "contentHeight": 300,
+          "visibleHeight": 300,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 390,
+          "width": 344,
+          "x": 18,
+          "right": 362,
+          "scroll": 342,
+          "content": 342,
+          "height": 347,
+          "contentHeight": 280,
+          "visibleHeight": 280,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 320,
+          "width": 274,
+          "x": 18,
+          "right": 292,
+          "scroll": 272,
+          "content": 272,
+          "height": 347,
+          "contentHeight": 280,
+          "visibleHeight": 280,
+          "focus": true,
+          "close": true
+        }
+      ],
+      "samePage": true,
+      "heading": "Tender invitations",
+      "escape": true,
+      "focusReturned": true
+    },
+    {
+      "role": "Admin",
+      "route": "/AdminOperations/Invitations",
+      "path": "/AdminOperations/InvitationDetails/21",
+      "name": "View invitation details",
+      "checks": [
+        {
+          "w": 1440,
+          "width": 1152,
+          "x": 139,
+          "right": 1291,
+          "scroll": 1150,
+          "content": 1150,
+          "height": 527,
+          "contentHeight": 461,
+          "visibleHeight": 461,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 390,
+          "width": 344,
+          "x": 18,
+          "right": 362,
+          "scroll": 342,
+          "content": 342,
+          "height": 688,
+          "contentHeight": 621,
+          "visibleHeight": 621,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 320,
+          "width": 274,
+          "x": 18,
+          "right": 292,
+          "scroll": 272,
+          "content": 272,
+          "height": 688,
+          "contentHeight": 621,
+          "visibleHeight": 621,
+          "focus": true,
+          "close": true
+        }
+      ],
+      "samePage": true,
+      "heading": "Supplier3",
+      "escape": true,
+      "focusReturned": true
+    },
+    {
+      "role": "Admin",
+      "route": "/AdminOperations/Bids",
+      "path": "/AdminOperations/BidDetails/9?panel=overview",
+      "name": "View bid summary",
+      "checks": [
+        {
+          "w": 1440,
+          "width": 1152,
+          "x": 139,
+          "right": 1291,
+          "scroll": 1150,
+          "content": 1150,
+          "height": 613,
+          "contentHeight": 546,
+          "visibleHeight": 546,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 390,
+          "width": 344,
+          "x": 18,
+          "right": 362,
+          "scroll": 332,
+          "content": 332,
+          "height": 724,
+          "contentHeight": 777,
+          "visibleHeight": 777,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 320,
+          "width": 274,
+          "x": 18,
+          "right": 292,
+          "scroll": 262,
+          "content": 262,
+          "height": 724,
+          "contentHeight": 777,
+          "visibleHeight": 777,
+          "focus": true,
+          "close": true
+        }
+      ],
+      "samePage": true,
+      "heading": "Supplier3",
+      "escape": true,
+      "focusReturned": true
+    },
+    {
+      "role": "Admin",
+      "route": "/AdminOperations/Bids",
+      "path": "/AdminOperations/BidDetails/9?panel=items",
+      "name": "View quoted items",
+      "checks": [
+        {
+          "w": 1440,
+          "width": 1152,
+          "x": 139,
+          "right": 1291,
+          "scroll": 1150,
+          "content": 1150,
+          "height": 488,
+          "contentHeight": 422,
+          "visibleHeight": 422,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 390,
+          "width": 344,
+          "x": 18,
+          "right": 362,
+          "scroll": 342,
+          "content": 342,
+          "height": 704,
+          "contentHeight": 638,
+          "visibleHeight": 638,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 320,
+          "width": 274,
+          "x": 18,
+          "right": 292,
+          "scroll": 272,
+          "content": 272,
+          "height": 704,
+          "contentHeight": 638,
+          "visibleHeight": 638,
+          "focus": true,
+          "close": true
+        }
+      ],
+      "samePage": true,
+      "heading": "Quoted items",
+      "escape": true,
+      "focusReturned": true
+    },
+    {
+      "role": "Admin",
+      "route": "/EvaluationWorkflow",
+      "path": "/EvaluationWorkflow/Details/5?panel=progress",
+      "name": "Reviewer progress: Phase 6 Cancel",
+      "checks": [
+        {
+          "w": 1440,
+          "width": 1152,
+          "x": 144,
+          "right": 1296,
+          "scroll": 1150,
+          "content": 1150,
+          "height": 876,
+          "contentHeight": 810,
+          "visibleHeight": 810,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 390,
+          "width": 344,
+          "x": 18,
+          "right": 362,
+          "scroll": 332,
+          "content": 332,
+          "height": 724,
+          "contentHeight": 1318,
+          "visibleHeight": 1318,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 320,
+          "width": 274,
+          "x": 18,
+          "right": 292,
+          "scroll": 262,
+          "content": 262,
+          "height": 724,
+          "contentHeight": 1438,
+          "visibleHeight": 1438,
+          "focus": true,
+          "close": true
+        }
+      ],
+      "samePage": true,
+      "heading": "Reviewer progress",
+      "escape": true,
+      "focusReturned": true
+    },
+    {
+      "role": "Admin",
+      "route": "/EvaluationWorkflow",
+      "path": "/EvaluationWorkflow/Details/5?panel=comparison",
+      "name": "Weighted comparison: Phase 6 Cancel",
+      "checks": [
+        {
+          "w": 1440,
+          "width": 1152,
+          "x": 144,
+          "right": 1296,
+          "scroll": 1150,
+          "content": 1150,
+          "height": 691,
+          "contentHeight": 624,
+          "visibleHeight": 624,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 390,
+          "width": 344,
+          "x": 18,
+          "right": 362,
+          "scroll": 332,
+          "content": 332,
+          "height": 724,
+          "contentHeight": 1319,
+          "visibleHeight": 1319,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 320,
+          "width": 274,
+          "x": 18,
+          "right": 292,
+          "scroll": 262,
+          "content": 262,
+          "height": 724,
+          "contentHeight": 1617,
+          "visibleHeight": 1617,
+          "focus": true,
+          "close": true
+        }
+      ],
+      "samePage": true,
+      "heading": "Weighted comparison",
+      "escape": true,
+      "focusReturned": true
+    },
+    {
+      "role": "Admin",
+      "route": "/EvaluationWorkflow",
+      "path": "/EvaluationWorkflow/Details/5?panel=decision",
+      "name": "Report and decision: Phase 6 Cancel",
+      "checks": [
+        {
+          "w": 1440,
+          "width": 1152,
+          "x": 144,
+          "right": 1296,
+          "scroll": 1150,
+          "content": 1150,
+          "height": 818,
+          "contentHeight": 752,
+          "visibleHeight": 752,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 390,
+          "width": 344,
+          "x": 18,
+          "right": 362,
+          "scroll": 332,
+          "content": 332,
+          "height": 724,
+          "contentHeight": 954,
+          "visibleHeight": 954,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 320,
+          "width": 274,
+          "x": 18,
+          "right": 292,
+          "scroll": 262,
+          "content": 262,
+          "height": 724,
+          "contentHeight": 1165,
+          "visibleHeight": 1165,
+          "focus": true,
+          "close": true
+        }
+      ],
+      "samePage": true,
+      "heading": "Report and decision",
+      "escape": true,
+      "focusReturned": true
+    },
+    {
+      "role": "Admin",
+      "route": "/Clarifications",
+      "path": "/Clarifications/Details/1",
+      "name": "View clarification: Additional insurance PDF",
+      "checks": [
+        {
+          "w": 1440,
+          "width": 1152,
+          "x": 144,
+          "right": 1296,
+          "scroll": 1150,
+          "content": 1150,
+          "height": 679,
+          "contentHeight": 613,
+          "visibleHeight": 613,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 390,
+          "width": 344,
+          "x": 18,
+          "right": 362,
+          "scroll": 332,
+          "content": 332,
+          "height": 724,
+          "contentHeight": 689,
+          "visibleHeight": 689,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 320,
+          "width": 274,
+          "x": 18,
+          "right": 292,
+          "scroll": 262,
+          "content": 262,
+          "height": 724,
+          "contentHeight": 752,
+          "visibleHeight": 752,
+          "focus": true,
+          "close": true
+        }
+      ],
+      "samePage": true,
+      "heading": "Additional insurance PDF",
+      "escape": true,
+      "focusReturned": true
+    },
+    {
+      "role": "RequestingDepartment",
+      "route": "/PurchaseRequisitions/Dashboard",
+      "path": "/PurchaseRequisitions/Details/6?panel=overview",
+      "name": "Details for PR-6",
+      "checks": [
+        {
+          "w": 1440,
+          "width": 1152,
+          "x": 139,
+          "right": 1291,
+          "scroll": 1150,
+          "content": 1150,
+          "height": 624,
+          "contentHeight": 558,
+          "visibleHeight": 558,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 390,
+          "width": 344,
+          "x": 18,
+          "right": 362,
+          "scroll": 332,
+          "content": 332,
+          "height": 724,
+          "contentHeight": 670,
+          "visibleHeight": 670,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 320,
+          "width": 274,
+          "x": 18,
+          "right": 292,
+          "scroll": 262,
+          "content": 262,
+          "height": 724,
+          "contentHeight": 670,
+          "visibleHeight": 670,
+          "focus": true,
+          "close": true
+        }
+      ],
+      "samePage": true,
+      "heading": "Phase 6 Cancel requisition",
+      "escape": true,
+      "focusReturned": true
+    },
+    {
+      "role": "RequestingDepartment",
+      "route": "/PurchaseRequisitions/Dashboard",
+      "path": "/PurchaseRequisitions/Details/6?panel=items",
+      "name": "Items for PR-6",
+      "checks": [
+        {
+          "w": 1440,
+          "width": 1152,
+          "x": 139,
+          "right": 1291,
+          "scroll": 1150,
+          "content": 1150,
+          "height": 458,
+          "contentHeight": 392,
+          "visibleHeight": 392,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 390,
+          "width": 344,
+          "x": 18,
+          "right": 362,
+          "scroll": 342,
+          "content": 342,
+          "height": 640,
+          "contentHeight": 573,
+          "visibleHeight": 573,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 320,
+          "width": 274,
+          "x": 18,
+          "right": 292,
+          "scroll": 272,
+          "content": 272,
+          "height": 640,
+          "contentHeight": 573,
+          "visibleHeight": 573,
+          "focus": true,
+          "close": true
+        }
+      ],
+      "samePage": true,
+      "heading": "Requested items",
+      "escape": true,
+      "focusReturned": true
+    },
+    {
+      "role": "RequestingDepartment",
+      "route": "/PurchaseRequisitions/Dashboard",
+      "path": "/PurchaseRequisitions/Details/6?panel=qr",
+      "name": "QR code for PR-6",
+      "checks": [
+        {
+          "w": 1440,
+          "width": 1152,
+          "x": 139,
+          "right": 1291,
+          "scroll": 1150,
+          "content": 1150,
+          "height": 474,
+          "contentHeight": 407,
+          "visibleHeight": 407,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 390,
+          "width": 344,
+          "x": 18,
+          "right": 362,
+          "scroll": 342,
+          "content": 342,
+          "height": 624,
+          "contentHeight": 557,
+          "visibleHeight": 557,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 320,
+          "width": 274,
+          "x": 18,
+          "right": 292,
+          "scroll": 272,
+          "content": 272,
+          "height": 624,
+          "contentHeight": 557,
+          "visibleHeight": 557,
+          "focus": true,
+          "close": true
+        }
+      ],
+      "samePage": true,
+      "heading": "Request QR code",
+      "escape": true,
+      "focusReturned": true
+    },
+    {
+      "role": "RequestingDepartment",
+      "route": "/PurchaseRequisitions/MyRequests",
+      "path": "/PurchaseRequisitions/Details/6?panel=overview",
+      "name": "Details for PR-6",
+      "checks": [
+        {
+          "w": 1440,
+          "width": 1152,
+          "x": 139,
+          "right": 1291,
+          "scroll": 1150,
+          "content": 1150,
+          "height": 624,
+          "contentHeight": 558,
+          "visibleHeight": 558,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 390,
+          "width": 344,
+          "x": 18,
+          "right": 362,
+          "scroll": 332,
+          "content": 332,
+          "height": 724,
+          "contentHeight": 670,
+          "visibleHeight": 670,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 320,
+          "width": 274,
+          "x": 18,
+          "right": 292,
+          "scroll": 262,
+          "content": 262,
+          "height": 724,
+          "contentHeight": 670,
+          "visibleHeight": 670,
+          "focus": true,
+          "close": true
+        }
+      ],
+      "samePage": true,
+      "heading": "Phase 6 Cancel requisition",
+      "escape": true,
+      "focusReturned": true
+    },
+    {
+      "role": "RequestingDepartment",
+      "route": "/PurchaseRequisitions/MyRequests",
+      "path": "/PurchaseRequisitions/Details/6?panel=items",
+      "name": "Items for PR-6",
+      "checks": [
+        {
+          "w": 1440,
+          "width": 1152,
+          "x": 139,
+          "right": 1291,
+          "scroll": 1150,
+          "content": 1150,
+          "height": 458,
+          "contentHeight": 392,
+          "visibleHeight": 392,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 390,
+          "width": 344,
+          "x": 18,
+          "right": 362,
+          "scroll": 342,
+          "content": 342,
+          "height": 640,
+          "contentHeight": 573,
+          "visibleHeight": 573,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 320,
+          "width": 274,
+          "x": 18,
+          "right": 292,
+          "scroll": 272,
+          "content": 272,
+          "height": 640,
+          "contentHeight": 573,
+          "visibleHeight": 573,
+          "focus": true,
+          "close": true
+        }
+      ],
+      "samePage": true,
+      "heading": "Requested items",
+      "escape": true,
+      "focusReturned": true
+    },
+    {
+      "role": "RequestingDepartment",
+      "route": "/PurchaseRequisitions/MyRequests",
+      "path": "/PurchaseRequisitions/Details/6?panel=qr",
+      "name": "QR code for PR-6",
+      "checks": [
+        {
+          "w": 1440,
+          "width": 1152,
+          "x": 139,
+          "right": 1291,
+          "scroll": 1150,
+          "content": 1150,
+          "height": 474,
+          "contentHeight": 407,
+          "visibleHeight": 407,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 390,
+          "width": 344,
+          "x": 18,
+          "right": 362,
+          "scroll": 342,
+          "content": 342,
+          "height": 624,
+          "contentHeight": 557,
+          "visibleHeight": 557,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 320,
+          "width": 274,
+          "x": 18,
+          "right": 292,
+          "scroll": 272,
+          "content": 272,
+          "height": 624,
+          "contentHeight": 557,
+          "visibleHeight": 557,
+          "focus": true,
+          "close": true
+        }
+      ],
+      "samePage": true,
+      "heading": "Request QR code",
+      "escape": true,
+      "focusReturned": true
+    },
+    {
+      "role": "SourcingOfficer",
+      "route": "/SourcingDashboard",
+      "path": "/RequisitionReviews/Details/1",
+      "name": "Review request PR-1",
+      "checks": [
+        {
+          "w": 1440,
+          "width": 1152,
+          "x": 139,
+          "right": 1291,
+          "scroll": 1140,
+          "content": 1140,
+          "height": 876,
+          "contentHeight": 861,
+          "visibleHeight": 861,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 390,
+          "width": 344,
+          "x": 18,
+          "right": 362,
+          "scroll": 332,
+          "content": 332,
+          "height": 724,
+          "contentHeight": 1623,
+          "visibleHeight": 1623,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 320,
+          "width": 274,
+          "x": 18,
+          "right": 292,
+          "scroll": 262,
+          "content": 262,
+          "height": 724,
+          "contentHeight": 1953,
+          "visibleHeight": 1953,
+          "focus": true,
+          "close": true
+        }
+      ],
+      "samePage": true,
+      "heading": "Phase 4 browser draft",
+      "escape": true,
+      "focusReturned": true
+    },
+    {
+      "role": "SourcingOfficer",
+      "route": "/RequisitionReviews/Pending",
+      "path": "/RequisitionReviews/Details/1",
+      "name": "View request PR-1",
+      "checks": [
+        {
+          "w": 1440,
+          "width": 1152,
+          "x": 144,
+          "right": 1296,
+          "scroll": 1140,
+          "content": 1140,
+          "height": 876,
+          "contentHeight": 861,
+          "visibleHeight": 861,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 390,
+          "width": 344,
+          "x": 18,
+          "right": 362,
+          "scroll": 332,
+          "content": 332,
+          "height": 724,
+          "contentHeight": 1623,
+          "visibleHeight": 1623,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 320,
+          "width": 274,
+          "x": 18,
+          "right": 292,
+          "scroll": 262,
+          "content": 262,
+          "height": 724,
+          "contentHeight": 1953,
+          "visibleHeight": 1953,
+          "focus": true,
+          "close": true
+        }
+      ],
+      "samePage": true,
+      "heading": "Phase 4 browser draft",
+      "escape": true,
+      "focusReturned": true
+    },
+    {
+      "role": "SourcingOfficer",
+      "route": "/RequisitionReviews",
+      "path": "/RequisitionReviews/Details/1",
+      "name": "View request PR-1",
+      "checks": [
+        {
+          "w": 1440,
+          "width": 1152,
+          "x": 139,
+          "right": 1291,
+          "scroll": 1140,
+          "content": 1140,
+          "height": 876,
+          "contentHeight": 861,
+          "visibleHeight": 861,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 390,
+          "width": 344,
+          "x": 18,
+          "right": 362,
+          "scroll": 332,
+          "content": 332,
+          "height": 724,
+          "contentHeight": 1623,
+          "visibleHeight": 1623,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 320,
+          "width": 274,
+          "x": 18,
+          "right": 292,
+          "scroll": 262,
+          "content": 262,
+          "height": 724,
+          "contentHeight": 1953,
+          "visibleHeight": 1953,
+          "focus": true,
+          "close": true
+        }
+      ],
+      "samePage": true,
+      "heading": "Phase 4 browser draft",
+      "escape": true,
+      "focusReturned": true
+    },
+    {
+      "role": "SourcingOfficer",
+      "route": "/Suppliers",
+      "path": "/Suppliers/Details/3?panel=overview",
+      "name": "Open application for Supplier3",
+      "checks": [
+        {
+          "w": 1440,
+          "width": 1152,
+          "x": 139,
+          "right": 1291,
+          "scroll": 1150,
+          "content": 1150,
+          "height": 520,
+          "contentHeight": 454,
+          "visibleHeight": 454,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 390,
+          "width": 344,
+          "x": 18,
+          "right": 362,
+          "scroll": 332,
+          "content": 332,
+          "height": 724,
+          "contentHeight": 802,
+          "visibleHeight": 802,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 320,
+          "width": 274,
+          "x": 18,
+          "right": 292,
+          "scroll": 262,
+          "content": 262,
+          "height": 724,
+          "contentHeight": 827,
+          "visibleHeight": 827,
+          "focus": true,
+          "close": true
+        }
+      ],
+      "samePage": true,
+      "heading": "Supplier3",
+      "escape": true,
+      "focusReturned": true
+    },
+    {
+      "role": "SourcingOfficer",
+      "route": "/Suppliers",
+      "path": "/Suppliers/Details/3?panel=documents",
+      "name": "View documents for Supplier3",
+      "checks": [
+        {
+          "w": 1440,
+          "width": 1152,
+          "x": 139,
+          "right": 1291,
+          "scroll": 1150,
+          "content": 1150,
+          "height": 417,
+          "contentHeight": 351,
+          "visibleHeight": 351,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 390,
+          "width": 344,
+          "x": 18,
+          "right": 362,
+          "scroll": 342,
+          "content": 342,
+          "height": 415,
+          "contentHeight": 348,
+          "visibleHeight": 348,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 320,
+          "width": 274,
+          "x": 18,
+          "right": 292,
+          "scroll": 272,
+          "content": 272,
+          "height": 438,
+          "contentHeight": 371,
+          "visibleHeight": 371,
+          "focus": true,
+          "close": true
+        }
+      ],
+      "samePage": true,
+      "heading": "Supplier documents",
+      "escape": true,
+      "focusReturned": true
+    },
+    {
+      "role": "SourcingOfficer",
+      "route": "/Suppliers",
+      "path": "/Clarifications/Create?kind=supplier&recordId=3",
+      "name": "Request a document from Supplier3",
+      "checks": [
+        {
+          "w": 1440,
+          "width": 768,
+          "x": 331,
+          "right": 1099,
+          "scroll": 766,
+          "content": 766,
+          "height": 791,
+          "contentHeight": 725,
+          "visibleHeight": 725,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 390,
+          "width": 344,
+          "x": 18,
+          "right": 362,
+          "scroll": 332,
+          "content": 332,
+          "height": 724,
+          "contentHeight": 758,
+          "visibleHeight": 758,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 320,
+          "width": 274,
+          "x": 18,
+          "right": 292,
+          "scroll": 262,
+          "content": 262,
+          "height": 724,
+          "contentHeight": 801,
+          "visibleHeight": 801,
+          "focus": true,
+          "close": true
+        }
+      ],
+      "samePage": true,
+      "heading": "Request supplier document",
+      "escape": true,
+      "focusReturned": true
+    },
+    {
+      "role": "SourcingOfficer",
+      "route": "/Tenders",
+      "path": "/Tenders/Create",
+      "name": "+ New Tender",
+      "checks": [
+        {
+          "w": 1440,
+          "width": 768,
+          "x": 331,
+          "right": 1099,
+          "scroll": 756,
+          "content": 756,
+          "height": 876,
+          "contentHeight": 890,
+          "visibleHeight": 890,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 390,
+          "width": 344,
+          "x": 18,
+          "right": 362,
+          "scroll": 332,
+          "content": 332,
+          "height": 724,
+          "contentHeight": 1037,
+          "visibleHeight": 1037,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 320,
+          "width": 274,
+          "x": 18,
+          "right": 292,
+          "scroll": 262,
+          "content": 262,
+          "height": 724,
+          "contentHeight": 1060,
+          "visibleHeight": 1060,
+          "focus": true,
+          "close": true
+        }
+      ],
+      "samePage": true,
+      "heading": "New Tender",
+      "escape": true,
+      "focusReturned": true
+    },
+    {
+      "role": "SourcingOfficer",
+      "route": "/Tenders",
+      "path": "/Tenders/Details/6?panel=overview",
+      "name": "View tender Phase 6 Replacement",
+      "checks": [
+        {
+          "w": 1440,
+          "width": 1152,
+          "x": 139,
+          "right": 1291,
+          "scroll": 1150,
+          "content": 1150,
+          "height": 760,
+          "contentHeight": 693,
+          "visibleHeight": 693,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 390,
+          "width": 344,
+          "x": 18,
+          "right": 362,
+          "scroll": 332,
+          "content": 332,
+          "height": 724,
+          "contentHeight": 959,
+          "visibleHeight": 959,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 320,
+          "width": 274,
+          "x": 18,
+          "right": 292,
+          "scroll": 262,
+          "content": 262,
+          "height": 724,
+          "contentHeight": 982,
+          "visibleHeight": 982,
+          "focus": true,
+          "close": true
+        }
+      ],
+      "samePage": true,
+      "heading": "Phase 6 Replacement",
+      "escape": true,
+      "focusReturned": true
+    },
+    {
+      "role": "SourcingOfficer",
+      "route": "/Tenders",
+      "path": "/Tenders/Details/6?panel=rounds",
+      "name": "Bidding rounds for Phase 6 Replacement",
+      "checks": [
+        {
+          "w": 1440,
+          "width": 1152,
+          "x": 139,
+          "right": 1291,
+          "scroll": 1150,
+          "content": 1150,
+          "height": 462,
+          "contentHeight": 396,
+          "visibleHeight": 396,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 390,
+          "width": 344,
+          "x": 18,
+          "right": 362,
+          "scroll": 342,
+          "content": 342,
+          "height": 490,
+          "contentHeight": 424,
+          "visibleHeight": 424,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 320,
+          "width": 274,
+          "x": 18,
+          "right": 292,
+          "scroll": 272,
+          "content": 272,
+          "height": 490,
+          "contentHeight": 424,
+          "visibleHeight": 424,
+          "focus": true,
+          "close": true
+        }
+      ],
+      "samePage": true,
+      "heading": "Bidding rounds",
+      "escape": true,
+      "focusReturned": true
+    },
+    {
+      "role": "SourcingOfficer",
+      "route": "/Invitations",
+      "path": "/Invitations/Create",
+      "name": "New invitation",
+      "checks": [
+        {
+          "w": 1440,
+          "width": 768,
+          "x": 331,
+          "right": 1099,
+          "scroll": 766,
+          "content": 766,
+          "height": 598,
+          "contentHeight": 531,
+          "visibleHeight": 531,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 390,
+          "width": 344,
+          "x": 18,
+          "right": 362,
+          "scroll": 342,
+          "content": 342,
+          "height": 610,
+          "contentHeight": 543,
+          "visibleHeight": 543,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 320,
+          "width": 274,
+          "x": 18,
+          "right": 292,
+          "scroll": 272,
+          "content": 272,
+          "height": 683,
+          "contentHeight": 617,
+          "visibleHeight": 617,
+          "focus": true,
+          "close": true
+        }
+      ],
+      "samePage": true,
+      "heading": "New invitation",
+      "escape": true,
+      "focusReturned": true
+    },
+    {
+      "role": "SourcingOfficer",
+      "route": "/Invitations",
+      "path": "/Invitations/Details/21",
+      "name": "View invitation 21",
+      "checks": [
+        {
+          "w": 1440,
+          "width": 1152,
+          "x": 139,
+          "right": 1291,
+          "scroll": 1150,
+          "content": 1150,
+          "height": 491,
+          "contentHeight": 425,
+          "visibleHeight": 425,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 390,
+          "width": 344,
+          "x": 18,
+          "right": 362,
+          "scroll": 342,
+          "content": 342,
+          "height": 628,
+          "contentHeight": 562,
+          "visibleHeight": 562,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 320,
+          "width": 274,
+          "x": 18,
+          "right": 292,
+          "scroll": 272,
+          "content": 272,
+          "height": 628,
+          "contentHeight": 562,
+          "visibleHeight": 562,
+          "focus": true,
+          "close": true
+        }
+      ],
+      "samePage": true,
+      "heading": "Supplier3",
+      "escape": true,
+      "focusReturned": true
+    },
+    {
+      "role": "SourcingOfficer",
+      "route": "/EvaluationWorkflow",
+      "path": "/EvaluationWorkflow/Details/5?panel=progress",
+      "name": "Reviewer progress: Phase 6 Cancel",
+      "checks": [
+        {
+          "w": 1440,
+          "width": 1152,
+          "x": 144,
+          "right": 1296,
+          "scroll": 1150,
+          "content": 1150,
+          "height": 876,
+          "contentHeight": 810,
+          "visibleHeight": 810,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 390,
+          "width": 344,
+          "x": 18,
+          "right": 362,
+          "scroll": 332,
+          "content": 332,
+          "height": 724,
+          "contentHeight": 1318,
+          "visibleHeight": 1318,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 320,
+          "width": 274,
+          "x": 18,
+          "right": 292,
+          "scroll": 262,
+          "content": 262,
+          "height": 724,
+          "contentHeight": 1438,
+          "visibleHeight": 1438,
+          "focus": true,
+          "close": true
+        }
+      ],
+      "samePage": true,
+      "heading": "Reviewer progress",
+      "escape": true,
+      "focusReturned": true
+    },
+    {
+      "role": "SourcingOfficer",
+      "route": "/EvaluationWorkflow",
+      "path": "/EvaluationWorkflow/Details/5?panel=comparison",
+      "name": "Weighted comparison: Phase 6 Cancel",
+      "checks": [
+        {
+          "w": 1440,
+          "width": 1152,
+          "x": 144,
+          "right": 1296,
+          "scroll": 1150,
+          "content": 1150,
+          "height": 691,
+          "contentHeight": 624,
+          "visibleHeight": 624,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 390,
+          "width": 344,
+          "x": 18,
+          "right": 362,
+          "scroll": 332,
+          "content": 332,
+          "height": 724,
+          "contentHeight": 1319,
+          "visibleHeight": 1319,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 320,
+          "width": 274,
+          "x": 18,
+          "right": 292,
+          "scroll": 262,
+          "content": 262,
+          "height": 724,
+          "contentHeight": 1617,
+          "visibleHeight": 1617,
+          "focus": true,
+          "close": true
+        }
+      ],
+      "samePage": true,
+      "heading": "Weighted comparison",
+      "escape": true,
+      "focusReturned": true
+    },
+    {
+      "role": "SourcingOfficer",
+      "route": "/EvaluationWorkflow",
+      "path": "/EvaluationWorkflow/Details/5?panel=decision",
+      "name": "Report and decision: Phase 6 Cancel",
+      "checks": [
+        {
+          "w": 1440,
+          "width": 1152,
+          "x": 144,
+          "right": 1296,
+          "scroll": 1150,
+          "content": 1150,
+          "height": 818,
+          "contentHeight": 752,
+          "visibleHeight": 752,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 390,
+          "width": 344,
+          "x": 18,
+          "right": 362,
+          "scroll": 332,
+          "content": 332,
+          "height": 724,
+          "contentHeight": 954,
+          "visibleHeight": 954,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 320,
+          "width": 274,
+          "x": 18,
+          "right": 292,
+          "scroll": 262,
+          "content": 262,
+          "height": 724,
+          "contentHeight": 1165,
+          "visibleHeight": 1165,
+          "focus": true,
+          "close": true
+        }
+      ],
+      "samePage": true,
+      "heading": "Report and decision",
+      "escape": true,
+      "focusReturned": true
+    },
+    {
+      "role": "SourcingOfficer",
+      "route": "/Clarifications",
+      "path": "/Clarifications/Details/1",
+      "name": "View clarification: Additional insurance PDF",
+      "checks": [
+        {
+          "w": 1440,
+          "width": 1152,
+          "x": 144,
+          "right": 1296,
+          "scroll": 1150,
+          "content": 1150,
+          "height": 681,
+          "contentHeight": 615,
+          "visibleHeight": 615,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 390,
+          "width": 344,
+          "x": 18,
+          "right": 362,
+          "scroll": 332,
+          "content": 332,
+          "height": 724,
+          "contentHeight": 733,
+          "visibleHeight": 733,
+          "focus": true,
+          "close": true
+        },
+        {
+          "w": 320,
+          "width": 274,
+          "x": 18,
+          "right": 292,
+          "scroll": 262,
+          "content": 262,
+          "height": 724,
+          "contentHeight": 796,
+          "visibleHeight": 796,
+          "focus": true,
+          "close": true
+        }
+      ],
+      "samePage": true,
+      "heading": "Additional insurance PDF",
+      "escape": true,
+      "focusReturned": true
+    }
+  ],
+  "interactions": [
+    {
+      "id": "employee-filter-keyboard",
+      "found": true,
+      "expanded": "true"
+    },
+    {
+      "id": "role-audit",
+      "role": "Supplier",
+      "error": "Timed out: Supplier audit landing "
+    },
+    {
+      "id": "role-audit",
+      "role": "SourcingManager",
+      "error": "Timed out: login form "
+    },
+    {
+      "id": "role-audit",
+      "role": "TechnicalCommittee",
+      "error": "Timed out: login form "
+    },
+    {
+      "id": "role-audit",
+      "role": "FinancialCommittee",
+      "error": "Timed out: login form "
+    },
+    {
+      "id": "role-audit",
+      "role": "TopCommittee",
+      "error": "Timed out: login form "
+    }
+  ]
+}

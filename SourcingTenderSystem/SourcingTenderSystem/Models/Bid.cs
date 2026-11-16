@@ -11,12 +11,18 @@ public class Bid
     public int TenderId { get; set; }
     public int SupplierProfileId { get; set; }
     public decimal TotalPrice { get; set; }
-    public string Currency { get; set; } = string.Empty;
+    public const string JordanianDinar = "JOD";
+    public string Currency { get; set; } = JordanianDinar;
     public int DeliveryDays { get; set; }
     public int ValidityDays { get; set; }
     public string Status { get; set; } = string.Empty;
+    public string? AwardOutcome { get; set; }
+    public int? ComplianceClarificationId { get; set; }
+    public ClarificationRequest? ComplianceClarification { get; set; }
     public string? ComplianceNotes { get; set; }
     public DateTime? SubmittedAt { get; set; }
+    public int? SubmittedRoundNumber { get; set; }
+    public TenderRound? SubmittedRound { get; set; }
 
     public Tender Tender { get; set; } = null!;
     public SupplierProfile SupplierProfile { get; set; } = null!;

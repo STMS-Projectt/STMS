@@ -1,0 +1,1103 @@
+[
+  {
+    "file": "Account\\Login.cshtml",
+    "line": 8,
+    "text": [
+      "STMS"
+    ]
+  },
+  {
+    "file": "AdminDashboard\\Index.cshtml",
+    "line": 56,
+    "text": [
+      "= 0; tick--) { "
+    ]
+  },
+  {
+    "file": "AdminOperations\\BidDetails.cshtml",
+    "line": 4,
+    "text": [
+      "SUBMITTED BID #@Model.Id"
+    ]
+  },
+  {
+    "file": "AdminOperations\\InvitationDetails.cshtml",
+    "line": 4,
+    "text": [
+      "INVITATION #@Model.Id"
+    ]
+  },
+  {
+    "file": "AdminOperations\\Register.cshtml",
+    "line": 49,
+    "text": [
+      "#@row.Id"
+    ]
+  },
+  {
+    "file": "AdminOperations\\Request.cshtml",
+    "line": 4,
+    "text": [
+      "REQUEST #@Model.Id"
+    ]
+  },
+  {
+    "file": "AdminOperations\\Tender.cshtml",
+    "line": 10,
+    "text": [
+      "TENDER #@tender.Id"
+    ]
+  },
+  {
+    "file": "AdminOperations\\Tender.cshtml",
+    "line": 33,
+    "text": [
+      " m.MemberRole)) { "
+    ]
+  },
+  {
+    "file": "BidDocuments\\Upload.cshtml",
+    "line": 17,
+    "text": [
+      "-- Choose a type --"
+    ]
+  },
+  {
+    "file": "BidItems\\Create.cshtml",
+    "line": 20,
+    "text": [
+      "(fixed by the requesting department)"
+    ]
+  },
+  {
+    "file": "BidItems\\Create.cshtml",
+    "line": 32,
+    "text": [
+      "Line total = unit price × @item.Quantity"
+    ]
+  },
+  {
+    "file": "BidItems\\Edit.cshtml",
+    "line": 21,
+    "text": [
+      "(fixed by the requesting department)"
+    ]
+  },
+  {
+    "file": "BidItems\\Edit.cshtml",
+    "line": 32,
+    "text": [
+      "Line total = unit price × @item.Quantity"
+    ]
+  },
+  {
+    "file": "Bids\\Create.cshtml",
+    "line": 12,
+    "text": [
+      "Closes @tender.CloseDate.ToString(\"yyyy-MM-dd HH:mm\") (UTC)"
+    ]
+  },
+  {
+    "file": "Bids\\Details.cshtml",
+    "line": 10,
+    "text": [
+      "SUPPLIER BID #@bid.Id"
+    ]
+  },
+  {
+    "file": "Bids\\Details.cshtml",
+    "line": 42,
+    "text": [
+      "Result: @result"
+    ]
+  },
+  {
+    "file": "Bids\\Details.cshtml",
+    "line": 159,
+    "text": [
+      "Prices: @(Model.Rows.Count - Model.MissingPrices) of @Model.Rows.Count items priced"
+    ]
+  },
+  {
+    "file": "Bids\\Details.cshtml",
+    "line": 162,
+    "text": [
+      "OK"
+    ]
+  },
+  {
+    "file": "Bids\\Details.cshtml",
+    "line": 170,
+    "text": [
+      "Documents: @bid.BidDocuments.Count uploaded (at least 1 required)"
+    ]
+  },
+  {
+    "file": "Bids\\Details.cshtml",
+    "line": 173,
+    "text": [
+      "OK"
+    ]
+  },
+  {
+    "file": "Bids\\Edit.cshtml",
+    "line": 7,
+    "text": [
+      " · closes @bid.Tender.CloseDate.ToString(\"yyyy-MM-dd HH:mm\") (UTC)"
+    ]
+  },
+  {
+    "file": "Bids\\MyBids.cshtml",
+    "line": 16,
+    "text": [
+      "Bid #@bid.Id"
+    ]
+  },
+  {
+    "file": "Clarifications\\Details.cshtml",
+    "line": 10,
+    "text": [
+      "CLARIFICATION #@row.Id"
+    ]
+  },
+  {
+    "file": "Clarifications\\Details.cshtml",
+    "line": 17,
+    "text": [
+      " Requested PDF: @row.RequestedDocumentType"
+    ]
+  },
+  {
+    "file": "Clarifications\\Details.cshtml",
+    "line": 49,
+    "text": [
+      "Requested @row.RequestedDocumentType (PDF)"
+    ]
+  },
+  {
+    "file": "Clarifications\\Details.cshtml",
+    "line": 60,
+    "text": [
+      "Resolved @row.ResolvedAt.Value.ToString(\"dd MMM yyyy HH:mm\", L.DisplayCulture) UTC"
+    ]
+  },
+  {
+    "file": "Clarifications\\Index.cshtml",
+    "line": 21,
+    "text": [
+      " r.Status == \"Answered\")"
+    ]
+  },
+  {
+    "file": "Clarifications\\Index.cshtml",
+    "line": 45,
+    "text": [
+      "#@row.Id · @row.CreatedAt.ToString(\"dd MMM yyyy HH:mm\", L.DisplayCulture) UTC"
+    ]
+  },
+  {
+    "file": "CommitteeReviews\\AiReport.cshtml",
+    "line": 16,
+    "text": [
+      "AI bid analysis · Tender #@input.TenderId"
+    ]
+  },
+  {
+    "file": "CommitteeReviews\\AiReport.cshtml",
+    "line": 58,
+    "text": [
+      "AI bid analysis · Tender #@input.TenderId"
+    ]
+  },
+  {
+    "file": "CommitteeReviews\\AiReport.cshtml",
+    "line": 60,
+    "text": [
+      "Generated @Model.GeneratedAtUtc.ToLocalTime().ToString(\"f\") · Model: @Model.Model · @input.Bids.Count compliant bids compared"
+    ]
+  },
+  {
+    "file": "CommitteeReviews\\AiReport.cshtml",
+    "line": 90,
+    "text": [
+      "#@assessment.OverallRank"
+    ]
+  },
+  {
+    "file": "CommitteeReviews\\AiReport.cshtml",
+    "line": 92,
+    "text": [
+      "≈ @usd.ToString(\"N2\") USD"
+    ]
+  },
+  {
+    "file": "CommitteeReviews\\AiReport.cshtml",
+    "line": 129,
+    "text": [
+      "qty @line.Quantity"
+    ]
+  },
+  {
+    "file": "CommitteeReviews\\AiReport.cshtml",
+    "line": 146,
+    "text": [
+      "#@a.OverallRank · @bid.Supplier@if (a.BidId == best.BidId) { "
+    ]
+  },
+  {
+    "file": "CommitteeReviews\\AiReport.cshtml",
+    "line": 182,
+    "text": [
+      " · @c.Type · @c.WeightPercent% weight · @c.MaxScore points"
+    ]
+  },
+  {
+    "file": "CommitteeReviews\\AiReport.cshtml",
+    "line": 185,
+    "text": [
+      "Sourcing Desk · AI assistant report for Tender #@input.TenderId · Supplier text was treated as data only. The committee's scores and decision are final."
+    ]
+  },
+  {
+    "file": "CommitteeReviews\\Bid.cshtml",
+    "line": 11,
+    "text": [
+      "BID #@Model.Bid.Id · @Model.Bid.Tender.Title"
+    ]
+  },
+  {
+    "file": "CommitteeReviews\\Bid.cshtml",
+    "line": 48,
+    "text": [
+      " r.WeightPercent))"
+    ]
+  },
+  {
+    "file": "CommitteeReviews\\Bid.cshtml",
+    "line": 54,
+    "text": [
+      " 0 && score "
+    ]
+  },
+  {
+    "file": "CommitteeReviews\\Bid.cshtml",
+    "line": 65,
+    "text": [
+      " Earned(e.row))) / @Percent(possible)"
+    ]
+  },
+  {
+    "file": "CommitteeReviews\\Bid.cshtml",
+    "line": 66,
+    "text": [
+      "No active @kind.ToLowerInvariant() criteria."
+    ]
+  },
+  {
+    "file": "CommitteeReviews\\Bid.cshtml",
+    "line": 75,
+    "text": [
+      "+@Percent(row.WeightPercent)"
+    ]
+  },
+  {
+    "file": "CommitteeReviews\\Bid.cshtml",
+    "line": 79,
+    "text": [
+      "Earned @Percent(Earned(row))"
+    ]
+  },
+  {
+    "file": "CommitteeReviews\\Bid.cshtml",
+    "line": 81,
+    "text": [
+      "Taxes: @row.Taxes · Extra costs: @row.Extras"
+    ]
+  },
+  {
+    "file": "CommitteeReviews\\Bid.cshtml",
+    "line": 90,
+    "text": [
+      "Taxes (@Model.Bid.Currency)"
+    ]
+  },
+  {
+    "file": "CommitteeReviews\\Bid.cshtml",
+    "line": 91,
+    "text": [
+      "Extra costs (@Model.Bid.Currency)"
+    ]
+  },
+  {
+    "file": "CommitteeReviews\\Details.cshtml",
+    "line": 4,
+    "text": [
+      "TENDER #@Model.Tender.Id"
+    ]
+  },
+  {
+    "file": "CommitteeReviews\\Details.cshtml",
+    "line": 8,
+    "text": [
+      "Submitted on @submission.SubmittedAt.ToString(\"yyyy-MM-dd HH:mm\") UTC. Your scores are read-only."
+    ]
+  },
+  {
+    "file": "CommitteeReviews\\Details.cshtml",
+    "line": 42,
+    "text": [
+      "Bid #@bid.Id"
+    ]
+  },
+  {
+    "file": "CommitteeReviews\\Details.cshtml",
+    "line": 90,
+    "text": [
+      "The AI recommendation could not be loaded.",
+      "Try again"
+    ]
+  },
+  {
+    "file": "CommitteeReviews\\Index.cshtml",
+    "line": 6,
+    "text": [
+      " x.Status == \"Under Evaluation\")"
+    ]
+  },
+  {
+    "file": "CommitteeReviews\\Index.cshtml",
+    "line": 7,
+    "text": [
+      " x.Status != \"Under Evaluation\")"
+    ]
+  },
+  {
+    "file": "CommitteeReviews\\Weights.cshtml",
+    "line": 5,
+    "text": [
+      "TENDER #@Model.TenderId"
+    ]
+  },
+  {
+    "file": "CommitteeReviews\\_AiRecommendation.cshtml",
+    "line": 32,
+    "text": [
+      "Generated @analysis.GeneratedAtUtc.ToLocalTime().ToString(\"g\") · @analysis.Model · @analysis.Input.Bids.Count bids compared"
+    ]
+  },
+  {
+    "file": "CommitteeReviews\\_Assignments.cshtml",
+    "line": 15,
+    "text": [
+      "Tender #@row.Id"
+    ]
+  },
+  {
+    "file": "Compliance\\Pending.cshtml",
+    "line": 18,
+    "text": [
+      "Tender #@row.Tender.Id · Closes @row.Tender.CloseDate.ToString(\"dd MMM yyyy HH:mm\", L.DisplayCulture) UTC"
+    ]
+  },
+  {
+    "file": "Compliance\\Review.cshtml",
+    "line": 18,
+    "text": [
+      "Scheduled deadline: @tender.CloseDate.ToString(\"yyyy-MM-dd HH:mm\") (UTC) · Tender status: @tender.Status"
+    ]
+  },
+  {
+    "file": "Compliance\\Review.cshtml",
+    "line": 36,
+    "text": [
+      "Tender status: @tender.Status. Compliance decisions are available after closing."
+    ]
+  },
+  {
+    "file": "Compliance\\Review.cshtml",
+    "line": 64,
+    "text": [
+      "One column per bid, sorted by total price (lowest first@(Model.MixedCurrencies ? (Model.UsdOrdered ? \", approximate USD\" : \" within each currency\") : \"\"))."
+    ]
+  },
+  {
+    "file": "Compliance\\Review.cshtml",
+    "line": 135,
+    "text": [
+      "× @bidItem.Quantity = @((bidItem.UnitPrice * bidItem.Quantity).ToString(\"N2\"))"
+    ]
+  },
+  {
+    "file": "Compliance\\Review.cshtml",
+    "line": 187,
+    "text": [
+      "Clarification: @clarification.Status"
+    ]
+  },
+  {
+    "file": "Compliance\\Review.cshtml",
+    "line": 219,
+    "text": [
+      "Send to evaluation · Round @tender.Counter of @TenderRules.MaxRounds"
+    ]
+  },
+  {
+    "file": "Compliance\\Review.cshtml",
+    "line": 230,
+    "text": [
+      "OK"
+    ]
+  },
+  {
+    "file": "Compliance\\Review.cshtml",
+    "line": 241,
+    "text": [
+      "OK"
+    ]
+  },
+  {
+    "file": "Compliance\\Review.cshtml",
+    "line": 274,
+    "text": [
+      "Bid #@bid.Id history"
+    ]
+  },
+  {
+    "file": "Compliance\\Review.cshtml",
+    "line": 277,
+    "text": [
+      " Request a PDF for bid #@bid.Id"
+    ]
+  },
+  {
+    "file": "Employees\\ResetPassword.cshtml",
+    "line": 4,
+    "text": [
+      "Set a new password for @ViewData[\"EmployeeName\"]."
+    ]
+  },
+  {
+    "file": "EvaluationWorkflow\\Details.cshtml",
+    "line": 12,
+    "text": [
+      "TENDER #@tender.Id"
+    ]
+  },
+  {
+    "file": "EvaluationWorkflow\\Details.cshtml",
+    "line": 18,
+    "text": [
+      " p.Complete) / 4 submitted"
+    ]
+  },
+  {
+    "file": "EvaluationWorkflow\\Details.cshtml",
+    "line": 26,
+    "text": [
+      " 0 ? \"In progress\" : \"Pending\")"
+    ]
+  },
+  {
+    "file": "EvaluationWorkflow\\Details.cshtml",
+    "line": 85,
+    "text": [
+      "Evidence and notes · @row.EvidenceIds.Count"
+    ]
+  },
+  {
+    "file": "EvaluationWorkflow\\Details.cshtml",
+    "line": 91,
+    "text": [
+      "Document #@documentId"
+    ]
+  },
+  {
+    "file": "EvaluationWorkflow\\Details.cshtml",
+    "line": 129,
+    "text": [
+      " b.Id == report.RecommendedBidId)?.SupplierProfile.CompanyName ?? \"—\")"
+    ]
+  },
+  {
+    "file": "EvaluationWorkflow\\Details.cshtml",
+    "line": 133,
+    "text": [
+      " a.Decision == \"Top Committee Approved\") of 4 approved"
+    ]
+  },
+  {
+    "file": "EvaluationWorkflow\\Details.cshtml",
+    "line": 148,
+    "text": [
+      " · @finalized.ToString(\"yyyy-MM-dd HH:mm:ss\") UTC"
+    ]
+  },
+  {
+    "file": "EvaluationWorkflow\\Details.cshtml",
+    "line": 152,
+    "text": [
+      "Cancelled by @rejection.ApproverEmployeeProfile.FullName. Reason: @rejection.Comments"
+    ]
+  },
+  {
+    "file": "EvaluationWorkflow\\Details.cshtml",
+    "line": 160,
+    "text": [
+      "Evaluation committee has @Model.Progress.Count of 4 seats assigned."
+    ]
+  },
+  {
+    "file": "EvaluationWorkflow\\Details.cshtml",
+    "line": 161,
+    "text": [
+      " $\"{p.Employee} ({p.Seat})\"))"
+    ]
+  },
+  {
+    "file": "EvaluationWorkflow\\Details.cshtml",
+    "line": 191,
+    "text": [
+      " a.Decision == \"Top Committee Approved\") / 4"
+    ]
+  },
+  {
+    "file": "EvaluationWorkflow\\Details.cshtml",
+    "line": 225,
+    "text": [
+      "This tender was cancelled by the Top Committee and returned by the sourcing manager. Create a NEW tender for the same purchase requisition #@tender.PurchaseRequisitionId. This cancelled tender and its history stay unchanged."
+    ]
+  },
+  {
+    "file": "EvaluationWorkflow\\Index.cshtml",
+    "line": 20,
+    "text": [
+      " t.EvaluationReport?.Status == \"Pending Top Committee\")"
+    ]
+  },
+  {
+    "file": "EvaluationWorkflow\\Index.cshtml",
+    "line": 21,
+    "text": [
+      " t.Status == \"Awarded\")"
+    ]
+  },
+  {
+    "file": "EvaluationWorkflow\\Index.cshtml",
+    "line": 22,
+    "text": [
+      " t.Status == \"Cancelled\")"
+    ]
+  },
+  {
+    "file": "EvaluationWorkflow\\Index.cshtml",
+    "line": 37,
+    "text": [
+      "#@tender.Id"
+    ]
+  },
+  {
+    "file": "EvaluationWorkflow\\Reject.cshtml",
+    "line": 3,
+    "text": [
+      "OFFICIAL DECISION · TENDER #@Model.Id"
+    ]
+  },
+  {
+    "file": "Home\\Index.cshtml",
+    "line": 33,
+    "text": [
+      "L"
+    ]
+  },
+  {
+    "file": "Home\\Index.cshtml",
+    "line": 34,
+    "text": [
+      "Little Threads"
+    ]
+  },
+  {
+    "file": "Home\\Index.cshtml",
+    "line": 45,
+    "text": [
+      "L"
+    ]
+  },
+  {
+    "file": "Home\\Index.cshtml",
+    "line": 46,
+    "text": [
+      "Little Threads",
+      "KIDSWEAR SUPPLY"
+    ]
+  },
+  {
+    "file": "Home\\Index.cshtml",
+    "line": 172,
+    "text": [
+      "WhatsApp"
+    ]
+  },
+  {
+    "file": "Home\\Index.cshtml",
+    "line": 193,
+    "text": [
+      "500 – 2,000 pieces",
+      "2,000 – 10,000 pieces",
+      "10,000+ pieces"
+    ]
+  },
+  {
+    "file": "Home\\Index.cshtml",
+    "line": 212,
+    "text": [
+      "Main St. 12, Your City"
+    ]
+  },
+  {
+    "file": "Home\\Index.cshtml",
+    "line": 219,
+    "text": [
+      "FAQ"
+    ]
+  },
+  {
+    "file": "Home\\Index.cshtml",
+    "line": 249,
+    "text": [
+      "L",
+      "Little Threads",
+      "KIDSWEAR SUPPLY"
+    ]
+  },
+  {
+    "file": "Home\\Index.cshtml",
+    "line": 252,
+    "text": [
+      "hello@@littlethreads.com"
+    ]
+  },
+  {
+    "file": "Home\\Index.cshtml",
+    "line": 253,
+    "text": [
+      "Main St. 12, Your City"
+    ]
+  },
+  {
+    "file": "Home\\Index.cshtml",
+    "line": 262,
+    "text": [
+      "Little Threads · Kidswear Supply · Little Threads · Kidswear Supply ·&nbsp;",
+      "Little Threads · Kidswear Supply · Little Threads · Kidswear Supply ·&nbsp;"
+    ]
+  },
+  {
+    "file": "Invitations\\Create.cshtml",
+    "line": 21,
+    "text": [
+      "Eligible suppliers @if (ViewData[\"RoundNumber\"] is int round) { ",
+      "· Round @round"
+    ]
+  },
+  {
+    "file": "Invitations\\Create.cshtml",
+    "line": 22,
+    "text": [
+      "Category: @categoryName"
+    ]
+  },
+  {
+    "file": "Invitations\\Delete.cshtml",
+    "line": 11,
+    "text": [
+      "SourcingTenderSystem.Models.Invitation"
+    ]
+  },
+  {
+    "file": "Invitations\\Details.cshtml",
+    "line": 5,
+    "text": [
+      "INVITATION #@Model.Id"
+    ]
+  },
+  {
+    "file": "Invitations\\Edit.cshtml",
+    "line": 20,
+    "text": [
+      "-- Select Tender --"
+    ]
+  },
+  {
+    "file": "Invitations\\Edit.cshtml",
+    "line": 29,
+    "text": [
+      "-- Select Suppliers --"
+    ]
+  },
+  {
+    "file": "PurchaseRequisitions\\Committee.cshtml",
+    "line": 18,
+    "text": [
+      "Tender #@assignment.TenderId"
+    ]
+  },
+  {
+    "file": "PurchaseRequisitions\\Committee.cshtml",
+    "line": 20,
+    "text": [
+      "PR-@assignment.RequestId"
+    ]
+  },
+  {
+    "file": "PurchaseRequisitions\\Dashboard.cshtml",
+    "line": 37,
+    "text": [
+      " point.Count == 0)) { "
+    ]
+  },
+  {
+    "file": "PurchaseRequisitions\\Dashboard.cshtml",
+    "line": 41,
+    "text": [
+      "= 0; tick--) { "
+    ]
+  },
+  {
+    "file": "PurchaseRequisitions\\Dashboard.cshtml",
+    "line": 81,
+    "text": [
+      "PR-@request.Id"
+    ]
+  },
+  {
+    "file": "PurchaseRequisitions\\Dashboard.cshtml",
+    "line": 82,
+    "text": [
+      "Changes requested: @request.ReviewNotes"
+    ]
+  },
+  {
+    "file": "PurchaseRequisitions\\DashboardRequestPanel.cshtml",
+    "line": 9,
+    "text": [
+      "PURCHASE REQUEST · PR-@Model.Id"
+    ]
+  },
+  {
+    "file": "PurchaseRequisitions\\Details.cshtml",
+    "line": 10,
+    "text": [
+      "PURCHASE REQUEST · PR-@Model.Id"
+    ]
+  },
+  {
+    "file": "PurchaseRequisitions\\Edit.cshtml",
+    "line": 4,
+    "text": [
+      "PURCHASE REQUEST · PR-@ViewBag.RequestId"
+    ]
+  },
+  {
+    "file": "PurchaseRequisitions\\Index.cshtml",
+    "line": 7,
+    "text": [
+      "Purchase requests from everyone in @Model.Department."
+    ]
+  },
+  {
+    "file": "PurchaseRequisitions\\Index.cshtml",
+    "line": 38,
+    "text": [
+      "PR-@request.Id · @request.CreatedByEmployeeProfile.FullName"
+    ]
+  },
+  {
+    "file": "PurchaseRequisitions\\Index.cshtml",
+    "line": 39,
+    "text": [
+      "Changes requested: @request.ReviewNotes"
+    ]
+  },
+  {
+    "file": "PurchaseRequisitions\\_RequestTable.cshtml",
+    "line": 9,
+    "text": [
+      "PR-@request.Id"
+    ]
+  },
+  {
+    "file": "RequisitionItems\\Create.cshtml",
+    "line": 4,
+    "text": [
+      "PURCHASE REQUEST · PR-@ViewBag.RequestId"
+    ]
+  },
+  {
+    "file": "RequisitionItems\\Delete.cshtml",
+    "line": 4,
+    "text": [
+      "REQUEST PR-@Model.PurchaseRequisitionId"
+    ]
+  },
+  {
+    "file": "RequisitionItems\\Delete.cshtml",
+    "line": 6,
+    "text": [
+      "Remove this line (@Model.Quantity @Model.Unit) from the purchase request?"
+    ]
+  },
+  {
+    "file": "RequisitionReviews\\Details.cshtml",
+    "line": 11,
+    "text": [
+      "PURCHASE REQUEST · PR-@request.Id"
+    ]
+  },
+  {
+    "file": "RequisitionReviews\\_RequestDirectory.cshtml",
+    "line": 13,
+    "text": [
+      "PR-@request.Id · @request.CreatedByEmployeeProfile.FullName"
+    ]
+  },
+  {
+    "file": "Shared\\_CommunicationNav.cshtml",
+    "line": 14,
+    "text": [
+      " 99 ? \"99+\" : unread.ToString())"
+    ]
+  },
+  {
+    "file": "Shared\\_Layout.cshtml",
+    "line": 110,
+    "text": [
+      "STMS"
+    ]
+  },
+  {
+    "file": "Shared\\_Layout.cshtml",
+    "line": 159,
+    "text": [
+      " STMS "
+    ]
+  },
+  {
+    "file": "Shared\\_SupplierDocuments.cshtml",
+    "line": 14,
+    "text": [
+      " · Expires @expires.ToString(\"dd MMM yyyy\", L.DisplayCulture)"
+    ]
+  },
+  {
+    "file": "Shared\\_TenderHistory.cshtml",
+    "line": 9,
+    "text": [
+      "Tender #@tender.Id"
+    ]
+  },
+  {
+    "file": "Shared\\_UsdReference.cshtml",
+    "line": 7,
+    "text": [
+      "≈ @usd.ToString(\"N2\") USD (approx.)"
+    ]
+  },
+  {
+    "file": "Shared\\_UsdReference.cshtml",
+    "line": 8,
+    "text": [
+      "1 @Model.Currency = @rate.ToString(\"0.######\") USD · @Model.RateDate?.ToString(\"yyyy-MM-dd\") · @Model.Source"
+    ]
+  },
+  {
+    "file": "Shared\\_WorkspaceHeader.cshtml",
+    "line": 22,
+    "text": [
+      "STMS"
+    ]
+  },
+  {
+    "file": "SourcingDashboard\\Index.cshtml",
+    "line": 42,
+    "text": [
+      "= 0; tick--) { "
+    ]
+  },
+  {
+    "file": "SourcingDashboard\\Index.cshtml",
+    "line": 89,
+    "text": [
+      "PR-@request.Id · @request.Department · @request.Priority priority · Due @request.TargetDate.ToString(\"dd MMM\")"
+    ]
+  },
+  {
+    "file": "SupplierRegistration\\RegistrationStatus.cshtml",
+    "line": 39,
+    "text": [
+      " c.Name))"
+    ]
+  },
+  {
+    "file": "Suppliers\\Decision.cshtml",
+    "line": 10,
+    "text": [
+      "Confirm your decision for @supplier.CompanyName."
+    ]
+  },
+  {
+    "file": "Suppliers\\Decision.cshtml",
+    "line": 14,
+    "text": [
+      "Status will change from @supplier.Status to @decision. The supplier will be able to read the reason below."
+    ]
+  },
+  {
+    "file": "Suppliers\\Decision.cshtml",
+    "line": 18,
+    "text": [
+      "Confirm @action.ToLowerInvariant()"
+    ]
+  },
+  {
+    "file": "Suppliers\\Details.cshtml",
+    "line": 27,
+    "text": [
+      " c.Name)))"
+    ]
+  },
+  {
+    "file": "SupplierWorkspace\\Index.cshtml",
+    "line": 37,
+    "text": [
+      "Invitations · @Model.AwaitingResponse awaiting response"
+    ]
+  },
+  {
+    "file": "SupplierWorkspace\\InvitationDetails.cshtml",
+    "line": 17,
+    "text": [
+      "TENDER #@tender.Id · @tender.Status · @(invitation.RoundNumber is int number ? $\"Round {number}\" : \"Legacy invitation\")"
+    ]
+  },
+  {
+    "file": "SupplierWorkspace\\Invitations.cshtml",
+    "line": 13,
+    "text": [
+      " i.Status == \"Pending\" && i.ExpiresAt "
+    ]
+  },
+  {
+    "file": "SupplierWorkspace\\Invitations.cshtml",
+    "line": 21,
+    "text": [
+      "TENDER #@tender.Id · Round @(invitation.RoundNumber?.ToString() ?? \"Legacy\")"
+    ]
+  },
+  {
+    "file": "Tenders\\AssignCommittee.cshtml",
+    "line": 45,
+    "text": [
+      "&middot; @member.Department"
+    ]
+  },
+  {
+    "file": "Tenders\\Create.cshtml",
+    "line": 28,
+    "text": [
+      "-- Select an approved purchase request --"
+    ]
+  },
+  {
+    "file": "Tenders\\Criteria.cshtml",
+    "line": 4,
+    "text": [
+      "TENDER #@Model.Id"
+    ]
+  },
+  {
+    "file": "Tenders\\Criteria.cshtml",
+    "line": 14,
+    "text": [
+      " c.WeightPercent).ToString(\"0.##\")%"
+    ]
+  },
+  {
+    "file": "Tenders\\Criteria.cshtml",
+    "line": 15,
+    "text": [
+      "No @type.ToLowerInvariant() criteria yet."
+    ]
+  },
+  {
+    "file": "Tenders\\Details.cshtml",
+    "line": 20,
+    "text": [
+      "TENDER #@Model.Id"
+    ]
+  },
+  {
+    "file": "Tenders\\Details.cshtml",
+    "line": 28,
+    "text": [
+      "Round @Model.Counter of @TenderRules.MaxRounds"
+    ]
+  },
+  {
+    "file": "Tenders\\Details.cshtml",
+    "line": 72,
+    "text": [
+      "Created by @Model.CreatedByEmployeeProfile.FullName · @Model.CreatedAt.ToString(\"dd MMM yyyy HH:mm\", L.DisplayCulture) UTC"
+    ]
+  },
+  {
+    "file": "Tenders\\Details.cshtml",
+    "line": 84,
+    "text": [
+      "Round @Model.Counter of @TenderRules.MaxRounds"
+    ]
+  },
+  {
+    "file": "Tenders\\Details.cshtml",
+    "line": 92,
+    "text": [
+      "Open round @(Model.Counter + 1)"
+    ]
+  },
+  {
+    "file": "Tenders\\Details.cshtml",
+    "line": 106,
+    "text": [
+      "Available to invite: @(invitable.Count == 0 ? \"None\" : string.Join(\", \", invitable))"
+    ]
+  },
+  {
+    "file": "Tenders\\Details.cshtml",
+    "line": 108,
+    "text": [
+      "Previously submitted: @(submitted.Count == 0 ? \"None\" : string.Join(\", \", submitted))"
+    ]
+  },
+  {
+    "file": "Tenders\\Details.cshtml",
+    "line": 113,
+    "text": [
+      "Round @round.Number",
+      " · @n eligible"
+    ]
+  },
+  {
+    "file": "Tenders\\Index.cshtml",
+    "line": 61,
+    "text": [
+      "Tender #@t.Id · @t.CreatedByEmployeeProfile.FullName · @t.CreatedAt.ToString(\"dd MMM yyyy\", L.DisplayCulture)"
+    ]
+  },
+  {
+    "file": "Tenders\\Reopen.cshtml",
+    "line": 3,
+    "text": [
+      "Open round @(Model.Counter + 1)"
+    ]
+  }
+]

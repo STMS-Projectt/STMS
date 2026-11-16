@@ -1,0 +1,18 @@
+{
+  "pages": [],
+  "modals": [],
+  "errors": [],
+  "coverage": [
+    {
+      "role": "TopCommittee",
+      "families": [
+        "/EvaluationWorkflow",
+        "/Clarifications",
+        "/Notifications",
+        "/Profile"
+      ]
+    }
+  ],
+  "started": "2026-11-15T21:33:46.032Z",
+  "finished": "2026-11-15T21:33:46.583Z"
+}

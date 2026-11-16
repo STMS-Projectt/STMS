@@ -1,0 +1,61 @@
+@model SourcingTenderSystem.Controllers.TenderFormViewModel
+
+@{
+    ViewData["Title"] = L.T("Edit Tender");
+}
+
+<header class="page-heading admin-action-heading"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("file")' /></span><div><p class="eyebrow">@L.T("SOURCING WORKSPACE")</p><h1>@L.T("Edit Tender")</h1><p>@L.T("Update the draft tender and its bidding dates.")</p></div></header>
+
+<div class="row">
+    <div class="col-lg-8">
+        <form asp-action="Edit" asp-route-id="@Model.Id" method="post" class="surface form-card sourcing-edit-form" novalidate>
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+            <input type="hidden" asp-for="Id" />
+
+            <div class="mb-3">
+                <label class="form-label">@L.T("Purchase Request")</label>
+                <input class="form-control" value="@Model.PurchaseRequisitionTitle" disabled />
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Title" class="form-label"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Description" class="form-label"></label>
+                <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Terms" class="form-label"></label>
+                <textarea asp-for="Terms" class="form-control" rows="5"></textarea>
+                <span asp-validation-for="Terms" class="text-danger"></span>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="OpenDate" class="form-label"></label>
+                    <input asp-for="OpenDate" type="datetime-local" class="form-control" />
+                    <span asp-validation-for="OpenDate" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="CloseDate" class="form-label"></label>
+                    <input asp-for="CloseDate" type="datetime-local" class="form-control" />
+                    <span asp-validation-for="CloseDate" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">@L.T("Save Changes")</button>
+                <a asp-action="Index" class="btn btn-outline-secondary">@L.T("Cancel")</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

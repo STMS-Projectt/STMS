@@ -1,0 +1,14 @@
+@inject Microsoft.AspNetCore.Identity.UserManager<Microsoft.AspNetCore.Identity.IdentityUser> Users
+@{
+    var account = await Users.GetUserAsync(User);
+    var exists = account != null && await Users.GetAuthenticationTokenAsync(account, "Profile", "Photo") != null;
+}
+@if (ViewData["AvatarDecoration"] is true) {
+    <span class="avatar overflow-hidden" aria-hidden="true">@if (exists) { <img class="w-100 h-100" style="object-fit:cover" src="@Url.Action("Photo", "Profile")" alt="" /> }
+    else { @((User.Identity?.Name ?? "U").FirstOrDefault().ToString().ToUpperInvariant()) }</span>
+} else {
+<a class="avatar overflow-hidden text-decoration-none" asp-controller="Profile" asp-action="Index" aria-label="@L.T("My profile")">
+    @if (exists) { <img class="w-100 h-100" style="object-fit:cover" src="@Url.Action("Photo", "Profile")" alt="" /> }
+    else { @((User.Identity?.Name ?? "U").FirstOrDefault().ToString().ToUpperInvariant()) }
+</a>
+}

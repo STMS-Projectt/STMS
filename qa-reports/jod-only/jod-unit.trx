@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="2432c17b-8746-4ccd-a3a3-dbd2c0a65d20" name="Wessam@DESKTOP-9BCNB94 2026-11-16 01:19:53" runUser="DESKTOP-9BCNB94\CodexSandboxOffline" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-11-16T01:19:53.5471126+03:00" queuing="2026-11-16T01:19:53.5471128+03:00" start="2026-11-16T01:19:52.8677608+03:00" finish="2026-11-16T01:19:53.5780368+03:00" />
+  <TestSettings name="default" id="8aa9358d-0e0e-4980-b28d-510132421c9e">
+    <Deployment runDeploymentRoot="Wessam_DESKTOP-9BCNB94_2026-11-16_01_19_53" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="76dd429e-7e0a-48e0-a8fb-30bbccabfae0" testId="db3a58de-d0c2-98ce-325c-efcc6c48c3eb" testName="DisplayLocalizationTests.Arabic_rendering_does_not_translate_route_or_filter_keys" computerName="DESKTOP-9BCNB94" duration="00:00:00.0083947" startTime="2026-11-16T01:19:53.4432774+03:00" endTime="2026-11-16T01:19:53.4510133+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="76dd429e-7e0a-48e0-a8fb-30bbccabfae0" />
+    <UnitTestResult executionId="122e2d9f-0a5d-40b9-95e5-7bf584b1851d" testId="aaedd83a-ff1e-8a30-95e8-e6dfaf60dfcb" testName="DisplayLocalizationTests.Literal_ui_keys_have_Arabic_translations" computerName="DESKTOP-9BCNB94" duration="00:00:00.0201895" startTime="2026-11-16T01:19:53.4376381+03:00" endTime="2026-11-16T01:19:53.4425661+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="122e2d9f-0a5d-40b9-95e5-7bf584b1851d" />
+    <UnitTestResult executionId="bb0e922c-27cf-4a94-a70c-fb5e2f14650a" testId="c5fdd258-f80a-a276-824e-381367e1b936" testName="CurrencyComparisonTests.Old_evaluation_snapshots_keep_the_original_amount_when_obsolete_rate_fields_exist" computerName="DESKTOP-9BCNB94" duration="00:00:00.0439980" startTime="2026-11-16T01:19:53.3972740+03:00" endTime="2026-11-16T01:19:53.4469496+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="bb0e922c-27cf-4a94-a70c-fb5e2f14650a" />
+    <UnitTestResult executionId="34d92da2-89b5-44e9-801d-16a7e23f6b7b" testId="88248a0b-6e2f-533f-19a1-9cc882f23f48" testName="WinnerBriefTests.Falls_back_to_recorded_facts_when_ollama_is_down_and_keeps_the_committee_winner" computerName="DESKTOP-9BCNB94" duration="00:00:00.0029816" startTime="2026-11-16T01:19:53.4909857+03:00" endTime="2026-11-16T01:19:53.4940102+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="34d92da2-89b5-44e9-801d-16a7e23f6b7b" />
+    <UnitTestResult executionId="b2d705d5-ec7b-480a-8048-026fb5c5bc07" testId="be5b1040-4fc8-8441-d739-63eb44648bb2" testName="WinnerBriefTests.Uses_the_ollama_narrative_and_caches_it_per_bid_set" computerName="DESKTOP-9BCNB94" duration="00:00:00.0867564" startTime="2026-11-16T01:19:53.3988120+03:00" endTime="2026-11-16T01:19:53.4898913+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b2d705d5-ec7b-480a-8048-026fb5c5bc07" />
+    <UnitTestResult executionId="55f6c519-4b99-4ca0-93f2-a2a83987b79a" testId="6096ee1d-2c00-6204-d9d8-a28988a416a9" testName="CurrencyComparisonTests.Historical_amounts_are_not_ranked_against_Jordanian_dinars" computerName="DESKTOP-9BCNB94" duration="00:00:00.0064947" startTime="2026-11-16T01:19:53.4470928+03:00" endTime="2026-11-16T01:19:53.4535401+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="55f6c519-4b99-4ca0-93f2-a2a83987b79a" />
+    <UnitTestResult executionId="6c9323de-9ffd-4f89-822f-6ce532cf94f3" testId="01114eb1-4c29-127e-c698-ede1ba3ef8d7" testName="WinnerBriefTests.Arabic_brief_uses_a_separate_cache_and_fills_missing_sections_with_localized_facts" computerName="DESKTOP-9BCNB94" duration="00:00:00.0106099" startTime="2026-11-16T01:19:53.5221493+03:00" endTime="2026-11-16T01:19:53.5222240+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="6c9323de-9ffd-4f89-822f-6ce532cf94f3" />
+    <UnitTestResult executionId="46927367-664e-4cfc-97e8-42d3c6d56899" testId="9dfd3977-d9d4-80f4-213c-97f7d2a4e26a" testName="DisplayLocalizationTests.Arabic_formats_messages_without_changing_business_values" computerName="DESKTOP-9BCNB94" duration="00:00:00.0170030" startTime="2026-11-16T01:19:53.3988659+03:00" endTime="2026-11-16T01:19:53.4222923+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="46927367-664e-4cfc-97e8-42d3c6d56899" />
+    <UnitTestResult executionId="a688dc31-f5a4-4dd0-9c64-8b2c15a9f69c" testId="0e042df2-653c-9a2d-4e0d-135b3ac613d4" testName="CurrencyComparisonTests.Jordanian_dinar_bids_are_ranked_by_their_recorded_amounts" computerName="DESKTOP-9BCNB94" duration="00:00:00.0097191" startTime="2026-11-16T01:19:53.4537381+03:00" endTime="2026-11-16T01:19:53.4633774+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="a688dc31-f5a4-4dd0-9c64-8b2c15a9f69c" />
+    <UnitTestResult executionId="f599b745-debb-4ef0-a4ab-e97dedeb916d" testId="fb94cb51-e7e6-1765-0bbf-d9ce72dda3be" testName="DisplayLocalizationTests.Translations_preserve_format_placeholders_and_have_unique_keys" computerName="DESKTOP-9BCNB94" duration="00:00:00.0162120" startTime="2026-11-16T01:19:53.4511406+03:00" endTime="2026-11-16T01:19:53.4672919+03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f599b745-debb-4ef0-a4ab-e97dedeb916d" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="CurrencyComparisonTests.Historical_amounts_are_not_ranked_against_Jordanian_dinars" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\displayaudit\net10.0\sourcingtendersystem.securitytests.dll" id="6096ee1d-2c00-6204-d9d8-a28988a416a9">
+      <Execution id="55f6c519-4b99-4ca0-93f2-a2a83987b79a" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\DisplayAudit\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="CurrencyComparisonTests" name="Historical_amounts_are_not_ranked_against_Jordanian_dinars" />
+    </UnitTest>
+    <UnitTest name="DisplayLocalizationTests.Literal_ui_keys_have_Arabic_translations" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\displayaudit\net10.0\sourcingtendersystem.securitytests.dll" id="aaedd83a-ff1e-8a30-95e8-e6dfaf60dfcb">
+      <Execution id="122e2d9f-0a5d-40b9-95e5-7bf584b1851d" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\DisplayAudit\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="DisplayLocalizationTests" name="Literal_ui_keys_have_Arabic_translations" />
+    </UnitTest>
+    <UnitTest name="WinnerBriefTests.Uses_the_ollama_narrative_and_caches_it_per_bid_set" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\displayaudit\net10.0\sourcingtendersystem.securitytests.dll" id="be5b1040-4fc8-8441-d739-63eb44648bb2">
+      <Execution id="b2d705d5-ec7b-480a-8048-026fb5c5bc07" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\DisplayAudit\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="WinnerBriefTests" name="Uses_the_ollama_narrative_and_caches_it_per_bid_set" />
+    </UnitTest>
+    <UnitTest name="DisplayLocalizationTests.Arabic_formats_messages_without_changing_business_values" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\displayaudit\net10.0\sourcingtendersystem.securitytests.dll" id="9dfd3977-d9d4-80f4-213c-97f7d2a4e26a">
+      <Execution id="46927367-664e-4cfc-97e8-42d3c6d56899" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\DisplayAudit\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="DisplayLocalizationTests" name="Arabic_formats_messages_without_changing_business_values" />
+    </UnitTest>
+    <UnitTest name="DisplayLocalizationTests.Translations_preserve_format_placeholders_and_have_unique_keys" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\displayaudit\net10.0\sourcingtendersystem.securitytests.dll" id="fb94cb51-e7e6-1765-0bbf-d9ce72dda3be">
+      <Execution id="f599b745-debb-4ef0-a4ab-e97dedeb916d" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\DisplayAudit\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="DisplayLocalizationTests" name="Translations_preserve_format_placeholders_and_have_unique_keys" />
+    </UnitTest>
+    <UnitTest name="CurrencyComparisonTests.Old_evaluation_snapshots_keep_the_original_amount_when_obsolete_rate_fields_exist" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\displayaudit\net10.0\sourcingtendersystem.securitytests.dll" id="c5fdd258-f80a-a276-824e-381367e1b936">
+      <Execution id="bb0e922c-27cf-4a94-a70c-fb5e2f14650a" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\DisplayAudit\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="CurrencyComparisonTests" name="Old_evaluation_snapshots_keep_the_original_amount_when_obsolete_rate_fields_exist" />
+    </UnitTest>
+    <UnitTest name="WinnerBriefTests.Arabic_brief_uses_a_separate_cache_and_fills_missing_sections_with_localized_facts" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\displayaudit\net10.0\sourcingtendersystem.securitytests.dll" id="01114eb1-4c29-127e-c698-ede1ba3ef8d7">
+      <Execution id="6c9323de-9ffd-4f89-822f-6ce532cf94f3" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\DisplayAudit\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="WinnerBriefTests" name="Arabic_brief_uses_a_separate_cache_and_fills_missing_sections_with_localized_facts" />
+    </UnitTest>
+    <UnitTest name="WinnerBriefTests.Falls_back_to_recorded_facts_when_ollama_is_down_and_keeps_the_committee_winner" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\displayaudit\net10.0\sourcingtendersystem.securitytests.dll" id="88248a0b-6e2f-533f-19a1-9cc882f23f48">
+      <Execution id="34d92da2-89b5-44e9-801d-16a7e23f6b7b" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\DisplayAudit\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="WinnerBriefTests" name="Falls_back_to_recorded_facts_when_ollama_is_down_and_keeps_the_committee_winner" />
+    </UnitTest>
+    <UnitTest name="CurrencyComparisonTests.Jordanian_dinar_bids_are_ranked_by_their_recorded_amounts" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\displayaudit\net10.0\sourcingtendersystem.securitytests.dll" id="0e042df2-653c-9a2d-4e0d-135b3ac613d4">
+      <Execution id="a688dc31-f5a4-4dd0-9c64-8b2c15a9f69c" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\DisplayAudit\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="CurrencyComparisonTests" name="Jordanian_dinar_bids_are_ranked_by_their_recorded_amounts" />
+    </UnitTest>
+    <UnitTest name="DisplayLocalizationTests.Arabic_rendering_does_not_translate_route_or_filter_keys" storage="c:\users\user\desktop\stms\sourcingtendersystem\sourcingtendersystem.securitytests\bin\displayaudit\net10.0\sourcingtendersystem.securitytests.dll" id="db3a58de-d0c2-98ce-325c-efcc6c48c3eb">
+      <Execution id="76dd429e-7e0a-48e0-a8fb-30bbccabfae0" />
+      <TestMethod codeBase="C:\Users\user\Desktop\STMS\SourcingTenderSystem\SourcingTenderSystem.SecurityTests\bin\DisplayAudit\net10.0\SourcingTenderSystem.SecurityTests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="DisplayLocalizationTests" name="Arabic_rendering_does_not_translate_route_or_filter_keys" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="db3a58de-d0c2-98ce-325c-efcc6c48c3eb" executionId="76dd429e-7e0a-48e0-a8fb-30bbccabfae0" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="aaedd83a-ff1e-8a30-95e8-e6dfaf60dfcb" executionId="122e2d9f-0a5d-40b9-95e5-7bf584b1851d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="c5fdd258-f80a-a276-824e-381367e1b936" executionId="bb0e922c-27cf-4a94-a70c-fb5e2f14650a" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="88248a0b-6e2f-533f-19a1-9cc882f23f48" executionId="34d92da2-89b5-44e9-801d-16a7e23f6b7b" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="be5b1040-4fc8-8441-d739-63eb44648bb2" executionId="b2d705d5-ec7b-480a-8048-026fb5c5bc07" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="6096ee1d-2c00-6204-d9d8-a28988a416a9" executionId="55f6c519-4b99-4ca0-93f2-a2a83987b79a" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="01114eb1-4c29-127e-c698-ede1ba3ef8d7" executionId="6c9323de-9ffd-4f89-822f-6ce532cf94f3" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="9dfd3977-d9d4-80f4-213c-97f7d2a4e26a" executionId="46927367-664e-4cfc-97e8-42d3c6d56899" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="0e042df2-653c-9a2d-4e0d-135b3ac613d4" executionId="a688dc31-f5a4-4dd0-9c64-8b2c15a9f69c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="fb94cb51-e7e6-1765-0bbf-d9ce72dda3be" executionId="f599b745-debb-4ef0-a4ab-e97dedeb916d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Completed">
+    <Counters total="10" executed="10" passed="10" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v3.1.4+50e68bbb8b (64-bit .NET 10.0.14)&#xD;
+[xUnit.net 00:00:00.07]   Discovering: SourcingTenderSystem.SecurityTests&#xD;
+[xUnit.net 00:00:00.13]   Discovered:  SourcingTenderSystem.SecurityTests&#xD;
+[xUnit.net 00:00:00.15]   Starting:    SourcingTenderSystem.SecurityTests&#xD;
+[xUnit.net 00:00:00.30]   Finished:    SourcingTenderSystem.SecurityTests&#xD;
+</StdOut>
+    </Output>
+  </ResultSummary>
+</TestRun>

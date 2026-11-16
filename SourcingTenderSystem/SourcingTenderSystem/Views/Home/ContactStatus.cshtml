@@ -1,0 +1,18 @@
+@model ContactReceipt
+@{ ViewData["Title"] = "Contact message status"; }
+<section class="surface detail-card">
+    <h1>@L.T("Contact message status")</h1>
+    <p>@L.T("Your message was received. Bookmark this private page to check for a reply. Anyone with the link can read the reply.")</p>
+    <p><strong>@L.T(Model.Topic)</strong> · @Model.ReceivedAtUtc.ToString("g", L.DisplayCulture) UTC</p>
+    @if (Model.Reply is null)
+    {
+        <p class="record-panel-label">@L.T("Awaiting response")</p>
+    }
+    else
+    {
+        <h2>@L.T("Reply from the team")</h2>
+        <p class="contact-message-body" dir="auto">@Model.Reply</p>
+        <p class="subtle">@Model.RepliedAtUtc?.ToString("g", L.DisplayCulture) UTC</p>
+    }
+    <a class="btn btn-outline-secondary" asp-action="Index">@L.T("Back to home")</a>
+</section>

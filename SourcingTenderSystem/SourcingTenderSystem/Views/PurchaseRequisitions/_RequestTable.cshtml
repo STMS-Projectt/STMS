@@ -1,0 +1,19 @@
+@model IReadOnlyList<PurchaseRequisition>
+<div class="table-responsive" role="region" aria-label="@L.T("Purchase requests")" tabindex="0">
+    <table class="directory-table department-table">
+        <thead><tr><th scope="col">@L.T("Request")</th><th scope="col">@L.T("Requested by")</th><th scope="col">@L.T("Priority")</th><th scope="col">@L.T("Target date")</th><th scope="col">@L.T("Status")</th><th scope="col"><span class="visually-hidden">@L.T("Actions")</span></th></tr></thead>
+        <tbody>
+        @foreach (var request in Model)
+        {
+            <tr>
+                <td><span class="record-name"><span>@request.Title<small>PR-@request.Id</small></span></span></td>
+                <td>@request.CreatedByEmployeeProfile.FullName</td>
+                <td class="@(request.Priority is "High" or "Urgent" ? "priority-high" : "")">@L.T(request.Priority)</td>
+                <td class="text-nowrap">@request.TargetDate.ToString("dd MMM yyyy", L.DisplayCulture)</td>
+                <td><partial name="_RequestStatus" model="request.Status" /></td>
+                <td><a class="table-action" asp-action="Details" asp-route-id="@request.Id" aria-label="@L.F("View request PR-{0}", request.Id)">@L.T("View") <partial name="_Icon" model='@("arrow")' /></a></td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

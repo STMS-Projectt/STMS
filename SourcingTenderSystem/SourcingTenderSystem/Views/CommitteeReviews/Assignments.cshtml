@@ -1,0 +1,4 @@
+@model IReadOnlyList<CommitteeAssignment>
+@{ ViewData["Title"] = L.T("My assignments"); }
+<header class="page-heading stms-hero"><div><p class="eyebrow">@L.T("EVALUATION COMMITTEE")</p><h1>@L.T("My assignments")</h1><p>@L.T("Tenders where you have an evaluation seat.")</p></div></header>
+<partial name="_Assignments" model="Model" />
