@@ -1,0 +1,13 @@
+.stms-brand-picture {
+    display: contents;
+}
+
+.stms-brand-image {
+    display: block;
+    flex: none;
+    box-sizing: border-box;
+    object-fit: contain;
+    padding: 2px;
+    border-radius: 24%;
+    background: light-dark(transparent, #e7f6f0);
+}

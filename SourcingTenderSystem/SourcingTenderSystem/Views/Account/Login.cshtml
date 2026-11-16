@@ -8,7 +8,7 @@
 <link rel="stylesheet" href="~/css/login-receipt.css" asp-append-version="true" />
 <div class="auth-shell receipt-login" lang="en" dir="ltr">
     <aside class="auth-aside">
-        <div class="login-brand"><img src="~/images/stms-cube.svg" alt="" /><strong>STMS</strong><span>Sourcing & Tender<br />Management System</span></div>
+        <div class="login-brand"><partial name="_BrandIcon" /><strong>STMS</strong><span>Sourcing & Tender<br />Management System</span></div>
         <p class="eyebrow">SOURCING DESK</p><h2>Your access, ready for approval.</h2>
         <p>Sign in securely. Your verification receipt updates as you go.</p>
         <div class="receipt-printer"><div class="receipt-paper"><header><strong>STMS</strong><small>ACCESS VERIFICATION RECEIPT</small></header><dl><div><dt>METHOD</dt><dd data-receipt-method>Password</dd></div><div><dt>ACCOUNT</dt><dd data-receipt-email>Awaiting details</dd></div><div data-receipt-password-row><dt>PASSWORD</dt><dd data-receipt-password>Not entered</dd></div></dl><img data-receipt-photo data-profile-photo-url="@Url.Action("Photo", "Profile")" hidden alt="Your profile photo" /><div class="receipt-finger" data-receipt-finger hidden><svg viewBox="0 0 100 110" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-label="Passkey illustration"><path pathLength="100" d="M15 65V45a35 35 0 0 1 70 0v15M25 80V45a25 25 0 0 1 50 0v20q0 20-10 35M35 95V45a15 15 0 0 1 30 0v20q0 20-10 35M45 100V45a5 5 0 0 1 10 0v25q0 15-5 20" /></svg><i></i></div><p class="receipt-state" data-receipt-state role="status" aria-live="polite">Awaiting verification</p><div class="receipt-barcode" aria-hidden="true"></div><footer>SECURE ACCESS · STMS</footer></div></div>

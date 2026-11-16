@@ -51,7 +51,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@title · @L.T("Sourcing Desk")</title>
     <partial name="_DisplayHead" />
-    <link rel="icon" type="image/svg+xml" href="~/sourcing-desk.svg" asp-append-version="true">
+    <partial name="_BrandHead" />
     <link rel="stylesheet" href="@stylesheet" asp-append-version="true">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true">
 
@@ -106,7 +106,7 @@
             <header class="portal-bar stms-public-header">
                 <div class="portal-bar-inner">
                     <a class="brand" asp-controller="Home" asp-action="Index">
-                        <img src="~/images/stms-cube.svg" alt="" />
+                        <partial name="_BrandIcon" />
                         <strong>STMS</strong>
                     </a>
 
@@ -155,7 +155,7 @@
         </main>
 
         <footer class="site-footer stms-footer">
-            <span><img src="~/images/stms-cube.svg" alt="" /> STMS <small>@L.T("Sourcing & Tender Management System")</small></span>
+            <span><partial name="_BrandIcon" /> STMS <small>@L.T("Sourcing & Tender Management System")</small></span>
             <div class="stms-footer-actions">
                 <a asp-controller="Home" asp-action="Privacy">@L.T("Privacy")</a>
                 @if (!fragment)
