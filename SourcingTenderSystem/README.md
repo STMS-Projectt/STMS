@@ -98,3 +98,17 @@ There must be exactly four active TopCommittee employee accounts when the
 manager forwards a report. These four accounts are recorded on the tender.
 An award requires all four approvals; any rejection cancels the tender.
 The final outcome sends an in-app notification to participating suppliers.
+
+### Google sign-in
+
+Google sign-in only works for accounts an administrator has already created; it never creates new users. The Google account's verified email must match the STMS account email. On the first Google sign-in the Google account is linked to that STMS account. Deactivated, locked or two-factor accounts are refused, and users without a passkey are sent to passkey setup, as with password sign-in.
+
+1. In Google Cloud Console, create an OAuth client ID of type **Web application** and add the redirect URI `https://localhost:7143/signin-google` (and the deployed site's `/signin-google`).
+2. Store the credentials as user secrets (never in `appsettings.json`):
+
+```powershell
+dotnet user-secrets --project SourcingTenderSystem set "Authentication:Google:ClientId" "<client id>"
+dotnet user-secrets --project SourcingTenderSystem set "Authentication:Google:ClientSecret" "<client secret>"
+```
+
+In production use the environment variables `Authentication__Google__ClientId` and `Authentication__Google__ClientSecret`. Without them the Google button stays disabled.

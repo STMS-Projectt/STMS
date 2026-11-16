@@ -24,6 +24,7 @@ public sealed class AccountController(SignInManager<IdentityUser> signIn, UserMa
     public IActionResult Login(string? returnUrl)
     {
         if (User.Identity?.IsAuthenticated == true) return RedirectToAction(nameof(Continue));
+        if (TempData["LoginError"] is string error) ModelState.AddModelError("", error);
         return View(new LoginInput { ReturnUrl = Local(returnUrl) });
     }
 
@@ -44,26 +45,78 @@ public sealed class AccountController(SignInManager<IdentityUser> signIn, UserMa
         if (user is not null && await Active(user) &&
             !await users.GetTwoFactorEnabledAsync(user) &&
             (await signIn.CheckPasswordSignInAsync(user, input.Password, lockoutOnFailure: true)).Succeeded)
-        {
-            if ((await users.GetPasskeysAsync(user)).Count > 0)
-            {
-                await HttpContext.SignOutAsync(Pending);
-                await signIn.SignInAsync(user, input.RememberMe);
-                return LocalRedirect(await Destination(user, input.ReturnUrl));
-            }
-
-            await signIn.SignOutAsync();
-            var identity = new ClaimsIdentity([
-                new Claim(ClaimTypes.NameIdentifier, user.Id),
-                new Claim("stamp", await users.GetSecurityStampAsync(user)),
-                new Claim("remember", input.RememberMe ? "1" : "0"),
-                new Claim("return", Local(input.ReturnUrl) ?? "")
-            ], Pending);
-            await HttpContext.SignInAsync(Pending, new ClaimsPrincipal(identity));
-            return RedirectToAction(nameof(BiometricVerify));
-        }
+            return await FinishSignIn(user, input.RememberMe, input.ReturnUrl);
         ModelState.AddModelError("", "Unable to sign in with those credentials.");
         return View(input);
+    }
+
+    // Same rules as a password sign-in: with a passkey the session starts, otherwise the user must set one up first.
+    private async Task<IActionResult> FinishSignIn(IdentityUser user, bool remember, string? returnUrl)
+    {
+        if ((await users.GetPasskeysAsync(user)).Count > 0)
+        {
+            await HttpContext.SignOutAsync(Pending);
+            await signIn.SignInAsync(user, remember);
+            return LocalRedirect(await Destination(user, returnUrl));
+        }
+
+        await signIn.SignOutAsync();
+        var identity = new ClaimsIdentity([
+            new Claim(ClaimTypes.NameIdentifier, user.Id),
+            new Claim("stamp", await users.GetSecurityStampAsync(user)),
+            new Claim("remember", remember ? "1" : "0"),
+            new Claim("return", Local(returnUrl) ?? "")
+        ], Pending);
+        await HttpContext.SignInAsync(Pending, new ClaimsPrincipal(identity));
+        return RedirectToAction(nameof(BiometricVerify));
+    }
+
+    // ---------------- Google sign-in (only for accounts an administrator already registered) ----------------
+
+    private const string Google = "Google";
+    private const string GoogleRefused = "This Google account is not registered in STMS. Ask an administrator to create your account with this email.";
+
+    [AllowAnonymous, HttpPost, EnableRateLimiting("biometric-login")]
+    public async Task<IActionResult> ExternalLogin(string? returnUrl)
+    {
+        if (await signIn.GetExternalAuthenticationSchemesAsync() is var schemes && !schemes.Any(x => x.Name == Google))
+            return RedirectToAction(nameof(Login));
+        var properties = signIn.ConfigureExternalAuthenticationProperties(Google,
+            Url.Action(nameof(ExternalLoginCallback), new { returnUrl = Local(returnUrl) }));
+        properties.SetParameter("prompt", "select_account");
+        return Challenge(properties, Google);
+    }
+
+    [AllowAnonymous, HttpGet]
+    public async Task<IActionResult> ExternalLoginCallback(string? returnUrl, string? remoteError)
+    {
+        var info = remoteError is null ? await signIn.GetExternalLoginInfoAsync() : null;
+        await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+        if (info is null || info.LoginProvider != Google)
+            return GoogleFailed("Google sign-in was cancelled or failed. Try again or use your password.", returnUrl);
+
+        // A linked Google account keeps working even if its address changes; otherwise match by verified email only.
+        var user = await users.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
+        if (user is null)
+        {
+            var email = info.Principal.FindFirstValue(ClaimTypes.Email)?.Trim();
+            var verified = string.Equals(info.Principal.FindFirstValue("email_verified"), "true", StringComparison.OrdinalIgnoreCase);
+            user = verified && !string.IsNullOrEmpty(email) ? await users.FindByEmailAsync(email) : null;
+            if (user is not null && (await users.GetLoginsAsync(user)).Any(x => x.LoginProvider == Google))
+                user = null; // the account is already linked to a different Google account
+            if (user is not null && await CanUseDirectLogin(user) && !(await users.AddLoginAsync(user, info)).Succeeded)
+                user = null;
+        }
+
+        if (user is null || !await CanUseDirectLogin(user))
+            return GoogleFailed(GoogleRefused, returnUrl);
+        return await FinishSignIn(user, remember: false, returnUrl);
+    }
+
+    private IActionResult GoogleFailed(string message, string? returnUrl)
+    {
+        TempData["LoginError"] = message;
+        return RedirectToAction(nameof(Login), new { returnUrl = Local(returnUrl) });
     }
 
     [AllowAnonymous, HttpPost, EnableRateLimiting("biometric-login"), RequestSizeLimit(1_500_000)]

@@ -1,7 +1,9 @@
 @inject SourcingTenderSystem.Services.Biometrics.FaceLab FaceLab
+@inject Microsoft.AspNetCore.Authentication.IAuthenticationSchemeProvider Schemes
 @model LoginInput
 @{
     ViewData["Title"] = L.T("Sign in");
+    var googleEnabled = await Schemes.GetSchemeAsync("Google") is not null;
 }
 <div class="auth-shell">
     <aside class="auth-aside">
@@ -43,8 +45,9 @@
             </form>
             <div class="login-providers" aria-describedby="login-provider-note">
                 <p class="login-provider-divider">@L.T("or continue with")</p>
+                <form id="google-sign-in" asp-action="ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post"></form>
                 <div class="login-provider-grid">
-                    <button class="login-provider" type="button" disabled>
+                    <button class="login-provider" type="submit" form="google-sign-in" disabled="@(!googleEnabled)">
                         <svg viewBox="0 0 48 48" aria-hidden="true">
                             <path fill="#4285F4" d="M43.6 24.5c0-1.4-.1-2.8-.4-4.1H24v7.8h11a9.4 9.4 0 0 1-4.1 6.2v5.1h6.6c3.9-3.6 6.1-8.8 6.1-15z"/>
                             <path fill="#34A853" d="M24 44c5.5 0 10.1-1.8 13.5-4.9l-6.6-5.1c-1.8 1.2-4.1 1.9-6.9 1.9-5.3 0-9.8-3.6-11.4-8.4H5.8v5.3A20 20 0 0 0 24 44z"/>
@@ -60,7 +63,9 @@
                         GitHub
                     </button>
                 </div>
-                <p id="login-provider-note" class="login-provider-note">@L.T("Google and GitHub sign-in are not available yet.")</p>
+                <p id="login-provider-note" class="login-provider-note">@(googleEnabled
+                    ? L.T("Google sign-in works only for accounts registered by an administrator. GitHub sign-in is not available yet.")
+                    : L.T("Google and GitHub sign-in are not available yet."))</p>
             </div>
         </div>
 
