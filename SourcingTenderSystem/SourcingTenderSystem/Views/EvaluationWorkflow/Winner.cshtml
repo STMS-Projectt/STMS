@@ -4,15 +4,31 @@
     ViewData["Title"] = "Winning supplier";
 }
 <a class="back-link" asp-action="Index"><partial name="_Icon" model='@("back")' /> @L.T("Evaluations")</a>
-<header class="page-heading stms-hero admin-record-hero"><div><p class="eyebrow">@L.F("Tender #{0}", Model.Id)</p><h1>@L.T("Winning supplier")</h1><p>@Model.Title</p></div><partial name="_Status" model="@report.Status" /></header>
-<section class="surface detail-card ai-box mb-3" data-winner-box data-winner-url="@Url.Action("WinnerBrief", new { id = Model.Id })">
-    <div class="ai-box-head"><h2 class="mb-0">@report.RecommendedBid.SupplierProfile.CompanyName</h2><span class="record-panel-label">@L.T("Recommended by the evaluation committee")</span></div>
-    <p class="ai-note">@L.T("This advisory brief explains the recommendation using the recorded scores and offer data. The committee decides the award.")</p>
-    <div data-winner-body aria-live="polite">
-        <div class="ai-box-state" role="status"><span class="spinner-border spinner-border-sm" aria-hidden="true"></span> @L.T("Preparing the AI brief. This can take up to a minute the first time.")</div>
+<div class="wb-shell" data-winner-box data-winner-url="@Url.Action("WinnerBrief", new { id = Model.Id })">
+    <header class="wb-intro">
+        <div class="wb-intro-tender">
+            <span class="wb-tender-id">@L.F("Tender #{0}", Model.Id)</span>
+            <h1 class="wb-tender-title"><bdi>@Model.Title</bdi></h1>
+        </div>
+        <partial name="_Status" model="@report.Status" />
+    </header>
+    <div class="wb-banner">
+        <span class="wb-banner-icon" aria-hidden="true"><partial name="_Icon" model='@("shield")' /></span>
+        <div>
+            <p class="wb-banner-title"><span class="wb-ai-chip">AI</span> @L.T("Recommended by the evaluation committee")</p>
+            <p class="wb-banner-text">@L.T("This advisory brief explains the recommendation using the recorded scores and offer data. The committee decides the award.")</p>
+        </div>
     </div>
-</section>
-<template data-winner-error><div class="ai-box-state" role="status"><div><strong>@L.T("The winner brief could not be loaded.")</strong> <button type="button" class="btn btn-outline-secondary btn-sm ms-2" data-winner-retry>@L.T("Try again")</button></div></div></template>
+    <div class="wb-body" data-winner-body aria-live="polite">
+        <div class="wb-loading" role="status">
+            <div class="wb-loading-label"><span class="spinner-border spinner-border-sm" aria-hidden="true"></span> @L.T("Preparing the AI brief. This can take up to a minute the first time.")</div>
+            <div class="wb-skeleton wb-skeleton-hero"></div>
+            <div class="wb-skeleton-row"><div class="wb-skeleton"></div><div class="wb-skeleton"></div><div class="wb-skeleton"></div></div>
+            <div class="wb-skeleton wb-skeleton-block"></div>
+        </div>
+    </div>
+</div>
+<template data-winner-error><div class="wb-alert" role="status"><partial name="_Icon" model='@("warning")' /><div><strong>@L.T("The winner brief could not be loaded.")</strong></div><button type="button" class="btn btn-outline-secondary btn-sm" data-winner-retry><partial name="_Icon" model='@("refresh")' /> @L.T("Try again")</button></div></template>
 @section Scripts {
 <script>
 (() => {
