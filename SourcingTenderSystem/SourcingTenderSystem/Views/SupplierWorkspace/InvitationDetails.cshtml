@@ -47,7 +47,7 @@
                 }
                 else if (invitation.Status == "Accepted" && hasBid)
                 {
-                    <a class="btn btn-outline-secondary" asp-controller="Bids" asp-action="MyBids">@L.T("View my bids")</a>
+                    <a class="btn btn-outline-secondary" data-workspace-page asp-controller="Bids" asp-action="MyBids">@L.T("View my bids")</a>
                 }
                 else if (open && invitation.Status == "Accepted")
                 {

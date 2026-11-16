@@ -6,4 +6,4 @@
 <div><dt>@L.T("Status")</dt><dd><partial name="_Status" model='@(Model.IsActive ? "Active" : "Inactive")' /></dd></div>
 <div><dt>@L.T("Description")</dt><dd>@(string.IsNullOrWhiteSpace(Model.Description) ? L.T("No description provided.") : Model.Description)</dd></div>
 <div><dt>@L.T("Employees")</dt><dd>@Model.EmployeeProfiles.Count</dd></div></dl></section>
-<aside class="surface helper-card"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("users")' /></span><h2>@L.T("Employees")</h2><p>@L.T("Manage employee accounts and department assignments in the employee directory.")</p><a class="text-link" asp-controller="Employees" asp-action="Index">@L.T("Open employees") <partial name="_Icon" model='@("arrow")' /></a></aside></div>
+<aside class="surface helper-card"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("users")' /></span><h2>@L.T("Employees")</h2><p>@L.T("Manage employee accounts and department assignments in the employee directory.")</p><a class="text-link" data-workspace-page asp-controller="Employees" asp-action="Index">@L.T("Open employees") <partial name="_Icon" model='@("arrow")' /></a></aside></div>
