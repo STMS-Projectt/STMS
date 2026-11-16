@@ -79,7 +79,7 @@ builder.Services.Configure<IdentityPasskeyOptions>(options =>
 {
     options.UserVerificationRequirement = "required";
     options.ResidentKeyRequirement = "required";
-    options.AuthenticatorAttachment = "platform";
+    options.AuthenticatorAttachment = null;
 });
 builder.Services.AddRateLimiter(options =>
 {
