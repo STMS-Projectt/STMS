@@ -90,7 +90,74 @@ try {
   const resume = process.env.STMS_DISPLAY_RESUME;
   const winnerAudit = process.env.STMS_DISPLAY_FOCUS === 'winner';
   const quick = process.env.STMS_EXTRA_FUNCTIONAL_AUDIT === 'only';
-  if (process.env.STMS_DISPLAY_FOCUS === 'portal-fixes') {
+  if (process.env.STMS_DISPLAY_FOCUS === 'brand') {
+    await test('BR-shared-brand-desktop-mobile-dark', async () => {
+      async function checkLogo(selector, size) {
+        const info = await ev(`(() => {
+          const image = document.querySelector(${JSON.stringify(selector)});
+          const style = getComputedStyle(image);
+          return {path: new URL(image.currentSrc).pathname, width: image.naturalWidth, height: image.naturalHeight,
+            fit: style.objectFit, size: image.getBoundingClientRect().width, background: style.backgroundColor};
+        })()`);
+        assert.deepEqual([info.path, info.width, info.height, info.fit, info.size], ['/images/logo-animated.svg', 350, 380, 'contain', size]);
+        assert.equal(await ev('new URL(document.querySelector("link[rel=icon]").href).pathname'), '/images/logo.svg');
+        return info;
+      }
+      await go('/');
+      await checkLogo('#navbar .stms-brand-image', 40);
+      await checkLogo('footer .stms-brand-image', 40);
+      await go('/Home/Team');
+      await checkLogo('.topbar .stms-brand-image', 40);
+      const clip = await ev('(() => { const {x,y,width,height} = document.querySelector(".topbar .stms-brand-image").getBoundingClientRect(); return {x,y,width,height,scale:1}; })()');
+      const logoFrame = async () => (await call('Page.captureScreenshot', {format:'png',clip})).data;
+      const start = await logoFrame();
+      await sleep(1500);
+      assert.notEqual(await logoFrame(), start, 'logo artwork changes between rendered frames');
+      await call('Emulation.setEmulatedMedia', {features:[{name:'prefers-reduced-motion',value:'reduce'}]});
+      await wait('document.querySelector(".topbar .stms-brand-image").currentSrc.includes("/images/logo.svg")', 'static logo for reduced motion');
+      await call('Emulation.setEmulatedMedia', {features:[{name:'prefers-color-scheme',value:'light'}]});
+      await capture('brand-team');
+      await go('/Account/Login');
+      await checkLogo('.login-brand .stms-brand-image', 46);
+      await checkLogo('.stms-public-header .stms-brand-image', 39);
+      await checkLogo('.stms-footer .stms-brand-image', 23);
+      await viewport(390);
+      await language('ar');
+      if (await ev('document.documentElement.dataset.bsTheme') !== 'dark') await click('[data-theme-toggle]');
+      await wait('document.documentElement.dataset.bsTheme === "dark"', 'dark theme');
+      assert.equal((await checkLogo('.stms-public-header .stms-brand-image', 29)).background, 'rgb(231, 246, 240)');
+      await capture('brand-login-ar-dark-mobile');
+      await login('admin');
+      await wait('location.pathname === "/AdminDashboard" && document.readyState === "complete"', 'admin dashboard');
+      await checkLogo('.stms-top-brand .stms-brand-image', 34);
+      await viewport(1440);
+      await checkLogo('.stms-top-brand .stms-brand-image', 45);
+      await capture('brand-dashboard-ar-dark');
+    });
+  } else if (process.env.STMS_DISPLAY_FOCUS === 'team') {
+    await test('BR-home-team-links-and-stitch', async () => {
+      await go('/');
+      for (const selector of ['#navbar a[href="/Home/Team"]', 'footer a[href="/Home/Team"]'])
+        assert(await ev('!!document.querySelector('+JSON.stringify(selector)+')'));
+      await language('ar');
+      assert.equal(await ev('document.querySelector('+JSON.stringify('#navbar a[href="/Home/Team"]')+').textContent.trim()'),'فريق التطوير');
+      await go('/Home/Team');
+      await wait('document.querySelectorAll("#cluster button").length===7','seven team members');
+      await capture('team-desktop');
+      await go('/Home/Team');
+      await viewport(390);
+      await click('#cluster button:nth-child(2)');
+      await wait('document.querySelector("#stitchedName").textContent.includes("Amneh")','selected the second profile');
+      await ev('window.scrollBy(0, innerHeight * .85)');
+      await wait('document.querySelector("#stitchedName").textContent.includes("Amneh") && document.querySelector("#stitchBarFill").style.width==="100%"','chosen profile fully stitched');
+      assert(await ev('document.querySelector("#spotlightImg").naturalWidth > 0 && document.documentElement.scrollWidth <= innerWidth'));
+      assert.equal(await ev('document.querySelector("#githubPatch").href'),'https://github.com/amneh-01');
+      await capture('team-mobile-profile');
+      await click('.topbar .brand');
+      await wait('!!document.querySelector("#navbar")','back to home');
+      assert.deepEqual(errors, []);
+    });
+  } else if (process.env.STMS_DISPLAY_FOCUS === 'portal-fixes') {
     await verifyPortalFixes({go,wait,ev,click,set,login,logout,capture,viewport,language,test,call});
   } else {
   if (!resume) {

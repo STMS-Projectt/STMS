@@ -18,8 +18,8 @@ body.workspace .sidebar{background:linear-gradient(140deg,light-dark(#fff, #1b21
 body.workspace .sidebar .side-link{border-radius:14px}
 body.workspace .sidebar .side-link:hover{color:light-dark(#075a47, #b5f0e2);background:light-dark(#e6f5ef, #163227)}
 body.workspace .sidebar .side-link.is-current{color:light-dark(#fff, #fff);background:linear-gradient(135deg,light-dark(#159d77, #1c9674),light-dark(#007658, #12644f));box-shadow:0 5px 12px #00846125}
-.sidebar .brand-mark{background:transparent url('../images/stms-cube.svg') center/contain no-repeat;box-shadow:none}
-.sidebar .brand-mark svg{visibility:hidden}
+.sidebar .brand-mark{background:transparent;box-shadow:none}
+.sidebar .brand-mark .stms-brand-image{width:100%;height:100%}
 .workspace-bar{margin:14px clamp(12px,2vw,28px) 0;padding:9px clamp(12px,1.8vw,25px);border:1px solid light-dark(#fff, #354345);border-radius:24px;background:linear-gradient(145deg,light-dark(#fff, #1b2125),light-dark(#edf4f9, #142531));box-shadow:var(--stms-shadow);gap:12px}
 .workspace-bar .bar-context{flex:1;min-width:0}
 .workspace-bar .bar-profile{background:light-dark(#ffffffb8, #1b2125b8);border:1px solid white;border-radius:100px;padding:5px 12px 5px 5px;min-width:0}

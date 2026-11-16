@@ -6,7 +6,7 @@
 }
 <aside class="sidebar" id="workspace-nav" aria-label="@L.T("Evaluation workspace")">
     <a class="brand" asp-controller="@(top ? "EvaluationWorkflow" : "CommitteeReviews")" asp-action="Index">
-        <span class="brand-mark"><partial name="_Icon" model='@("brand")' /></span>
+        <span class="brand-mark"><partial name="_BrandIcon" /></span>
         <span>@L.T("Sourcing Desk")<small>@L.T(top ? "Top Committee" : manager ? "Sourcing manager" : "Evaluation committee")</small></span>
     </a>
     <nav class="side-nav" aria-label="@L.T("Committee pages")">

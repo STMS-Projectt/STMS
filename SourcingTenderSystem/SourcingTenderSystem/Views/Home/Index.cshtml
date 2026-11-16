@@ -13,6 +13,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@@0,500;0,600;1,500&family=Inter:wght@@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="~/home/css/style.css" asp-append-version="true">
+  <partial name="_BrandHead" />
   <partial name="_DisplayHead" />
   <link rel="stylesheet" href="~/css/display-preferences.css" asp-append-version="true">
 
@@ -31,7 +32,7 @@
   <!-- ================= LOADER ================= -->
   <div id="loader" aria-live="polite">
     <div class="loader-inner">
-      <div class="brand-mark">L</div>
+      <div class="brand-mark"><partial name="_BrandIcon" /></div>
       <div class="loader-title serif">Little Threads</div>
       <div class="loader-bar"><span id="loaderBar"></span></div>
       <div class="loader-text" id="loaderText">@L.T("Opening the store…")</div>
@@ -43,7 +44,7 @@
     <nav class="navbar" id="navbar">
       <partial name="_DisplayPreferences" />
       <a href="#home" class="logo" aria-label="@L.T("Little Threads home")">
-        <span class="brand-mark">L</span>
+        <span class="brand-mark"><partial name="_BrandIcon" /></span>
         <span class="logo-text"><b>Little Threads</b><small>@L.T("KIDSWEAR SUPPLY")</small></span>
       </a>
       <button class="burger" id="burger" aria-label="@L.T("Open menu")" aria-expanded="false"><span></span><span></span></button>
@@ -52,6 +53,7 @@
         <a href="#about" class="nav-link" data-section="about">@L.T("About")</a>
         <a href="#how-it-works" class="nav-link" data-section="how-it-works">@L.T("How It Works")</a>
         <a href="#contact" class="nav-link" data-section="contact">@L.T("Contact")</a>
+        <a asp-controller="Home" asp-action="Team" class="btn btn-outline">@L.T("Development team")</a>
         <a asp-controller="Account" asp-action="Login" class="btn btn-outline">@L.T("Login")</a>
         <a asp-controller="SupplierRegistration" asp-action="Register" class="btn btn-dark">@L.T("Supplier Registration")</a>
       </div>
@@ -239,13 +241,13 @@
         <div class="ft-note" id="newsNote" role="status"></div>
       </div>
       <nav class="ft-cols" aria-label="@L.T("Footer")">
-        <div><h5>@L.T("Explore")</h5><ul><li><a href="#home">@L.T("Home")</a></li><li><a href="#about">@L.T("About")</a></li><li><a href="#how-it-works">@L.T("How It Works")</a></li><li><a href="#contact">@L.T("Contact")</a></li></ul></div>
+        <div><h5>@L.T("Explore")</h5><ul><li><a href="#home">@L.T("Home")</a></li><li><a href="#about">@L.T("About")</a></li><li><a href="#how-it-works">@L.T("How It Works")</a></li><li><a href="#contact">@L.T("Contact")</a></li><li><a asp-controller="Home" asp-action="Team">@L.T("Development team")</a></li></ul></div>
         <div><h5>@L.T("Suppliers")</h5><ul><li><a asp-controller="SupplierRegistration" asp-action="Register">@L.T("Registration")</a></li><li><a asp-controller="Account" asp-action="Login">@L.T("Login")</a></li><li><a href="#">@L.T("Guidelines")</a></li><li><a href="#">@L.T("Pricing")</a></li></ul></div>
-        <div><h5>@L.T("Departments")</h5><ul><li><a href="#home">@L.T("Girls & Baby")</a></li><li><a href="#home">@L.T("Boys")</a></li><li><a href="#home">@L.T("Accessories")</a></li><li><a href="#home">@L.T("Our Team")</a></li></ul></div>
+        <div><h5>@L.T("Departments")</h5><ul><li><a href="#home">@L.T("Girls & Baby")</a></li><li><a href="#home">@L.T("Boys")</a></li><li><a href="#home">@L.T("Accessories")</a></li></ul></div>
       </nav>
     </div>
     <div class="container ft-mid">
-      <a href="#home" class="logo"><span class="brand-mark">L</span><span class="logo-text"><b>Little Threads</b><small>@L.T("KIDSWEAR SUPPLY")</small></span></a>
+      <a href="#home" class="logo"><span class="brand-mark"><partial name="_BrandIcon" /></span><span class="logo-text"><b>Little Threads</b><small>@L.T("KIDSWEAR SUPPLY")</small></span></a>
       <div class="ft-contact">
         <div><b>@L.T("CALL")</b><a href="tel:+0000000000">+000 000 0000</a></div>
         <div><b>@L.T("EMAIL")</b><a href="mailto:hello@@littlethreads.com">hello@@littlethreads.com</a></div>

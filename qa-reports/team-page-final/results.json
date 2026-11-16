@@ -1,0 +1,43 @@
+{
+  "results": [
+    {
+      "id": "BR-home-team-links-and-stitch",
+      "status": "PASS"
+    }
+  ],
+  "errors": [],
+  "http": [
+    {
+      "path": "/",
+      "status": 200
+    },
+    {
+      "path": "/home/assets/contact-team.jpg",
+      "status": 200
+    },
+    {
+      "path": "/",
+      "status": 200
+    },
+    {
+      "path": "/home/assets/contact-team.jpg",
+      "status": 200
+    },
+    {
+      "path": "/Home/Team",
+      "status": 200
+    },
+    {
+      "path": "/Home/Team",
+      "status": 200
+    },
+    {
+      "path": "/",
+      "status": 200
+    },
+    {
+      "path": "/home/assets/contact-team.jpg",
+      "status": 200
+    }
+  ]
+}

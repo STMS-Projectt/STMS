@@ -47,6 +47,9 @@ namespace SourcingTenderSystem.Controllers
             return message is null ? NotFound() : View(message);
         }
 
+        [HttpGet]
+        public IActionResult Team() => View();
+
         public IActionResult Privacy()
         {
             return View();

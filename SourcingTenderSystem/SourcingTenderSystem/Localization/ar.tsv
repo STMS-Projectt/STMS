@@ -1750,5 +1750,7 @@ Not comparable|غير قابل للمقارنة
 Google sign-in works only for accounts registered by an administrator. GitHub sign-in is not available yet.|تسجيل الدخول عبر Google متاح فقط للحسابات التي سجّلها المسؤول. تسجيل الدخول عبر GitHub غير متاح بعد.
 This Google account is not registered in STMS. Ask an administrator to create your account with this email.|حساب Google هذا غير مسجّل في STMS. اطلب من المسؤول إنشاء حسابك بهذا البريد الإلكتروني.
 Google sign-in was cancelled or failed. Try again or use your password.|تم إلغاء تسجيل الدخول عبر Google أو فشل. حاول مرة أخرى أو استخدم كلمة المرور.
-days|يوم
-Technical / financial|الفني / المالي
+Development team|فريق التطوير
+Enable JavaScript to explore the development team.|فعّل JavaScript لعرض صفحة فريق التطوير.
+Cancelled by {0}|ألغاه {0}
+Reason: {0}|السبب: {0}
