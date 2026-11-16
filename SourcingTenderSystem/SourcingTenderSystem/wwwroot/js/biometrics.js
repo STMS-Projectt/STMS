@@ -26,8 +26,9 @@ function bind(root) {
         busy = true;
         if (phone) phone.disabled = true;
         status.textContent = window.stmsT("Verifying…");
-        try { window.location.assign((await operation()).redirectUrl); }
+        try { window.stmsReceipt?.state("checking"); const result = await operation(); await window.stmsReceipt?.approve(); window.location.assign(result.redirectUrl); }
         catch (error) {
+            window.stmsReceipt?.state("failure");
             status.textContent = error.name === "NotAllowedError" ? window.stmsT("Phone verification was cancelled or timed out. Try again.") : error.message;
         } finally {
             if (password) password.value = "";
