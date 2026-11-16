@@ -54,7 +54,6 @@
 </head>
 <body>
 <main>
-    <div class="report-display-controls"><partial name="_DisplayPreferences" /></div>
     <p class="eyebrow">@L.F("AI bid analysis · Tender #{0}", input.TenderId)</p>
     <h1>@input.Title</h1>
     <p class="meta">@L.F("Generated {0} · Model: {1} · {2} compliant bids compared", Model.GeneratedAtUtc.ToLocalTime().ToString("f", L.DisplayCulture), Model.Model, input.Bids.Count)</p>

@@ -88,6 +88,8 @@ public class InvitationsController : Controller
             ModelState.AddModelError(nameof(Invitation.ExpiresAt), "Choose a UTC expiry after bidding opens and in the future.");
         if (await TenderRules.PreviouslySubmitted(_context, invitation.TenderId).AnyAsync(id => ids.Contains(id)))
             ModelState.AddModelError("", "Suppliers who have already submitted a bid cannot be invited again.");
+        if (await PreviouslyDeclined(invitation.TenderId).AnyAsync(id => ids.Contains(id)))
+            ModelState.AddModelError("", "Suppliers who declined an earlier invitation cannot be invited again.");
         if (!ModelState.IsValid)
         {
             await LoadInvitationOptionsAsync(invitation.TenderId, ids);
@@ -124,6 +126,11 @@ public class InvitationsController : Controller
         _context.SupplierProfiles.AsNoTracking().Where(s => s.Status == SupplierStatus.Approved &&
             s.Categories.Any(c => _context.Tenders.Any(t => t.Id == tenderId && t.PurchaseRequisition.CategoryId == c.Id)));
 
+    // A supplier who declined an invitation to this tender (any round) is not offered again.
+    private IQueryable<int> PreviouslyDeclined(int tenderId) =>
+        _context.Invitations.Where(i => i.TenderId == tenderId && i.Status == "Declined")
+            .Select(i => i.SupplierProfileId).Distinct();
+
     private async Task LoadInvitationOptionsAsync(int? tenderId, IEnumerable<int>? selected = null)
     {
         var now = DateTime.UtcNow;
@@ -137,7 +144,8 @@ public class InvitationsController : Controller
             suppliers = EligibleSuppliers(tender.Id);
             var sent = TenderRules.CurrentInvitations(_context, tender).Select(i => i.SupplierProfileId);
             var submitted = TenderRules.PreviouslySubmitted(_context, tender.Id);
-            suppliers = suppliers.Where(s => !sent.Contains(s.Id) && !submitted.Contains(s.Id));
+            var declined = PreviouslyDeclined(tender.Id);
+            suppliers = suppliers.Where(s => !sent.Contains(s.Id) && !submitted.Contains(s.Id) && !declined.Contains(s.Id));
             ViewData["RoundNumber"] = tender.Counter;
             ViewData["CategoryName"] = await _context.PurchaseRequisitions.Where(r => r.Id == tender.PurchaseRequisitionId)
                 .Select(r => r.Category == null ? null : r.Category.Name).SingleOrDefaultAsync();

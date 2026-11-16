@@ -97,6 +97,7 @@
         const staff = directory.querySelector("[data-filter-staff]");
         const sort = directory.querySelector("[data-filter-sort]");
         const pagination = directory.querySelector("[data-dept-pagination]");
+        if (pagination) results.after(pagination);
         const pageSize = pagination ? 8 : 0;
         let currentPage = 1;
         const apply = () => {
@@ -134,7 +135,7 @@
                     button.textContent = String(page);
                     button.setAttribute("aria-label", `Go to page ${page} of ${pages}`);
                     button.setAttribute("aria-current", page === currentPage ? "page" : "false");
-                    button.addEventListener("click", () => { currentPage = page; apply(); pagination.querySelector(".dept-filter-popover").hidden = true; pagination.querySelector(".dept-dock-button").setAttribute("aria-expanded", "false"); });
+                    button.addEventListener("click", () => { currentPage = page; apply(); results.scrollIntoView({ behavior: "smooth", block: "start" }); });
                     options.append(button);
                 }
             }

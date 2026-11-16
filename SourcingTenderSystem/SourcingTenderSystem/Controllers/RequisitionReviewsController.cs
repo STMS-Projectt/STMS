@@ -17,8 +17,10 @@ public class RequisitionReviewsController : RequisitionBaseController
     public async Task<IActionResult> Index()
     {
         if (await CurrentEmployeeAsync() == null) return Forbid();
+        // Draft requests are not yet submitted, so they never appear in the reviewer queue.
         var requests = await Db.PurchaseRequisitions.AsNoTracking().Include(x => x.Department)
             .Include(x => x.CreatedByEmployeeProfile).Include(x => x.Tenders).ThenInclude(t => t.EvaluationReport)
+            .Where(x => x.Status != "Draft")
             .OrderBy(x => x.CreatedAt).ToListAsync();
         return View(requests);
     }
