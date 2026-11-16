@@ -249,7 +249,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 /* ---------------- newsletter ---------------- */
 const news = $('#newsForm'), newsNote = $('#newsNote');
-news.addEventListener('submit', e => {
+news?.addEventListener('submit', e => {
   e.preventDefault();
   const email = news.elements.email.value.trim();
   if (!EMAIL_RE.test(email)) { news.classList.add('invalid'); newsNote.textContent = t('Please enter a valid email.'); newsNote.className = 'ft-note err'; return; }
