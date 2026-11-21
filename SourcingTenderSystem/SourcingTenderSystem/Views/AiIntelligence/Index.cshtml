@@ -92,6 +92,6 @@
 <section class="surface dashboard-card ai-block">
     <div class="card-heading"><div><h2>@L.T("AI recommendations")</h2><p>@L.T("Advice only. The AI does not take any decision or action on your behalf.")</p></div></div>
     <ul class="ai-recommendations">
-        @foreach (var r in AiInsights.Recommendations(Model)) { <li>@r</li> }
+        @foreach (var r in selected is null ? AiInsights.Recommendations(Model) : AiInsights.TenderRecommendations(selected, Model)) { <li>@r</li> }
     </ul>
 </section>

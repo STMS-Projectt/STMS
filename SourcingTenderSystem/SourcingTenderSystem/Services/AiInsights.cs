@@ -178,6 +178,45 @@ public class AiInsights(ApplicationDbContext db, IHttpClientFactory httpClients,
         return list;
     }
 
+    /// <summary>Recommendations about the bids of ONE tender. Advice only.</summary>
+    public static List<string> TenderRecommendations(AiTenderRow t, AiData data)
+    {
+        var bids = data.Bids.Where(b => b.TenderId == t.Id).OrderBy(b => b.Price).ToList();
+        var list = new List<string>();
+        if (bids.Count == 0)
+        {
+            list.Add($"Tender #{t.Id} \"{t.Title}\" has no visible bids yet. Bids stay sealed while the tender is open.");
+            return list;
+        }
+
+        var cheapest = bids[0];
+        var fastest = bids.OrderBy(b => b.DeliveryDays).First();
+        var average = bids.Average(b => b.Price);
+
+        if (bids.Count == 1)
+            list.Add($"Only one bid was received ({cheapest.Supplier}). There is no competition, so compare the price with the market or previous purchases before deciding.");
+
+        list.Add($"Lowest price: {cheapest.Supplier} with {Money(cheapest.Price, cheapest.Currency)} ({(average > 0 ? (1 - cheapest.Price / average) * 100 : 0):0}% below the average of the bids).");
+
+        if (fastest.Supplier != cheapest.Supplier)
+            list.Add($"Fastest delivery: {fastest.Supplier} ({fastest.DeliveryDays} days) vs {cheapest.DeliveryDays} days for the cheapest offer. Choose based on what matters more for this tender: price or time.");
+        else
+            list.Add($"{cheapest.Supplier} offers both the lowest price and the fastest delivery ({cheapest.DeliveryDays} days). It looks like the best value offer.");
+
+        foreach (var b in bids.Where(b => bids.Count > 1 && b.Price < average * 0.7m))
+            list.Add($"{b.Supplier}'s price is much lower than the average. Make sure the offer covers all items and specifications before accepting it.");
+
+        if (t.Lowest > 0 && t.Highest > t.Lowest * 1.3m)
+            list.Add($"The highest bid is {(t.Highest / t.Lowest - 1) * 100:0}% above the lowest. A big gap like this may mean the suppliers understood the specifications differently.");
+
+        foreach (var b in bids.Where(b => b.ValidityDays > 0 && b.ValidityDays < 30))
+            list.Add($"{b.Supplier}'s offer is valid for only {b.ValidityDays} days. Finish the evaluation before it expires.");
+
+        if (t.Winner is not null)
+            list.Add($"This tender was awarded to {t.Winner}.");
+        return list;
+    }
+
     // ============================================================ 3) Chatbot
 
     public async Task<AiAnswer> AskAsync(AiData data, string question, IFormFile? file, bool arabic)
@@ -186,6 +225,7 @@ public class AiInsights(ApplicationDbContext db, IHttpClientFactory httpClients,
         var q = question.ToLowerInvariant();
         var answer = new AiAnswer();
         string fallback;
+        AiTenderRow? focus = null;   // the tender the question is about (if any)
 
         // --- A file was uploaded: read it and show its content as a table.
         if (file is { Length: > 0 })
@@ -200,6 +240,7 @@ public class AiInsights(ApplicationDbContext db, IHttpClientFactory httpClients,
         // --- A specific tender: "tender 12", "#12", "مناقصة 12"
         else if (FindTender(data, q) is AiTenderRow t)
         {
+            focus = t;
             var bids = data.Bids.Where(b => b.TenderId == t.Id).ToList();
             answer.Cards = [new("Status", t.Status), new("Bids", t.BidCount.ToString()), new("Lowest", Money(t.Lowest, t.Currency)),
                 new("Highest", Money(t.Highest, t.Currency)), new("Winner", t.Winner ?? "-")];
@@ -253,25 +294,29 @@ public class AiInsights(ApplicationDbContext db, IHttpClientFactory httpClients,
             fallback = "Here is a general overview of the tenders you can see.";
         }
 
-        answer.Recommendations = Recommendations(data);
+        // Question about one tender -> recommendations for that tender only.
+        answer.Recommendations = focus is null ? Recommendations(data) : TenderRecommendations(focus, data);
 
         // Ask the AI model to write the answer in words, using ONLY the numbers we calculated.
-        var aiText = await AskModelAsync(question, data, answer, arabic);
+        var aiText = await AskModelAsync(question, data, answer, arabic, focus);
         answer.UsedAiModel = aiText is not null;
         answer.Answer = aiText ?? fallback;
         return answer;
     }
 
-    private async Task<string?> AskModelAsync(string question, AiData data, AiAnswer answer, bool arabic)
+    private async Task<string?> AskModelAsync(string question, AiData data, AiAnswer answer, bool arabic, AiTenderRow? focus)
     {
         var facts = new
         {
-            kpis = Kpis(data),
-            tenders = data.Tenders.Take(30).Select(t => new { t.Id, t.Title, t.Status, t.Department, t.BidCount, t.Lowest, t.Highest, t.Average, t.Currency, t.LowestSupplier, t.Winner, t.DaysToAward }),
+            kpis = focus is null ? Kpis(data) : null,
+            bids = focus is null ? null : data.Bids.Where(b => b.TenderId == focus.Id).Select(b => new { b.Supplier, b.Price, b.Currency, b.DeliveryDays, b.ValidityDays, b.Outcome }),
+            recommendations = answer.Recommendations,
+            tenders = (focus is null ? data.Tenders.Take(30) : [focus]).Select(t => new { t.Id, t.Title, t.Status, t.Department, t.BidCount, t.Lowest, t.Highest, t.Average, t.Currency, t.LowestSupplier, t.Winner, t.DaysToAward }),
             result = new { answer.Cards, answer.Table, answer.Chart }
         };
         var system = "You are the AI assistant of a Sourcing & Tender Management System. " +
                      "Answer the user's question using ONLY the JSON data given to you. Never invent numbers, tenders or suppliers. " +
+                     "If the question is about one tender, talk ONLY about that tender and its bids. " +
                      "If the data does not contain the answer, say that clearly. You only give advice and analysis; you cannot approve, " +
                      "award, edit or delete anything. Keep the answer short (max 6 sentences). " +
                      (arabic ? "Answer in Arabic." : "Answer in the same language as the question.");
@@ -440,8 +485,14 @@ public class AiInsights(ApplicationDbContext db, IHttpClientFactory httpClients,
 
     private static AiTenderRow? FindTender(AiData data, string q)
     {
+        // By number: "#3", "tender 3", "مناقصة 3"
         var match = System.Text.RegularExpressions.Regex.Match(q, @"(?:#|tender\s*|مناقصة\s*|المناقصة\s*|رقم\s*)(\d+)");
-        return match.Success && int.TryParse(match.Groups[1].Value, out var id) ? data.Tenders.FirstOrDefault(t => t.Id == id) : null;
+        if (match.Success && int.TryParse(match.Groups[1].Value, out var id) && data.Tenders.FirstOrDefault(t => t.Id == id) is { } byId)
+            return byId;
+        // By name: "recommendations for the ffg tender". Longest title first so "Laptops 2" wins over "Laptops".
+        return data.Tenders.Where(t => t.Title.Trim().Length >= 3)
+            .OrderByDescending(t => t.Title.Length)
+            .FirstOrDefault(t => q.Contains(t.Title.Trim().ToLowerInvariant()));
     }
 
     public static string Money(decimal? value, string currency) => value is null ? "-" : $"{value:N2} {currency}";
