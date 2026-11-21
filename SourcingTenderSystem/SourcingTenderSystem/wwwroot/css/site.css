@@ -255,15 +255,30 @@ textarea.form-control {min-height:91px}
 .ai-note {color:var(--muted);font-size:.9rem;margin:.45rem 0 1rem}
 .ai-box-state {display:flex;align-items:flex-start;gap:10px;color:var(--muted)}
 .ai-box-state strong {color:var(--ink)}
-.ai-pick {background:light-dark(#eef8f6, #15302b);border:1px solid light-dark(#cbe9e3, #2c6358);border-radius:12px;padding:14px 16px}
-.ai-label {font-size:.72rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--brand-dark);margin:0 0 .2rem}
-.ai-pick h3 {margin:0;font-size:1.3rem}
-.ai-pick-meta {color:var(--muted);font-size:.9rem;margin:.15rem 0 .5rem}
-.ai-headline {margin:0}
-.ai-reasons {margin:.9rem 0 0;padding-inline-start:1.2rem}
-.ai-reasons li+li {margin-top:.25rem}
+.ai-pick {position:relative;overflow:hidden;display:flex;align-items:flex-start;gap:16px;padding:18px 20px;border:1px solid light-dark(#cbe9dc, #2c6358);border-radius:18px;background:radial-gradient(ellipse at 100% 0%,light-dark(#c9f0e0, #1c4439) 0%,transparent 55%),linear-gradient(115deg,light-dark(#f0fbf6, #15302b),light-dark(#fff, #16232e))}
+.ai-pick::after {content:"";position:absolute;inset-inline-end:-40px;top:-40px;width:140px;height:140px;border-radius:50%;border:1px solid light-dark(#ffffffb0, #ffffff14);box-shadow:0 0 0 14px light-dark(#ffffff40, #ffffff08);pointer-events:none}
+.ai-pick-icon {display:grid;place-items:center;flex:none;width:48px;height:48px;border-radius:14px;color:#fff;background:linear-gradient(135deg,light-dark(#159d77, #1c9674),light-dark(#007658, #12644f));box-shadow:0 6px 14px #0084612e}
+.ai-pick-icon .icon {width:24px;height:24px}
+.ai-pick-body {min-width:0;flex:1}
+.ai-label {font-size:.7rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--brand-dark);margin:0 0 .15rem}
+.ai-pick h3 {margin:0;font-size:1.45rem;font-weight:800;color:light-dark(#0b2a3f, #e6f3ee);overflow-wrap:anywhere}
+.ai-pick-facts {display:flex;flex-wrap:wrap;gap:6px;margin:.6rem 0 .8rem;padding:0;list-style:none}
+.ai-pick-facts li {display:inline-flex;align-items:center;gap:4px;padding:4px 11px;border:1px solid light-dark(#d6ece3, #2c5a4c);border-radius:999px;background:light-dark(#ffffffcc, #1b2125cc);color:light-dark(#2f4a55, #c2d8d2);font-size:.82rem;font-weight:600;font-variant-numeric:tabular-nums}
+.ai-pick-facts li strong {color:light-dark(#00684f, #9be6cf);font-weight:800}
+.ai-headline {margin:0;padding-top:.7rem;border-top:1px dashed light-dark(#cfe6dc, #2c5a4c);color:light-dark(#173a33, #d3ebe4);font-weight:650;font-size:1rem}
+.ai-reasons-title {margin:1.15rem 0 .55rem;color:var(--muted);font-size:.74rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase}
+.ai-reasons {display:grid;gap:8px;margin:0;padding:0;list-style:none}
+.ai-reasons li {position:relative;padding:10px 14px 10px 44px;border:1px solid light-dark(#e3ecef, #2b4151);border-radius:12px;background:light-dark(#fbfdfd, #16232e);line-height:1.5}
+[dir=rtl] .ai-reasons li {padding:10px 44px 10px 14px}
+.ai-reasons li::before {content:"✓";position:absolute;inset-inline-start:13px;top:50%;translate:0 -50%;display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:light-dark(#dcf4ea, #1c4436);color:light-dark(#00704f, #9be6cf);font-size:.72rem;font-weight:900}
 .ai-actions {display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:1rem}
 .ai-actions .btn {display:inline-flex;align-items:center;gap:6px}
+.ai-report-actions {justify-content:space-between;margin-top:1.2rem;padding-top:1rem;border-top:1px solid light-dark(#e6eef2, #2b4151)}
+.ai-report-actions .btn {gap:8px;padding:.6rem 1rem;border-radius:12px;font-weight:700;box-shadow:0 6px 16px #0078582b}
+.ai-file-badge {padding:1px 7px;border-radius:6px;background:#ffffff2e;font-size:.68rem;font-weight:800;letter-spacing:.06em}
+.ai-report-meta {display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:.82rem}
+.ai-report-meta .icon {width:15px;height:15px;flex:none}
+@media (max-width:560px) {.ai-pick {flex-direction:column}.ai-report-actions {justify-content:flex-start}}
 
 /* Winning supplier AI brief (EvaluationWorkflow/Winner) */
 .wb-shell {--wb-accent:var(--brand);--wb-soft:light-dark(#eef8f6, #16302c);--wb-card:light-dark(#fff, #1b2936);display:grid;gap:18px}

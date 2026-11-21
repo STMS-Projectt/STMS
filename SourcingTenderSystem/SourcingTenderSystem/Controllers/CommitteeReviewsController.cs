@@ -265,7 +265,7 @@ public sealed class CommitteeReviewsController(ApplicationDbContext db, BidAiAdv
 
     /// <summary>The full AI report as a standalone HTML file (opens in any browser and prints to PDF).</summary>
     [HttpGet]
-    public async Task<IActionResult> AiReport(int id)
+    public async Task<IActionResult> AiReport(int id, [FromServices] ProtectedPdf pdf, [FromServices] ILogger<CommitteeReviewsController> logger)
     {
         var employee = await CurrentEmployeeAsync();
         if (employee is null) return Forbid();
@@ -278,8 +278,20 @@ public sealed class CommitteeReviewsController(ApplicationDbContext db, BidAiAdv
             TempData["ReviewError"] = ex.Message;
             return RedirectToAction(nameof(Details), new { id });
         }
-        Response.Headers.ContentDisposition = $"attachment; filename=\"ai-bid-analysis-tender-{id}.html\"";
-        return View("AiReport", analysis);
+        try
+        {
+            using var document = AiBidReportPdf.Build(analysis);
+            pdf.AddWatermark(document, User, DateTime.UtcNow);
+            var bytes = await pdf.Render(document, null);
+            Response.Headers.CacheControl = "private, no-store";
+            return File(bytes, "application/pdf", $"ai-bid-analysis-tender-{id}.pdf");
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "Could not build the AI bid analysis PDF for tender {TenderId}", id);
+            TempData["ReviewError"] = "The AI report PDF could not be created. Please try again.";
+            return RedirectToAction(nameof(Details), new { id });
+        }
     }
 
     private async Task<AiTenderSnapshot?> AiSnapshotAsync(int tenderId, int employeeId)
