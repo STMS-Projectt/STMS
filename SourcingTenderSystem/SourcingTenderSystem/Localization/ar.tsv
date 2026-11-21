@@ -1953,3 +1953,6 @@ Rows|الصفوف
 Columns|الأعمدة
 Text|النص
 {0} of {1} items covered|{0} من {1} بنود مغطاة
+All four reviewers have finished. Uploading the PDF closes scoring and sends the report to the sourcing manager.|أنهى المراجعون الأربعة التقييم. رفع ملف PDF يغلق التقييم ويرسل التقرير إلى مدير التوريد.
+Evaluation closed. The report is with the sourcing manager.|أُغلق التقييم وأُرسل التقرير إلى مدير التوريد.
+Evaluation report ready for your approval|تقرير التقييم جاهز لموافقتك

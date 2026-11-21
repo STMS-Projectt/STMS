@@ -212,15 +212,18 @@ public sealed partial class BiddingRoundTests
             Assert.Equal(4, await db.EvaluationSubmissions.CountAsync(s=>s.TenderId==tenderId));
             Assert.Equal(4, await db.AuditLogs.CountAsync(a=>a.EntityId==tenderId && a.Action=="EvaluationSubmitted"));
             Assert.False(await db.TenderApprovals.AnyAsync());
-            async Task<HttpStatusCode> Upload(int bid)
+            async Task<HttpStatusCode> Upload(int bid, HttpClient? client = null, string? token = null)
             {
                 using var form=new MultipartFormDataContent();
-                form.Add(new StringContent(managerToken),"__RequestVerificationToken");
+                form.Add(new StringContent(token ?? officerToken),"__RequestVerificationToken");
                 form.Add(new StringContent(bid.ToString()),"RecommendedBidId");
                 form.Add(new StringContent("Justification"),"Summary");
                 form.Add(new ByteArrayContent("%PDF-1.4 synthetic test"u8.ToArray()),"File","test.pdf");
-                return (await manager.PostAsync($"/EvaluationWorkflow/Upload/{tenderId}",form)).StatusCode;
+                return (await (client ?? officer).PostAsync($"/EvaluationWorkflow/Upload/{tenderId}",form)).StatusCode;
             }
+            // The sourcing officer, not the sourcing manager, closes the evaluation.
+            Assert.NotEqual(HttpStatusCode.Redirect, await Upload(seed.Bid, manager, managerToken));
+            Assert.False(await db.EvaluationReports.AnyAsync(r=>r.TenderId==tenderId));
             await Upload(excluded.Id);
             Assert.False(await db.EvaluationReports.AnyAsync(r=>r.TenderId==tenderId));
             Assert.Equal(HttpStatusCode.Redirect, await Upload(seed.Bid));
@@ -239,9 +242,10 @@ public sealed partial class BiddingRoundTests
                 if(reason!=null)data["comments"]=reason;
                 return data;
             }
-            Assert.Equal(HttpStatusCode.Conflict, await Send(manager,managerToken,approve,Decision("Pending Manager Approval")));
-            Assert.Equal(HttpStatusCode.Redirect, await Send(officer,officerToken,approve,Decision("Pending Officer Approval")));
+            // Closing the evaluation sends the report straight to the sourcing manager.
             Assert.Equal("Awaiting Manager Review",await State());
+            Assert.Equal(HttpStatusCode.Conflict, await Send(officer,officerToken,approve,Decision("Pending Officer Approval")));
+            Assert.Equal(HttpStatusCode.Forbidden, await Send(officer,officerToken,approve,Decision("Pending Manager Approval")));
             Assert.Equal(HttpStatusCode.Redirect, await Send(manager,managerToken,approve,Decision("Pending Manager Approval")));
             Assert.Equal("Awaiting Committee Decision",await State());
             using var first = Client(app,"top1","TopCommittee");

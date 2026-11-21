@@ -97,7 +97,7 @@ else if (!full)
 {
     <section class="surface form-card mb-3">
         <h2>@L.T("Upload final evaluation report")</h2>
-        <p class="subtle">@L.T("All four reviewers have finished. Uploading the PDF closes scoring and sends the report to the sourcing officer.")</p>
+        <p class="subtle">@L.T("All four reviewers have finished. Uploading the PDF closes scoring and sends the report to the sourcing manager.")</p>
         <form asp-action="Upload" asp-route-id="@tender.Id" method="post" enctype="multipart/form-data">
             <label class="field mb-3 d-block">@L.T("Recommended bid")<select class="form-select" name="RecommendedBidId" required><option value="">@L.T("Select supplier")</option>
             @foreach (var bid in tender.Bids) { <option value="@bid.Id">@bid.SupplierProfile.CompanyName · @bid.TotalPrice.ToString("N2") @bid.Currency</option> }
@@ -108,7 +108,7 @@ else if (!full)
         </form>
     </section>
 }
-else if (report == null && User.IsInRole("SourcingManager"))
+else if (report == null && User.IsInRole("SourcingOfficer"))
 {
     <p class="subtle">@L.T("The final report can be uploaded once all four members submit their checklists for every compliant bid.")</p>
 }
@@ -214,7 +214,7 @@ else if (report == null && User.IsInRole("SourcingManager"))
         }
     </section>
 }
-else if (!full && !Model.CanUpload && !User.IsInRole("SourcingManager"))
+else if (!full && !Model.CanUpload && !User.IsInRole("SourcingOfficer"))
 {
     <section class="surface empty-state"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("file")' /></span><h2>@L.T("No final report yet")</h2><p>@L.T("The report appears here after the evaluation is complete.")</p></section>
 }

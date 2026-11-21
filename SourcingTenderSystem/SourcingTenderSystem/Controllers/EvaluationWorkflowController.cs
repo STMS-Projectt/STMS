@@ -71,7 +71,8 @@ public sealed class EvaluationWorkflowController(ApplicationDbContext db, Suppli
             NextStage(tender, employee.Id), scores, weights));
     }
 
-    [HttpPost, Authorize(Roles = Roles.SourcingManager), RequestSizeLimit(SupplierFileStore.MaxBytes + 65536)]
+    // The sourcing officer closes the evaluation once all four reviewers have submitted; the report then goes to the sourcing manager.
+    [HttpPost, Authorize(Roles = Roles.SourcingOfficer), RequestSizeLimit(SupplierFileStore.MaxBytes + 65536)]
     public async Task<IActionResult> Upload(int id, FinalReportInput input, CancellationToken cancellationToken)
     {
         var employee = await CurrentEmployeeAsync();
@@ -110,8 +111,14 @@ public sealed class EvaluationWorkflowController(ApplicationDbContext db, Suppli
                 TenderId = id, RecommendedBidId = input.RecommendedBidId, Summary = input.Summary.Trim(),
                 SupplierComparison = System.Text.Json.JsonSerializer.Serialize(comparison), Recommendation = input.Summary.Trim(),
                 ResultsSnapshot = snapshot,
-                FileKey = key, Status = Officer, PreparedByEmployeeProfileId = employee.Id, CreatedAt = DateTime.UtcNow
+                FileKey = key, Status = Manager, PreparedByEmployeeProfileId = employee.Id, CreatedAt = DateTime.UtcNow
             });
+            tender.Status = "Awaiting Manager Review";
+            var manager = tender.CommitteeMembers.FirstOrDefault(m => m.CommitteeType == "Evaluation" && m.MemberRole == "Sourcing Manager");
+            if (manager is not null)
+                NotifyHandoff(manager.EmployeeProfileId, tender, "Evaluation report ready for your approval",
+                    $"The sourcing officer closed the evaluation of tender #{tender.Id} \"{tender.Title}\" and sent the final report for your approval.",
+                    Url.Action(nameof(Details), new { id = tender.Id }));
             EvaluationRules.Audit(Db, id, employee.Id, "EvaluationReportPrepared", $"Recommended bid #{input.RecommendedBidId}", DateTime.UtcNow);
             await Db.SaveChangesAsync(cancellationToken);
             await tx.CommitAsync(cancellationToken);
@@ -121,7 +128,7 @@ public sealed class EvaluationWorkflowController(ApplicationDbContext db, Suppli
             files.Delete(key);
             throw;
         }
-        TempData["Message"] = "Evaluation closed. The report is with the sourcing officer.";
+        TempData["Message"] = "Evaluation closed. The report is with the sourcing manager.";
         return RedirectToAction(nameof(Details), new { id });
     }
 
@@ -467,7 +474,7 @@ public sealed class EvaluationWorkflowController(ApplicationDbContext db, Suppli
     }
 
     private bool CanUpload(Tender tender, int employeeId, IReadOnlyList<EvaluationProgress> progress) =>
-        User.IsInRole(Roles.SourcingManager) && IsAssignedManager(tender, employeeId) &&
+        User.IsInRole(Roles.SourcingOfficer) &&
         tender.Status == "Under Evaluation" && tender.EvaluationReport == null &&
         tender.CommitteeMembers.Select(m => m.EmployeeProfileId).Distinct().Count() == 4 &&
         EvaluationRules.CriteriaValid(tender.EvaluationCriteria.ToArray()) && progress.Count == 4 && progress.All(p => p.Complete);
@@ -480,6 +487,7 @@ public sealed class EvaluationWorkflowController(ApplicationDbContext db, Suppli
         .Select(e => e.Id).ToListAsync();
     private string? NextStage(Tender tender, int employeeId) => tender.EvaluationReport?.Status switch
     {
+        // Legacy stage: reports created before the officer closed evaluations directly still need the officer's approval.
         Officer when User.IsInRole(Roles.SourcingOfficer) => Manager,
         Manager when User.IsInRole(Roles.SourcingManager) && IsAssignedManager(tender, employeeId) => Top,
         Top when User.IsInRole(Roles.TopCommittee) && tender.CommitteeMembers.Any(m => m.CommitteeType == "Top" && m.EmployeeProfileId == employeeId) && tender.EvaluationReport.TenderApprovals.All(a => a.ApproverEmployeeProfileId != employeeId || a.Decision != Vote) => Approved,
