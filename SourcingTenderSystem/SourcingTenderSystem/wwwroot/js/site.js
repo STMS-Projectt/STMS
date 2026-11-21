@@ -129,15 +129,29 @@
                 pagination.querySelector("[data-page-status]").textContent = window.stmsFormat("Page {0} of {1}", currentPage, pages);
                 const options = pagination.querySelector("[data-page-options]");
                 options.replaceChildren();
+                const goTo = page => { currentPage = page; apply(); results.scrollIntoView({ behavior: "smooth", block: "start" }); };
+                const step = (target, label, text) => {
+                    const button = document.createElement("button");
+                    button.type = "button";
+                    button.className = "page-step";
+                    button.textContent = text;
+                    button.setAttribute("aria-label", label);
+                    button.disabled = target < 1 || target > pages;
+                    button.addEventListener("click", () => goTo(target));
+                    return button;
+                };
+                const rtl = document.documentElement.dir === "rtl";
+                options.append(step(currentPage - 1, window.stmsT("Previous page"), rtl ? "›" : "‹"));
                 for (let page = 1; page <= pages; page++) {
                     const button = document.createElement("button");
                     button.type = "button";
                     button.textContent = String(page);
                     button.setAttribute("aria-label", `Go to page ${page} of ${pages}`);
                     button.setAttribute("aria-current", page === currentPage ? "page" : "false");
-                    button.addEventListener("click", () => { currentPage = page; apply(); results.scrollIntoView({ behavior: "smooth", block: "start" }); });
+                    button.addEventListener("click", () => goTo(page));
                     options.append(button);
                 }
+                options.append(step(currentPage + 1, window.stmsT("Next page"), rtl ? "‹" : "›"));
             }
             count.textContent = window.stmsFormat(shown === 1 ? "{0} record" : "{0} records", shown);
             empty.hidden = shown !== 0;

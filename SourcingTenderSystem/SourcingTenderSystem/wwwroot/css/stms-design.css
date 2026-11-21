@@ -685,6 +685,18 @@ body:has(.dept-directory) [data-scroll-top]{bottom:18px}
 .directory-bottom-pagination [data-page-options]{display:flex;flex-direction:row;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;grid-template-columns:none}
 .directory-bottom-pagination[data-dept-pagination] [data-page-options] button{margin:0}
 .directory-bottom-pagination [data-page-status]{padding:0;border:0;white-space:nowrap}
+/* Inline pagination bar: pill track of page numbers with prev/next arrows, status beside it */
+.directory-bottom-pagination{justify-content:space-between;gap:14px;margin:10px 4px 2px;padding:16px 6px 4px;border-top:1px solid light-dark(#e6eef2, #2b4151)}
+.directory-bottom-pagination>div{width:100%;justify-content:space-between;flex-direction:row-reverse;gap:14px}
+.directory-bottom-pagination [data-page-options]{gap:4px;padding:4px;border:1px solid light-dark(#e1ece8, #2c4c42);border-radius:14px;background:light-dark(#f5faf8, #14241f)}
+.directory-bottom-pagination[data-dept-pagination] [data-page-options] button{flex:0 0 36px;width:36px;height:36px;min-width:36px;min-height:36px;max-width:none;border:0;border-radius:10px;background:transparent;color:light-dark(#3c5a63, #b9cfd6);font-size:.85rem;font-weight:700;box-shadow:none;transform:none;transition:background .15s ease,color .15s ease}
+.directory-bottom-pagination[data-dept-pagination] [data-page-options] button:hover:not(:disabled):not([aria-current=page]){background:light-dark(#fff, #1c3a31);color:light-dark(#006b51, #aff4e3);box-shadow:0 1px 3px light-dark(#14324a1a, #0006)}
+.directory-bottom-pagination[data-dept-pagination] [data-page-options] button[aria-current=page]{background:linear-gradient(135deg,light-dark(#159d77, #1c9674),light-dark(#007658, #12644f));color:#fff;box-shadow:0 4px 10px #00846133}
+.directory-bottom-pagination[data-dept-pagination] [data-page-options] button.page-step{font-size:1.25rem;line-height:1;color:light-dark(#006b51, #9be6cf)}
+.directory-bottom-pagination[data-dept-pagination] [data-page-options] button:disabled{opacity:.35;cursor:default}
+.directory-bottom-pagination[data-dept-pagination] [data-page-options] button:focus-visible{outline:3px solid light-dark(#4bb99a, #4bb99a);outline-offset:1px}
+.directory-bottom-pagination [data-page-status]{color:light-dark(#5a6e82, #93a9bd);font-size:.8rem;font-weight:650;font-variant-numeric:tabular-nums}
+@media(max-width:520px){.directory-bottom-pagination>div{flex-direction:column;justify-content:center}}
 /* Server-side register pagination as a bottom bar (not inside the filter dock). */
 .dept-directory>[data-register-pages]{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin:6px 18px 16px;padding:14px 12px 4px;border-top:1px solid light-dark(#e4eeeb, #31564b)}
 .dept-directory>[data-register-pages]>a{display:grid;place-items:center;min-width:40px;min-height:40px;padding:6px 14px;font-variant-numeric:tabular-nums}

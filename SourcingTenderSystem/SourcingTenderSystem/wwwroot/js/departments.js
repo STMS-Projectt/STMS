@@ -66,17 +66,7 @@
         menu("More", panel.querySelector("label:has([data-filter-sort])"));
         const search = panel.querySelector("[data-directory-search-form], form, .directory-search");
         menu("Search", search?.hidden ? null : search);
-        // Record pagination becomes a horizontal bar BELOW the list instead of a dock popover.
-        const pagination = directory.querySelector("[data-dept-pagination]");
-        if (pagination) {
-            pagination.classList.add("directory-bottom-pagination");
-            pagination.removeAttribute("data-dept-menu");
-            pagination.querySelector(".dept-dock-button")?.remove();
-            const pop = pagination.querySelector(".dept-filter-popover");
-            if (pop) { pop.hidden = false; pop.classList.remove("dept-filter-popover"); pop.querySelector("strong")?.remove(); }
-            const list = directory.querySelector("[data-record-list]") || directory.querySelector(".table-responsive, .directory-table");
-            if (list) list.after(pagination); else directory.append(pagination);
-        }
+        inlinePagination(directory);
         const reset = panel.querySelector("[data-filter-reset]");
         if (reset) { decorate(reset, "Reset"); dock.append(reset); }
         const clear = panel.querySelector("[data-directory-clear]");
@@ -87,7 +77,21 @@
         return dock;
     }
 
+    // Record pagination is a horizontal bar BELOW the list, always visible, instead of a dock popover.
+    function inlinePagination(directory) {
+        const pagination = directory.querySelector("[data-dept-pagination]");
+        if (!pagination || pagination.classList.contains("directory-bottom-pagination")) return;
+        pagination.classList.add("directory-bottom-pagination");
+        pagination.removeAttribute("data-dept-menu");
+        pagination.querySelector(".dept-dock-button")?.remove();
+        const pop = pagination.querySelector(".dept-filter-popover");
+        if (pop) { pop.hidden = false; pop.classList.remove("dept-filter-popover"); pop.querySelector("strong")?.remove(); }
+        const list = directory.querySelector("[data-record-list]") || directory.querySelector(".table-responsive, .directory-table");
+        if (list) list.after(pagination); else directory.append(pagination);
+    }
+
     function setupDirectory(directory, signal) {
+        inlinePagination(directory);
         const dock = directory.querySelector(".dept-filter-dock") || upgradeDock(directory);
         if (!dock) return;
         const heading = directory.querySelector(":scope > .dept-directory-heading");
