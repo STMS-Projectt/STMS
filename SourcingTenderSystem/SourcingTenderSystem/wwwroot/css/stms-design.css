@@ -890,3 +890,18 @@ body:has(.dept-directory) [data-scroll-top]{bottom:18px}
 @media(max-width:760px){.metrics-grid.analytics-kpis{grid-template-columns:1fr}}
 @media(max-width:1100px){.analytics-breakdowns{grid-template-columns:1fr 1fr}}
 @media(max-width:760px){.analytics-breakdowns{grid-template-columns:1fr}}
+
+/* Tender committee: members grouped by committee as avatar cards */
+.committee-card h2{margin-bottom:1rem}
+.committee-group+.committee-group{margin-top:1.25rem;padding-top:1.1rem;border-top:1px dashed light-dark(#dbe6ec,#2b4151)}
+.committee-group-heading{display:flex;align-items:center;gap:8px;margin-bottom:.7rem}
+.committee-group-title{color:light-dark(#5a6e82,#93a9bd);font-size:.74rem;font-weight:750;letter-spacing:.07em;text-transform:uppercase}
+.committee-members{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;margin:0;padding:0;list-style:none}
+.committee-member{display:flex;align-items:center;gap:12px;min-width:0;padding:12px 14px;border:1px solid light-dark(#e1eaf0,#2b4151);border-radius:14px;background:light-dark(#fff,#16232e);transition:border-color .15s ease,box-shadow .15s ease,transform .15s ease}
+.committee-member:hover{border-color:light-dark(#bfe3d5,#2f6a59);box-shadow:0 6px 16px light-dark(#14324a12,#0000004d);transform:translateY(-1px)}
+.committee-avatar{display:grid;place-items:center;flex:none;width:40px;height:40px;border-radius:12px;font-weight:800;font-size:1rem;color:#fff;background:linear-gradient(135deg,light-dark(#159d77,#1c9674),light-dark(#007658,#12644f));box-shadow:0 4px 10px #0084612b}
+.committee-member.is-top .committee-avatar{background:linear-gradient(135deg,light-dark(#7a5cd6,#6a4fc0),light-dark(#5338a8,#45308e));box-shadow:0 4px 10px #5338a82b}
+.committee-member-text{display:flex;flex-direction:column;min-width:0;line-height:1.3}
+.committee-member-text strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:light-dark(#0b2a3f,#e1ebf4);font-size:.95rem}
+.committee-member-text small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:light-dark(#5a6e82,#93a9bd);font-size:.8rem;font-weight:550}
+@media(prefers-reduced-motion:reduce){.committee-member{transition:none}.committee-member:hover{transform:none}}

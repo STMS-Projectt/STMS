@@ -82,16 +82,6 @@
                     <div><dt>@L.T("Price")</dt><dd>@row.Price.ToString("N2") @row.Currency</dd></div>
                     <div><dt>@L.T("Technical")</dt><dd>@row.Technical</dd></div><div><dt>@L.T("Financial")</dt><dd>@row.Financial</dd></div>
                 </dl>
-                <details class="action-disclosure"><summary>@L.F("Evidence and notes · {0}", row.EvidenceIds.Count)</summary>
-                @if (!string.IsNullOrWhiteSpace(row.ComplianceNotes)) { <p class="subtle my-2">@row.ComplianceNotes</p> }
-                @if (row.EvidenceIds.Count == 0) { <p class="subtle my-2">@L.T("No documents attached.")</p> }
-                else if (row.Compliance == "Compliant" || User.IsInRole("SourcingOfficer"))
-                {
-                    @foreach (var documentId in row.EvidenceIds)
-                    { <a class="btn btn-outline-secondary btn-sm me-2 mt-2" asp-controller="BidDocuments" asp-action="Download" asp-route-id="@documentId">@L.F("Document #{0}", documentId)</a> }
-                }
-                else { <p class="subtle my-2">@L.F("{0} documents", row.EvidenceIds.Count)</p> }
-                </details>
             </article>
         }</div>
     </section>

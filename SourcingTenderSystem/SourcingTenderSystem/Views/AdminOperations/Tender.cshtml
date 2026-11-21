@@ -28,9 +28,28 @@
 }
 @if (full || panel == "committee")
 {
-<section class="surface detail-card mb-3"><h2>@L.T("Committee")</h2>
+<section class="surface detail-card mb-3 committee-card"><h2>@L.T("Committee")</h2>
 @if (tender.CommitteeMembers.Count == 0) { <p class="subtle mb-0">@L.T("No members assigned.")</p> }
-else { <ul class="mb-0">@foreach (var member in tender.CommitteeMembers.OrderBy(m => m.CommitteeType).ThenBy(m => m.MemberRole)) { <li>@member.EmployeeProfile.FullName · @L.T(member.MemberRole) · @L.T(member.CommitteeType)</li> }</ul> }
+else
+{
+    @foreach (var group in tender.CommitteeMembers.GroupBy(m => m.CommitteeType).OrderBy(g => g.Key == "Top" ? 1 : 0))
+    {
+        var top = group.Key == "Top";
+        <div class="committee-group">
+            <div class="committee-group-heading"><span class="committee-group-title">@L.T(top ? "Top Committee" : "Evaluation Committee")</span><span class="record-panel-label">@group.Count()</span></div>
+            <ul class="committee-members">
+                @foreach (var member in group.OrderBy(m => m.MemberRole).ThenBy(m => m.EmployeeProfile.FullName))
+                {
+                    var name = member.EmployeeProfile.FullName;
+                    <li class="committee-member @(top ? "is-top" : "is-evaluation")">
+                        <span class="committee-avatar" aria-hidden="true">@(string.IsNullOrWhiteSpace(name) ? "?" : name.Trim()[0].ToString().ToUpperInvariant())</span>
+                        <span class="committee-member-text"><strong>@name</strong><small>@L.T(member.MemberRole)</small></span>
+                    </li>
+                }
+            </ul>
+        </div>
+    }
+}
 </section>
 }
 @if (full || panel is "invitations" or "bids")
