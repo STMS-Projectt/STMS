@@ -905,3 +905,33 @@ body:has(.dept-directory) [data-scroll-top]{bottom:18px}
 .committee-member-text strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:light-dark(#0b2a3f,#e1ebf4);font-size:.95rem}
 .committee-member-text small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:light-dark(#5a6e82,#93a9bd);font-size:.8rem;font-weight:550}
 @media(prefers-reduced-motion:reduce){.committee-member{transition:none}.committee-member:hover{transform:none}}
+
+/* Final report: winner banner, summary panel, PDF buttons and approval timeline */
+.final-report h2{margin-bottom:1rem}
+.final-report-winner{display:flex;align-items:center;gap:14px;margin-bottom:1rem;padding:14px 16px;border:1px solid light-dark(#cfeadf,#2a5547);border-radius:16px;background:linear-gradient(110deg,light-dark(#ecf9f3,#15302a),light-dark(#fff,#16232e) 75%)}
+.final-report-winner .icon-tile{flex:none}
+.final-report-winner div{display:flex;flex-direction:column;min-width:0;line-height:1.25}
+.final-report-winner span:not(.icon-tile){color:light-dark(#4f6b62,#9cc2b6);font-size:.74rem;font-weight:750;letter-spacing:.06em;text-transform:uppercase}
+.final-report-winner strong{color:light-dark(#0b2a3f,#e6f3ee);font-size:1.25rem;font-weight:800;overflow-wrap:anywhere}
+.final-report-summary{padding:12px 16px;border:1px solid light-dark(#e1eaf0,#2b4151);border-radius:14px;background:light-dark(#f8fbfc,#16232e)}
+.final-report-summary>summary{cursor:pointer}
+.final-report-summary .record-terms{margin:.6rem 0 0;padding-top:.6rem;border-top:1px solid light-dark(#e8eff3,#24384a);white-space:pre-wrap;color:light-dark(#2a3f52,#c7d5e3);line-height:1.6}
+.final-report-files .btn{display:inline-flex;align-items:center;gap:8px;border-radius:12px;font-weight:700}
+.final-report-files .btn .icon{width:17px;height:17px}
+.approval-history-title{margin:1.4rem 0 .9rem;padding-top:1.1rem;border-top:1px solid light-dark(#e6eef2,#2b4151);font-size:1.05rem}
+.approval-timeline{position:relative;margin:0;padding:0;list-style:none}
+.approval-timeline>li{position:relative;padding:0 0 1rem 2rem}
+.approval-timeline>li:last-child{padding-bottom:0}
+.approval-timeline>li::before{content:"";position:absolute;inset-inline-start:5px;top:6px;width:14px;height:14px;border-radius:50%;background:light-dark(#fff,#16232e);border:3px solid var(--tl,light-dark(#2f80c7,#5aa4e3));box-shadow:0 0 0 4px light-dark(#fff,#1b2125)}
+.approval-timeline>li:not(:last-child)::after{content:"";position:absolute;inset-inline-start:11px;top:24px;bottom:2px;width:2px;border-radius:2px;background:light-dark(#e1eaf0,#2b4151)}
+.approval-timeline>li.is-positive{--tl:light-dark(#0a9270,#1fa07f)}
+.approval-timeline>li.is-negative{--tl:light-dark(#d14343,#e06b6b)}
+.approval-entry-head{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}
+.approval-entry-head strong{color:light-dark(#0b2a3f,#e1ebf4);font-size:.95rem}
+.approval-decision{display:inline-flex;align-items:center;padding:3px 10px;border-radius:999px;font-size:.75rem;font-weight:720;background:light-dark(#e8f1fb,#16283a);color:light-dark(#1d5f99,#9cc8ef)}
+.approval-timeline>li.is-positive .approval-decision{background:light-dark(#e8f6f0,#153226);color:light-dark(#075941,#b5f0de)}
+.approval-timeline>li.is-negative .approval-decision{background:light-dark(#fdecec,#3a1a1a);color:light-dark(#a12b2b,#f2b2b2)}
+.approval-entry-head time{color:light-dark(#6b7d8f,#8ea3b7);font-size:.8rem;font-variant-numeric:tabular-nums}
+.approval-comment{position:relative;width:fit-content;max-width:100%;min-width:12rem;margin:.5rem 0 0;padding:9px 13px;border-radius:4px 12px 12px 12px;background:light-dark(#f4f7fa,#1a2934);color:light-dark(#2a3f52,#c7d5e3);font-size:.9rem;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}
+.approval-pdf{display:inline-flex;align-items:center;gap:6px;margin-top:.45rem;font-size:.82rem;font-weight:700}
+.approval-pdf .icon{width:15px;height:15px}
