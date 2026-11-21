@@ -24,6 +24,10 @@
             <a class="side-link @(controller == "EvaluationWorkflow" ? "is-current" : "")" aria-current="@(controller == "EvaluationWorkflow" ? "page" : null)" asp-controller="EvaluationWorkflow" asp-action="Index"><partial name="_Icon" model='@("check")' /> @L.T(top ? "Award decisions" : "Evaluation reports")</a>
         }
         <a class="side-link @(controller == "AiIntelligence" ? "is-current" : "")" aria-current="@(controller == "AiIntelligence" ? "page" : null)" asp-controller="AiIntelligence" asp-action="Index" asp-route-id=""><partial name="_Icon" model='@("chart")' /> @L.T("AI Intelligence")</a>
+        @if (top)
+        {
+            <a class="side-link @(controller == "Reports" ? "is-current" : "")" aria-current="@(controller == "Reports" ? "page" : null)" asp-controller="Reports" asp-action="TopCommittee"><partial name="_Icon" model='@("chart")' /> @L.T("Statistics report")</a>
+        }
     </nav>
     <div class="side-bottom"><partial name="_LoginPartial" /></div>
 </aside>

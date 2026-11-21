@@ -1,0 +1,128 @@
+@model ReportsPage
+@using System.Globalization
+@{
+    ViewData["Title"] = L.T("Reports & analytics");
+    var f = Model.Filter;
+    var from = f.From?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+    var to = f.To?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+
+    string[] tabKeys = { "requests", "tenders", "suppliers", "evaluations", "decisions", "top" };
+    string[] tabLabels = { "Purchase requests", "Tenders", "Suppliers", "Bids & evaluation", "Approvals & decisions", "Top Committee" };
+    string[] tabIcons = { "file", "briefcase", "supplier", "check", "shield", "trophy" };
+
+    // Each tab shows only the filters that apply to its data.
+    var siteWide = f.Tab == "top";
+    var showSupplier = f.Tab == "tenders" || f.Tab == "suppliers" || f.Tab == "evaluations" || f.Tab == "decisions";
+    var showStatus = f.Tab == "tenders" || f.Tab == "decisions";
+    var showTender = f.Tab == "evaluations";
+    var filtered = f.From != null || f.To != null || f.DepartmentId != null || f.SupplierId != null ||
+                   !string.IsNullOrEmpty(f.TenderStatus) || f.TenderId != null;
+
+    var note = "Showing all records.";
+    if (siteWide)
+    {
+        note = "Site-wide statistics: filters do not apply.";
+    }
+    else if (filtered)
+    {
+        note = "Filters apply to this report and to its downloads.";
+    }
+}
+<header class="page-heading stms-hero admin-record-hero">
+    <div>
+        <p class="eyebrow">@L.T("ADMINISTRATION")</p>
+        <h1>@L.T("Reports & analytics")</h1>
+        <p>@L.T("Every report reads live system data. Filter it, open the records behind a number, or download it as PDF or Excel.")</p>
+    </div>
+</header>
+
+<nav class="directory-status-options report-tabs" aria-label="@L.T("Report sections")">
+    @for (var i = 0; i < tabKeys.Length; i++)
+    {
+        <a asp-action="Index" asp-route-tab="@tabKeys[i]" asp-route-from="@from" asp-route-to="@to"
+           asp-route-departmentId="@f.DepartmentId" asp-route-supplierId="@f.SupplierId" asp-route-tenderStatus="@f.TenderStatus"
+           aria-current="@(f.Tab == tabKeys[i] ? "page" : null)"><partial name="_Icon" model="tabIcons[i]" /> @L.T(tabLabels[i])</a>
+    }
+</nav>
+
+@if (!siteWide)
+{
+    <form class="surface report-filters" asp-action="Index" method="get" role="search" aria-label="@L.T("Report filters")">
+        <input type="hidden" name="tab" value="@f.Tab" />
+        @if (showTender)
+        {
+            <label class="field">@L.T("Tender")
+                <select class="form-select" name="tenderId">
+                    <option value="">@L.T("All tenders")</option>
+                    @foreach (var item in Model.Tenders)
+                    {
+                        <option value="@item.Value" selected="@(item.Value == f.TenderId?.ToString())">@item.Text</option>
+                    }
+                </select>
+            </label>
+        }
+        <label class="field">@L.T("From (UTC)")<input class="form-control" type="date" name="from" value="@from" /></label>
+        <label class="field">@L.T("Through (UTC)")<input class="form-control" type="date" name="to" value="@to" /></label>
+        <label class="field">@L.T("Department")
+            <select class="form-select" name="departmentId">
+                <option value="">@L.T("All departments")</option>
+                @foreach (var item in Model.Departments)
+                {
+                    <option value="@item.Value" selected="@(item.Value == f.DepartmentId?.ToString())">@item.Text</option>
+                }
+            </select>
+        </label>
+        @if (showSupplier)
+        {
+            <label class="field">@L.T("Supplier")
+                <select class="form-select" name="supplierId">
+                    <option value="">@L.T("All suppliers")</option>
+                    @foreach (var item in Model.Suppliers)
+                    {
+                        <option value="@item.Value" selected="@(item.Value == f.SupplierId?.ToString())">@item.Text</option>
+                    }
+                </select>
+            </label>
+        }
+        @if (showStatus)
+        {
+            <label class="field">@L.T("Tender status")
+                <select class="form-select" name="tenderStatus">
+                    <option value="">@L.T("All statuses")</option>
+                    @foreach (var status in Model.TenderStatuses)
+                    {
+                        <option value="@status" selected="@(status == f.TenderStatus)">@L.T(status)</option>
+                    }
+                </select>
+            </label>
+        }
+        <div class="report-filter-actions">
+            <button class="btn btn-primary" type="submit">@L.T("Apply filters")</button>
+            @if (filtered)
+            {
+                <a class="btn btn-outline-secondary" asp-action="Index" asp-route-tab="@f.Tab">@L.T("Reset")</a>
+            }
+        </div>
+    </form>
+}
+
+@if (Model.FilterError != null)
+{
+    <p class="alert alert-warning" role="alert">@L.T(Model.FilterError)</p>
+}
+
+<div class="report-toolbar">
+    <span class="subtle">@L.T(note)</span>
+    <div class="button-row">
+        <a download class="btn btn-outline-secondary" asp-action="Export" asp-route-format="excel" asp-route-tab="@f.Tab"
+           asp-route-from="@from" asp-route-to="@to" asp-route-departmentId="@f.DepartmentId"
+           asp-route-supplierId="@f.SupplierId" asp-route-tenderStatus="@f.TenderStatus"
+           asp-route-tenderId="@f.TenderId"><partial name="_Icon" model='@("download")' /> @L.T("Download Excel")</a>
+        <a download class="btn btn-outline-secondary" asp-action="Export" asp-route-format="pdf" asp-route-tab="@f.Tab"
+           asp-route-from="@from" asp-route-to="@to" asp-route-departmentId="@f.DepartmentId"
+           asp-route-supplierId="@f.SupplierId" asp-route-tenderStatus="@f.TenderStatus"
+           asp-route-tenderId="@f.TenderId"><partial name="_Icon" model='@("download")' /> @L.T("Download PDF")</a>
+    </div>
+</div>
+
+<partial name="_ReportSection" model="Model.Section" />

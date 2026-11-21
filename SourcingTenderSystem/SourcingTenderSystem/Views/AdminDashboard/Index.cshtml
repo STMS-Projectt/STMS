@@ -13,6 +13,18 @@
     var approved = pending + (total == 0 ? 0 : 100d * Model.ApprovedSuppliers / total);
     var rejected = approved + (total == 0 ? 0 : 100d * Model.RejectedSuppliers / total);
     var chart = FormattableString.Invariant($"--pending:{pending:F3}%;--approved:{approved:F3}%;--rejected:{rejected:F3}%");
+    // Analytics dashboard data (see AdminDashboardController.LoadAnalyticsAsync)
+    var kpis = (List<ReportKpi>)ViewBag.Kpis;
+    var byDepartment = (List<DashboardBar>)ViewBag.RequestsByDepartment;
+    var byStatus = (List<DashboardBar>)ViewBag.RequestsByStatus;
+    var topSuppliers = (List<DashboardBar>)ViewBag.TopSuppliers;
+    // The longest bar of each chart is full width; the other bars are a part of it.
+    var departmentMax = 1;
+    foreach (var row in byDepartment) { if (row.Count > departmentMax) departmentMax = row.Count; }
+    var statusMax = 1;
+    foreach (var row in byStatus) { if (row.Count > statusMax) statusMax = row.Count; }
+    var supplierMax = 1;
+    foreach (var row in topSuppliers) { if (row.Count > supplierMax) supplierMax = row.Count; }
 }
 <header class="page-heading stms-hero admin-overview">
     <div>
@@ -34,6 +46,21 @@
             <a class="metric surface admin-metric-link" asp-controller="@item.Item5" asp-action="@item.Item6" aria-label="@L.F("View {0}", L.T(item.Item1))">
                 <span class="icon-tile tone-@item.Item4"><partial name="_Icon" model="item.Item3" /></span>
                 <strong data-count="@item.Item2">@item.Item2</strong><span>@L.T(item.Item1)</span>
+                <span class="admin-metric-arrow" aria-hidden="true"><partial name="_Icon" model='@("arrow")' /></span>
+            </a>
+        }
+    </div>
+</section>
+<section aria-labelledby="indicators-title">
+    <div class="section-heading"><h2 id="indicators-title">@L.T("Key indicators")</h2><a class="text-link" asp-controller="Reports" asp-action="Index">@L.T("Open reports") <partial name="_Icon" model='@("arrow")' /></a></div>
+    <div class="metrics-grid analytics-kpis">
+        @foreach (var kpi in kpis)
+        {
+            <a class="metric surface admin-metric-link report-kpi" href="@kpi.Link" aria-label="@kpi.Label: @kpi.Value">
+                <span class="icon-tile tone-@kpi.Tone"><partial name="_Icon" model="kpi.Icon" /></span>
+                <strong>@kpi.Value</strong>
+                <span>@kpi.Label</span>
+                @if (kpi.Hint != null) { <small class="report-kpi-hint">@kpi.Hint</small> }
                 <span class="admin-metric-arrow" aria-hidden="true"><partial name="_Icon" model='@("arrow")' /></span>
             </a>
         }
@@ -83,6 +110,41 @@
                 }
             </div>
         </div>
+    </section>
+</div>
+<div class="analytics-breakdowns">
+    <section class="surface dashboard-card">
+        <div class="card-heading"><div><h2>@L.T("Requests by department")</h2><p>@L.T("Select a department to open its report")</p></div></div>
+        @if (byDepartment.Count == 0) { <p class="subtle mb-0">@L.T("No purchase requests yet.")</p> }
+        @foreach (var row in byDepartment)
+        {
+            <div class="stms-stat-row" title="@L.F("{0}: {1} requests", row.Name, row.Count)">
+                <a asp-controller="Reports" asp-action="Index" asp-route-tab="requests" asp-route-departmentId="@row.Id">@row.Name</a>
+                <meter min="0" max="@departmentMax" value="@row.Count" aria-label="@row.Name"></meter><strong>@row.Count</strong>
+            </div>
+        }
+    </section>
+    <section class="surface dashboard-card">
+        <div class="card-heading"><div><h2>@L.T("Requests by status")</h2><p>@L.T("Select a status to list its requests")</p></div></div>
+        @if (byStatus.Count == 0) { <p class="subtle mb-0">@L.T("No purchase requests yet.")</p> }
+        @foreach (var row in byStatus)
+        {
+            <div class="stms-stat-row" title="@L.F("{0}: {1} requests", L.T(row.Name), row.Count)">
+                <a asp-controller="AdminOperations" asp-action="Requests" asp-route-status="@row.Name">@L.T(row.Name)</a>
+                <meter min="0" max="@statusMax" value="@row.Count" aria-label="@L.T(row.Name)"></meter><strong>@row.Count</strong>
+            </div>
+        }
+    </section>
+    <section class="surface dashboard-card">
+        <div class="card-heading"><div><h2>@L.T("Top suppliers by awards")</h2><p>@L.T("Select a supplier to open its performance")</p></div></div>
+        @if (topSuppliers.Count == 0) { <p class="subtle mb-0">@L.T("No tender has been awarded yet.")</p> }
+        @foreach (var row in topSuppliers)
+        {
+            <div class="stms-stat-row" title="@L.F("{0}: {1} awards", row.Name, row.Count)">
+                <a asp-controller="Reports" asp-action="Index" asp-route-tab="suppliers" asp-route-supplierId="@row.Id" asp-fragment="performance">@row.Name</a>
+                <meter min="0" max="@supplierMax" value="@row.Count" aria-label="@row.Name"></meter><strong>@row.Count</strong>
+            </div>
+        }
     </section>
 </div>
 <div class="dashboard-grid admin-secondary">

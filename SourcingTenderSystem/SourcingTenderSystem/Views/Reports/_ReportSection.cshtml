@@ -1,0 +1,93 @@
+@model ReportSection
+@* One report section: the KPI cards, then every table. Used by the admin reports and the Top Committee report. *@
+<section class="report-section" aria-labelledby="report-title">
+    <div class="section-heading"><h2 id="report-title">@Model.Title</h2><span>@Model.Description</span></div>
+
+    @if (Model.Kpis.Count > 0)
+    {
+        <div class="metrics-grid report-kpis">
+            @foreach (var kpi in Model.Kpis)
+            {
+                if (kpi.Link != null)
+                {
+                    <a class="metric surface admin-metric-link report-kpi" href="@kpi.Link" aria-label="@kpi.Label: @kpi.Value">
+                        <span class="icon-tile tone-@kpi.Tone"><partial name="_Icon" model="kpi.Icon" /></span>
+                        <strong>@kpi.Value</strong>
+                        <span>@kpi.Label</span>
+                        @if (kpi.Hint != null) { <small class="report-kpi-hint">@kpi.Hint</small> }
+                        <span class="admin-metric-arrow" aria-hidden="true"><partial name="_Icon" model='@("arrow")' /></span>
+                    </a>
+                }
+                else
+                {
+                    <div class="metric surface report-kpi">
+                        <span class="icon-tile tone-@kpi.Tone"><partial name="_Icon" model="kpi.Icon" /></span>
+                        <strong>@kpi.Value</strong>
+                        <span>@kpi.Label</span>
+                        @if (kpi.Hint != null) { <small class="report-kpi-hint">@kpi.Hint</small> }
+                    </div>
+                }
+            }
+        </div>
+    }
+
+    @foreach (var table in Model.Tables)
+    {
+        <section class="surface dashboard-card report-card" id="@table.Key">
+            <div class="card-heading">
+                <div>
+                    <h2>@table.Title</h2>
+                    @if (table.Note != null) { <p>@table.Note</p> }
+                </div>
+                <span class="record-panel-label">@L.F("{0} rows", table.Rows.Count)</span>
+            </div>
+            @if (table.Key == "audit" && User.IsInRole("Admin"))
+            {
+                <p><a class="text-link" asp-controller="AdminOperations" asp-action="Activity">@L.T("Open the activity log") <partial name="_Icon" model='@("arrow")' /></a></p>
+            }
+            @if (table.Rows.Count == 0)
+            {
+                <p class="subtle mb-0">@table.Empty</p>
+            }
+            else
+            {
+                <div class="table-responsive report-table-wrap">
+                    <table class="table table-sm align-middle report-table">
+                        <thead>
+                            <tr>
+                                @foreach (var header in table.Headers) { <th scope="col">@header</th> }
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (var r = 0; r < table.Rows.Count; r++)
+                            {
+                                var row = table.Rows[r];
+                                var link = table.Links[r];
+                                <tr>
+                                    @for (var c = 0; c < row.Length; c++)
+                                    {
+                                        var value = ReportRules.Cell(row[c], L.DisplayCulture);
+                                        <td>
+                                            @if (c == 0 && link != null && table.LinksOpenDialog)
+                                            {
+                                                <a href="@link" data-workspace-dialog="details">@value</a>
+                                            }
+                                            else if (c == 0 && link != null)
+                                            {
+                                                <a href="@link">@value</a>
+                                            }
+                                            else
+                                            {
+                                                @value
+                                            }
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </section>
+    }
+</section>
