@@ -360,3 +360,66 @@
 .checklist-save{display:flex;justify-content:flex-end;padding-top:16px;border-top:1px solid light-dark(#e6eef2, #2b4151)}
 .checklist-save .btn{display:inline-flex;align-items:center;gap:8px;padding:.6rem 1.3rem;border-radius:12px;font-weight:700;box-shadow:0 6px 16px #0078582b}
 @media(prefers-reduced-motion:reduce){.checklist-meter>span,.checklist-choice input[type=checkbox],.checklist-choice input[type=checkbox]::after{transition:none}}
+
+/* ---------- Supplier dashboard: status metric + step guide ---------- */
+.stms-metrics .metric-status strong{display:inline-flex;align-items:center;gap:10px;font-size:clamp(1.35rem,2.2vw,1.75rem);letter-spacing:-.02em}
+.metric-status-dot{width:11px;height:11px;flex:none;border-radius:50%;background:light-dark(#0a9270, #2fb08a);box-shadow:0 0 0 5px light-dark(#0a927024, #2fb08a2e)}
+.supplier-guide{padding:clamp(20px,2.6vw,30px)}
+.supplier-guide h2{margin-bottom:1.1rem}
+.supplier-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:0;padding:0;list-style:none;counter-reset:step}
+.supplier-steps li{counter-increment:step;position:relative;display:flex;flex-direction:column;gap:12px;padding:18px 18px 16px;border:1px solid light-dark(#e1ebe7, #2c4a3f);border-radius:18px;background:linear-gradient(160deg,light-dark(#fff, #1b2125),light-dark(#f5faf8, #15241f));transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
+.supplier-steps li:hover{transform:translateY(-2px);border-color:light-dark(#bfe3d5, #2f6a59);box-shadow:0 10px 24px light-dark(#14324a14, #0000004d)}
+.supplier-steps li::after{content:counter(step,decimal-leading-zero);position:absolute;top:14px;inset-inline-end:16px;color:light-dark(#d5e6df, #2c4a3f);font-size:1.6rem;font-weight:800;letter-spacing:-.04em;line-height:1}
+.supplier-steps .icon-tile{width:42px;height:42px;border-radius:13px}
+.supplier-steps p{margin:0;color:light-dark(#22394d, #c7d5e3);font-weight:600;line-height:1.5}
+.supplier-steps .text-link{font-weight:750}
+@media(max-width:800px){.supplier-steps{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){.supplier-steps li{transition:none}.supplier-steps li:hover{transform:none}}
+
+/* ---------- Bid compliance: side-by-side offer comparison ---------- */
+.compare-wrap{border:1px solid light-dark(#e1eaf0, #2b4151);border-radius:18px;background:light-dark(#fff, #16232e);box-shadow:0 1px 2px light-dark(#14324a0d, #0000004d)}
+.compare-table{--bs-table-bg:transparent;--bs-table-color:inherit;margin:0;border-collapse:separate;border-spacing:0;font-size:.9rem;color:light-dark(#1d2f42, #c7d5e3);font-variant-numeric:tabular-nums}
+.compare-table :is(th,td){padding:.85rem 1rem;border:0;border-bottom:1px solid light-dark(#eef3f6, #223645);vertical-align:middle}
+.compare-table :is(th,td)+:is(th,td){border-inline-start:1px solid light-dark(#f0f4f7, #1f3141)}
+.compare-table tbody tr:last-child>*{border-bottom:0}
+.compare-table thead th{background:light-dark(#f4f8fb, #122029);border-bottom:1px solid light-dark(#e1eaf0, #2b4151);vertical-align:bottom}
+.compare-table thead th:first-child{color:light-dark(#5a6e82, #93a9bd);font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.compare-table tbody th{position:sticky;inset-inline-start:0;z-index:1;min-width:150px;background:light-dark(#fafcfd, #172530);color:light-dark(#3b5266, #a9bdcf);font-size:.8rem;font-weight:700}
+.compare-table tbody tr:hover>td{background:light-dark(#f7fcfa, #172d26)}
+.compare-supplier{display:flex;align-items:center;gap:10px;min-width:170px}
+.compare-supplier>span:last-child{display:flex;flex-direction:column;line-height:1.25;color:light-dark(#0b2a3f, #e1ebf4);font-size:.95rem;font-weight:800}
+.compare-supplier small{color:light-dark(#6b7d8f, #8ea3b7);font-size:.75rem;font-weight:600}
+.compare-avatar{display:grid;place-items:center;flex:none;width:36px;height:36px;border-radius:11px;color:#fff;font-weight:800;background:linear-gradient(135deg,light-dark(#4f8fe0, #3d78c2),light-dark(#2557a0, #1f4a86))}
+.compare-table .badge{padding:.35em .75em;border-radius:999px;font-size:.72rem;font-weight:700}
+.compare-table .badge.bg-primary{background:light-dark(#e8f1fb, #16283a)!important;color:light-dark(#1d5f99, #9cc8ef)}
+.compare-table .badge.bg-success{background:light-dark(#e8f6f0, #153226)!important;color:light-dark(#075941, #b5f0de)}
+.compare-table .badge.bg-danger{background:light-dark(#fdecec, #3a1a1a)!important;color:light-dark(#a12b2b, #f2b2b2)}
+.compare-table .badge.bg-warning{background:light-dark(#fff4dc, #332a15)!important;color:light-dark(#7a4b00, #f3d8ae)!important}
+.compare-table .badge.bg-secondary,.compare-table .badge.bg-dark{background:light-dark(#eef2f5, #22303b)!important;color:light-dark(#4b5d6e, #b4c3d0)}
+.compare-total td strong{font-size:1.08rem;font-weight:800;color:light-dark(#0b2a3f, #e1ebf4)}
+.compare-total td strong span{color:light-dark(#6b7d8f, #8ea3b7);font-size:.8rem;font-weight:650}
+.compare-total td.is-lowest{background:light-dark(#effaf5, #153128)!important}
+.compare-total td.is-lowest strong{color:light-dark(#00684f, #9be6cf)}
+.compare-flag{display:inline-block;margin-inline-start:8px;padding:2px 8px;border-radius:999px;background:light-dark(#007858, #1fa07f);color:#fff;font-size:.66rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;vertical-align:2px}
+.compare-item{color:light-dark(#0b2a3f, #e1ebf4)!important;font-size:.88rem!important}
+.compare-item small{display:block;margin-top:2px;color:light-dark(#6b7d8f, #8ea3b7);font-size:.75rem;font-weight:600}
+.compare-line{display:flex;align-items:baseline;flex-wrap:wrap;gap:6px}
+.compare-line strong{font-size:.95rem;color:light-dark(#0b2a3f, #e1ebf4)}
+.compare-line small{color:light-dark(#6b7d8f, #8ea3b7);font-size:.78rem}
+.compare-note{display:inline-block;margin-top:5px;padding:2px 8px;border-radius:6px;background:light-dark(#f4f7fa, #1a2934);color:light-dark(#4b5d6e, #b4c3d0);font-size:.76rem}
+.compare-docs{display:grid;gap:6px;margin:0;padding:0;list-style:none}
+.compare-docs a{display:flex;align-items:center;gap:9px;max-width:300px;padding:7px 10px;border:1px solid light-dark(#e1eaf0, #2b4151);border-radius:11px;background:light-dark(#fbfdfe, #172530);text-decoration:none;transition:border-color .15s ease,background .15s ease}
+.compare-docs a:hover{border-color:light-dark(#9fd3bf, #2f6a59);background:light-dark(#f2fbf7, #173228)}
+.compare-docs a>span:last-child{display:flex;flex-direction:column;min-width:0;line-height:1.25}
+.compare-docs strong{color:light-dark(#00684f, #9be6cf);font-size:.84rem}
+.compare-docs small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:light-dark(#6b7d8f, #8ea3b7);font-size:.74rem}
+.compare-doc-icon{display:grid;place-items:center;flex:none;width:30px;height:30px;border-radius:9px;background:light-dark(#fdecec, #3a1a1a);color:light-dark(#c03c3c, #f2b2b2)}
+.compare-doc-icon .icon{width:16px;height:16px}
+.compare-empty{color:light-dark(#a3b1be, #5d7286)}
+.compare-actions td{background:light-dark(#fafcfd, #172530)}
+.compare-action-buttons{display:flex;flex-wrap:wrap;gap:6px}
+.compare-action-buttons form{margin:0}
+.compare-action-buttons .btn{display:inline-flex;align-items:center;gap:6px;padding:.42rem .8rem;border-radius:10px;font-weight:700}
+.compare-action-buttons .btn .icon{width:15px;height:15px}
+.compare-action-buttons .btn-success{--bs-btn-bg:#007858;--bs-btn-border-color:#007858;--bs-btn-hover-bg:#006148;--bs-btn-hover-border-color:#006148;box-shadow:0 4px 10px #0078582b}
+.compare-action-buttons .btn.disabled{border-style:dashed;opacity:.55}

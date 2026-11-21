@@ -62,16 +62,20 @@ else
     <p class="text-muted">@L.T(Model.MixedCurrencies ? "One column per bid, sorted by total price within each currency (lowest first)." : "One column per bid, sorted by total price (lowest first).")</p>
 
     @* Side-by-side table: rows = information, columns = bids *@
-    <div class="table-responsive mb-4">
-        <table class="table table-bordered align-middle">
-            <thead class="table-light">
+    var lowestPrice = Model.MixedCurrencies ? (decimal?)null : Model.Bids.Min(b => b.TotalPrice);
+    <div class="table-responsive mb-4 compare-wrap">
+        <table class="table align-middle compare-table">
+            <thead>
                 <tr>
                     <th scope="col">@L.T("Supplier")</th>
                     @foreach (var bid in Model.Bids)
                     {
+                        var company = bid.SupplierProfile.CompanyName;
                         <th scope="col">
-                            @bid.SupplierProfile.CompanyName
-                            <br /><small class="text-muted fw-normal">@L.F("Bid #{0}", bid.Id)</small>
+                            <div class="compare-supplier">
+                                <span class="compare-avatar" aria-hidden="true">@(string.IsNullOrWhiteSpace(company) ? "?" : company.Trim()[0].ToString().ToUpperInvariant())</span>
+                                <span>@company<small>@L.F("Bid #{0}", bid.Id)</small></span>
+                            </div>
                         </th>
                     }
                 </tr>
@@ -84,11 +88,11 @@ else
                         <td><partial name="~/Views/Bids/_StatusBadge.cshtml" model="bid.Status" /></td>
                     }
                 </tr>
-                <tr>
+                <tr class="compare-total">
                     <th scope="row">@L.T("Total price")</th>
                     @foreach (var bid in Model.Bids)
                     {
-                        <td><strong>@bid.TotalPrice.ToString("N2") @bid.Currency</strong></td>
+                        <td class="@(bid.TotalPrice == lowestPrice ? "is-lowest" : "")"><strong>@bid.TotalPrice.ToString("N2") <span>@bid.Currency</span></strong>@if (bid.TotalPrice == lowestPrice && Model.Bids.Count > 1) { <span class="compare-flag">@L.T("Lowest")</span> }</td>
                     }
                 </tr>
                 <tr>
@@ -117,9 +121,9 @@ else
                 @foreach (var item in Model.RequestedItems)
                 {
                     <tr>
-                        <th scope="row">
+                        <th scope="row" class="compare-item">
                             @item.ItemName
-                            <br /><small class="text-muted fw-normal">@item.Quantity @item.Unit</small>
+                            <small>@item.Quantity @item.Unit</small>
                         </th>
                         @foreach (var bid in Model.Bids)
                         {
@@ -131,11 +135,10 @@ else
                                 }
                                 else
                                 {
-                                    <span>@bidItem.UnitPrice.ToString("N2")</span>
-                                    <small class="text-muted">× @bidItem.Quantity = @((bidItem.UnitPrice * bidItem.Quantity).ToString("N2"))</small>
+                                    <div class="compare-line"><strong>@bidItem.UnitPrice.ToString("N2")</strong><small>× @bidItem.Quantity = @((bidItem.UnitPrice * bidItem.Quantity).ToString("N2"))</small></div>
                                     @if (bidItem.Notes != null)
                                     {
-                                        <br /><small class="text-muted">@bidItem.Notes</small>
+                                        <small class="compare-note">@bidItem.Notes</small>
                                     }
                                 }
                             </td>
@@ -154,12 +157,14 @@ else
                             }
                             else
                             {
-                                <ul class="list-unstyled mb-0">
+                                <ul class="compare-docs">
                                     @foreach (var document in bid.BidDocuments)
                                     {
                                         <li>
-                                            <a asp-controller="BidDocuments" asp-action="Download" asp-route-id="@document.Id">@L.T(document.DocumentType)</a>
-                                            <small class="text-muted">@document.FileName</small>
+                                            <a asp-controller="BidDocuments" asp-action="Download" asp-route-id="@document.Id" title="@document.FileName">
+                                                <span class="compare-doc-icon" aria-hidden="true"><partial name="_Icon" model='@("file")' /></span>
+                                                <span><strong>@L.T(document.DocumentType)</strong><small>@document.FileName</small></span>
+                                            </a>
                                         </li>
                                     }
                                 </ul>
@@ -171,13 +176,13 @@ else
                     <th scope="row">@L.T("Compliance notes")</th>
                     @foreach (var bid in Model.Bids)
                     {
-                        <td>@(bid.ComplianceNotes ?? "—")</td>
+                        <td class="@(bid.ComplianceNotes == null ? "compare-empty" : "")">@(bid.ComplianceNotes ?? "—")</td>
                     }
                 </tr>
 
                 @if (Model.TenderIsClosed)
                 {
-                    <tr>
+                    <tr class="compare-actions">
                         <th scope="row">@L.T("Actions")</th>
                         @foreach (var bid in Model.Bids)
                         {
@@ -188,12 +193,12 @@ else
                                 }
                                 @if (bid.Status == "Submitted" || bid.Status == "Pending Clarification" && bid.ComplianceClarification?.Status == "Resolved")
                                 {
-                                    <div class="d-flex flex-wrap gap-1">
+                                    <div class="compare-action-buttons">
                                         <form asp-action="MarkCompliant" asp-route-id="@bid.Id" method="post" asp-antiforgery="true"
                                               data-workspace-confirm="@L.T("Mark this bid as Compliant?")" onsubmit="return window.stmsWorkspaceReady || confirm(this.dataset.workspaceConfirm);">
-                                            <button type="submit" class="btn btn-sm btn-success">@L.T("Compliant")</button>
+                                            <button type="submit" class="btn btn-sm btn-success"><partial name="_Icon" model='@("check")' /> @L.T("Compliant")</button>
                                         </form>
-                                        <a data-workspace-dialog class="btn btn-sm btn-outline-danger" asp-action="MarkNonCompliant" asp-route-id="@bid.Id">@L.T("Non-compliant")</a>
+                                        <a data-workspace-dialog class="btn btn-sm btn-outline-danger" asp-action="MarkNonCompliant" asp-route-id="@bid.Id"><partial name="_Icon" model='@("close")' /> @L.T("Non-compliant")</a>
                                         @* Placeholder: clarification requests belong to Person 4 (ClarificationsController).
                                            Replace this with the real link when it is ready. *@
                                         <a class="btn btn-sm btn-outline-secondary disabled" aria-disabled="true">@L.T("Request clarification")</a>

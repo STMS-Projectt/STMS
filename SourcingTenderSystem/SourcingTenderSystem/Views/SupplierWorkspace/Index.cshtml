@@ -27,9 +27,9 @@
     </section>
 }
 <section class="metrics-grid stms-metrics" aria-label="@L.T("Supplier statistics")">
-    <article class="surface metric">
+    <article class="surface metric metric-status">
         <span class="icon-tile tone-teal"><partial name="_Icon" model='@("shield")' /></span>
-        <strong>@L.T(Model.ApplicationDraft ? "Draft" : Model.Status)</strong>
+        <strong><span class="metric-status-dot" aria-hidden="true"></span>@L.T(Model.ApplicationDraft ? "Draft" : Model.Status)</strong>
         <span>@L.T("Application status")</span>
     </article>
     @if (trading)
@@ -43,11 +43,15 @@
         <article class="surface metric"><span class="icon-tile tone-blue"><partial name="_Icon" model='@("file")' /></span><strong>@Model.Documents</strong><span>@L.T("Application documents")</span></article>
     }
 </section>
-<section class="surface detail-card">
+<section class="surface detail-card supplier-guide">
     <h2>@L.T(trading ? "How to submit a bid" : "What happens next")</h2>
     @if (trading)
     {
-        <ol class="mb-0"><li>@L.T("Review and accept an invitation while the tender is open.")</li><li>@L.T("Create a bid, enter your prices, and attach supporting documents.")</li><li>@L.T("Submit before the deadline and track the bid in") <a asp-controller="Bids" asp-action="MyBids">@L.T("My bids")</a>.</li></ol>
+        <ol class="supplier-steps">
+            <li><span class="icon-tile tone-teal"><partial name="_Icon" model='@("mail")' /></span><p>@L.T("Review and accept an invitation while the tender is open.")</p></li>
+            <li><span class="icon-tile tone-blue"><partial name="_Icon" model='@("edit")' /></span><p>@L.T("Create a bid, enter your prices, and attach supporting documents.")</p></li>
+            <li><span class="icon-tile tone-violet"><partial name="_Icon" model='@("check")' /></span><p>@L.T("Submit before the deadline and track the bid in") <a class="text-link" asp-controller="Bids" asp-action="MyBids">@L.T("My bids")</a>.</p></li>
+        </ol>
     }
     else if (Model.ApplicationDraft)
     {
