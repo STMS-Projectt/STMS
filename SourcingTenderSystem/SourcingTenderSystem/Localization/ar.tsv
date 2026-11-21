@@ -1754,3 +1754,145 @@ Development team|فريق التطوير
 Enable JavaScript to explore the development team.|فعّل JavaScript لعرض صفحة فريق التطوير.
 Cancelled by {0}|ألغاه {0}
 Reason: {0}|السبب: {0}
+A dealing is a submitted bid. Dealings per month = bids divided by the months between the first and the last bid.|التعامل هو عرض مقدَّم. التعاملات شهريًا = عدد العروض مقسومًا على عدد الأشهر بين أول عرض وآخر عرض.
+A tender is delayed when it waits more than {0} day at one stage: compliance, committee evaluation or an approval.|يُعدّ العطاء متأخرًا إذا بقي أكثر من {0} يوم في مرحلة واحدة: فحص المطابقة أو تقييم اللجنة أو إحدى الموافقات.
+Action|الإجراء
+All records|جميع السجلات
+All suppliers|جميع الموردين
+Amount|المبلغ
+Approval decisions|قرارات الموافقة
+Approval time|مدة الموافقة
+Approval time runs from the last submission to the approval, read from the request activity log.|تُحسب مدة الموافقة من آخر إرسال للطلب حتى اعتماده، اعتمادًا على سجل نشاط الطلب.
+Approvals & decision reports|تقارير الموافقات والقرارات
+Approvals & decisions|الموافقات والقرارات
+Approve votes|أصوات الموافقة
+Approved requests|الطلبات المعتمدة
+Approved suppliers|الموردون المعتمدون
+Audit trail|سجل التدقيق
+Average approval time|متوسط مدة الموافقة
+Average bids per tender|متوسط العروض لكل عطاء
+Average response time|متوسط زمن الرد
+Award rate|نسبة الترسية
+Awarded on (UTC)|تاريخ الترسية (UTC)
+Awarded out of finished tenders (awarded or cancelled)|العطاءات المرساة من العطاءات المنتهية (المرساة أو الملغاة)
+Awarded tenders|العطاءات المرساة
+Awarded tenders (final contracts)|العطاءات المرساة (العقود النهائية)
+Awards|الترسيات
+Bid|العرض
+Bid comparison|مقارنة العروض
+Bids & evaluation|العروض والتقييم
+Bids & evaluation reports|تقارير العروض والتقييم
+Bids submitted|العروض المقدمة
+Bids submitted in the selected period, their evaluation scores and the excluded offers.|العروض المقدمة في الفترة المحددة ونتائج تقييمها والعروض المستبعدة.
+By|بواسطة
+Closed or in evaluation|مغلقة أو قيد التقييم
+Closing date (UTC)|تاريخ الإغلاق (UTC)
+Comments|الملاحظات
+Committee evaluation|تقييم اللجنة
+Committee recommendations|توصيات اللجنة
+Committee recommendations, approval decisions, Top Committee votes, awards and the audit trail.|توصيات اللجان وقرارات الموافقة وتصويت اللجنة العليا والترسيات وسجل التدقيق.
+Compliance|المطابقة
+Compliance check|فحص المطابقة
+Days left|الأيام المتبقية
+Days waiting|أيام الانتظار
+Dealings per month|التعاملات شهريًا
+Dealings with each supplier|التعاملات مع كل مورد
+Decided by|صاحب القرار
+Decision|القرار
+Delayed evaluations|تقييمات متأخرة
+Department: {0}|القسم: {0}
+Document|المستند
+Documents expiring soon|مستندات تنتهي قريبًا
+Documents on file|المستندات المحفوظة
+Download Excel|تنزيل ملف Excel
+Evaluation delays|تأخير التقييم
+Evaluation results (unified reports)|نتائج التقييم (التقارير الموحدة)
+Every report reads live system data. Filter it, open the records behind a number, or download it as PDF or Excel.|كل تقرير يقرأ بيانات النظام الحالية. يمكنك تصفيته أو فتح السجلات خلف أي رقم أو تنزيله بصيغة PDF أو Excel.
+Excluded bids|العروض المستبعدة
+Excluded offers|العروض المستبعدة وأسباب استبعادها
+Expired and expiring documents|المستندات المنتهية والقريبة من الانتهاء
+Expired documents|المستندات المنتهية
+Expires soon|تنتهي قريبًا
+Expiring soon|قريبة الانتهاء
+Filters apply to this report and to its downloads.|تُطبَّق الفلاتر على هذا التقرير وعلى ملفاته المنزَّلة.
+First dealing (UTC)|أول تعامل (UTC)
+From submission to approval|من الإرسال حتى الاعتماد
+Generated {0} UTC|أُنشئ في {0} UTC
+Invited suppliers|الموردون المدعوون
+Key indicators|المؤشرات الرئيسية
+Last dealing (UTC)|آخر تعامل (UTC)
+Latest {0} entries in the selected period. The activity log has the full history with search.|آخر {0} قيد في الفترة المحددة. يحتوي سجل النشاط على السجل الكامل مع البحث.
+Legal verification|التحقق القانوني
+Live data: the numbers update whenever this page or a download is opened.|بيانات مباشرة: تتحدّث الأرقام كلما فُتحت هذه الصفحة أو نُزّل الملف.
+Month|الشهر
+No purchase requests yet.|لا توجد طلبات شراء بعد.
+No records match these filters.|لا توجد سجلات مطابقة لهذه الفلاتر.
+No tender has been awarded yet.|لم تتم ترسية أي عطاء بعد.
+Open reports|فتح التقارير
+Open tenders|العطاءات المفتوحة
+Open the activity log|فتح سجل النشاط
+Outcome|النتيجة
+Participation|المشاركة
+Period: {0} to {1}|الفترة: من {0} إلى {1}
+Prepared by|أعدّه
+Prepared on (UTC)|تاريخ الإعداد (UTC)
+Purchase request reports|تقارير طلبات الشراء
+Recommended supplier|المورد الموصى به
+Reject votes|أصوات الرفض
+Report filters|فلاتر التقرير
+Report sections|أقسام التقارير
+Report status|حالة التقرير
+Reports & analytics|التقارير والتحليلات
+Requests|الطلبات
+Requests by department|الطلبات حسب القسم
+Requests created in the selected period, by status and department.|الطلبات المنشأة في الفترة المحددة حسب الحالة والقسم.
+Returned to sourcing officer for retender|أُعيد إلى مسؤول التوريد لإعادة الطرح
+Scores come from the evaluation report of each tender. Compare prices only within the same currency.|الدرجات مأخوذة من تقرير التقييم لكل عطاء. قارن الأسعار ضمن العملة نفسها فقط.
+Select a department to open its report|اختر قسمًا لفتح تقريره
+Select a status to list its requests|اختر حالة لعرض طلباتها
+Select a supplier to open its performance|اختر موردًا لعرض أدائه
+Share|النسبة
+Showing all records.|يتم عرض جميع السجلات.
+Site-wide statistics|إحصاءات النظام كاملًا
+Site-wide statistics on suppliers, dealings, tenders and awards. Download it as PDF or Excel.|إحصاءات شاملة للنظام عن الموردين والتعاملات والعطاءات والترسيات. يمكنك تنزيلها بصيغة PDF أو Excel.
+Site-wide statistics on suppliers, dealings, tenders and awards. Filters do not apply to this report.|إحصاءات شاملة للنظام عن الموردين والتعاملات والعطاءات والترسيات. لا تُطبَّق الفلاتر على هذا التقرير.
+Site-wide statistics: filters do not apply.|إحصاءات النظام كاملًا: لا تُطبَّق الفلاتر.
+Sourcing manager approved|وافق مدير التوريد
+Sourcing manager decisions|قرارات مدير التوريد
+Sourcing officer and sourcing manager approvals, returns and Top Committee votes.|موافقات مسؤول التوريد ومدير التوريد وحالات الإعادة وتصويت اللجنة العليا.
+Sourcing officer approved|وافق مسؤول التوريد
+Statistics report|التقرير الإحصائي
+Submitted at least one bid|قدّم عرضًا واحدًا على الأقل
+Supplier counts and documents show the current state. Performance uses invitations and bids in the selected period.|أعداد الموردين والمستندات تعرض الوضع الحالي، أما الأداء فيعتمد على الدعوات والعروض في الفترة المحددة.
+Supplier participation|مشاركة الموردين
+Supplier participation rate|نسبة مشاركة الموردين
+Supplier performance|أداء الموردين
+Supplier reports|تقارير الموردين
+Supplier: {0}|المورد: {0}
+Suppliers by status|الموردون حسب الحالة
+Suppliers who submitted a bid out of suppliers invited|الموردون الذين قدّموا عروضًا من بين المدعوين
+Suppliers with dealings|موردون لديهم تعاملات
+Tender reports|تقارير العطاءات
+Tender status: {0}|حالة العطاء: {0}
+Tenders created|العطاءات المنشأة
+Tenders created in the selected period, supplier participation and evaluation delays.|العطاءات المنشأة في الفترة المحددة ومشاركة الموردين وتأخير التقييم.
+Tenders with no bids|عطاءات بلا عروض
+Tenders, bids and awards by month|العطاءات والعروض والترسيات حسب الشهر
+Top Committee statistics|إحصاءات اللجنة العليا
+Top Committee votes|أصوات اللجنة العليا
+Top Committee voting record|سجل تصويت اللجنة العليا
+Top suppliers by awards|أكثر الموردين ترسيةً
+Total score|الدرجة الإجمالية
+Waiting at|مرحلة الانتظار
+Waiting for review|بانتظار المراجعة
+Waiting more than {0} day at one stage|ينتظر أكثر من {0} يوم في مرحلة واحدة
+Waiting since (UTC)|ينتظر منذ (UTC)
+Win rate|نسبة الفوز
+Within {0} days|خلال {0} يومًا
+{0} hours|{0} ساعة
+{0} rows|{0} صفوف
+{0}: {1} awards|{0}: {1} ترسيات
+{0}: {1} requests|{0}: {1} طلبات
+days|أيام
+Technical / financial|فني / مالي
+Tender: {0}|العطاء: {0}

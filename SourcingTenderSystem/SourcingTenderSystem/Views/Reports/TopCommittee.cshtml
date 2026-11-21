@@ -1,0 +1,21 @@
+@model ReportsPage
+@{
+    ViewData["Title"] = L.T("Statistics report");
+}
+<header class="page-heading stms-hero admin-record-hero">
+    <div>
+        <p class="eyebrow">@L.T("TOP COMMITTEE")</p>
+        <h1>@L.T("Statistics report")</h1>
+        <p>@L.T("Site-wide statistics on suppliers, dealings, tenders and awards. Download it as PDF or Excel.")</p>
+    </div>
+</header>
+
+<div class="report-toolbar">
+    <span class="subtle">@L.T("Live data: the numbers update whenever this page or a download is opened.")</span>
+    <div class="button-row">
+        <a download class="btn btn-primary" asp-action="TopCommitteeExport" asp-route-format="pdf"><partial name="_Icon" model='@("download")' /> @L.T("Download PDF")</a>
+        <a download class="btn btn-outline-secondary" asp-action="TopCommitteeExport" asp-route-format="excel"><partial name="_Icon" model='@("download")' /> @L.T("Download Excel")</a>
+    </div>
+</div>
+
+<partial name="_ReportSection" model="Model.Section" />

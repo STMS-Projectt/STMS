@@ -846,3 +846,22 @@ body:has(.dept-directory) [data-scroll-top]{bottom:18px}
  .stms-public-header .portal-nav{flex-wrap:wrap;justify-content:flex-end}
  .stms-public-header .portal-nav .side-link{padding:7px 9px;font-size:.8rem}
 }
+
+/* Reports & analytics (Views/Reports, admin dashboard key indicators) */
+.report-tabs{margin-bottom:1rem;flex-wrap:wrap}.report-tabs a{display:inline-flex;align-items:center;gap:.4rem}.report-tabs .icon{width:16px;height:16px}
+.report-filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:.75rem 1rem;align-items:end;padding:1rem 1.1rem;margin-bottom:1rem}
+.report-filter-actions{display:flex;gap:.5rem;flex-wrap:wrap}
+.report-toolbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.75rem;margin-bottom:1rem}
+.report-toolbar .btn .icon{width:16px;height:16px}
+.report-kpis{margin-bottom:1rem}.report-kpi-hint{display:block;color:light-dark(#5b6b7c,#9fb3c4);font-size:.76rem;line-height:1.3;font-weight:500}
+.report-card{margin-bottom:1rem;scroll-margin-top:5rem}.report-card .card-heading p{margin-bottom:0}
+.report-table-wrap{max-height:28rem;overflow:auto;border:1px solid light-dark(#e3e9ef,#2e4656);border-radius:12px}
+.report-table{margin:0;font-size:.9rem;font-variant-numeric:tabular-nums}.report-table td{vertical-align:top}.report-table td a{font-weight:600;text-decoration:none}
+.report-table :is(th,td){text-align:start;padding:.55rem .85rem}
+.report-table thead th{position:sticky;top:0;z-index:1;background:light-dark(#f2f6fa,#142230);color:light-dark(#263b50,#c2d1df);white-space:nowrap}
+.analytics-breakdowns{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px;margin-bottom:15px}
+.analytics-breakdowns .stms-stat-row{grid-template-columns:minmax(6rem,1.2fr) minmax(3rem,2fr) 2.5rem}
+.metrics-grid.analytics-kpis{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media(max-width:760px){.metrics-grid.analytics-kpis{grid-template-columns:1fr}}
+@media(max-width:1100px){.analytics-breakdowns{grid-template-columns:1fr 1fr}}
+@media(max-width:760px){.analytics-breakdowns{grid-template-columns:1fr}}
