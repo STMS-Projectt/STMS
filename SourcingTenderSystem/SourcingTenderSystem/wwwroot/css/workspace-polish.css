@@ -302,3 +302,61 @@
 }
 .sourcing-request-decisions .review-alternatives { padding-block-start:.625rem; }
 .contact-message-body { white-space:pre-wrap; overflow-wrap:anywhere; }
+
+/* ---------- Committee bid review: reference cards + evaluation checklist ---------- */
+.review-references .bid-evidence{padding:16px 18px}
+.review-references .bid-evidence>summary{display:flex;align-items:center;gap:10px;list-style:none;cursor:pointer;font-size:.98rem}
+.review-references .bid-evidence>summary::-webkit-details-marker{display:none}
+.review-references .bid-evidence>summary .icon-tile{width:36px;height:36px;border-radius:11px;flex:none}
+.review-references .bid-evidence>summary .record-panel-label{margin-inline-start:auto}
+.review-references .bid-evidence>summary::after{content:"";flex:none;width:8px;height:8px;margin-inline-start:4px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg) translateY(-2px);opacity:.55;transition:transform .2s ease}
+.review-references .bid-evidence[open]>summary{margin-bottom:12px}
+.review-references .bid-evidence[open]>summary::after{transform:rotate(225deg) translateY(-2px)}
+.bid-checklist{padding:clamp(18px,2.4vw,28px)}
+.bid-checklist .record-section-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.bid-checklist .record-section-heading p{margin-bottom:0}
+.checklist-total{padding:6px 13px;font-size:.85rem;font-variant-numeric:tabular-nums}
+.checklist-meter{position:relative;height:8px;border-radius:999px;background:light-dark(#e6efec, #22362e);overflow:hidden}
+.checklist-meter>span{position:absolute;inset:0 auto 0 0;width:var(--fill,0%);border-radius:inherit;background:linear-gradient(90deg,light-dark(#3cc29a, #2fb08a),light-dark(#007858, #13654f));transition:width .35s cubic-bezier(.2,.8,.2,1)}
+[dir=rtl] .checklist-meter>span{inset:0 0 0 auto}
+.checklist-meter-total{height:10px;margin:14px 0 20px}
+.checklist-columns{gap:16px}
+.checklist-group{position:relative;padding:16px;border:1px solid light-dark(#e1ebe7, #2c4a3f);border-radius:18px;background:light-dark(#f8fbfa, #15241f)}
+.checklist-group legend{float:left;width:100%;display:flex;align-items:center;gap:10px;margin:0 0 10px;padding:0 6.5rem 0 0;font-size:1.05rem;font-weight:800;color:light-dark(#0b2a3f, #e1ebf4)}
+[dir=rtl] .checklist-group legend{float:right;padding:0 0 0 6.5rem}
+.checklist-group>:not(legend):not(.checklist-subtotal){clear:both}
+.checklist-group legend .icon-tile{width:36px;height:36px;border-radius:11px}
+.checklist-subtotal{position:absolute;top:22px;inset-inline-end:16px;margin:0;padding:3px 10px;border-radius:999px;background:light-dark(#fff, #1b2125);border:1px solid light-dark(#dcebe5, #2f5245);font-size:.82rem}
+.checklist-group .checklist-meter{height:6px;margin-bottom:14px}
+.checklist-financial .checklist-meter>span{background:linear-gradient(90deg,light-dark(#62a8ec, #4a8fd0),light-dark(#1d64b0, #2a6fb8))}
+.checklist-entry{position:relative;padding:12px 14px;border:1px solid light-dark(#e3ece9, #2d4a40);border-radius:14px;background:light-dark(#fff, #1b2125);box-shadow:0 1px 2px light-dark(#14324a0a, #0000004d)}
+.checklist-entry+.checklist-entry{margin-top:10px}
+.checklist-entry:hover{border-color:light-dark(#c4e2d6, #346c58)}
+.checklist-entry:has([data-checklist-choice]:checked){border-color:light-dark(#8fcfb7, #3a7d65);background:linear-gradient(110deg,light-dark(#effaf5, #163428),light-dark(#fff, #1b2125) 70%);box-shadow:inset 3px 0 0 light-dark(#0a9270, #1fa07f)}
+[dir=rtl] .checklist-entry:has([data-checklist-choice]:checked){box-shadow:inset -3px 0 0 light-dark(#0a9270, #1fa07f)}
+.checklist-choice{gap:12px;min-height:36px}
+.checklist-choice input[type=checkbox]{appearance:none;display:grid;place-items:center;width:22px;height:22px;margin:0;border:2px solid light-dark(#b9cdc6, #4a6a5e);border-radius:7px;background:light-dark(#fff, #16232e);cursor:pointer;transition:background .15s ease,border-color .15s ease}
+.checklist-choice input[type=checkbox]::after{content:"";width:6px;height:11px;margin-top:-2px;border:solid #fff;border-width:0 2.5px 2.5px 0;transform:rotate(45deg) scale(0);transition:transform .15s ease}
+.checklist-choice input[type=checkbox]:checked{border-color:light-dark(#007858, #1fa07f);background:light-dark(#007858, #1fa07f)}
+.checklist-choice input[type=checkbox]:checked::after{transform:rotate(45deg) scale(1)}
+.checklist-choice input[type=checkbox]:focus-visible{outline:3px solid light-dark(#4bb99a, #4bb99a);outline-offset:2px}
+.checklist-choice input[type=checkbox]:disabled{cursor:default;opacity:.75}
+.checklist-choice span{font-size:.98rem;font-weight:700;color:light-dark(#0b2a3f, #e1ebf4)}
+.checklist-choice strong{padding:3px 9px;border-radius:999px;background:light-dark(#e8f6f0, #153226);color:light-dark(#075941, #b5f0de);font-size:.78rem;font-variant-numeric:tabular-nums}
+.checklist-financial .checklist-choice strong{background:light-dark(#e8f1fb, #16283a);color:light-dark(#1d5f99, #9cc8ef)}
+.checklist-entry details{margin:6px 0 0 34px}
+[dir=rtl] .checklist-entry details{margin:6px 34px 0 0}
+.checklist-entry details>summary{display:inline-flex;align-items:center;gap:6px;list-style:none;padding:3px 10px 3px 8px;border-radius:8px;color:light-dark(#3c6a5e, #a9d6c9);font-size:.8rem;font-weight:700;cursor:pointer;transition:background .15s ease}
+.checklist-entry details>summary::-webkit-details-marker{display:none}
+.checklist-entry details>summary::before{content:"+";display:grid;place-items:center;width:16px;height:16px;border-radius:5px;background:light-dark(#e3f1ec, #1c3a31);font-size:.8rem;line-height:1}
+.checklist-entry details[open]>summary::before{content:"−"}
+.checklist-entry details>summary:hover{background:light-dark(#eef7f3, #17302a)}
+.checklist-entry details .form-grid{gap:10px}
+.checklist-entry details .field{font-size:.78rem;font-weight:700;color:light-dark(#4f6670, #a9bcc5)}
+.checklist-entry details .form-control{margin-top:4px;border-radius:10px;border-color:light-dark(#dbe6e2, #2f4a41);background:light-dark(#fbfdfc, #16232e);font-size:.9rem}
+.checklist-entry details .form-control:focus{border-color:light-dark(#4bb99a, #4bb99a);box-shadow:0 0 0 3px light-dark(#4bb99a33, #4bb99a33)}
+.checklist-entry details textarea.form-control{min-height:70px;resize:vertical}
+.checklist-entry .field-hint{margin-inline-start:34px;color:light-dark(#5a6e82, #93a9bd)}
+.checklist-save{display:flex;justify-content:flex-end;padding-top:16px;border-top:1px solid light-dark(#e6eef2, #2b4151)}
+.checklist-save .btn{display:inline-flex;align-items:center;gap:8px;padding:.6rem 1.3rem;border-radius:12px;font-weight:700;box-shadow:0 6px 16px #0078582b}
+@media(prefers-reduced-motion:reduce){.checklist-meter>span,.checklist-choice input[type=checkbox],.checklist-choice input[type=checkbox]::after{transition:none}}

@@ -15,9 +15,11 @@
                         if (input.checked) groupPoints += weight;
                     }
                     group.querySelector("[data-checklist-subtotal]").textContent = format(groupPoints, groupPossible);
+                    group.querySelector("[data-checklist-meter]")?.style.setProperty("--fill", `${groupPossible ? groupPoints * 100 / groupPossible : 0}%`);
                     points += groupPoints; possible += groupPossible;
                 }
                 total.textContent = format(points, possible);
+                form.closest(".bid-checklist").querySelector(".checklist-meter-total")?.style.setProperty("--fill", `${possible ? points * 100 / possible : 0}%`);
             });
         }
         for (const form of root.querySelectorAll("[data-weight-plan]")) {

@@ -6,6 +6,7 @@
     var entries = Model.Scores.Select((row, index) => (row, index)).ToList();
     string Percent(decimal value) => EvaluationRules.Round(value).ToString("0.##", CultureInfo.InvariantCulture) + "%";
     decimal Earned(CommitteeScoreRow row) => row.Score.GetValueOrDefault() * row.WeightPercent / row.Criterion.MaxScore;
+    string Fill(decimal earned, decimal possible) => (possible <= 0 ? 0 : Math.Min(100, earned * 100 / possible)).ToString("0.##", CultureInfo.InvariantCulture) + "%";
 }
 <a class="back-link" asp-action="Details" asp-route-id="@Model.Bid.TenderId"><partial name="_Icon" model='@("back")' /> @L.T("Tender evaluation")</a>
 <header class="page-heading stms-hero admin-record-hero"><div><p class="eyebrow">@L.F("Bid #{0}", Model.Bid.Id) · @Model.Bid.Tender.Title</p><h1>@Model.Bid.SupplierProfile.CompanyName</h1><p>@Model.Bid.TotalPrice.ToString("N2") @Model.Bid.Currency · Delivery in @Model.Bid.DeliveryDays days</p></div></header>
@@ -13,7 +14,7 @@
 <div class="review-workspace">
 <aside class="review-references" aria-label="@L.T("Bid reference materials")">
 <details class="surface detail-card mb-3 bid-evidence">
-    <summary>@L.T("Offered items") <span class="record-panel-label">@Model.Bid.BidItems.Count</span></summary>
+    <summary><span class="icon-tile tone-teal"><partial name="_Icon" model='@("inbox")' /></span>@L.T("Offered items") <span class="record-panel-label">@Model.Bid.BidItems.Count</span></summary>
     @if (Model.Bid.BidItems.Count == 0) { <div class="empty-state">@L.T("No items were attached to this bid.")</div> }
     else
     {
@@ -28,7 +29,7 @@
         </div>
     }
 </details>
-<details class="surface detail-card mb-3 bid-evidence"><summary>@L.T("Bid documents") <span class="record-panel-label">@Model.Bid.BidDocuments.Count</span></summary>
+<details class="surface detail-card mb-3 bid-evidence"><summary><span class="icon-tile tone-blue"><partial name="_Icon" model='@("file")' /></span>@L.T("Bid documents") <span class="record-panel-label">@Model.Bid.BidDocuments.Count</span></summary>
     @if (Model.Bid.BidDocuments.Count == 0) { <p class="subtle mb-0">@L.T("No documents attached.")</p> }
     else
     {
@@ -45,8 +46,9 @@
 </aside>
 <section class="surface detail-card bid-checklist" aria-label="@L.T("Your evaluation")">
     <div class="record-section-heading"><div><h2>@L.T("Your evaluation checklist")</h2><p>@L.T(locked ? "Saved scores are read-only." : "Check each criterion the offer meets, then save the checklist for this bid.")</p></div>
-        <span class="record-panel-label" data-checklist-total>@Percent(Model.Scores.Sum(Earned)) / @Percent(Model.Scores.Sum(r => r.WeightPercent))</span>
+        <span class="record-panel-label checklist-total" data-checklist-total>@Percent(Model.Scores.Sum(Earned)) / @Percent(Model.Scores.Sum(r => r.WeightPercent))</span>
     </div>
+    <div class="checklist-meter checklist-meter-total" data-checklist-meter style="--fill:@Fill(Model.Scores.Sum(Earned), Model.Scores.Sum(r => r.WeightPercent))" aria-hidden="true"><span></span></div>
     @if (Model.Scores.Count == 0) { <p class="subtle">@L.T("No valid criteria are selected for this evaluation.")</p> }
     else
     {
@@ -60,9 +62,10 @@
                 {
                     var rows = entries.Where(e => e.row.Criterion.Type == kind).ToList();
                     var possible = rows.Sum(e => e.row.WeightPercent);
-                    <fieldset class="checklist-group" data-checklist-group>
-                        <legend><span class="icon-tile tone-teal"><partial name="_Icon" model="icon" /></span>@L.T(kind)</legend>
+                    <fieldset class="checklist-group checklist-@kind.ToLowerInvariant()" data-checklist-group>
+                        <legend><span class="icon-tile @(kind == "Technical" ? "tone-teal" : "tone-blue")"><partial name="_Icon" model="icon" /></span>@L.T(kind)</legend>
                         <p class="checklist-subtotal"><output data-checklist-subtotal>@Percent(rows.Sum(e => Earned(e.row))) / @Percent(possible)</output></p>
+                        <div class="checklist-meter" data-checklist-meter style="--fill:@Fill(rows.Sum(e => Earned(e.row)), possible)" aria-hidden="true"><span></span></div>
                         @if (rows.Count == 0) { <p class="subtle mb-0">@L.F("No active {0} criteria.", L.T(kind))</p> }
                         @foreach (var (row, index) in rows)
                         {
