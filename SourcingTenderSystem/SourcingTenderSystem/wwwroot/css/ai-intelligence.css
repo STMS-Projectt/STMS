@@ -9,8 +9,37 @@
 .ai-block { margin-bottom: 20px; }
 .ai-select { max-width: 520px; margin-bottom: 16px; }
 .ai-empty { color: light-dark(#56657a, #a9b7c6); margin: 8px 0; }
-.ai-recommendations li { margin-bottom: 6px; }
-.ai-table th { white-space: nowrap; }
+
+/* ---------- Page tables (tenders, suppliers, bids): framed card, small-caps sticky header, zebra + mint hover ---------- */
+.ai-block .table-responsive { max-height: 28rem; overflow: auto; border: 1px solid light-dark(#e1eaf0, #2b4151); border-radius: 16px;
+    background: light-dark(#fff, #16232e); box-shadow: 0 1px 2px light-dark(#14324a0d, #0000004d); scrollbar-width: thin; scrollbar-color: light-dark(#9fcfc0, #2f6a59) transparent; }
+.ai-block .ai-table { --bs-table-bg: transparent; --bs-table-color: inherit; margin: 0; font-size: .9rem; font-variant-numeric: tabular-nums;
+    border-collapse: separate; border-spacing: 0; color: light-dark(#1d2f42, #c7d5e3); }
+.ai-block .ai-table :is(th, td) { text-align: start; padding: .8rem 1.1rem; border: 0; }
+.ai-block .ai-table thead th { position: sticky; top: 0; z-index: 1; background: light-dark(#f4f8fb, #122029); color: light-dark(#5a6e82, #93a9bd);
+    font-size: .72rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; border-bottom: 1px solid light-dark(#e1eaf0, #2b4151); }
+.ai-block .ai-table :is(thead th, tbody td):first-child { padding-inline-start: 1.35rem; }
+.ai-block .ai-table tbody td { vertical-align: middle; white-space: nowrap; border-bottom: 1px solid light-dark(#eef3f6, #223645); transition: background-color .15s ease; }
+.ai-block .ai-table tbody td:first-child { position: relative; font-weight: 650; color: light-dark(#0b2a3f, #e1ebf4); }
+.ai-block .ai-table tbody td:first-child::before { content: ""; position: absolute; inset-block: .5rem; inset-inline-start: 0; width: 4px;
+    border-radius: 0 3px 3px 0; background: light-dark(#0a9270, #1fa07f); opacity: 0; transition: opacity .15s ease; }
+.ai-block .ai-table tbody tr:nth-child(even) td { background: light-dark(#fafcfd, #18262f); }
+.ai-block .ai-table tbody tr:hover td { background: light-dark(#e4f6ef, #173228); }
+.ai-block .ai-table tbody tr:hover td:first-child::before { opacity: 1; }
+.ai-block .ai-table tbody tr:last-child td { border-bottom: 0; }
+@media (max-width: 640px) { .ai-block .ai-table :is(th, td) { padding: .65rem .8rem; } .ai-block .ai-table :is(thead th, tbody td):first-child { padding-inline-start: 1rem; } }
+
+/* ---------- AI recommendations: numbered advice cards with a soft mint accent ---------- */
+.ai-recommendations { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; counter-reset: ai-rec; }
+.ai-recommendations li { counter-increment: ai-rec; position: relative; display: flex; align-items: flex-start; gap: 14px; margin: 0;
+    padding: 14px 18px 14px 14px; border: 1px solid light-dark(#dcefe7, #24423a); border-inline-start: 4px solid light-dark(#0a9270, #1fa07f);
+    border-radius: 14px; background: linear-gradient(110deg, light-dark(#f3fbf8, #15292a), light-dark(#fff, #16232e) 70%);
+    color: light-dark(#1d2f42, #c7d5e3); line-height: 1.55; font-size: .93rem; transition: transform .15s ease, box-shadow .15s ease; }
+.ai-recommendations li::before { content: counter(ai-rec); flex: none; display: grid; place-items: center; width: 28px; height: 28px; margin-top: -1px;
+    border-radius: 9px; background: linear-gradient(135deg, light-dark(#159d77, #1c9674), light-dark(#007658, #12644f)); color: #fff;
+    font-size: .8rem; font-weight: 800; box-shadow: 0 4px 10px #00846126; }
+.ai-recommendations li:hover { transform: translateY(-1px); box-shadow: 0 8px 20px light-dark(#14324a14, #00000059); }
+@media (prefers-reduced-motion: reduce) { .ai-recommendations li { transition: none; } .ai-recommendations li:hover { transform: none; } }
 
 /* ---------- Bar charts ---------- */
 .ai-chart { padding: 16px; }
