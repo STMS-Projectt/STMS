@@ -47,6 +47,8 @@ builder.Services.AddHttpClient(BidAiAdvisor.HttpClientName, client =>
 builder.Services.AddSingleton<BidAiAdvisor>();
 builder.Services.AddSingleton<WinnerAiBriefing>();
 builder.Services.AddSingleton<EvaluationWeightAdvisor>();
+// AI Intelligence page + chatbot
+builder.Services.AddScoped<AiInsights>();
 // Free exchange-rate reference (Frankfurter v2) for USD-equivalent bid display only.
 builder.Services.AddMemoryCache();
 

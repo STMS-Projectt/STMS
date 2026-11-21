@@ -1,0 +1,97 @@
+@using SourcingTenderSystem.Services
+@model AiData
+@{
+    ViewData["Title"] = "AI Intelligence";
+    AiTenderRow? selected = ViewBag.Selected;
+    var selectedBids = selected is null ? new List<AiBidRow>() : Model.Bids.Where(b => b.TenderId == selected.Id).OrderBy(b => b.Price).ToList();
+    var charts = new[] { AiInsights.StatusChart(Model), AiInsights.BidsPerTenderChart(Model), AiInsights.SupplierChart(Model), AiInsights.MonthlyChart(Model) };
+    string Json(object value) => System.Text.Json.JsonSerializer.Serialize(value, new System.Text.Json.JsonSerializerOptions(System.Text.Json.JsonSerializerDefaults.Web));
+}
+
+<header class="page-heading stms-hero">
+    <div>
+        <p class="eyebrow">@L.T("AI INTELLIGENCE")</p>
+        <h1>@L.T("AI Intelligence")</h1>
+        <p>@L.T("Interactive analysis of tenders, bids and suppliers, built on the real system data you are allowed to see.")</p>
+    </div>
+    <div class="ai-actions">
+        <a class="btn btn-outline-secondary" data-full-page asp-action="ExportExcel" asp-route-tenderId="@selected?.Id"><partial name="_Icon" model='@("download")' /> Excel</a>
+        <a class="btn btn-outline-secondary" data-full-page asp-action="ExportPdf" asp-route-tenderId="@selected?.Id"><partial name="_Icon" model='@("download")' /> PDF</a>
+        <button type="button" class="btn btn-primary" data-ai-chat-open><partial name="_Icon" model='@("chart")' /> @L.T("Ask the AI")</button>
+    </div>
+</header>
+
+@* ------------------------------------------------ KPI / analysis cards *@
+<section aria-labelledby="ai-kpis">
+    <div class="section-heading"><h2 id="ai-kpis">@L.T("Key performance indicators")</h2><span>@L.T("Live from the system")</span></div>
+    <div class="ai-cards">
+        @foreach (var card in AiInsights.Kpis(Model))
+        {
+            <div class="surface ai-card"><strong>@card.Value</strong><span>@L.T(card.Label)</span></div>
+        }
+    </div>
+</section>
+
+@* ------------------------------------------------ Choose a tender *@
+<section class="surface dashboard-card ai-block">
+    <div class="card-heading"><div><h2>@L.T("Tender analysis report")</h2><p>@L.T("Choose any tender to see its visual report.")</p></div></div>
+    <form method="get" asp-action="Index" class="ai-select">
+        <select name="tenderId" class="form-select" data-ai-autosubmit aria-label="@L.T("Choose a tender")">
+            <option value="">@L.T("All tenders (overview)")</option>
+            @foreach (var t in Model.Tenders)
+            {
+                <option value="@t.Id" selected="@(selected?.Id == t.Id)">#@t.Id · @t.Title (@L.T(t.Status))</option>
+            }
+        </select>
+    </form>
+
+    @if (selected is not null)
+    {
+        <div class="ai-cards">
+            <div class="surface ai-card"><strong>@L.T(selected.Status)</strong><span>@L.T("Status")</span></div>
+            <div class="surface ai-card"><strong>@selected.BidCount</strong><span>@L.T("Bids")</span></div>
+            <div class="surface ai-card"><strong>@AiInsights.Money(selected.Lowest, selected.Currency)</strong><span>@L.T("Lowest price")</span><small>@selected.LowestSupplier</small></div>
+            <div class="surface ai-card"><strong>@AiInsights.Money(selected.Highest, selected.Currency)</strong><span>@L.T("Highest price")</span><small>@selected.HighestSupplier</small></div>
+            <div class="surface ai-card"><strong>@(selected.Winner ?? "-")</strong><span>@L.T("Winner")</span></div>
+            <div class="surface ai-card"><strong>@(selected.DaysToAward?.ToString("0.0") ?? "-")</strong><span>@L.T("Days from creation to award")</span></div>
+        </div>
+        @if (selectedBids.Count == 0)
+        {
+            <p class="ai-empty">@L.T("No bids are visible for this tender. Bid prices stay sealed while the tender is open.")</p>
+        }
+        else
+        {
+            <div class="ai-grid">
+                <div class="ai-chart" data-ai-chart="@Json(new AiChart(L.T("Bid prices"), selectedBids.Select(b => b.Supplier).ToList(), selectedBids.Select(b => b.Price).ToList()))"></div>
+                <div class="ai-chart" data-ai-chart="@Json(new AiChart(L.T("Delivery days"), selectedBids.Select(b => b.Supplier).ToList(), selectedBids.Select(b => (decimal)b.DeliveryDays).ToList()))"></div>
+            </div>
+            <partial name="_AiTable" model="AiInsights.BidsTable(selectedBids)" />
+        }
+    }
+</section>
+
+@* ------------------------------------------------ Charts *@
+<div class="ai-grid">
+    @foreach (var chart in charts)
+    {
+        <section class="surface dashboard-card ai-chart" data-ai-chart="@Json(chart with { Title = L.T(chart.Title) })"></section>
+    }
+</div>
+
+@* ------------------------------------------------ Tables *@
+<section class="surface dashboard-card ai-block">
+    <div class="card-heading"><div><h2>@L.T("Tenders table")</h2><p>@L.T("Bids, lowest, highest and average price for each tender.")</p></div></div>
+    <partial name="_AiTable" model="AiInsights.TendersTable(Model.Tenders)" />
+</section>
+<section class="surface dashboard-card ai-block">
+    <div class="card-heading"><div><h2>@L.T("Suppliers table")</h2><p>@L.T("How often each supplier participates and wins.")</p></div></div>
+    <partial name="_AiTable" model="AiInsights.SuppliersTable(Model)" />
+</section>
+
+@* ------------------------------------------------ Recommendations *@
+<section class="surface dashboard-card ai-block">
+    <div class="card-heading"><div><h2>@L.T("AI recommendations")</h2><p>@L.T("Advice only. The AI does not take any decision or action on your behalf.")</p></div></div>
+    <ul class="ai-recommendations">
+        @foreach (var r in AiInsights.Recommendations(Model)) { <li>@r</li> }
+    </ul>
+</section>

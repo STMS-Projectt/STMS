@@ -19,6 +19,7 @@
                 <partial name="_Icon" model="icon" /> @L.T(label)
             </a>
         }
+        <a class="side-link @(controller == "AiIntelligence" ? "is-current" : "")" aria-current="@(controller == "AiIntelligence" ? "page" : null)" asp-controller="AiIntelligence" asp-action="Index" asp-route-id=""><partial name="_Icon" model='@("chart")' /> @L.T("AI Intelligence")</a>
     </nav>
     <div class="side-bottom"><partial name="_LoginPartial" /></div>
 </aside>

@@ -1754,3 +1754,63 @@ Development team|فريق التطوير
 Enable JavaScript to explore the development team.|فعّل JavaScript لعرض صفحة فريق التطوير.
 Cancelled by {0}|ألغاه {0}
 Reason: {0}|السبب: {0}
+AI Intelligence|الذكاء الاصطناعي
+AI INTELLIGENCE|الذكاء الاصطناعي
+Interactive analysis of tenders, bids and suppliers, built on the real system data you are allowed to see.|تحليل تفاعلي للمناقصات والعروض والموردين، مبني على بيانات النظام الفعلية المسموح لك برؤيتها.
+Ask the AI|اسأل الذكاء الاصطناعي
+AI assistant|المساعد الذكي
+Key performance indicators|مؤشرات الأداء
+Live from the system|مباشرة من النظام
+Tender analysis report|تقرير تحليل المناقصة
+Choose any tender to see its visual report.|اختر أي مناقصة لعرض تقريرها التحليلي.
+Choose a tender|اختر مناقصة
+All tenders (overview)|كل المناقصات (نظرة عامة)
+Lowest price|أقل سعر
+Highest price|أعلى سعر
+Lowest|الأقل
+Highest|الأعلى
+Average|المتوسط
+Winner|الفائز
+Days from creation to award|الأيام من الإنشاء حتى الترسية
+No bids are visible for this tender. Bid prices stay sealed while the tender is open.|لا توجد عروض ظاهرة لهذه المناقصة. تبقى أسعار العروض مغلقة طالما المناقصة مفتوحة.
+Bid prices|أسعار العروض
+Delivery days|أيام التوريد
+Tenders table|جدول المناقصات
+Bids, lowest, highest and average price for each tender.|عدد العروض وأقل وأعلى ومتوسط سعر لكل مناقصة.
+Suppliers table|جدول الموردين
+How often each supplier participates and wins.|عدد مشاركات وفوز كل مورد.
+AI recommendations|توصيات الذكاء الاصطناعي
+AI recommendations (advice only)|توصيات الذكاء الاصطناعي (للاستشارة فقط)
+Advice only. The AI does not take any decision or action on your behalf.|للاستشارة فقط. لا يتخذ الذكاء الاصطناعي أي قرار أو إجراء نيابة عنك.
+No data yet.|لا توجد بيانات بعد.
+Open tenders|المناقصات المفتوحة
+Awarded tenders|المناقصات المرساة
+Total bids|إجمالي العروض
+Participating suppliers|الموردون المشاركون
+Average bids per tender|متوسط العروض لكل مناقصة
+Average days from tender creation to award|متوسط الأيام من إنشاء المناقصة حتى الترسية
+Bids per tender|العروض لكل مناقصة
+Supplier participation (number of bids)|مشاركة الموردين (عدد العروض)
+New tenders per month|المناقصات الجديدة شهرياً
+Validity (days)|الصلاحية (أيام)
+Result|النتيجة
+Wins|مرات الفوز
+Lowest offers|أقل العروض
+Average delivery (days)|متوسط التوريد (أيام)
+Hi! Ask me about tenders, bids and suppliers. I can also read an Excel or PDF file.|مرحباً! اسألني عن المناقصات والعروض والموردين. يمكنني أيضاً قراءة ملف Excel أو PDF.
+Compare the tenders|قارن المناقصات
+Who offered the lowest prices?|من قدّم أقل الأسعار؟
+Who offered the highest prices?|من قدّم أعلى الأسعار؟
+Supplier participation|مشاركة الموردين
+Give me recommendations|أعطني توصيات
+Attach Excel or PDF|إرفاق ملف Excel أو PDF
+Ask a question, e.g. tender #5|اكتب سؤالك، مثلاً مناقصة 5
+Send|إرسال
+Thinking…|جاري التفكير…
+Sorry, something went wrong. Please try again.|عذراً، حدث خطأ. حاول مرة أخرى.
+Download as Excel|تنزيل Excel
+Please write a question or attach a file.|اكتب سؤالاً أو أرفق ملفاً.
+Only Excel (.xlsx, .csv) and PDF files are supported.|يُسمح فقط بملفات Excel (.xlsx, .csv) و PDF.
+Rows|الصفوف
+Columns|الأعمدة
+Text|النص

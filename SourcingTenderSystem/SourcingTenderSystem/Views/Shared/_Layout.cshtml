@@ -63,6 +63,7 @@
     <link rel="stylesheet" href="~/css/stms-design.css" asp-append-version="true">
     <link rel="stylesheet" href="~/css/workspace-polish.css" asp-append-version="true">
     <link rel="stylesheet" href="~/css/display-preferences.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/ai-intelligence.css" asp-append-version="true">
 </head>
 }
 
@@ -206,6 +207,12 @@
             @if (workspace) { <script src="~/js/stms-shell.js" asp-append-version="true" defer></script> }
             <script src="~/js/workspace.js" asp-append-version="true" defer></script>
             <script src="~/js/evaluation-weights.js" asp-append-version="true" defer></script>
+        }
+        @if (admin || sourcing || department || committee)
+        {
+            @* AI chatbot for employees only (suppliers never get it) *@
+            <partial name="_AiChat" />
+            <script src="~/js/ai-intelligence.js" asp-append-version="true" defer></script>
         }
     }
     <div data-page-scripts hidden>@await RenderSectionAsync("Scripts", required: false)</div>

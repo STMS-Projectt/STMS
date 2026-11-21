@@ -1,0 +1,31 @@
+@* AI chatbot: a floating button on every employee page (never shown to suppliers). *@
+<button type="button" class="ai-chat-button" data-ai-chat-open aria-label="@L.T("Ask the AI")" title="@L.T("Ask the AI")">AI</button>
+
+<section class="ai-chat" data-ai-chat hidden aria-label="@L.T("AI assistant")">
+    <header>
+        <strong>@L.T("AI assistant")</strong>
+        <button type="button" class="btn-close" data-ai-chat-close aria-label="@L.T("Close")"></button>
+    </header>
+
+    <div class="ai-chat-messages" data-ai-messages>
+        <div class="ai-msg ai-msg-bot">
+            @L.T("Hi! Ask me about tenders, bids and suppliers. I can also read an Excel or PDF file.")
+        </div>
+        <div class="ai-suggestions">
+            @foreach (var s in new[] { "Compare the tenders", "Who offered the lowest prices?", "Who offered the highest prices?", "Supplier participation", "Tender status", "Give me recommendations" })
+            {
+                <button type="button" data-ai-suggestion>@L.T(s)</button>
+            }
+        </div>
+    </div>
+
+    <form data-ai-form asp-controller="AiIntelligence" asp-action="Ask" method="post" enctype="multipart/form-data">
+        <label class="ai-file" title="@L.T("Attach Excel or PDF")">
+            <partial name="_Icon" model='@("upload")' />
+            <input type="file" name="file" accept=".xlsx,.csv,.pdf" hidden data-ai-file>
+        </label>
+        <input type="text" name="question" class="form-control" autocomplete="off" placeholder="@L.T("Ask a question, e.g. tender #5")" data-ai-question>
+        <button type="submit" class="btn btn-primary">@L.T("Send")</button>
+    </form>
+    <small class="ai-file-name" data-ai-file-name></small>
+</section>

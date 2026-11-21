@@ -1,0 +1,19 @@
+@model SourcingTenderSystem.Services.AiTable
+@if (Model.Rows.Count == 0)
+{
+    <p class="ai-empty">@L.T("No data yet.")</p>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-sm align-middle ai-table">
+            <thead><tr>@foreach (var c in Model.Columns) { <th>@L.T(c)</th> }</tr></thead>
+            <tbody>
+                @foreach (var row in Model.Rows)
+                {
+                    <tr>@foreach (var cell in row) { <td>@L.T(cell)</td> }</tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
