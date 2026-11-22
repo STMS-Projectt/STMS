@@ -648,3 +648,11 @@
 .ac-actions { display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
 .ac-actions .btn { min-height: 46px; border-radius: 13px; font-weight: 700; padding-inline: 20px; }
 .ac-actions .pr-submit:disabled { opacity: .5; box-shadow: none; }
+
+/* Gradient heroes inside the workspace dialog (the dialog's own light header style must not win) */
+#workspace-dialog .pr-hero,
+:is(.sourcing-workspace, .supplier-workspace, .committee-workspace) #workspace-dialog .stms-hero {
+    background: radial-gradient(circle at 85% 20%, #39d5bd55, transparent 45%), linear-gradient(135deg, #065b53, #0b8a7c 60%, #19a891); border: 0; color: #fff;
+}
+#workspace-dialog .pr-hero { margin-top: 0; padding: 20px 22px; }
+#workspace-dialog .pr-hero h1 { font-size: 1.5rem; }
