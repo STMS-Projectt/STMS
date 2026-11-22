@@ -97,6 +97,10 @@ public class PurchaseRequisitionsController : RequisitionBaseController
         if (!HasDepartment(employee)) return Forbid();
         ValidateDate(input);
         await ValidateCategory(input);
+        if (input.Items.Count == 0)
+            ModelState.AddModelError(nameof(input.Items), "Add at least one item.");
+        if (input.Items.Count > 100)
+            ModelState.AddModelError(nameof(input.Items), "A request can have at most 100 items.");
         if (!ModelState.IsValid) return await CategoryForm("Create", input);
 
         // نحفظ الطلب وسجل إنشائه معًا؛ إذا فشل أحدهما لا نعتمد أيًا منهما.
@@ -111,9 +115,19 @@ public class PurchaseRequisitionsController : RequisitionBaseController
         Db.PurchaseRequisitions.Add(request);
         await Db.SaveChangesAsync();
         Log(request, employee, "Created");
+        // The item lines typed on the same page
+        foreach (var line in input.Items)
+        {
+            Db.PurchaseRequisitionItems.Add(new PurchaseRequisitionItem
+            {
+                PurchaseRequisitionId = request.Id, ItemName = line.ItemName.Trim(), Quantity = line.Quantity,
+                Unit = line.Unit.Trim(), Specifications = line.Specifications.Trim()
+            });
+            Log(request, employee, "Item added", line.ItemName.Trim());
+        }
         await Db.SaveChangesAsync();
         await transaction.CommitAsync();
-        TempData["Message"] = "Draft created. Add items, then submit it for review.";
+        TempData["Message"] = "Draft created. Review it, then submit it for review.";
         return RedirectToAction(nameof(Details), new { id = request.Id });
     }
 

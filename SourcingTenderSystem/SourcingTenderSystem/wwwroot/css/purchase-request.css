@@ -80,3 +80,27 @@
     .pr-actions { flex-direction: column-reverse; }
     .pr-actions .btn { width: 100%; justify-content: center; }
 }
+
+/* Item lines */
+.pr-items-head { align-items: center; }
+.pr-items-head > div { flex: 1; }
+.pr-count { min-width: 34px; height: 34px; padding: 0 10px; display: grid; place-items: center; border-radius: 999px; background: var(--pr-soft); color: var(--pr-accent); font-weight: 750; }
+.pr-items { display: grid; gap: 14px; }
+.pr-item { position: relative; padding: 18px; border: 1.5px solid var(--pr-line); border-radius: 18px; background: light-dark(#fbfdfe, #17212c); transition: border-color .15s, box-shadow .15s; animation: pr-in .2s ease-out; }
+.pr-item:focus-within { border-color: color-mix(in srgb, var(--pr-accent) 55%, var(--pr-line)); box-shadow: 0 8px 22px light-dark(#08766c14, #00000040); }
+.pr-item-top { display: grid; grid-template-columns: auto minmax(0, 1fr) 120px 140px auto; gap: 12px; align-items: end; margin-bottom: 12px; }
+.pr-item-top .pr-field { margin-bottom: 0; }
+.pr-item-no { align-self: center; margin-top: 26px; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 10px; background: var(--pr-accent); color: #fff; font-weight: 750; font-size: .85rem; }
+.pr-create .pr-item-specs { min-height: 72px; }
+.pr-item-remove { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 13px; border: 1.5px solid var(--pr-line); background: transparent; color: light-dark(#b42318, #ff8a80); transition: all .15s; }
+.pr-item-remove:hover:not(:disabled) { background: light-dark(#fdecea, #3a1d1d); border-color: light-dark(#f3b4ad, #7a2e2e); }
+.pr-item-remove:disabled { opacity: .35; cursor: not-allowed; }
+.pr-add-item { margin-top: 14px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 52px; border-radius: 16px;
+    border: 2px dashed color-mix(in srgb, var(--pr-accent) 45%, var(--pr-line)); background: var(--pr-soft); color: var(--pr-accent); font-weight: 700; transition: all .15s; }
+.pr-add-item:hover { background: color-mix(in srgb, var(--pr-accent) 14%, var(--pr-card)); border-style: solid; }
+@keyframes pr-in { from { opacity: 0; transform: translateY(6px); } }
+@media (max-width: 900px) {
+    .pr-item-top { grid-template-columns: auto 1fr auto; }
+    .pr-item-qty, .pr-item-unit { grid-column: span 1; }
+    .pr-item-top .pr-item-qty { grid-column: 2; } .pr-item-top .pr-item-unit { grid-column: 2; }
+}

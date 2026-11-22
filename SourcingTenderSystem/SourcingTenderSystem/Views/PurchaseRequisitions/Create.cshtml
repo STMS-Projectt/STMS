@@ -3,6 +3,8 @@
     ViewData["Title"] = L.T("New purchase request");
     var categories = (IEnumerable<Category>)ViewBag.Categories;
     var priorities = new[] { ("Low", "low"), ("Normal", "normal"), ("High", "high"), ("Urgent", "urgent") };
+    var items = Model.Items.Count > 0 ? Model.Items : new List<RequisitionItemInput> { new() };
+    var units = new[] { "Piece", "Box", "Set", "Kg", "Liter", "Meter", "License", "Service" };
 }
 <div class="pr-create">
 <a class="back-link" asp-controller="PurchaseRequisitions" asp-action="MyRequests"><partial name="_Icon" model='@("back")' /> @L.T("My Requests")</a>
@@ -16,7 +18,7 @@
     </div>
     <ol class="pr-steps" aria-label="@L.T("Draft workflow")">
         <li class="is-active"><span>1</span>@L.T("Request details")</li>
-        <li><span>2</span>@L.T("Add items")</li>
+        <li class="is-active"><span>2</span>@L.T("Add items")</li>
         <li><span>3</span>@L.T("Submit for review")</li>
     </ol>
 </header>
@@ -73,6 +75,46 @@
             </div>
         </section>
 
+        @* ---------- 3. Items ---------- *@
+        <section class="pr-section">
+            <div class="pr-section-head pr-items-head">
+                <span class="pr-badge"><partial name="_Icon" model='@("briefcase")' /></span>
+                <div><h2>@L.T("Requested items")</h2><p>@L.T("Add one line per item with its quantity and specifications.")</p></div>
+                <span class="pr-count" data-pr-count>@items.Count</span>
+            </div>
+            <span asp-validation-for="Items" class="text-danger d-block mb-2"></span>
+            <datalist id="pr-units">@foreach (var unit in units) { <option value="@unit"></option> }</datalist>
+
+            <div class="pr-items" data-pr-items>
+                @for (var i = 0; i < items.Count; i++)
+                {
+                    <div class="pr-item" data-pr-item>
+                        <div class="pr-item-top">
+                            <span class="pr-item-no" data-pr-no>@(i + 1)</span>
+                            <div class="pr-field pr-item-name">
+                                <label class="form-label" for="Items_@(i)__ItemName">@L.T("Item name")</label>
+                                <input class="form-control" id="Items_@(i)__ItemName" name="Items[@i].ItemName" value="@items[i].ItemName" maxlength="200" required placeholder="@L.T("e.g. Laptop")" />
+                            </div>
+                            <div class="pr-field pr-item-qty">
+                                <label class="form-label" for="Items_@(i)__Quantity">@L.T("Quantity")</label>
+                                <input class="form-control" type="number" id="Items_@(i)__Quantity" name="Items[@i].Quantity" value="@items[i].Quantity" min="1" max="1000000" required />
+                            </div>
+                            <div class="pr-field pr-item-unit">
+                                <label class="form-label" for="Items_@(i)__Unit">@L.T("Unit")</label>
+                                <input class="form-control" id="Items_@(i)__Unit" name="Items[@i].Unit" value="@items[i].Unit" list="pr-units" maxlength="50" required />
+                            </div>
+                            <button type="button" class="pr-item-remove" data-pr-remove aria-label="@L.T("Remove item")" title="@L.T("Remove item")"><partial name="_Icon" model='@("trash")' /></button>
+                        </div>
+                        <div class="pr-field">
+                            <label class="form-label" for="Items_@(i)__Specifications">@L.T("Specifications")</label>
+                            <textarea class="form-control pr-item-specs" id="Items_@(i)__Specifications" name="Items[@i].Specifications" rows="2" maxlength="2000" required placeholder="@L.T("Model, size, brand or any detail the supplier needs.")">@items[i].Specifications</textarea>
+                        </div>
+                    </div>
+                }
+            </div>
+            <button type="button" class="pr-add-item" data-pr-add><partial name="_Icon" model='@("plus")' /> @L.T("Add another item")</button>
+        </section>
+
         <div class="pr-actions">
             <a class="btn btn-outline-secondary" asp-controller="PurchaseRequisitions" asp-action="MyRequests">@L.T("Cancel")</a>
             <button class="btn btn-primary pr-submit" type="submit"><partial name="_Icon" model='@("check")' /> @L.T("Save draft")</button>
@@ -103,5 +145,42 @@
             const update = () => counter.textContent = box.value.length + ' / ' + box.maxLength;
             box.addEventListener('input', update); update();
         });
+
+        // Add / remove item rows. Field names are renumbered (Items[0], Items[1] ...) so the server binds them in order.
+        (() => {
+            const list = document.querySelector('[data-pr-items]');
+            if (!list) return;
+            const count = document.querySelector('[data-pr-count]');
+            const renumber = () => {
+                const rows = list.querySelectorAll('[data-pr-item]');
+                rows.forEach((row, i) => {
+                    row.querySelector('[data-pr-no]').textContent = i + 1;
+                    row.querySelectorAll('[name^="Items["]').forEach(field => {
+                        const prop = field.name.split('.').pop();
+                        field.name = `Items[${i}].${prop}`;
+                        field.id = `Items_${i}__${prop}`;
+                        const label = field.closest('.pr-field')?.querySelector('label');
+                        if (label) label.htmlFor = field.id;
+                    });
+                    row.querySelector('[data-pr-remove]').disabled = rows.length === 1;
+                });
+                count.textContent = rows.length;
+            };
+            document.querySelector('[data-pr-add]').addEventListener('click', () => {
+                const copy = list.querySelector('[data-pr-item]').cloneNode(true);
+                copy.querySelectorAll('input, textarea').forEach(f => f.value = f.name.endsWith('Quantity') ? '1' : f.name.endsWith('Unit') ? 'Piece' : '');
+                copy.querySelectorAll('.input-validation-error').forEach(e => e.classList.remove('input-validation-error'));
+                list.appendChild(copy);
+                renumber();
+                copy.querySelector('input').focus();
+            });
+            list.addEventListener('click', e => {
+                const remove = e.target.closest('[data-pr-remove]');
+                if (!remove || list.querySelectorAll('[data-pr-item]').length === 1) return;
+                remove.closest('[data-pr-item]').remove();
+                renumber();
+            });
+            renumber();
+        })();
     </script>
 }

@@ -2035,3 +2035,10 @@ How urgent is it and when do you need it?|ما مدى الاستعجال ومت�
 Use a short, specific title.|استخدم عنواناً قصيراً ومحدداً.
 Explain the business need in the reason.|اشرح حاجة العمل في خانة السبب.
 Choose Urgent only for critical needs.|اختر "عاجل" للاحتياجات الحرجة فقط.
+Add one line per item with its quantity and specifications.|أضف سطراً لكل بند مع الكمية والمواصفات.
+e.g. Laptop|مثال: لابتوب
+Model, size, brand or any detail the supplier needs.|الموديل أو الحجم أو الماركة أو أي تفصيل يحتاجه المورد.
+Add another item|إضافة بند آخر
+Add at least one item.|أضف بنداً واحداً على الأقل.
+A request can have at most 100 items.|يمكن أن يحتوي الطلب على 100 بند كحد أقصى.
+Draft created. Review it, then submit it for review.|تم إنشاء المسودة. راجعها ثم أرسلها للمراجعة.

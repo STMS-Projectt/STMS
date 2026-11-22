@@ -18,6 +18,9 @@ public class RequisitionInput
 
     [Required, DataType(DataType.Date), Display(Name = "Target date")]
     public DateTime? TargetDate { get; set; } = DateTime.Today.AddDays(7);
+
+    // Item lines entered on the New request page (saved together with the request).
+    public List<RequisitionItemInput> Items { get; set; } = new();
 }
 
 // بيانات عنصر واحد داخل الطلب.
