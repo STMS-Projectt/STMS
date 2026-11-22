@@ -444,10 +444,10 @@ public sealed class EvaluationWorkflowController(ApplicationDbContext db, Suppli
             winner.TotalPrice, winner.TaxAmount, winner.TotalWithTax, winner.Currency, winner.DeliveryDays,
             winner.LegalWarrantyMonths, winner.BankName,
             winner.BankGuaranteeAmount, winner.BankGuaranteeExpiry,
-            Url.Action(nameof(Details), "EvaluationWorkflow", new { id = tender.Id }, Request.Scheme)!,
+            PublicBaseUrl() + Url.Action(nameof(Details), "EvaluationWorkflow", new { id = tender.Id }),
             winner.HasBankGuarantee ? PublicBaseUrl() + Url.Action("Index", "GuaranteeVerify",
                 new { code = winner.GuaranteeVerificationCode.ToString("N") }) : null,
-            Url.Action("Upload", "BidDocuments", new { bidId = winner.Id }, Request.Scheme)!,
+            PublicBaseUrl() + Url.Action("Upload", "BidDocuments", new { bidId = winner.Id }),
             // The warranty / guarantee documents already uploaded are attached to the winner's e-mail
             winner.BidDocuments.Where(d => BidDocument.AfterAwardTypes.Contains(d.DocumentType))
                 .Select(d => Path.Combine(guaranteeFolder, Path.GetFileName(d.FilePath))).ToList());
