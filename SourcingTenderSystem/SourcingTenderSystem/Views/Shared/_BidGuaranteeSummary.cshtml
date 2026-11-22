@@ -16,44 +16,61 @@
     }
     var warrantyFile = Model.BidDocuments.LastOrDefault(d => d.DocumentType == BidDocument.LegalWarranty);
     var guaranteeFile = Model.BidDocuments.LastOrDefault(d => d.DocumentType == BidDocument.BankGuarantee);
+    var daysLeft = Model.BankGuaranteeExpiry is DateTime exp ? (exp.Date - DateTime.UtcNow.Date).Days : (int?)null;
 }
-<section class="pr-create pr-card prd-card record-section bg-sum">
-    <div class="prd-card-head">
-        <div class="pr-section-head mb-0"><span class="pr-badge"><partial name="_Icon" model='@("shield")' /></span><div><h2>@L.T("Cost, warranty and bank guarantee")</h2></div></div>
+<section class="pr-create record-section cw">
+    <div class="cw-head">
+        <span class="cw-icon"><partial name="_Icon" model='@("shield")' /></span>
+        <div><h2>@L.T("Cost, warranty and bank guarantee")</h2><p>@L.T("Final cost including tax, and the guarantees attached to this bid.")</p></div>
     </div>
-    <div class="bg-cost">
-        <div><span>@L.T("Price before tax")</span><strong>@Model.TotalPrice.ToString("N2") <small>@Model.Currency</small></strong></div>
-        <i aria-hidden="true">+</i>
-        <div><span>@L.T("Sales tax (16%)")</span><strong>@(Model.IncludesSalesTax ? Model.TaxAmount.ToString("N2") : "0.00") <small>@(Model.IncludesSalesTax ? Model.Currency : L.T("Not added"))</small></strong></div>
-        <i aria-hidden="true">=</i>
-        <div class="bg-final"><span>@L.T("Final cost")</span><strong>@Model.TotalWithTax.ToString("N2") <small>@Model.Currency</small></strong></div>
+
+    @* ---------- Cost receipt ---------- *@
+    <div class="cw-receipt">
+        <div class="cw-line"><span>@L.T("Price before tax")</span><i></i><strong>@Model.TotalPrice.ToString("N2") <small>@Model.Currency</small></strong></div>
+        <div class="cw-line"><span>@L.T("Sales tax (16%)")</span><i></i><strong>@(Model.IncludesSalesTax ? "+ " + Model.TaxAmount.ToString("N2") : L.T("Not added")) @if (Model.IncludesSalesTax) { <small>@Model.Currency</small> }</strong></div>
+        <div class="cw-total"><span>@L.T("Final cost")</span><strong>@Model.TotalWithTax.ToString("N2") <small>@Model.Currency</small></strong></div>
     </div>
-    <div class="bg-two">
-        <div class="bg-box">
-            <h3><partial name="_Icon" model='@("file")' /> @L.T("Legal warranty")</h3>
-            <strong>@(Model.LegalWarrantyMonths is int months ? L.F("{0} months", months) : L.T("Not provided"))</strong>
-            @if (warrantyFile != null) { <a class="bg-file" asp-controller="BidDocuments" asp-action="Download" asp-route-id="@warrantyFile.Id" asp-route-preview="true" target="_blank" rel="noopener"><partial name="_Icon" model='@("eye")' /> @L.T("View warranty file")</a> }
-        </div>
-        <div class="bg-box">
-            <h3><partial name="_Icon" model='@("shield")' /> @L.T("Bank guarantee")</h3>
+
+    @* ---------- Warranty + guarantee ---------- *@
+    <div class="cw-cards">
+        <article class="cw-card cw-warranty">
+            <header><span class="cw-card-icon"><partial name="_Icon" model='@("file")' /></span><h3>@L.T("Legal warranty")</h3>
+                <span class="cw-badge @(Model.LegalWarrantyMonths != null ? "is-ok" : "is-missing")">@(Model.LegalWarrantyMonths != null ? L.T("Provided") : L.T("Not provided"))</span></header>
+            <p class="cw-value">@(Model.LegalWarrantyMonths is int months ? L.F("{0} months", months) : "—")</p>
+            @if (warrantyFile != null) { <a class="cw-file" asp-controller="BidDocuments" asp-action="Download" asp-route-id="@warrantyFile.Id" asp-route-preview="true" target="_blank" rel="noopener"><span class="cw-pdf">PDF</span><span>@L.T("View warranty file")<small>@warrantyFile.FileName</small></span></a> }
+            else { <p class="cw-empty">@L.T("No warranty file uploaded.")</p> }
+        </article>
+        <article class="cw-card cw-guarantee">
+            <header><span class="cw-card-icon"><partial name="_Icon" model='@("shield")' /></span><h3>@L.T("Bank guarantee")</h3>
+                @if (Model.HasBankGuarantee)
+                {
+                    <span class="cw-badge @(daysLeft >= 0 ? "is-ok" : "is-late")">@(daysLeft >= 0 ? L.F("{0} days left", daysLeft!) : L.T("Expired"))</span>
+                }
+                else { <span class="cw-badge is-missing">@L.T("Not provided")</span> }
+            </header>
             @if (Model.HasBankGuarantee)
             {
-                <strong>@Model.BankName</strong>
-                <p>@Model.BankGuaranteeAmount?.ToString("N2") @Model.Currency · @L.F("valid until {0}", Model.BankGuaranteeExpiry?.ToString("yyyy-MM-dd"))</p>
+                <p class="cw-value">@Model.BankName</p>
+                <dl class="cw-facts">
+                    <div><dt>@L.T("Amount")</dt><dd>@Model.BankGuaranteeAmount?.ToString("N2") @Model.Currency</dd></div>
+                    <div><dt>@L.T("Expiry date")</dt><dd>@Model.BankGuaranteeExpiry?.ToString("dd MMM yyyy", L.DisplayCulture)</dd></div>
+                </dl>
             }
-            else { <strong>@L.T("Not provided")</strong> }
-            @if (guaranteeFile != null) { <a class="bg-file" asp-controller="BidDocuments" asp-action="Download" asp-route-id="@guaranteeFile.Id" asp-route-preview="true" target="_blank" rel="noopener"><partial name="_Icon" model='@("eye")' /> @L.T("View guarantee file")</a> }
-        </div>
+            else { <p class="cw-value">—</p> }
+            @if (guaranteeFile != null) { <a class="cw-file" asp-controller="BidDocuments" asp-action="Download" asp-route-id="@guaranteeFile.Id" asp-route-preview="true" target="_blank" rel="noopener"><span class="cw-pdf">PDF</span><span>@L.T("View guarantee file")<small>@guaranteeFile.FileName</small></span></a> }
+        </article>
     </div>
+
     @if (qrImage != null)
     {
-        <div class="bg-qr">
-            <img width="112" height="112" src="data:image/png;base64,@qrImage" alt="@L.T("QR code to verify the bank guarantee")" />
-            <div>
-                <p class="mb-1">@L.T("Scan to verify this bank guarantee on the e-guarantee verification page.")</p>
-                <p class="small mb-2">@L.T("Verification code"): <code>@Model.GuaranteeVerificationCode.ToString("N")</code></p>
-                <a class="btn tm-btn" href="@verifyLink" target="_blank" rel="noopener"><partial name="_Icon" model='@("shield")' /> @L.T("Open verification page")</a>
+        <div class="cw-verify">
+            <img width="104" height="104" src="data:image/png;base64,@qrImage" alt="@L.T("QR code to verify the bank guarantee")" />
+            <div class="cw-verify-body">
+                <h3>@L.T("Verify the bank guarantee")</h3>
+                <p>@L.T("Scan to verify this bank guarantee on the e-guarantee verification page.")</p>
+                <div class="cw-code"><span>@L.T("Verification code")</span><code>@Model.GuaranteeVerificationCode.ToString("N")</code></div>
             </div>
+            <a class="btn cw-verify-btn" href="@verifyLink" target="_blank" rel="noopener"><partial name="_Icon" model='@("shield")' /> @L.T("Open verification page")</a>
         </div>
     }
 </section>
