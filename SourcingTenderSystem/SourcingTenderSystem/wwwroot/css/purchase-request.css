@@ -296,3 +296,27 @@
 .rv-divider::before, .rv-divider::after { content: ""; flex: 1; height: 1px; background: var(--pr-line); }
 .rv-claim { width: 100%; border: 0; background: transparent; text-align: start; }
 .rv .prd-note h2 { font-size: .95rem; }
+
+/* ===== Modal (workspace dialog) polish ===== */
+#workspace-dialog { border: 0 !important; border-radius: 24px !important; box-shadow: 0 30px 80px #0b2b2a59, 0 0 0 1px light-dark(#ffffffcc, #ffffff14); }
+#workspace-dialog::backdrop { background: #08201eb3; backdrop-filter: blur(6px); }
+#workspace-dialog[open] { animation: stms-dialog-in .22s cubic-bezier(.2, .8, .2, 1); }
+@keyframes stms-dialog-in { from { opacity: 0; transform: translateY(14px) scale(.98); } }
+#workspace-dialog .workspace-dialog-bar { position: sticky; top: 0; z-index: 5; padding-block: 14px !important;
+    background: color-mix(in srgb, light-dark(#ffffff, #132e29) 88%, transparent) !important; backdrop-filter: blur(12px);
+    border-bottom: 1px solid light-dark(#e2eeeb, #2b4c45); }
+#workspace-dialog .workspace-dialog-bar::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 4px; background: linear-gradient(90deg, #065b53, #19a891, #39d5bd); }
+#workspace-dialog-title { font-size: 1.15rem !important; font-weight: 750; }
+#workspace-dialog .workspace-dialog-bar .icon-button { border-radius: 12px; transition: background .15s, color .15s, transform .15s; }
+#workspace-dialog .workspace-dialog-bar .icon-button:hover { background: light-dark(#fdecea, #3a1d1d); color: light-dark(#b42318, #ff8a80); border-color: transparent; transform: rotate(90deg); }
+#workspace-dialog [data-dialog-content] { background: light-dark(#f4f8f9, #142226) !important; }
+#workspace-dialog { scrollbar-width: thin; scrollbar-color: #9dcbbe transparent; }
+
+/* Inside the modal the bar already shows the title and a close button */
+#workspace-dialog .pr-create > .back-link { display: none; }
+#workspace-dialog .pr-hero h1 { display: none; }
+#workspace-dialog .pr-hero { border-radius: 18px; margin-bottom: 18px; box-shadow: 0 10px 24px #065b5326; }
+#workspace-dialog .pr-hero-icon { width: 48px; height: 48px; border-radius: 14px; }
+#workspace-dialog .prd-layout { gap: 16px; }
+#workspace-dialog .prd-main, #workspace-dialog .prd-side { gap: 16px; }
+#workspace-dialog .prd-side { top: 84px; }
