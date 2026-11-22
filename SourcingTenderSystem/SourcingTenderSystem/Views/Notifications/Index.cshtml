@@ -1,6 +1,13 @@
 @model IReadOnlyList<Notification>
 @{ ViewData["Title"] = L.T("Notifications"); }
-<header class="page-heading stms-hero"><div><p class="eyebrow">@L.T("YOUR WORKSPACE")</p><h1>@L.T("Notifications")</h1><p>@L.T("New clarification requests, responses, and workflow updates.")</p></div></header>
+@{ var unread = Model.Count(n => !n.IsRead); }
+<header class="pr-hero cl-hero">
+    <span class="pr-hero-icon"><partial name="_Icon" model='@("inbox")' /></span>
+    <div><p class="eyebrow">@L.T("YOUR WORKSPACE")</p><h1>@L.T("Notifications")</h1><p>@L.T("New clarification requests, responses, and workflow updates.")</p></div>
+    <div class="cl-hero-side">
+        <div class="cl-hero-total"><strong>@unread</strong><span>@L.T("Unread")</span></div>
+    </div>
+</header>
 @if (Model.Count == 0) { <section class="surface empty-state"><h2>@L.T("No notifications yet")</h2></section> }
 else
 {
