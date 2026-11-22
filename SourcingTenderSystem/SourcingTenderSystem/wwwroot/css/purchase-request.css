@@ -222,3 +222,22 @@
 .cl-hero .btn-outline-secondary { color: #fff; border-color: #ffffff66; background: transparent; }
 .cl-hero .btn-outline-secondary:hover { background: #ffffff22; color: #fff; }
 @media (max-width: 700px) { .cl-hero { grid-template-columns: 1fr; } .cl-hero-side { align-items: flex-start; } }
+
+/* Details page: adapt to the width it really has (full page or inside a dialog) */
+.prd { container-type: inline-size; }
+.prd-stats { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+.prd-stat strong { white-space: nowrap; }
+@container (max-width: 1050px) {
+    .prd-layout { grid-template-columns: 1fr; }
+    .prd-side { position: static; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); align-items: start; }
+}
+@container (max-width: 640px) {
+    .prd-hero { grid-template-columns: 1fr; }
+    .prd-track li { font-size: 0; }
+    .prd-track li > span { font-size: .8rem; }
+    .prd-item { grid-template-columns: auto 1fr; }
+    .prd-qty, .prd-item .record-action { grid-column: 2; justify-self: start; }
+}
+.prd-card-head .pr-section-head { align-items: center; }
+.prd-stat small { color: light-dark(#08766c, #5eead4); }
+.pr-create .pr-badge { color: light-dark(#08766c, #5eead4); }
