@@ -263,3 +263,36 @@
 .sourcing-workspace .stms-hero :is(.btn-outline-secondary, .btn-outline-primary, .btn-light):hover { background: #ffffff26; color: #fff; }
 .sourcing-workspace .stms-hero .status-pill, .sourcing-workspace .stms-hero .badge { background: #fff; color: #065b53; box-shadow: 0 6px 16px #0000001f; }
 .sourcing-workspace .stms-hero .icon-tile { background: #ffffff22; color: #fff; }
+
+/* Gradient heroes inside the workspace dialog (the dialog's own light header style must not win) */
+#workspace-dialog .pr-hero, .sourcing-workspace #workspace-dialog .stms-hero {
+    background: radial-gradient(circle at 85% 20%, #39d5bd55, transparent 45%), linear-gradient(135deg, #065b53, #0b8a7c 60%, #19a891); border: 0; color: #fff;
+}
+#workspace-dialog .pr-hero { margin-top: 0; padding: 20px 22px; }
+#workspace-dialog .pr-hero h1 { font-size: 1.5rem; }
+
+/* ===== Sourcing: review a purchase request (RequisitionReviews/Details) ===== */
+.rv .pr-count { margin-inline-start: auto; }
+.rv-reviewer { white-space: normal !important; font-size: 1rem !important; }
+.rv-item { grid-template-columns: auto minmax(0, 1fr) auto; }
+.rv-decision { padding: 22px; border-radius: 22px; border: 1px solid color-mix(in srgb, var(--pr-accent) 35%, var(--pr-line));
+    background: linear-gradient(170deg, var(--pr-soft), var(--pr-card) 55%); box-shadow: var(--shadow); }
+.rv-decision .pr-section-head { margin-bottom: 16px; }
+.rv-decision .form-label { font-weight: 650; font-size: .9rem; }
+.rv-decision textarea.form-control { min-height: 110px; }
+.rv-hint { margin: 8px 0 16px; font-size: .82rem; color: var(--muted); }
+.rv-actions { display: grid; gap: 10px; }
+.rv-actions .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; border-radius: 13px; font-weight: 700; white-space: normal; transition: transform .15s, box-shadow .15s, background .15s; }
+.rv-actions .btn:hover { transform: translateY(-1px); }
+.rv-main { box-shadow: 0 10px 22px #08766c38; }
+.rv-approve { border: 1.5px solid #10b981; color: light-dark(#047857, #6ee7b7); background: light-dark(#ecfdf5, #0f2a22); }
+.rv-approve:hover { background: light-dark(#d1fae5, #13372c); color: light-dark(#065f46, #a7f3d0); }
+.rv-actions-2 { grid-template-columns: 1fr 1fr; }
+.rv-return { border: 1.5px solid var(--pr-line); color: var(--ink); background: var(--pr-card); }
+.rv-return:hover { border-color: #f59e0b; background: light-dark(#fffbeb, #2b2410); color: light-dark(#b45309, #fbbf24); }
+.rv-reject { border: 1.5px solid light-dark(#fecaca, #7a2e2e); color: light-dark(#b42318, #ff8a80); background: var(--pr-card); }
+.rv-reject:hover { background: light-dark(#fef2f2, #3a1d1d); color: light-dark(#991b1b, #ffb4ab); border-color: #ef4444; }
+.rv-divider { display: flex; align-items: center; gap: 10px; margin: 16px 0 12px; color: var(--muted); font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; }
+.rv-divider::before, .rv-divider::after { content: ""; flex: 1; height: 1px; background: var(--pr-line); }
+.rv-claim { width: 100%; border: 0; background: transparent; text-align: start; }
+.rv .prd-note h2 { font-size: .95rem; }
