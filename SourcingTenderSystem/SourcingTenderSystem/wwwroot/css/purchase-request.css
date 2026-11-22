@@ -208,3 +208,17 @@
 .cm-actions { display: flex; gap: 6px; flex-wrap: wrap; }
 .btn.cm-review-btn { display: inline-flex; align-items: center; gap: 6px; border-radius: 12px; font-weight: 700; min-height: 40px; box-shadow: 0 8px 18px #08766c33; }
 @media (max-width: 700px) { .cm-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } .cm-grid { grid-template-columns: 1fr; } }
+
+/* ===== Clarifications hero (same style as the request pages) ===== */
+.cl-hero { grid-template-columns: auto 1fr auto; margin-top: 0; }
+.cl-hero-side { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: flex-end; gap: 12px; }
+.cl-hero-total { display: flex; align-items: baseline; gap: 8px; padding: 12px 20px; border-radius: 16px; background: #ffffff1c; border: 1px solid #ffffff2e; backdrop-filter: blur(4px); }
+.cl-hero-total strong { font-size: 2rem; line-height: 1; color: #fff; }
+.cl-hero-total span { color: #d3f4ee; font-weight: 600; }
+.cl-hero .button-row { margin: 0; display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+.cl-hero .btn { border-radius: 12px; font-weight: 650; display: inline-flex; align-items: center; gap: 6px; }
+.cl-hero .btn-primary { background: #fff; border-color: #fff; color: #065b53; }
+.cl-hero .btn-primary:hover { background: #e9f8f5; color: #065b53; }
+.cl-hero .btn-outline-secondary { color: #fff; border-color: #ffffff66; background: transparent; }
+.cl-hero .btn-outline-secondary:hover { background: #ffffff22; color: #fff; }
+@media (max-width: 700px) { .cl-hero { grid-template-columns: 1fr; } .cl-hero-side { align-items: flex-start; } }
