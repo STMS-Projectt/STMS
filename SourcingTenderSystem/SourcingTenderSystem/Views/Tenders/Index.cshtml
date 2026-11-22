@@ -9,6 +9,12 @@
 }
 
 @functions {
+    // Colour family of each tender status (cards)
+    static string Tone(string status) => status switch
+    {
+        "Draft" => "draft", "Open" or "Published" => "open", "Closed" => "closed",
+        "Awarded" => "done", "Cancelled" => "stop", _ => "review"
+    };
     static string BadgeClass(string status) => status switch
     {
         "Draft" => "bg-secondary",
@@ -24,65 +30,103 @@
     };
 }
 
-<header class="page-heading stms-hero">
+<div class="pr-create tm">
+<header class="pr-hero cl-hero tm-hero">
+    <span class="pr-hero-icon"><partial name="_Icon" model='@("briefcase")' /></span>
     <div><p class="eyebrow">@L.T("PROCUREMENT WORKSPACE")</p><h1>@L.T("Tender Management")</h1><p>@L.T("Track bidding, evaluation, and award decisions in one place.")</p></div>
-    <a data-workspace-dialog asp-action="Create" class="btn btn-primary"><span aria-hidden="true">+</span> @L.T("New Tender")</a>
+    <div class="cl-hero-side"><div class="button-row"><a data-workspace-dialog asp-action="Create" class="btn btn-primary"><partial name="_Icon" model='@("plus")' /> @L.T("New Tender")</a></div></div>
+    <div class="cm-stats">
+        @foreach (var (label, value, _, _) in metrics)
+        {
+            <div><strong>@value</strong><span>@L.T(label)</span></div>
+        }
+    </div>
 </header>
-<partial name="_DesignMetrics" model="metrics" />
 
 @if (TempData["Success"] is string successMessage)
 {
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        @successMessage
+    <div class="alert alert-success alert-dismissible fade show tm-alert" role="alert">
+        <partial name="_Icon" model='@("check")' /> @successMessage
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="@L.T("Close")"></button>
     </div>
 }
 @if (TempData["Error"] is string errorMessage)
 {
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        @errorMessage
+    <div class="alert alert-danger alert-dismissible fade show tm-alert" role="alert">
+        <partial name="_Icon" model='@("warning")' /> @errorMessage
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="@L.T("Close")"></button>
     </div>
 }
 
-<section class="surface directory dept-directory" data-directory>
-    <div class="dept-directory-heading"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("briefcase")' /></span><div><h2>@L.T("All tenders")</h2><p>@L.T("Set evaluation criteria on drafts or close bidding on an open tender from its card.")</p></div></div>
-    <partial name="_ListFilters" model='@("Search tenders", Model.Select(t => t.Status))' />
-    <partial name="_DirectoryPages" model='@("Tender pages")' />
-@if (!Model.Any()) { <div class="empty-state"><h2>@L.T("No tenders yet")</h2></div> }
+<section class="dept-directory cm-panel" data-directory>
+    <div class="cm-panel-head">
+        <div class="pr-section-head mb-0"><span class="pr-badge"><partial name="_Icon" model='@("briefcase")' /></span><div><h2>@L.T("All tenders")</h2><p>@L.T("Set evaluation criteria on drafts or close bidding on an open tender from its card.")</p></div></div>
+    </div>
+    <div class="cm-filters">
+        <partial name="_ListFilters" model='@("Search tenders", Model.Select(t => t.Status))' />
+        <partial name="_DirectoryPages" model='@("Tender pages")' />
+    </div>
+@if (!Model.Any()) { <div class="prd-empty"><span class="pr-badge"><partial name="_Icon" model='@("briefcase")' /></span><h3>@L.T("No tenders yet")</h3></div> }
 else
 {
-    <div class="record-list tender-register" data-record-list>
+    <div class="tm-list" data-record-list>
     @foreach (var t in Model)
     {
         var early = TenderRules.IsOpen(t, now);
         var canClose = early || t.Status is ("Open" or "Published") && t.CloseDate <= now;
-        <article class="record-card" data-record data-status="@t.Status">
-            <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("briefcase")' /></span><span>@t.Title<small>@L.F("Tender #{0}", t.Id) · @t.CreatedByEmployeeProfile.FullName · @t.CreatedAt.ToString("dd MMM yyyy", L.DisplayCulture)</small></span></div>
-            <dl class="record-facts"><div><dt>@L.T("Purchase request")</dt><dd>@t.PurchaseRequisition.Title</dd></div><div><dt>@L.T("Opens (UTC)")</dt><dd>@t.OpenDate.ToString("dd MMM yyyy HH:mm", L.DisplayCulture)</dd></div><div><dt>@L.T("Closes (UTC)")</dt><dd>@t.CloseDate.ToString("dd MMM yyyy HH:mm", L.DisplayCulture)</dd></div><div><dt>@L.T("Status")</dt><dd><span class="badge @BadgeClass(t.Status)">@L.T(t.Status)</span></dd></div></dl>
-            <div class="record-action">
-                <a class="record-icon-action" data-workspace-dialog="details" asp-action="Details" asp-route-id="@t.Id" asp-route-panel="overview" aria-label="@L.F("View tender {0}", t.Title)" data-tooltip="@L.T("Tender summary")"><partial name="_Icon" model='@("eye")' /></a>
-                <a class="record-icon-action" data-workspace-dialog="details" asp-action="Details" asp-route-id="@t.Id" asp-route-panel="rounds" aria-label="@L.F("Bidding rounds for {0}", t.Title)" data-tooltip="@L.T("Bidding rounds")"><partial name="_Icon" model='@("clock")' /></a>
-                <a class="record-icon-action" data-workspace-dialog="details" asp-action="Details" asp-route-id="@t.Id" asp-route-panel="qr" aria-label="@L.F("QR code for {0}", t.Title)" data-tooltip="@L.T("Tender QR code")"><partial name="_Icon" model='@("qr")' /></a>
-                @if (t.Status == "Draft")
-                {
-                    <a class="record-icon-action" data-workspace-dialog asp-action="Edit" asp-route-id="@t.Id" aria-label="@L.F("Edit tender {0}", t.Title)" data-tooltip="@L.T("Edit")"><partial name="_Icon" model='@("edit")' /></a>
-                    <form asp-action="Delete" asp-route-id="@t.Id" method="post" data-workspace-confirm="@L.T("Delete this tender? The purchase request will go back to Approved.")" onsubmit="return window.stmsWorkspaceReady || confirm(this.dataset.workspaceConfirm);">
-                        <button type="submit" class="record-icon-action record-icon-danger" aria-label="@L.F("Delete tender {0}", t.Title)" data-tooltip="@L.T("Delete")"><partial name="_Icon" model='@("close")' /></button>
-                    </form>
-                }
-                <a class="record-icon-action" data-workspace-dialog asp-controller="Invitations" asp-action="Index" asp-route-tenderId="@t.Id" aria-label="@L.F("Invitations for {0}", t.Title)" data-tooltip="@L.T("Invitations")"><partial name="_Icon" model='@("mail")' /></a>
-                @if (t.Status == "Closed")
-                {
-                    <a class="record-icon-action" data-workspace-dialog asp-action="AssignCommittee" asp-route-id="@t.Id" aria-label="@L.F("Assign committee for {0}", t.Title)" data-tooltip="@L.T("Assign committee")"><partial name="_Icon" model='@("users")' /></a>
-                }
+        // How far the bidding window has run (0-100%)
+        var total = (t.CloseDate - t.OpenDate).TotalMinutes;
+        var done = total <= 0 ? 100 : Math.Clamp((now - t.OpenDate).TotalMinutes / total * 100, 0, 100);
+        var left = t.CloseDate - now;
+        var tone = Tone(t.Status);
+        <article class="tm-card tm-@tone" data-record data-status="@t.Status">
+            <div class="tm-main">
+                <span class="tm-icon"><partial name="_Icon" model='@("briefcase")' /></span>
+                <div class="tm-title">
+                    <h3>@t.Title</h3>
+                    <small>@L.F("Tender #{0}", t.Id) · @t.CreatedByEmployeeProfile.FullName · @t.CreatedAt.ToString("dd MMM yyyy", L.DisplayCulture)</small>
+                </div>
+                <span class="tm-status"><i></i>@L.T(t.Status)</span>
             </div>
-            @if (t.Status == "Draft" || canClose)
-            {
-                <div class="tender-card-quick-actions">
+
+            <div class="tm-facts">
+                <div class="tm-fact"><span><partial name="_Icon" model='@("file")' /> @L.T("Purchase request")</span><strong>@t.PurchaseRequisition.Title</strong></div>
+                <div class="tm-window">
+                    <div class="tm-window-dates">
+                        <span><small>@L.T("Opens (UTC)")</small><strong>@t.OpenDate.ToString("dd MMM · HH:mm", L.DisplayCulture)</strong></span>
+                        <span class="text-end"><small>@L.T("Closes (UTC)")</small><strong>@t.CloseDate.ToString("dd MMM · HH:mm", L.DisplayCulture)</strong></span>
+                    </div>
+                    <div class="tm-bar" role="progressbar" aria-valuenow="@((int)done)" aria-valuemin="0" aria-valuemax="100"><i style="width:@((int)done)%"></i></div>
+                    <small class="tm-left">
+                        @if (now < t.OpenDate) { @L.T("Not open yet") }
+                        else if (left.TotalMinutes > 0 && t.Status is "Open" or "Published") { @(left.TotalDays >= 1 ? L.F("{0} days left", (int)left.TotalDays) : L.F("{0} hours left", Math.Max(1, (int)left.TotalHours))) }
+                        else { @L.T("Bidding window ended") }
+                    </small>
+                </div>
+            </div>
+
+            <div class="tm-foot">
+                <div class="record-action tm-actions">
+                    <a class="record-icon-action" data-workspace-dialog="details" asp-action="Details" asp-route-id="@t.Id" asp-route-panel="overview" aria-label="@L.F("View tender {0}", t.Title)" data-tooltip="@L.T("Tender summary")"><partial name="_Icon" model='@("eye")' /></a>
+                    <a class="record-icon-action" data-workspace-dialog="details" asp-action="Details" asp-route-id="@t.Id" asp-route-panel="rounds" aria-label="@L.F("Bidding rounds for {0}", t.Title)" data-tooltip="@L.T("Bidding rounds")"><partial name="_Icon" model='@("clock")' /></a>
+                    <a class="record-icon-action" data-workspace-dialog="details" asp-action="Details" asp-route-id="@t.Id" asp-route-panel="qr" aria-label="@L.F("QR code for {0}", t.Title)" data-tooltip="@L.T("Tender QR code")"><partial name="_Icon" model='@("qr")' /></a>
+                    <a class="record-icon-action" data-workspace-dialog asp-controller="Invitations" asp-action="Index" asp-route-tenderId="@t.Id" aria-label="@L.F("Invitations for {0}", t.Title)" data-tooltip="@L.T("Invitations")"><partial name="_Icon" model='@("mail")' /></a>
                     @if (t.Status == "Draft")
                     {
-                        <a class="btn btn-outline-secondary" data-workspace-dialog asp-action="Criteria" asp-route-id="@t.Id" aria-label="@L.F("Evaluation criteria for {0}", t.Title)"><partial name="_Icon" model='@("filter")' /> @L.T("Evaluation criteria")</a>
+                        <a class="record-icon-action" data-workspace-dialog asp-action="Edit" asp-route-id="@t.Id" aria-label="@L.F("Edit tender {0}", t.Title)" data-tooltip="@L.T("Edit")"><partial name="_Icon" model='@("edit")' /></a>
+                        <form asp-action="Delete" asp-route-id="@t.Id" method="post" data-workspace-confirm="@L.T("Delete this tender? The purchase request will go back to Approved.")" onsubmit="return window.stmsWorkspaceReady || confirm(this.dataset.workspaceConfirm);">
+                            <button type="submit" class="record-icon-action record-icon-danger" aria-label="@L.F("Delete tender {0}", t.Title)" data-tooltip="@L.T("Delete")"><partial name="_Icon" model='@("trash")' /></button>
+                        </form>
+                    }
+                </div>
+                <div class="tm-quick">
+                    @if (t.Status == "Closed")
+                    {
+                        <a class="btn tm-btn tm-btn-main" data-workspace-dialog asp-action="AssignCommittee" asp-route-id="@t.Id" aria-label="@L.F("Assign committee for {0}", t.Title)"><partial name="_Icon" model='@("users")' /> @L.T("Assign committee")</a>
+                    }
+                    @if (t.Status == "Draft")
+                    {
+                        <a class="btn tm-btn" data-workspace-dialog asp-action="Criteria" asp-route-id="@t.Id" aria-label="@L.F("Evaluation criteria for {0}", t.Title)"><partial name="_Icon" model='@("filter")' /> @L.T("Evaluation criteria")</a>
                     }
                     @if (canClose)
                     {
@@ -90,18 +134,18 @@ else
                               data-workspace-confirm="@(early ? $"Close bidding early for “{t.Title}”? This stops new submissions for the current round." : null)"
                               onsubmit="return !this.dataset.workspaceConfirm || window.stmsWorkspaceReady || confirm(this.dataset.workspaceConfirm);">
                             <input type="hidden" name="confirmClose" value="@(early ? "true" : "false")" />
-                            <button class="btn btn-outline-danger" type="submit" aria-label="@(early ? "Close bidding early for" : "Close bidding for") @t.Title"><partial name="_Icon" model='@("pause")' /> @(early ? "Close bidding early" : "Close bidding")</button>
+                            <button class="btn tm-btn tm-btn-danger" type="submit" aria-label="@(early ? "Close bidding early for" : "Close bidding for") @t.Title"><partial name="_Icon" model='@("pause")' /> @(early ? L.T("Close bidding early") : L.T("Close bidding"))</button>
                         </form>
                     }
                 </div>
-            }
+            </div>
         </article>
     }
     </div>
 }
 <partial name="_ListFilterEmpty" />
 </section>
-<div class="stms-page-panels">
+<div class="stms-page-panels tm-panels">
 <section class="surface dashboard-card">
     <div class="card-heading"><div><h2>@L.T("Procurement pipeline")</h2><p>@L.T("Where current tenders stand")</p></div></div>
     @foreach (var group in tenders.GroupBy(t => t.Status).OrderByDescending(g => g.Count()).ThenBy(g => g.Key))
@@ -127,4 +171,5 @@ else
         </div>
     }
 </section>
+</div>
 </div>
