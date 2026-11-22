@@ -2,64 +2,77 @@
 @{
     var currency = (ViewBag.Bid as Bid)?.Currency ?? Bid.JordanianDinar;
 }
-<p class="field-hint mb-3">@L.T("Currency"): <strong>@(currency == Bid.JordanianDinar ? L.T("Jordanian dinar (JOD)") : currency)</strong></p>
-<div class="mb-3">
-    <label asp-for="DeliveryDays" class="form-label"></label>
-    <input asp-for="DeliveryDays" class="form-control" />
-    <span asp-validation-for="DeliveryDays" class="text-danger"></span>
-</div>
-<div class="mb-3">
-    <label asp-for="ValidityDays" class="form-label"></label>
-    <input asp-for="ValidityDays" class="form-control" />
-    <span asp-validation-for="ValidityDays" class="text-danger"></span>
-</div>
+@* ---------- 1. Offer terms ---------- *@
+<section class="pr-section">
+    <div class="pr-section-head"><span class="iv-step">1</span><div><h2>@L.T("Offer terms")</h2><p>@L.T("Delivery time and how long your offer stays valid.")</p></div>
+        <span class="iv-chip bf-currency">@(currency == Bid.JordanianDinar ? L.T("Jordanian dinar (JOD)") : currency)</span></div>
+    <div class="pr-grid bf-2">
+        <div class="pr-field">
+            <label asp-for="DeliveryDays" class="form-label"></label>
+            <div class="bf-suffix"><input asp-for="DeliveryDays" class="form-control" min="1" /><span>@L.T("days")</span></div>
+            <span asp-validation-for="DeliveryDays" class="text-danger"></span>
+        </div>
+        <div class="pr-field">
+            <label asp-for="ValidityDays" class="form-label"></label>
+            <div class="bf-suffix"><input asp-for="ValidityDays" class="form-control" min="1" /><span>@L.T("days")</span></div>
+            <span asp-validation-for="ValidityDays" class="text-danger"></span>
+        </div>
+    </div>
+    <label class="bf-switch">
+        <input asp-for="IncludesSalesTax" />
+        <span class="bf-track" aria-hidden="true"><i></i></span>
+        <span><strong>@L.T("Add 16% sales tax")</strong><small>@L.T("The tax is calculated on the total of your item prices and shown as the final cost.")</small></span>
+    </label>
+</section>
 
-@* ----- 16% sales tax ----- *@
-<div class="form-check mb-3">
-    <input asp-for="IncludesSalesTax" class="form-check-input" />
-    <label asp-for="IncludesSalesTax" class="form-check-label"></label>
-    <div class="form-text">@L.T("The tax is calculated on the total of your item prices and shown as the final cost.")</div>
-</div>
+@* ---------- 2. Legal warranty: duration + PDF ---------- *@
+<section class="pr-section">
+    <div class="pr-section-head"><span class="iv-step">2</span><div><h2>@L.T("Legal warranty")</h2><p>@L.T("Warranty period and the signed warranty document.")</p></div></div>
+    <div class="pr-grid bf-2">
+        <div class="pr-field">
+            <label asp-for="LegalWarrantyMonths" class="form-label"></label>
+            <div class="bf-suffix"><input asp-for="LegalWarrantyMonths" class="form-control" /><span>@L.T("months")</span></div>
+            <span asp-validation-for="LegalWarrantyMonths" class="text-danger"></span>
+        </div>
+        <div class="pr-field">
+            <label asp-for="LegalWarrantyFile" class="form-label"></label>
+            <label class="bf-drop">
+                <input asp-for="LegalWarrantyFile" type="file" accept=".pdf,application/pdf" data-bf-file />
+                <span class="bf-drop-icon"><partial name="_Icon" model='@("upload")' /></span>
+                <span><strong data-bf-name>@L.T("Choose a PDF file")</strong><small>@L.T("PDF, maximum 10 MB. A new file replaces the current one.")</small></span>
+            </label>
+            <span asp-validation-for="LegalWarrantyFile" class="text-danger"></span>
+        </div>
+    </div>
+</section>
 
-@* ----- Legal warranty: duration + PDF ----- *@
-<fieldset class="mb-3">
-    <legend class="h6">@L.T("Legal warranty")</legend>
-    <div class="mb-3">
-        <label asp-for="LegalWarrantyMonths" class="form-label"></label>
-        <input asp-for="LegalWarrantyMonths" class="form-control" />
-        <span asp-validation-for="LegalWarrantyMonths" class="text-danger"></span>
+@* ---------- 3. Bank guarantee (optional): bank, amount, expiry + PDF ---------- *@
+<section class="pr-section">
+    <div class="pr-section-head"><span class="iv-step">3</span><div><h2>@L.T("Bank guarantee") <span class="iv-chip">@L.T("Optional")</span></h2><p>@L.T("Leave these fields empty if you will add the guarantee later.")</p></div></div>
+    <div class="pr-grid bf-3">
+        <div class="pr-field">
+            <label asp-for="BankName" class="form-label"></label>
+            <input asp-for="BankName" class="form-control" />
+            <span asp-validation-for="BankName" class="text-danger"></span>
+        </div>
+        <div class="pr-field">
+            <label asp-for="BankGuaranteeAmount" class="form-label"></label>
+            <div class="bf-suffix"><input asp-for="BankGuaranteeAmount" class="form-control" /><span>JOD</span></div>
+            <span asp-validation-for="BankGuaranteeAmount" class="text-danger"></span>
+        </div>
+        <div class="pr-field">
+            <label asp-for="BankGuaranteeExpiry" class="form-label"></label>
+            <input asp-for="BankGuaranteeExpiry" type="date" class="form-control" />
+            <span asp-validation-for="BankGuaranteeExpiry" class="text-danger"></span>
+        </div>
     </div>
-    <div class="mb-3">
-        <label asp-for="LegalWarrantyFile" class="form-label"></label>
-        <input asp-for="LegalWarrantyFile" type="file" accept=".pdf,application/pdf" class="form-control" />
-        <div class="form-text">@L.T("PDF, maximum 10 MB. A new file replaces the current one.")</div>
-        <span asp-validation-for="LegalWarrantyFile" class="text-danger"></span>
-    </div>
-</fieldset>
-
-@* ----- Bank guarantee (optional): bank, amount, expiry + PDF ----- *@
-<fieldset class="mb-3">
-    <legend class="h6">@L.T("Bank guarantee")</legend>
-    <p class="field-hint">@L.T("Leave these fields empty if you will add the guarantee later.")</p>
-    <div class="mb-3">
-        <label asp-for="BankName" class="form-label"></label>
-        <input asp-for="BankName" class="form-control" />
-        <span asp-validation-for="BankName" class="text-danger"></span>
-    </div>
-    <div class="mb-3">
-        <label asp-for="BankGuaranteeAmount" class="form-label"></label>
-        <input asp-for="BankGuaranteeAmount" class="form-control" />
-        <span asp-validation-for="BankGuaranteeAmount" class="text-danger"></span>
-    </div>
-    <div class="mb-3">
-        <label asp-for="BankGuaranteeExpiry" class="form-label"></label>
-        <input asp-for="BankGuaranteeExpiry" type="date" class="form-control" />
-        <span asp-validation-for="BankGuaranteeExpiry" class="text-danger"></span>
-    </div>
-    <div class="mb-3">
+    <div class="pr-field">
         <label asp-for="BankGuaranteeFile" class="form-label"></label>
-        <input asp-for="BankGuaranteeFile" type="file" accept=".pdf,application/pdf" class="form-control" />
-        <div class="form-text">@L.T("PDF, maximum 10 MB. A new file replaces the current one.")</div>
+        <label class="bf-drop">
+            <input asp-for="BankGuaranteeFile" type="file" accept=".pdf,application/pdf" data-bf-file />
+            <span class="bf-drop-icon"><partial name="_Icon" model='@("upload")' /></span>
+            <span><strong data-bf-name>@L.T("Choose a PDF file")</strong><small>@L.T("PDF, maximum 10 MB. A new file replaces the current one.")</small></span>
+        </label>
         <span asp-validation-for="BankGuaranteeFile" class="text-danger"></span>
     </div>
-</fieldset>
+</section>

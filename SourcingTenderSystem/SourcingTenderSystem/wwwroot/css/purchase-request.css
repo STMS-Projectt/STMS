@@ -441,3 +441,47 @@
 .iv-chip-btn:hover, .iv-chip-btn.is-on { border-color: var(--pr-accent); background: var(--pr-soft); color: var(--pr-accent); }
 .iv .pr-submit:disabled { box-shadow: none; opacity: .5; }
 @media (max-width: 600px) { .iv-tender { grid-template-columns: 1fr; } .iv-suppliers-head { flex-wrap: wrap; } }
+
+/* ===== Supplier bid form (Bids/Create + Bids/Edit) ===== */
+#workspace-dialog .bf .iv-intro h1 { display: none; }
+.bf-tender { --tone: #0ea5e9; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 14px; align-items: center; margin-bottom: 18px; padding: 16px 18px;
+    border-radius: 18px; border: 1px solid var(--pr-line); background: var(--pr-card); box-shadow: var(--shadow); }
+.bf-tender h2 { font-size: 1.1rem; margin: 0; }
+.bf-tender p { margin: 2px 0 0; color: var(--muted); font-size: .9rem; }
+.bf-close { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; background: light-dark(#fff7ed, #2b2410); color: light-dark(#b45309, #fbbf24); font-weight: 700; font-size: .82rem; white-space: nowrap; }
+.bf-close .icon { width: 15px; height: 15px; }
+.bf-card { overflow: hidden; }
+.bf-currency { margin-inline-start: auto; align-self: center; }
+.pr-section-head:has(.bf-currency) { align-items: center; }
+.pr-section-head:has(.bf-currency) > div { flex: 1; }
+.bf-2 { grid-template-columns: 1fr 1fr; }
+.bf-3 { grid-template-columns: 1.4fr 1fr 1fr; }
+.bf-suffix { position: relative; }
+.bf-suffix .form-control { padding-inline-end: 64px; }
+.bf-suffix > span { position: absolute; inset-inline-end: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: .82rem; font-weight: 650; pointer-events: none; }
+.bf-suffix input[type=number]::-webkit-inner-spin-button { margin-inline-end: 40px; }
+
+/* Tax toggle switch */
+.bf-switch { position: relative; display: flex; gap: 14px; align-items: flex-start; margin-top: 16px; padding: 14px 16px; border-radius: 16px; cursor: pointer;
+    border: 1.5px solid var(--pr-line); background: light-dark(#fbfdfe, #17212c); transition: border-color .15s, background .15s; }
+.bf-switch input { position: absolute; opacity: 0; pointer-events: none; }
+.bf-track { flex: none; position: relative; width: 46px; height: 26px; margin-top: 2px; border-radius: 99px; background: light-dark(#cbd5e1, #334155); transition: background .2s; }
+.bf-track i { position: absolute; top: 3px; inset-inline-start: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; box-shadow: 0 2px 6px #0003; transition: transform .2s; }
+.bf-switch strong { display: block; }
+.bf-switch small { color: var(--muted); }
+.bf-switch:has(input:checked) { border-color: var(--pr-accent); background: color-mix(in srgb, var(--pr-accent) 7%, var(--pr-card)); }
+.bf-switch:has(input:checked) .bf-track { background: var(--pr-accent); }
+.bf-switch:has(input:checked) .bf-track i { transform: translateX(20px); }
+[dir=rtl] .bf-switch:has(input:checked) .bf-track i { transform: translateX(-20px); }
+.bf-switch:has(input:focus-visible) { outline: 3px solid #13a88f; outline-offset: 2px; }
+
+/* File upload box */
+.bf-drop { position: relative; display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 10px 14px; border-radius: 13px; cursor: pointer;
+    border: 1.5px dashed color-mix(in srgb, var(--pr-accent) 45%, var(--pr-line)); background: var(--pr-soft); transition: all .15s; }
+.bf-drop:hover { border-style: solid; background: color-mix(in srgb, var(--pr-accent) 12%, var(--pr-card)); }
+.bf-drop input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.bf-drop-icon { flex: none; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: var(--pr-card); color: var(--pr-accent); }
+.bf-drop strong { display: block; font-size: .9rem; color: var(--pr-accent); overflow-wrap: anywhere; }
+.bf-drop small { display: block; color: var(--muted); font-size: .76rem; }
+.bf-drop.has-file { border-style: solid; border-color: var(--pr-accent); }
+@media (max-width: 760px) { .bf-2, .bf-3 { grid-template-columns: 1fr; } .bf-tender { grid-template-columns: auto 1fr; } .bf-close { grid-column: 1 / -1; justify-self: start; } }
