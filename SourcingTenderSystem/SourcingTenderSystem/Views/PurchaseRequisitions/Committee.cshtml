@@ -1,28 +1,74 @@
 @model IReadOnlyList<DepartmentAssignment>
-@{ ViewData["Title"] = L.T("My Committee"); }
-<header class="page-heading stms-hero"><div><p class="eyebrow">@L.T("EVALUATION COMMITTEE")</p><h1>@L.T("My Committee")</h1><p>@L.T("Tenders where you represent your department.")</p></div></header>
-<section class="surface directory dept-directory" aria-label="@L.T("Committee assignments")" data-directory data-committee-directory>
-    <div class="dept-directory-heading"><span class="icon-tile tone-violet"><partial name="_Icon" model='@("users")' /></span><div><h2>@L.T("Assigned tenders")</h2><p>@L.T("Find your assignments and open related purchase requests.")</p></div></div>
+@{
+    ViewData["Title"] = L.T("My Committee");
+    var toReview = Model.Count(a => a.Status == "Under Evaluation");
+    var awarded = Model.Count(a => a.Status == "Awarded");
+    var inProgress = Model.Count - toReview - awarded;
+    // Colour of each card by tender status
+    string Tone(string status) => status switch
+    {
+        "Under Evaluation" => "review", "Awarded" => "done", "Cancelled" => "stop",
+        "Open" or "Closed" or "Awaiting Manager Review" or "Awaiting Committee Decision" => "wait", _ => "idle"
+    };
+}
+<div class="pr-create cm">
+<header class="pr-hero cm-hero">
+    <span class="pr-hero-icon"><partial name="_Icon" model='@("users")' /></span>
+    <div>
+        <p class="eyebrow">@L.T("EVALUATION COMMITTEE")</p>
+        <h1>@L.T("My Committee")</h1>
+        <p>@L.T("Tenders where you represent your department.")</p>
+    </div>
+    <div class="cm-stats">
+        <div><strong>@Model.Count</strong><span>@L.T("Assigned tenders")</span></div>
+        <div class="@(toReview > 0 ? "is-hot" : "")"><strong>@toReview</strong><span>@L.T("Under Evaluation")</span></div>
+        <div><strong>@inProgress</strong><span>@L.T("In progress")</span></div>
+        <div><strong>@awarded</strong><span>@L.T("Awarded")</span></div>
+    </div>
+</header>
+
+@if (toReview > 0)
+{
+    <div class="cm-alert"><span class="pr-badge"><partial name="_Icon" model='@("check")' /></span><div><strong>@L.F("{0} tender(s) need your review", toReview)</strong><p>@L.T("Open the evaluation to see your checklist and submission status.")</p></div></div>
+}
+
+<section class="dept-directory cm-panel" aria-label="@L.T("Committee assignments")" data-directory data-committee-directory>
+    <div class="cm-panel-head">
+        <div class="pr-section-head mb-0"><span class="pr-badge"><partial name="_Icon" model='@("briefcase")' /></span><div><h2>@L.T("Assigned tenders")</h2><p>@L.T("Find your assignments and open related purchase requests.")</p></div></div>
+    </div>
     @if (Model.Count == 0)
     {
-        <div class="empty-state"><span class="icon-tile tone-violet"><partial name="_Icon" model='@("users")' /></span><h2>@L.T("No assignments yet")</h2><p>@L.T("Your tenders will appear here when you are assigned as the department representative.")</p></div>
+        <div class="prd-empty"><span class="pr-badge"><partial name="_Icon" model='@("users")' /></span><h3>@L.T("No assignments yet")</h3><p>@L.T("Your tenders will appear here when you are assigned as the department representative.")</p></div>
     }
     else
     {
-        <partial name="_ListFilters" model='@("Search assignments", Model.Select(a => a.Status))' />
-        <partial name="_DirectoryPages" model='@("Assignment pages")' />
-        <div class="record-list" data-record-list>
+        <div class="cm-filters">
+            <partial name="_ListFilters" model='@("Search assignments", Model.Select(a => a.Status))' />
+            <partial name="_DirectoryPages" model='@("Assignment pages")' />
+        </div>
+        <div class="cm-grid" data-record-list>
             @foreach (var assignment in Model)
             {
-                <article class="record-card" data-record data-status="@assignment.Status">
-                    <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("briefcase")' /></span><span>@assignment.Title<small>@L.F("Tender #{0}", assignment.TenderId)</small></span></div>
-                    <dl class="record-facts"><div><dt>@L.T("Status")</dt><dd><partial name="_Status" model="assignment.Status" />@if (assignment.Status == "Under Evaluation") { <small>@L.T("Open the evaluation to see your checklist and submission status.")</small> }</dd></div>
-                        <div><dt class="record-field-icon" title="@L.T("Purchase request")"><partial name="_Icon" model='@("file")' /><span class="visually-hidden">@L.T("Purchase request")</span></dt><dd>PR-@assignment.RequestId</dd></div></dl>
-                    <div class="record-action">
-                        <partial name="_RequestActions" model="@( (assignment.RequestId, assignment.CanEditRequest) )" />
-                        @if (assignment.Status == "Under Evaluation")
+                var review = assignment.Status == "Under Evaluation";
+                <article class="cm-card cm-@Tone(assignment.Status)" data-record data-status="@assignment.Status">
+                    <div class="cm-card-top">
+                        <span class="cm-icon"><partial name="_Icon" model='@("briefcase")' /></span>
+                        <div class="cm-title">
+                            <h3>@assignment.Title</h3>
+                            <small>@L.F("Tender #{0}", assignment.TenderId)</small>
+                        </div>
+                        <partial name="_Status" model="assignment.Status" />
+                    </div>
+                    <div class="cm-card-meta">
+                        <span><partial name="_Icon" model='@("file")' /> @L.T("Purchase request") <strong>PR-@assignment.RequestId</strong></span>
+                    </div>
+                    <div class="cm-card-foot">
+                        <div class="record-action cm-actions">
+                            <partial name="_RequestActions" model="@( (assignment.RequestId, assignment.CanEditRequest) )" />
+                        </div>
+                        @if (review)
                         {
-                            <a class="record-icon-action" data-workspace-dialog="details" asp-controller="CommitteeReviews" asp-action="Details" asp-route-id="@assignment.TenderId" aria-label="@L.F("Review bids for {0}", assignment.Title)" data-tooltip="@L.T("Review bids")"><partial name="_Icon" model='@("check")' /></a>
+                            <a class="btn btn-primary cm-review-btn" data-workspace-dialog="details" asp-controller="CommitteeReviews" asp-action="Details" asp-route-id="@assignment.TenderId" aria-label="@L.F("Review bids for {0}", assignment.Title)"><partial name="_Icon" model='@("check")' /> @L.T("Review bids")</a>
                         }
                     </div>
                 </article>
@@ -31,3 +77,4 @@
         <partial name="_ListFilterEmpty" />
     }
 </section>
+</div>
