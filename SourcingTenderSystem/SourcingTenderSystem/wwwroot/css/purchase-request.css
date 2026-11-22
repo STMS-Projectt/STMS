@@ -620,3 +620,31 @@
 .cr-side .rv-hint { margin: 0 0 12px; }
 .cr .prd-links small { font-weight: 500; }
 @container (max-width: 1000px) { .cr-layout { grid-template-columns: 1fr; } .cr-side { position: static; } }
+
+/* ===== Assign evaluation committee (Tenders/AssignCommittee) ===== */
+#workspace-dialog .ac .iv-intro h1 { display: none; }
+.ac-problems ul { padding-inline-start: 1.1rem; }
+.ac-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px; }
+.ac-role { white-space: nowrap; }
+.ac-member { --tone: #08766c; position: relative; display: flex; gap: 14px; align-items: flex-start; padding: 16px; border-radius: 18px; overflow: hidden;
+    border: 1px solid var(--pr-line); background: light-dark(#fbfdfe, #17212c); transition: transform .15s, box-shadow .15s, border-color .15s; }
+.ac-member::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 4px; background: var(--tone); }
+.ac-member:hover { transform: translateY(-2px); border-color: color-mix(in srgb, var(--tone) 45%, var(--pr-line)); box-shadow: 0 12px 24px light-dark(#192e4a14, #00000055); }
+.ac-manager { --tone: #08766c; } .ac-tech { --tone: #0ea5e9; } .ac-fin { --tone: #f59e0b; } .ac-dept { --tone: #8b5cf6; }
+.ac-avatar { flex: none; display: grid; place-items: center; width: 48px; height: 48px; border-radius: 15px; font-weight: 800; color: #fff;
+    background: linear-gradient(135deg, var(--tone), color-mix(in srgb, var(--tone) 60%, #fff)); box-shadow: 0 8px 16px color-mix(in srgb, var(--tone) 30%, transparent); }
+.ac-body { min-width: 0; }
+.ac-body h3 { font-size: 1.05rem; margin: 2px 0 0; }
+.ac-body p { margin: 2px 0 10px; color: var(--muted); font-size: .85rem; min-height: 1em; }
+.ac-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.ac-role { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 999px; font-size: .76rem; font-weight: 700;
+    background: color-mix(in srgb, var(--tone) 14%, transparent); color: color-mix(in srgb, var(--tone) 75%, var(--ink)); }
+.ac-role .icon { width: 13px; height: 13px; }
+.ac-kind { padding: 4px 10px; border-radius: 999px; font-size: .76rem; font-weight: 700; background: light-dark(#f1f5f9, #273444); color: var(--muted); }
+.ac-dept .ac-kind { background: light-dark(#ede9fe, #2e2546); color: light-dark(#6d28d9, #c4b5fd); }
+.ac-footer { margin-top: 16px; padding: 16px 18px; border-radius: 18px; border: 1px solid var(--pr-line); background: var(--pr-card); box-shadow: var(--shadow); }
+.ac-footer p { display: flex; gap: 8px; align-items: flex-start; margin: 0 0 14px; color: var(--muted); font-size: .9rem; }
+.ac-footer p .icon { flex: none; margin-top: 2px; color: var(--pr-accent); }
+.ac-actions { display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
+.ac-actions .btn { min-height: 46px; border-radius: 13px; font-weight: 700; padding-inline: 20px; }
+.ac-actions .pr-submit:disabled { opacity: .5; box-shadow: none; }
