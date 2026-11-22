@@ -1,12 +1,107 @@
 @model RequisitionInput
-@{ ViewData["Title"] = L.T("New purchase request"); }
-<a class="back-link" asp-controller="PurchaseRequisitions" asp-action="MyRequests" ><partial name="_Icon" model='@("back")' /> @L.T("My Requests")</a>
-<header class="page-heading stms-hero"><div><p class="eyebrow">@L.T("PURCHASE REQUESTS")</p><h1>@L.T("New purchase request")</h1><p>@L.T("Start with the reason and target date. Add your item lines after saving.")</p></div></header>
-<div class="form-shell">
-    <form class="surface form-card" asp-action="Create"  method="post">
-        <partial name="_Fields" model="Model" />
-        <div class="button-row"><button class="btn btn-primary" type="submit">@L.T("Save draft")</button><a class="btn btn-outline-secondary" asp-controller="PurchaseRequisitions" asp-action="MyRequests" >@L.T("Cancel")</a></div>
+@{
+    ViewData["Title"] = L.T("New purchase request");
+    var categories = (IEnumerable<Category>)ViewBag.Categories;
+    var priorities = new[] { ("Low", "low"), ("Normal", "normal"), ("High", "high"), ("Urgent", "urgent") };
+}
+<div class="pr-create">
+<a class="back-link" asp-controller="PurchaseRequisitions" asp-action="MyRequests"><partial name="_Icon" model='@("back")' /> @L.T("My Requests")</a>
+
+<header class="pr-hero">
+    <span class="pr-hero-icon"><partial name="_Icon" model='@("file")' /></span>
+    <div>
+        <p class="eyebrow">@L.T("PURCHASE REQUESTS")</p>
+        <h1>@L.T("New purchase request")</h1>
+        <p>@L.T("Start with the reason and target date. Add your item lines after saving.")</p>
+    </div>
+    <ol class="pr-steps" aria-label="@L.T("Draft workflow")">
+        <li class="is-active"><span>1</span>@L.T("Request details")</li>
+        <li><span>2</span>@L.T("Add items")</li>
+        <li><span>3</span>@L.T("Submit for review")</li>
+    </ol>
+</header>
+
+<div class="pr-layout">
+    <form class="pr-card" asp-action="Create" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        @* ---------- 1. What do you need ---------- *@
+        <section class="pr-section">
+            <div class="pr-section-head"><span class="pr-badge"><partial name="_Icon" model='@("inbox")' /></span><div><h2>@L.T("What do you need?")</h2><p>@L.T("Pick a category and give the request a clear title.")</p></div></div>
+            <div class="pr-grid">
+                <div class="pr-field">
+                    <label asp-for="CategoryId" class="form-label">@L.T("Category")</label>
+                    <select asp-for="CategoryId" class="form-select" required>
+                        <option value="">@L.T("Select a category")</option>
+                        @foreach (var category in categories) { <option value="@category.Id">@category.Name</option> }
+                    </select>
+                    <span asp-validation-for="CategoryId" class="text-danger"></span>
+                </div>
+                <div class="pr-field">
+                    <label asp-for="Title" class="form-label"></label>
+                    <input asp-for="Title" class="form-control" maxlength="200" placeholder="@L.T("e.g. Laptops for the new team")" />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="pr-field">
+                <div class="pr-label-row"><label asp-for="Reason" class="form-label"></label><small class="pr-counter" data-pr-counter="Reason">0 / 2000</small></div>
+                <textarea asp-for="Reason" class="form-control" rows="4" maxlength="2000" placeholder="@L.T("Explain why this purchase is needed and how it will be used.")"></textarea>
+                <span asp-validation-for="Reason" class="text-danger"></span>
+            </div>
+        </section>
+
+        @* ---------- 2. Priority and timing ---------- *@
+        <section class="pr-section">
+            <div class="pr-section-head"><span class="pr-badge"><partial name="_Icon" model='@("clock")' /></span><div><h2>@L.T("Priority and timing")</h2><p>@L.T("How urgent is it and when do you need it?")</p></div></div>
+            <fieldset class="pr-field">
+                <legend class="form-label">@L.T("Priority")</legend>
+                <div class="pr-priority" role="radiogroup">
+                    @foreach (var (value, tone) in priorities)
+                    {
+                        <label class="pr-chip pr-@tone">
+                            <input type="radio" name="Priority" value="@value" checked="@(Model.Priority == value)" />
+                            <span><i aria-hidden="true"></i>@L.T(value)</span>
+                        </label>
+                    }
+                </div>
+                <span asp-validation-for="Priority" class="text-danger"></span>
+            </fieldset>
+            <div class="pr-field pr-date">
+                <label asp-for="TargetDate" class="form-label"></label>
+                <input asp-for="TargetDate" asp-format="{0:yyyy-MM-dd}" class="form-control" />
+                <span asp-validation-for="TargetDate" class="text-danger"></span>
+            </div>
+        </section>
+
+        <div class="pr-actions">
+            <a class="btn btn-outline-secondary" asp-controller="PurchaseRequisitions" asp-action="MyRequests">@L.T("Cancel")</a>
+            <button class="btn btn-primary pr-submit" type="submit"><partial name="_Icon" model='@("check")' /> @L.T("Save draft")</button>
+        </div>
     </form>
-    <aside class="surface helper-card"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("file")' /></span><h2>@L.T("Draft workflow")</h2><p class="mb-0">@L.T("Add one line per item with its quantity and specifications. You can edit your draft until you submit it.")</p></aside>
+
+    <aside class="pr-side">
+        <div class="pr-tip">
+            <span class="pr-badge"><partial name="_Icon" model='@("file")' /></span>
+            <h2>@L.T("Draft workflow")</h2>
+            <p>@L.T("Add one line per item with its quantity and specifications. You can edit your draft until you submit it.")</p>
+        </div>
+        <ul class="pr-checklist">
+            <li><partial name="_Icon" model='@("check")' /> @L.T("Use a short, specific title.")</li>
+            <li><partial name="_Icon" model='@("check")' /> @L.T("Explain the business need in the reason.")</li>
+            <li><partial name="_Icon" model='@("check")' /> @L.T("Choose Urgent only for critical needs.")</li>
+        </ul>
+    </aside>
 </div>
-@section Scripts { <partial name="_ValidationScriptsPartial" /> }
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Live character counter for the reason box
+        document.querySelectorAll('[data-pr-counter]').forEach(counter => {
+            const box = document.getElementById(counter.dataset.prCounter);
+            if (!box) return;
+            const update = () => counter.textContent = box.value.length + ' / ' + box.maxLength;
+            box.addEventListener('input', update); update();
+        });
+    </script>
+}
