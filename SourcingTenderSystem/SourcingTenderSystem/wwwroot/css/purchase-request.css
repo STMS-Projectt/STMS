@@ -407,3 +407,42 @@
 /* The directory script looks for .dept-directory-heading; keep our plain look for it */
 .cm-panel > .dept-directory-heading { padding: 0; background: none; border: 0; box-shadow: none; margin-bottom: 16px; border-radius: 0; }
 .cm-panel > .dept-directory-heading::before, .cm-panel > .dept-directory-heading::after { display: none; }
+
+/* ===== New invitation (Invitations/Create) ===== */
+.iv-intro { display: flex; gap: 14px; align-items: center; margin: 10px 0 18px; padding: 18px 22px; border-radius: 20px;
+    background: linear-gradient(120deg, var(--pr-soft), var(--pr-card)); border: 1px solid color-mix(in srgb, var(--pr-accent) 25%, var(--pr-line)); }
+.iv-intro h1 { font-size: 1.5rem; margin: 0; }
+.iv-intro p { margin: 2px 0 0; color: var(--muted); }
+.iv-intro .eyebrow { margin: 0; color: var(--pr-accent); font-size: .7rem; letter-spacing: .14em; font-weight: 800; }
+#workspace-dialog .iv > .back-link, #workspace-dialog .iv-intro h1 { display: none; }
+.iv-card { overflow: hidden; }
+.iv-step { flex: none; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 12px; background: var(--pr-accent); color: #fff; font-weight: 800; }
+.iv-tender { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; }
+.iv-tender .tm-btn { min-height: 48px; }
+.iv-suppliers-head { align-items: center; }
+.iv-suppliers-head > div:first-of-type { flex: 1; }
+.iv-chip { display: inline-block; margin-inline-start: 6px; padding: 2px 10px; border-radius: 999px; background: var(--pr-soft); color: var(--pr-accent); font-size: .78rem; font-weight: 700; vertical-align: middle; }
+.iv-tools { display: flex; align-items: center; gap: 10px; }
+.iv-count { color: var(--muted); font-size: .85rem; white-space: nowrap; }
+.iv-count strong { color: var(--pr-accent); font-size: 1rem; }
+.iv-all { min-height: 38px; padding-inline: 12px; }
+.iv-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 10px; }
+.iv-supplier { position: relative; display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 16px; cursor: pointer;
+    border: 1.5px solid var(--pr-line); background: light-dark(#fbfdfe, #17212c); transition: all .15s; }
+.iv-supplier:hover { border-color: color-mix(in srgb, var(--pr-accent) 50%, var(--pr-line)); transform: translateY(-1px); }
+.iv-supplier input { position: absolute; opacity: 0; pointer-events: none; }
+.iv-avatar { flex: none; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; background: light-dark(#e2e8f0, #263545); color: var(--muted); font-weight: 800; font-size: .85rem; transition: all .15s; }
+.iv-name { flex: 1; min-width: 0; font-weight: 650; overflow-wrap: anywhere; }
+.iv-check { flex: none; display: grid; place-items: center; width: 24px; height: 24px; border-radius: 8px; border: 2px solid var(--pr-line); color: transparent; transition: all .15s; }
+.iv-check .icon { width: 14px; height: 14px; }
+.iv-supplier:has(input:checked) { border-color: var(--pr-accent); background: color-mix(in srgb, var(--pr-accent) 8%, var(--pr-card)); box-shadow: 0 8px 18px light-dark(#08766c1f, #00000040); }
+.iv-supplier:has(input:checked) .iv-avatar { background: var(--pr-accent); color: #fff; }
+.iv-supplier:has(input:checked) .iv-check { background: var(--pr-accent); border-color: var(--pr-accent); color: #fff; }
+.iv-supplier:has(input:focus-visible) { outline: 3px solid #13a88f; outline-offset: 2px; }
+.iv-expiry { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.iv-expiry .form-control { max-width: 280px; }
+.iv-quick { display: flex; gap: 8px; }
+.iv-chip-btn { padding: 8px 14px; border-radius: 999px; border: 1.5px solid var(--pr-line); background: var(--pr-card); color: var(--ink); font-weight: 650; font-size: .85rem; transition: all .15s; }
+.iv-chip-btn:hover, .iv-chip-btn.is-on { border-color: var(--pr-accent); background: var(--pr-soft); color: var(--pr-accent); }
+.iv .pr-submit:disabled { box-shadow: none; opacity: .5; }
+@media (max-width: 600px) { .iv-tender { grid-template-columns: 1fr; } .iv-suppliers-head { flex-wrap: wrap; } }

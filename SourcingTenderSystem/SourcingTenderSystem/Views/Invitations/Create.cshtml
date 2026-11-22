@@ -3,52 +3,118 @@
     ViewData["Title"] = "New supplier invitation";
     var suppliers = (IReadOnlyList<SupplierProfile>)ViewData["Suppliers"]!;
     var selected = (HashSet<int>)ViewData["SelectedSuppliers"]!;
+    // Two letters for the avatar, skipping small joining words ("and", "of", "&" ...)
+    string Initials(string name) => string.Concat(name.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+        .Where(w => w.Length > 1 && w.ToLowerInvariant() is not ("and" or "of" or "the" or "co" or "llc"))
+        .DefaultIfEmpty(name).Take(2).Select(w => char.ToUpperInvariant(w[0])));
 }
+<div class="pr-create iv" data-iv>
 <a class="back-link" asp-action="Index"><partial name="_Icon" model='@("back")' /> @L.T("Supplier invitations")</a>
-<header class="page-heading admin-action-heading"><div><p class="eyebrow">@L.T("SUPPLIER INVITATIONS")</p><h1>@L.T("New invitation")</h1><p>@L.T("Choose a tender, its suppliers, and the invitation expiry date.")</p></div></header>
-<div class="form-shell">
-    <form id="load-invitation-suppliers" asp-action="Create" method="get" hidden></form>
-    <form class="surface form-card" asp-action="Create" method="post">
-        <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
-        <div class="mb-3">
-            <label for="invitation-tender" class="form-label">@L.T("Tender")</label>
-            <input type="hidden" name="TenderId" value="@Model.TenderId" />
-            <select id="invitation-tender" name="tenderId" class="form-select" asp-items="ViewBag.TenderId" form="load-invitation-suppliers" required><option value="">@L.T("Select a tender")</option></select>
-            <button type="submit" form="load-invitation-suppliers" class="btn btn-outline-secondary mt-2">@L.T("Load eligible suppliers")</button>
-            <span asp-validation-for="TenderId" class="text-danger"></span>
+<header class="iv-intro">
+    <span class="pr-badge"><partial name="_Icon" model='@("mail")' /></span>
+    <div><p class="eyebrow">@L.T("SUPPLIER INVITATIONS")</p><h1>@L.T("New invitation")</h1><p>@L.T("Choose a tender, its suppliers, and the invitation expiry date.")</p></div>
+</header>
+
+<form id="load-invitation-suppliers" asp-action="Create" method="get" hidden></form>
+<form class="pr-card iv-card" asp-action="Create" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+
+    @* ---------- 1. Tender ---------- *@
+    <section class="pr-section">
+        <div class="pr-section-head"><span class="iv-step">1</span><div><h2>@L.T("Tender")</h2><p>@L.T("Select a tender and load its eligible suppliers.")</p></div></div>
+        <input type="hidden" name="TenderId" value="@Model.TenderId" />
+        <div class="iv-tender">
+            <select id="invitation-tender" name="tenderId" class="form-select" asp-items="ViewBag.TenderId" form="load-invitation-suppliers" required aria-label="@L.T("Tender")"><option value="">@L.T("Select a tender")</option></select>
+            <button type="submit" form="load-invitation-suppliers" class="btn tm-btn"><partial name="_Icon" model='@("refresh")' /> @L.T("Load eligible suppliers")</button>
         </div>
-        <fieldset class="mb-3">
-            <legend class="form-label">@L.T("Eligible suppliers") @if (ViewData["RoundNumber"] is int round) { <span>· @L.F("Round {0}", round)</span> }</legend>
-            @if (ViewData["CategoryName"] is string categoryName) { <p class="field-hint">@L.F("Category: {0}", categoryName)</p> }
-            @if (ViewData["TenderUnavailable"] is true)
+        <span asp-validation-for="TenderId" class="text-danger"></span>
+    </section>
+
+    @* ---------- 2. Suppliers ---------- *@
+    <section class="pr-section">
+        <div class="pr-section-head iv-suppliers-head">
+            <span class="iv-step">2</span>
+            <div>
+                <h2>@L.T("Eligible suppliers") @if (ViewData["RoundNumber"] is int round) { <span class="iv-chip">@L.F("Round {0}", round)</span> }</h2>
+                @if (ViewData["CategoryName"] is string categoryName) { <p>@L.F("Category: {0}", categoryName)</p> }
+            </div>
+            @if (suppliers.Count > 0)
             {
-                <p class="callout callout-warning">@L.T("This tender is not open for bidding. Select an open tender to send invitations.")</p>
-            }
-            else if (suppliers.Count == 0)
-            {
-                <p class="subtle mb-0">@L.T(Model.TenderId == 0 ? "Select a tender and load its eligible suppliers." : ViewData["CategoryName"] is null ? "Assign a supply category to the purchase request before sending invitations." : "No approved suppliers in this category are eligible for a new invitation in this round.")</p>
-            }
-            else
-            {
-                <div class="supplier-category-grid">
-                    @foreach (var supplier in suppliers)
-                    {
-                        <label class="supplier-category-option">
-                            <input type="checkbox" name="selectedSuppliers" value="@supplier.Id" checked="@selected.Contains(supplier.Id)" />
-                            <span>@supplier.CompanyName</span>
-                        </label>
-                    }
+                <div class="iv-tools">
+                    <span class="iv-count"><strong data-iv-count>0</strong> / @suppliers.Count @L.T("selected")</span>
+                    <button type="button" class="btn tm-btn iv-all" data-iv-all data-select="@L.T("Select all")" data-clear="@L.T("Clear all")">@L.T("Select all")</button>
                 </div>
             }
-        </fieldset>
-        <div class="mb-3">
-            <label asp-for="ExpiresAt" class="form-label">@L.T("Expires at (UTC)")</label>
+        </div>
+        @if (ViewData["TenderUnavailable"] is true)
+        {
+            <p class="prd-note is-returned mb-0"><span>@L.T("This tender is not open for bidding. Select an open tender to send invitations.")</span></p>
+        }
+        else if (suppliers.Count == 0)
+        {
+            <div class="prd-empty"><span class="pr-badge"><partial name="_Icon" model='@("supplier")' /></span><p class="mb-0">@L.T(Model.TenderId == 0 ? "Select a tender and load its eligible suppliers." : ViewData["CategoryName"] is null ? "Assign a supply category to the purchase request before sending invitations." : "No approved suppliers in this category are eligible for a new invitation in this round.")</p></div>
+        }
+        else
+        {
+            <div class="iv-grid">
+                @foreach (var supplier in suppliers)
+                {
+                    <label class="iv-supplier">
+                        <input type="checkbox" name="selectedSuppliers" value="@supplier.Id" checked="@selected.Contains(supplier.Id)" />
+                        <span class="iv-avatar">@Initials(supplier.CompanyName)</span>
+                        <span class="iv-name">@supplier.CompanyName</span>
+                        <span class="iv-check"><partial name="_Icon" model='@("check")' /></span>
+                    </label>
+                }
+            </div>
+        }
+    </section>
+
+    @* ---------- 3. Expiry ---------- *@
+    <section class="pr-section">
+        <div class="pr-section-head"><span class="iv-step">3</span><div><h2>@L.T("Expires at (UTC)")</h2><p>@L.T("Suppliers must accept the invitation before this time.")</p></div></div>
+        <div class="iv-expiry">
             <input asp-for="ExpiresAt" class="form-control" required />
-            <span asp-validation-for="ExpiresAt" class="text-danger"></span>
+            <div class="iv-quick">
+                <button type="button" class="iv-chip-btn" data-iv-days="3">+3 @L.T("days")</button>
+                <button type="button" class="iv-chip-btn" data-iv-days="7">+7 @L.T("days")</button>
+                <button type="button" class="iv-chip-btn" data-iv-days="14">+14 @L.T("days")</button>
+            </div>
         </div>
-        <div class="form-actions">
-            <a data-dialog-cancel class="btn btn-outline-secondary" asp-action="Index" asp-route-tenderId="@Model.TenderId">@L.T("Cancel")</a>
-            <button type="submit" class="btn btn-primary" data-send-invitations disabled="@(suppliers.Count == 0)"><partial name="_Icon" model='@("mail")' /> @L.T("Send invitations")</button>
-        </div>
-    </form>
+        <span asp-validation-for="ExpiresAt" class="text-danger"></span>
+    </section>
+
+    <div class="pr-actions">
+        <a data-dialog-cancel class="btn btn-outline-secondary" asp-action="Index" asp-route-tenderId="@Model.TenderId">@L.T("Cancel")</a>
+        <button type="submit" class="btn btn-primary pr-submit" data-send-invitations disabled="@(suppliers.Count == 0)"><partial name="_Icon" model='@("mail")' /> @L.T("Send invitations")</button>
+    </div>
+</form>
 </div>
+@section Scripts {
+<script>
+    // Selected counter, select all, and quick expiry buttons (runs for each new copy of the form)
+    document.querySelectorAll('[data-iv]:not([data-iv-ready])').forEach(root => {
+        root.dataset.ivReady = '1';
+        const boxes = [...root.querySelectorAll('input[name="selectedSuppliers"]')];
+        const count = root.querySelector('[data-iv-count]');
+        const all = root.querySelector('[data-iv-all]');
+        const send = root.querySelector('[data-send-invitations]');
+        const update = () => {
+            const n = boxes.filter(b => b.checked).length;
+            if (count) count.textContent = n;
+            if (all) all.textContent = n === boxes.length ? all.dataset.clear : all.dataset.select;
+            if (send && boxes.length) send.disabled = n === 0;
+        };
+        boxes.forEach(b => b.addEventListener('change', update));
+        all?.addEventListener('click', () => { const on = boxes.some(b => !b.checked); boxes.forEach(b => b.checked = on); update(); });
+        const expiry = root.querySelector('input[name="ExpiresAt"]');
+        root.querySelectorAll('[data-iv-days]').forEach(btn => btn.addEventListener('click', () => {
+            const d = new Date(Date.now() + btn.dataset.ivDays * 864e5);
+            d.setUTCHours(0, 0, 0, 0);
+            if (expiry) expiry.value = d.toISOString().slice(0, 16);
+            root.querySelectorAll('[data-iv-days]').forEach(b => b.classList.toggle('is-on', b === btn));
+        }));
+        update();
+    });
+</script>
+}
