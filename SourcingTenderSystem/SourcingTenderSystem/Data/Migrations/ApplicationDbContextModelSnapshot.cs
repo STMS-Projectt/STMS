@@ -293,6 +293,25 @@ namespace SourcingTenderSystem.Data.Migrations
                     b.Property<string>("AwardOutcome")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<decimal?>("BankGuaranteeAmount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime?>("BankGuaranteeExpiry")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("BankGuaranteeNumber")
+                        .HasMaxLength(60)
+                        .HasColumnType("nvarchar(60)");
+
+                    b.Property<string>("BankGuaranteeType")
+                        .HasMaxLength(60)
+                        .HasColumnType("nvarchar(60)");
+
+                    b.Property<string>("BankName")
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)");
+
                     b.Property<int?>("ComplianceClarificationId")
                         .HasColumnType("int");
 
@@ -305,6 +324,24 @@ namespace SourcingTenderSystem.Data.Migrations
 
                     b.Property<int>("DeliveryDays")
                         .HasColumnType("int");
+
+                    b.Property<Guid>("GuaranteeVerificationCode")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<bool>("IncludesSalesTax")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("LegalWarrantyMonths")
+                        .HasColumnType("int");
+
+                    b.Property<string>("OfferNature")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
+                        .HasDefaultValue("Product");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -332,6 +369,9 @@ namespace SourcingTenderSystem.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ComplianceClarificationId");
+
+                    b.HasIndex("GuaranteeVerificationCode")
+                        .IsUnique();
 
                     b.HasIndex("SupplierProfileId");
 
@@ -531,6 +571,8 @@ namespace SourcingTenderSystem.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(254)
@@ -568,11 +610,10 @@ namespace SourcingTenderSystem.Data.Migrations
                         .HasMaxLength(40)
                         .HasColumnType("nvarchar(40)");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
                     b.HasKey("Id");
 
-                    b.HasIndex("Receipt").IsUnique();
+                    b.HasIndex("Receipt")
+                        .IsUnique();
 
                     b.ToTable("ContactMessages");
                 });

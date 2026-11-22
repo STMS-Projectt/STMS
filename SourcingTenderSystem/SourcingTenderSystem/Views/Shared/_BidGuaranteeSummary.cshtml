@@ -1,0 +1,49 @@
+@using QRCoder
+@model Bid
+@* Tax, legal warranty and bank guarantee of one bid + QR code to the e-guarantee verification page *@
+@{
+    var verifyPath = Url.Action("Index", "GuaranteeVerify", new { code = Model.GuaranteeVerificationCode.ToString("N"), number = Model.BankGuaranteeNumber });
+    var verifyLink = $"{Context.Request.Scheme}://{Context.Request.Host}{verifyPath}";
+    string? qrImage = null;
+    if (Model.HasBankGuarantee)
+    {
+        using var data = QRCodeGenerator.GenerateQrCode(verifyLink, QRCodeGenerator.ECCLevel.M);
+        using var qr = new PngByteQRCode(data);
+        qrImage = Convert.ToBase64String(qr.GetGraphic(4));
+    }
+}
+<section class="surface detail-card record-section">
+    <h2>@L.T("Cost, warranty and bank guarantee")</h2>
+    <dl class="row mb-0">
+        <dt class="col-sm-5">@L.T("Price before tax")</dt>
+        <dd class="col-sm-7">@Model.TotalPrice.ToString("N2") @Model.Currency</dd>
+        <dt class="col-sm-5">@L.T("Sales tax (16%)")</dt>
+        <dd class="col-sm-7">@(Model.IncludesSalesTax ? Model.TaxAmount.ToString("N2") + " " + Model.Currency : L.T("Not added"))</dd>
+        <dt class="col-sm-5">@L.T("Final cost")</dt>
+        <dd class="col-sm-7"><strong>@Model.TotalWithTax.ToString("N2") @Model.Currency</strong></dd>
+        <dt class="col-sm-5">@L.T("Offer type")</dt>
+        <dd class="col-sm-7">@L.T(Model.OfferNature)</dd>
+        <dt class="col-sm-5">@L.T("Legal warranty")</dt>
+        <dd class="col-sm-7">@(Model.LegalWarrantyMonths is int months ? L.F("{0} months", months) : L.T("Not provided"))</dd>
+        <dt class="col-sm-5">@L.T("Bank guarantee")</dt>
+        <dd class="col-sm-7">
+            @if (Model.HasBankGuarantee)
+            {
+                <span>@L.T(Model.BankGuaranteeType ?? "") · #@Model.BankGuaranteeNumber · @Model.BankName</span><br />
+                <span>@Model.BankGuaranteeAmount?.ToString("N2") @Model.Currency · @L.F("valid until {0}", Model.BankGuaranteeExpiry?.ToString("yyyy-MM-dd"))</span>
+            }
+            else { @L.T("Not provided") }
+        </dd>
+    </dl>
+    @if (qrImage != null)
+    {
+        <div class="d-flex gap-3 align-items-center flex-wrap mt-3">
+            <img width="128" height="128" src="data:image/png;base64,@qrImage" alt="@L.T("QR code to verify the bank guarantee")" />
+            <div style="min-width:0">
+                <p class="subtle mb-1">@L.T("Scan to verify this bank guarantee on the e-guarantee verification page.")</p>
+                <p class="small mb-1">@L.T("Verification code"): <code>@Model.GuaranteeVerificationCode.ToString("N")</code></p>
+                <a class="btn btn-sm btn-outline-secondary" href="@verifyPath" target="_blank" rel="noopener">@L.T("Open verification page")</a>
+            </div>
+        </div>
+    }
+</section>

@@ -92,7 +92,8 @@ public class BidsController : Controller
             return RedirectToAction(nameof(MyBids));
         }
 
-        ViewBag.Tender = tender;        return View(new BidFormViewModel());
+        ViewBag.Tender = tender;
+        return View(new BidFormViewModel());
     }
 
     // POST: /Bids/Create?tenderId=5
@@ -121,9 +122,11 @@ public class BidsController : Controller
             return RedirectToAction(nameof(MyBids));
         }
 
+        AddGuaranteeErrors(model);
         if (!ModelState.IsValid)
         {
-            ViewBag.Tender = tender;            return View(model);
+            ViewBag.Tender = tender;
+            return View(model);
         }
 
         // Sensitive values come from the server, not from the form
@@ -132,13 +135,12 @@ public class BidsController : Controller
             TenderId = tender.Id,
             SupplierProfileId = supplier.Id,
             Currency = Bid.JordanianDinar,
-            DeliveryDays = model.DeliveryDays,
-            ValidityDays = model.ValidityDays,
             Status = "Draft",
             TotalPrice = 0,
             SubmittedAt = null
         };
 
+        model.CopyTo(bid);
         _context.Bids.Add(bid);
         try
         {
@@ -179,13 +181,10 @@ public class BidsController : Controller
         }
 
         // Copy the current values into the form
-        var model = new BidFormViewModel
-        {
-            DeliveryDays = bid.DeliveryDays,
-            ValidityDays = bid.ValidityDays
-        };
+        var model = BidFormViewModel.From(bid);
 
-        ViewBag.Bid = bid;        return View(model);
+        ViewBag.Bid = bid;
+        return View(model);
     }
 
     // POST: /Bids/Edit/5
@@ -215,14 +214,15 @@ public class BidsController : Controller
             return RedirectToAction(nameof(Details), new { id = bid.Id });
         }
 
+        AddGuaranteeErrors(model);
         if (!ModelState.IsValid)
         {
-            ViewBag.Bid = bid;            return View(model);
+            ViewBag.Bid = bid;
+            return View(model);
         }
 
         // The currency on an existing bid never changes when schedule details are edited.
-        bid.DeliveryDays = model.DeliveryDays;
-        bid.ValidityDays = model.ValidityDays;
+        model.CopyTo(bid);
         await _context.SaveChangesAsync();
         await tx.CommitAsync();
 
@@ -413,6 +413,12 @@ public class BidsController : Controller
     }
 
     // ----------------- helper methods -----------------
+
+    private void AddGuaranteeErrors(BidFormViewModel model)
+    {
+        foreach (var (field, error) in model.GuaranteeErrors())
+            ModelState.AddModelError(field, error);
+    }
 
     // The supplier profile of the logged-in user (or null)
     private async Task<SupplierProfile?> GetCurrentSupplierAsync()

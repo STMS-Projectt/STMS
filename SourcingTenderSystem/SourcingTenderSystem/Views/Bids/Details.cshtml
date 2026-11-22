@@ -46,6 +46,8 @@
                     <dd class="col-sm-7"><partial name="_StatusBadge" model="bid.Status" /> @if (bid.AwardOutcome is string result) { <span class="badge bg-secondary">@L.F("Result: {0}", L.T(result))</span> }</dd>
                     <dt class="col-sm-5">@L.T("Total price")</dt>
                     <dd class="col-sm-7">@bid.TotalPrice.ToString("N2") @bid.Currency</dd>
+                    <dt class="col-sm-5">@L.T("Final cost (with tax)")</dt>
+                    <dd class="col-sm-7">@bid.TotalWithTax.ToString("N2") @bid.Currency</dd>
                     <dt class="col-sm-5">@L.T("Delivery")</dt>
                     <dd class="col-sm-7">@bid.DeliveryDays days</dd>
                     <dt class="col-sm-5">@L.T("Offer validity")</dt>
@@ -64,6 +66,7 @@
                 }
     </section>
 </div>
+<partial name="_BidGuaranteeSummary" model="bid" />
 <div class="record-panel-actions record-section"><a class="btn btn-outline-secondary" data-workspace-dialog="details" asp-controller="Clarifications" asp-action="Index" asp-route-kind="bid" asp-route-recordId="@bid.Id"><partial name="_Icon" model='@("mail")' /> @L.T("Clarification history")</a></div>
 }
 
@@ -120,6 +123,10 @@ else
 @if (Model.CanChange)
 {
     <a data-workspace-dialog class="btn btn-primary" asp-controller="BidDocuments" asp-action="Upload" asp-route-bidId="@bid.Id"><partial name="_Icon" model='@("upload")' /> @L.T("Upload document")</a>
+}
+else if (bid.AwardOutcome == "Awarded")
+{
+    <a data-workspace-dialog class="btn btn-primary" asp-controller="BidDocuments" asp-action="Upload" asp-route-bidId="@bid.Id"><partial name="_Icon" model='@("upload")' /> @L.T("Upload warranty / guarantee")</a>
 }</div>
 @if (bid.BidDocuments.Count == 0)
 {
@@ -131,11 +138,20 @@ else
         @foreach (var document in bid.BidDocuments)
         {
             <article class="record-card">
-                <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("file")' /></span><span>@L.T(document.DocumentType)<small>@document.FileName</small></span></div>
+                <div class="record-name">
+                    @if (document.IsImage)
+                    {
+                        <img src="@Url.Action("Download", "BidDocuments", new { id = document.Id, preview = true })" alt="@document.FileName" width="56" height="56" style="object-fit:cover;border-radius:8px" />
+                    }
+                    else
+                    {
+                        <span class="avatar"><partial name="_Icon" model='@("file")' /></span>
+                    }
+                    <span>@L.T(document.DocumentType)<small>@document.FileName</small></span></div>
                 <dl class="record-facts"><div><dt>@L.T("Uploaded (UTC)")</dt><dd>@document.UploadedAt.ToString("dd MMM yyyy", L.DisplayCulture)</dd></div></dl>
                 <div class="record-action">
                     <a class="record-icon-action" asp-controller="BidDocuments" asp-action="Download" asp-route-id="@document.Id" aria-label="@L.F("Download {0}", document.FileName)" data-tooltip="@L.T("Download")"><partial name="_Icon" model='@("download")' /></a>
-                    <a class="record-icon-action" asp-controller="BidDocuments" asp-action="Download" asp-route-id="@document.Id" asp-route-preview="true" target="_blank" rel="noopener" aria-label="@L.F("Preview {0}", document.FileName)" data-tooltip="@L.T("Preview PDF")"><partial name="_Icon" model='@("eye")' /></a>
+                    <a class="record-icon-action" asp-controller="BidDocuments" asp-action="Download" asp-route-id="@document.Id" asp-route-preview="true" target="_blank" rel="noopener" aria-label="@L.F("Preview {0}", document.FileName)" data-tooltip="@L.T(document.IsImage ? "Preview image" : "Preview PDF")"><partial name="_Icon" model='@("eye")' /></a>
                     @if (Model.CanChange)
                     {
                         <form asp-controller="BidDocuments" asp-action="Delete" asp-route-id="@document.Id" method="post"

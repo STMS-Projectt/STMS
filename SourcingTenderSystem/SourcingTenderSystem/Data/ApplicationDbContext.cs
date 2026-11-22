@@ -342,6 +342,13 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser>
         modelBuilder.Entity<TenderApproval>().HasIndex(a => new { a.EvaluationReportId, a.ApproverEmployeeProfileId })
             .HasFilter("[Decision] IN ('Top Committee Approved', 'Top Committee Rejected')").IsUnique();
         modelBuilder.Entity<Bid>().Property(b => b.TotalPrice).HasPrecision(18, 2);
+        modelBuilder.Entity<Bid>().Property(b => b.BankGuaranteeAmount).HasPrecision(18, 2);
+        modelBuilder.Entity<Bid>().Property(b => b.OfferNature).HasMaxLength(20).HasDefaultValue("Product");
+        modelBuilder.Entity<Bid>().Property(b => b.BankGuaranteeType).HasMaxLength(60);
+        modelBuilder.Entity<Bid>().Property(b => b.BankGuaranteeNumber).HasMaxLength(60);
+        modelBuilder.Entity<Bid>().Property(b => b.BankName).HasMaxLength(120);
+        modelBuilder.Entity<Bid>().Property(b => b.GuaranteeVerificationCode).HasDefaultValueSql("NEWID()");
+        modelBuilder.Entity<Bid>().HasIndex(b => b.GuaranteeVerificationCode).IsUnique();
         modelBuilder.Entity<BidItem>().Property(b => b.UnitPrice).HasPrecision(18, 2);
         modelBuilder.Entity<EvaluationCriterion>().Property(c => c.WeightPercent).HasPrecision(18, 2);
         modelBuilder.Entity<TechnicalEvaluation>().Property(e => e.Score).HasPrecision(18, 2);

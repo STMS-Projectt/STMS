@@ -13,3 +13,67 @@
     <input asp-for="ValidityDays" class="form-control" />
     <span asp-validation-for="ValidityDays" class="text-danger"></span>
 </div>
+
+@* ----- 16% sales tax ----- *@
+<div class="form-check mb-3">
+    <input asp-for="IncludesSalesTax" class="form-check-input" />
+    <label asp-for="IncludesSalesTax" class="form-check-label"></label>
+    <div class="form-text">@L.T("The tax is calculated on the total of your item prices and shown as the final cost.")</div>
+</div>
+
+@* ----- Legal warranty ----- *@
+<fieldset class="mb-3">
+    <legend class="h6">@L.T("Legal warranty")</legend>
+    <div class="mb-3">
+        <label asp-for="OfferNature" class="form-label"></label>
+        <select asp-for="OfferNature" class="form-select">
+            @foreach (var nature in Bid.OfferNatures)
+            {
+                <option value="@nature">@L.T(nature)</option>
+            }
+        </select>
+        <div class="form-text">@L.F("Minimum warranty: product {0} months, service {1} months.", Bid.MinWarrantyMonths("Product"), Bid.MinWarrantyMonths("Service"))</div>
+    </div>
+    <div class="mb-3">
+        <label asp-for="LegalWarrantyMonths" class="form-label"></label>
+        <input asp-for="LegalWarrantyMonths" class="form-control" />
+        <span asp-validation-for="LegalWarrantyMonths" class="text-danger"></span>
+    </div>
+</fieldset>
+
+@* ----- Bank guarantee (optional: leave the number empty to skip) ----- *@
+<fieldset class="mb-3">
+    <legend class="h6">@L.T("Bank guarantee")</legend>
+    <p class="field-hint">@L.T("Leave the guarantee number empty if you will add the guarantee later.")</p>
+    <div class="mb-3">
+        <label asp-for="BankGuaranteeType" class="form-label"></label>
+        <select asp-for="BankGuaranteeType" class="form-select">
+            <option value="">@L.T("-- Choose a type --")</option>
+            @foreach (var type in Bid.GuaranteeTypes)
+            {
+                <option value="@type">@L.T(type)</option>
+            }
+        </select>
+        <span asp-validation-for="BankGuaranteeType" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="BankGuaranteeNumber" class="form-label"></label>
+        <input asp-for="BankGuaranteeNumber" class="form-control" />
+        <span asp-validation-for="BankGuaranteeNumber" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="BankName" class="form-label"></label>
+        <input asp-for="BankName" class="form-control" />
+        <span asp-validation-for="BankName" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="BankGuaranteeAmount" class="form-label"></label>
+        <input asp-for="BankGuaranteeAmount" class="form-control" />
+        <span asp-validation-for="BankGuaranteeAmount" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="BankGuaranteeExpiry" class="form-label"></label>
+        <input asp-for="BankGuaranteeExpiry" type="date" class="form-control" />
+        <span asp-validation-for="BankGuaranteeExpiry" class="text-danger"></span>
+    </div>
+</fieldset>

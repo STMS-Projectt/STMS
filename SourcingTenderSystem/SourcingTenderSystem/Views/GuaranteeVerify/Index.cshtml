@@ -1,0 +1,72 @@
+@model SourcingTenderSystem.Controllers.GuaranteeCheckResult
+@{
+    Layout = null;
+    var days = Model.Expiry is DateTime e ? (e.Date - DateTime.UtcNow.Date).Days : 0;
+}
+<!DOCTYPE html>
+<html lang="@(L.Arabic ? "ar" : "en")" dir="@(L.Arabic ? "rtl" : "ltr")">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@L.T("e-Guarantee Verification")</title>
+    <style>
+        :root { --brand:#0b4f6c; --ok:#1b7f3b; --bad:#b42318; --line:#d9e2ec; }
+        * { box-sizing:border-box; }
+        body { margin:0; font-family:Segoe UI, Tahoma, Arial, sans-serif; background:#f3f6f9; color:#1f2933; }
+        .bank-bar { background:var(--brand); color:#fff; padding:16px 24px; display:flex; align-items:center; gap:12px; }
+        .bank-logo { width:40px; height:40px; border-radius:8px; background:#fff; color:var(--brand); display:grid; place-items:center; font-weight:700; }
+        .bank-bar h1 { font-size:18px; margin:0; } .bank-bar small { opacity:.8; }
+        main { max-width:720px; margin:24px auto; padding:0 16px; }
+        .card { background:#fff; border:1px solid var(--line); border-radius:12px; padding:24px; margin-bottom:16px; }
+        label { display:block; font-weight:600; margin:12px 0 4px; }
+        input { width:100%; padding:10px; border:1px solid var(--line); border-radius:8px; font-size:15px; }
+        button { margin-top:16px; background:var(--brand); color:#fff; border:0; border-radius:8px; padding:10px 20px; font-size:15px; cursor:pointer; }
+        .status { padding:14px; border-radius:8px; font-weight:700; margin-bottom:16px; }
+        .status.ok { background:#e7f6ec; color:var(--ok); } .status.bad { background:#fdecea; color:var(--bad); }
+        dl { display:grid; grid-template-columns:1fr 1.4fr; gap:10px 16px; margin:0; }
+        dt { color:#52606d; } dd { margin:0; font-weight:600; }
+        footer { text-align:center; font-size:12px; color:#7b8794; padding:16px; }
+    </style>
+</head>
+<body>
+<header class="bank-bar">
+    <span class="bank-logo">eG</span>
+    <div><h1>@L.T("e-Guarantee Verification")</h1><small>@L.T("Electronic bank guarantee check service")</small></div>
+</header>
+<main>
+    @if (Model.Found)
+    {
+        <section class="card">
+            <div class="status @(Model.IsValid ? "ok" : "bad")">
+                @(Model.IsValid ? L.T("✔ This bank guarantee is genuine and valid.") : L.T("✖ This bank guarantee is expired or no longer valid."))
+            </div>
+            <dl>
+                <dt>@L.T("Guarantee number")</dt><dd>@Model.Number</dd>
+                <dt>@L.T("Issuing bank")</dt><dd>@Model.BankName</dd>
+                <dt>@L.T("Guarantee type")</dt><dd>@L.T(Model.Type ?? "")</dd>
+                <dt>@L.T("Amount")</dt><dd>@Model.Amount?.ToString("N2") @Model.Currency</dd>
+                <dt>@L.T("Expiry date")</dt><dd>@Model.Expiry?.ToString("yyyy-MM-dd") @(Model.IsValid ? $"({L.F("{0} days left", days)})" : "")</dd>
+                <dt>@L.T("Principal (supplier)")</dt><dd>@Model.Principal</dd>
+                <dt>@L.T("Beneficiary tender")</dt><dd>@Model.TenderTitle</dd>
+                <dt>@L.T("Offer type")</dt><dd>@L.T(Model.OfferNature ?? "")</dd>
+                <dt>@L.T("Legal warranty")</dt><dd>@(Model.WarrantyMonths is int m ? L.F("{0} months", m) : "—")</dd>
+            </dl>
+        </section>
+    }
+    else if (Model.Searched)
+    {
+        <div class="status bad">@L.T("No bank guarantee matches these details.")</div>
+    }
+
+    <form class="card" method="get" asp-action="Index">
+        <h2 style="margin-top:0;font-size:17px">@L.T("Verify a bank guarantee")</h2>
+        <label for="number">@L.T("Guarantee number")</label>
+        <input id="number" name="number" value="@Model.Number" />
+        <label for="code">@L.T("Verification code")</label>
+        <input id="code" name="code" value="@Model.Code" required />
+        <button type="submit">@L.T("Verify")</button>
+    </form>
+</main>
+<footer>@L.T("Simulated bank verification page for the Sourcing & Tender Management System.")</footer>
+</body>
+</html>

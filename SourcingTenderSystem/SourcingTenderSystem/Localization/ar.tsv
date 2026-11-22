@@ -1956,3 +1956,62 @@ Text|النص
 All four reviewers have finished. Uploading the PDF closes scoring and sends the report to the sourcing manager.|أنهى المراجعون الأربعة التقييم. رفع ملف PDF يغلق التقييم ويرسل التقرير إلى مدير التوريد.
 Evaluation closed. The report is with the sourcing manager.|أُغلق التقييم وأُرسل التقرير إلى مدير التوريد.
 Evaluation report ready for your approval|تقرير التقييم جاهز لموافقتك
+Bank guarantee|الكفالة البنكية
+Beneficiary tender|المناقصة المستفيدة
+Cost, warranty and bank guarantee|التكلفة والكفالة العدلية والكفالة البنكية
+Electronic bank guarantee check service|خدمة التحقق الإلكتروني من الكفالات البنكية
+Final cost|التكلفة النهائية
+Final cost (with tax)|التكلفة النهائية (شاملة الضريبة)
+Guarantee number|رقم الكفالة
+Guarantee type|نوع الكفالة
+Issuing bank|البنك المُصدِر
+Leave the guarantee number empty if you will add the guarantee later.|اترك رقم الكفالة فارغاً إذا كنت ستضيف الكفالة لاحقاً.
+Legal warranty|الكفالة العدلية
+Minimum warranty: product {0} months, service {1} months.|الحد الأدنى للكفالة: منتج {0} شهراً، خدمة {1} أشهر.
+No bank guarantee matches these details.|لا توجد كفالة بنكية مطابقة لهذه البيانات.
+Not added|غير مضافة
+Not provided|غير مُقدَّمة
+Offer type|نوع العرض
+Open verification page|فتح صفحة التحقق
+PDF, maximum 10 MB. For sample images choose a JPG or PNG photo.|ملف PDF بحد أقصى 10 ميغابايت. لصور العينات اختر صورة JPG أو PNG.
+Price before tax|السعر قبل الضريبة
+Principal (supplier)|المكفول (المورد)
+QR code to verify the bank guarantee|رمز QR للتحقق من الكفالة البنكية
+Sales tax (16%)|ضريبة المبيعات (16%)
+Scan to verify this bank guarantee on the e-guarantee verification page.|امسح الرمز للتحقق من هذه الكفالة عبر صفحة التحقق الإلكتروني.
+Simulated bank verification page for the Sourcing & Tender Management System.|صفحة تحقق بنكية تجريبية لنظام إدارة المناقصات والتوريد.
+The tax is calculated on the total of your item prices and shown as the final cost.|تُحسب الضريبة على مجموع أسعار البنود وتظهر ضمن التكلفة النهائية.
+Upload warranty / guarantee|رفع الكفالة العدلية / البنكية
+Verification code|رمز التحقق
+Verify|تحقق
+Verify a bank guarantee|التحقق من كفالة بنكية
+e-Guarantee Verification|التحقق الإلكتروني من الكفالات
+valid until {0}|سارية حتى {0}
+{0} days left|متبقٍ {0} يوماً
+✔ This bank guarantee is genuine and valid.|✔ هذه الكفالة البنكية صحيحة وسارية.
+✖ This bank guarantee is expired or no longer valid.|✖ هذه الكفالة البنكية منتهية أو غير سارية.
+Product|منتج
+Service|خدمة
+Bid bond|كفالة دخول عطاء
+Performance bond|كفالة حسن تنفيذ
+Advance payment guarantee|كفالة دفعة مقدمة
+Maintenance guarantee|كفالة صيانة
+Sample Image|صورة عينة
+Add 16% sales tax|إضافة ضريبة مبيعات 16%
+Legal warranty (months)|مدة الكفالة العدلية (بالأشهر)
+Bank guarantee type|نوع الكفالة البنكية
+Bank guarantee number|رقم الكفالة البنكية
+Guarantee amount (JOD)|قيمة الكفالة (دينار أردني)
+Guarantee expiry date|تاريخ انتهاء الكفالة
+File (PDF, or image for samples)|الملف (PDF، أو صورة للعينات)
+Preview image|معاينة الصورة
+Choose Product or Service.|اختر منتج أو خدمة.
+Choose the bank guarantee type.|اختر نوع الكفالة البنكية.
+Enter the issuing bank.|أدخل البنك المُصدِر.
+Enter the guarantee amount.|أدخل قيمة الكفالة.
+The guarantee expiry must be a future date.|يجب أن يكون تاريخ انتهاء الكفالة في المستقبل.
+Warranty must be between 1 and 120 months.|يجب أن تكون مدة الكفالة بين 1 و120 شهراً.
+Guarantee amount must be greater than 0.|يجب أن تكون قيمة الكفالة أكبر من صفر.
+Sample images must be JPG or PNG files.|يجب أن تكون صور العينات بصيغة JPG أو PNG.
+This file is not a real JPG/PNG image.|هذا الملف ليس صورة JPG/PNG حقيقية.
+Please choose a file.|يرجى اختيار ملف.

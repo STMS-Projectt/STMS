@@ -29,6 +29,7 @@
         </div>
     }
 </details>
+<partial name="_BidGuaranteeSummary" model="Model.Bid" />
 <details class="surface detail-card mb-3 bid-evidence"><summary><span class="icon-tile tone-blue"><partial name="_Icon" model='@("file")' /></span>@L.T("Bid documents") <span class="record-panel-label">@Model.Bid.BidDocuments.Count</span></summary>
     @if (Model.Bid.BidDocuments.Count == 0) { <p class="subtle mb-0">@L.T("No documents attached.")</p> }
     else

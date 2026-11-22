@@ -10,7 +10,7 @@ public sealed class BiometricEnforcementMiddleware(RequestDelegate next)
         var endpoint = context.GetEndpoint()?.Metadata.GetMetadata<ControllerActionDescriptor>();
         // Supplier onboarding must finish before requiring sign-in security setup.
         if (endpoint is not null && endpoint.ControllerName != "Account" &&
-            endpoint.ControllerName != "SupplierRegistration" && context.User.Identity?.IsAuthenticated == true)
+            endpoint.ControllerName != "SupplierRegistration" && endpoint.ControllerName != "GuaranteeVerify" && context.User.Identity?.IsAuthenticated == true)
         {
             var user = await users.GetUserAsync(context.User);
             if (user is not null && (await users.GetPasskeysAsync(user)).Count == 0)

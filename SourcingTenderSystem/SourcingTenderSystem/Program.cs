@@ -96,6 +96,9 @@ builder.Services.AddRateLimiter(options =>
     options.AddPolicy("biometric-login", context => RateLimitPartition.GetFixedWindowLimiter(
         context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
         _ => new FixedWindowRateLimiterOptions { PermitLimit = 12, Window = TimeSpan.FromMinutes(2) }));
+    options.AddPolicy("guarantee-verify", context => RateLimitPartition.GetFixedWindowLimiter(
+        context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+        _ => new FixedWindowRateLimiterOptions { PermitLimit = 30, Window = TimeSpan.FromMinutes(1) }));
     options.AddPolicy("evaluation-weight-advice", context => RateLimitPartition.GetFixedWindowLimiter(
         context.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "anonymous",
         _ => new FixedWindowRateLimiterOptions { PermitLimit = 10, Window = TimeSpan.FromMinutes(1) }));
@@ -112,6 +115,8 @@ builder.Services.AddScoped<ProtectedPdf>();
 ProtectedPdf.ConfigureFonts(builder.Configuration);
 builder.Services.AddHostedService<TenderClock>();
 builder.Services.AddScoped<BidDocumentAccess>();
+// Award e-mails (AI-written text, sent by SMTP or saved to App_Data/OutgoingEmails)
+builder.Services.AddSingleton<AwardEmailService>();
 var app = builder.Build();
 
 if (args.Contains("--reset-local-test-data"))

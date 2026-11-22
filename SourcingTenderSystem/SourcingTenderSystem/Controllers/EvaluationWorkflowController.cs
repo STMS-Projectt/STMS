@@ -293,7 +293,7 @@ public sealed class EvaluationWorkflowController(ApplicationDbContext db, Suppli
     }
 
     [HttpPost]
-    public async Task<IActionResult> Approve(int id, string? comments, string expectedStage, string? vote, string? password, bool confirmDecision, [FromServices] ProtectedPdf pdf)
+    public async Task<IActionResult> Approve(int id, string? comments, string expectedStage, string? vote, string? password, bool confirmDecision, [FromServices] ProtectedPdf pdf, [FromServices] AwardEmailService mailer)
     {
         var employee = await CurrentEmployeeAsync();
         if (employee is null) return Forbid();
@@ -386,6 +386,7 @@ public sealed class EvaluationWorkflowController(ApplicationDbContext db, Suppli
         }
         await Db.SaveChangesAsync();
         await tx.CommitAsync();
+        if (next == Approved) await QueueAwardEmailsAsync(tender, report.RecommendedBidId, mailer);
         TempData["Message"] = next == Approved ? "Tender awarded." : next == Cancelled ? "Tender cancelled." : report.Status == Top && decision == Vote ? "Vote recorded." : "Report approved and forwarded.";
         return RedirectToAction(nameof(Details), new { id });
     }
@@ -415,6 +416,43 @@ public sealed class EvaluationWorkflowController(ApplicationDbContext db, Suppli
         await tx.CommitAsync();
         TempData["Message"] = "Returned to the sourcing officer for a new tender.";
         return RedirectToAction(nameof(Details), new { id });
+    }
+
+    // Collects the award facts + every person involved, then sends the e-mails in the background
+    // (the AI text can take a while, so the Top Committee member does not wait for it).
+    private async Task QueueAwardEmailsAsync(Tender tender, int winnerBidId, AwardEmailService mailer)
+    {
+        var winner = await Db.Bids.AsNoTracking().Include(b => b.SupplierProfile).ThenInclude(s => s.User)
+            .Include(b => b.BidDocuments).SingleAsync(b => b.Id == winnerBidId);
+        var requisition = await Db.PurchaseRequisitions.AsNoTracking()
+            .Where(r => r.Id == tender.PurchaseRequisitionId)
+            .Select(r => new { r.CreatedByEmployeeProfileId, r.ReviewedByEmployeeProfileId }).SingleAsync();
+
+        // Officer who created the tender, requester + reviewer of the requisition, evaluation and top committees
+        var employeeIds = tender.CommitteeMembers.Select(m => m.EmployeeProfileId)
+            .Append(tender.CreatedByEmployeeProfileId).Append(requisition.CreatedByEmployeeProfileId)
+            .Concat(requisition.ReviewedByEmployeeProfileId is int reviewer ? [reviewer] : Array.Empty<int>())
+            .Distinct().ToList();
+        var recipients = await Db.EmployeeProfiles.AsNoTracking()
+            .Where(e => employeeIds.Contains(e.Id) && e.IsActive && e.User.Email != null)
+            .Select(e => new AwardRecipient(e.User.Email!, e.FullName, false)).ToListAsync();
+        if (winner.SupplierProfile.User.Email is { Length: > 0 } supplierEmail)
+            recipients.Add(new AwardRecipient(supplierEmail, winner.SupplierProfile.CompanyName, true));
+
+        var guaranteeFolder = Path.Combine(HttpContext.RequestServices.GetRequiredService<IWebHostEnvironment>().ContentRootPath, "App_Data", "BidDocuments");
+        var data = new AwardEmailData(tender.Id, tender.Title, winner.SupplierProfile.CompanyName,
+            winner.TotalPrice, winner.TaxAmount, winner.TotalWithTax, winner.Currency, winner.DeliveryDays,
+            winner.OfferNature, winner.LegalWarrantyMonths, winner.BankGuaranteeType, winner.BankGuaranteeNumber, winner.BankName,
+            winner.BankGuaranteeAmount, winner.BankGuaranteeExpiry,
+            Url.Action(nameof(Details), "EvaluationWorkflow", new { id = tender.Id }, Request.Scheme)!,
+            winner.HasBankGuarantee ? Url.Action("Index", "GuaranteeVerify",
+                new { code = winner.GuaranteeVerificationCode.ToString("N"), number = winner.BankGuaranteeNumber }, Request.Scheme) : null,
+            Url.Action("Upload", "BidDocuments", new { bidId = winner.Id }, Request.Scheme)!,
+            // The warranty / guarantee documents already uploaded are attached to the winner's e-mail
+            winner.BidDocuments.Where(d => BidDocument.AfterAwardTypes.Contains(d.DocumentType))
+                .Select(d => Path.Combine(guaranteeFolder, Path.GetFileName(d.FilePath))).ToList());
+
+        _ = Task.Run(() => mailer.SendAsync(data, recipients));
     }
 
     private void NotifyHandoff(int employeeId, Tender tender, string title, string message, string? link) =>

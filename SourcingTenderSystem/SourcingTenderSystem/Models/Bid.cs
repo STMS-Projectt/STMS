@@ -24,6 +24,31 @@ public class Bid
     public int? SubmittedRoundNumber { get; set; }
     public TenderRound? SubmittedRound { get; set; }
 
+    // ----- Sales tax (added by the supplier) -----
+    public const decimal SalesTaxRate = 0.16m;            // 16% general sales tax
+    public bool IncludesSalesTax { get; set; } = true;
+    [NotMapped] public decimal TaxAmount => IncludesSalesTax ? Math.Round(TotalPrice * SalesTaxRate, 2) : 0m;
+    [NotMapped] public decimal TotalWithTax => TotalPrice + TaxAmount;
+
+    // ----- Legal warranty + bank guarantee -----
+    public static IReadOnlyList<string> OfferNatures { get; } = Array.AsReadOnly(new[] { "Product", "Service" });
+    public static IReadOnlyList<string> GuaranteeTypes { get; } = Array.AsReadOnly(new[]
+        { "Bid bond", "Performance bond", "Advance payment guarantee", "Maintenance guarantee" });
+
+    // Minimum legal warranty (months) for each kind of offer.
+    public static int MinWarrantyMonths(string? nature) => nature == "Service" ? 6 : 12;
+
+    public string OfferNature { get; set; } = "Product";  // Product | Service
+    public int? LegalWarrantyMonths { get; set; }
+    public string? BankGuaranteeType { get; set; }
+    public string? BankGuaranteeNumber { get; set; }
+    public string? BankName { get; set; }
+    public decimal? BankGuaranteeAmount { get; set; }
+    public DateTime? BankGuaranteeExpiry { get; set; }
+    // Secret code in the QR link of the guarantee verification page.
+    public Guid GuaranteeVerificationCode { get; set; } = Guid.NewGuid();
+    [NotMapped] public bool HasBankGuarantee => !string.IsNullOrWhiteSpace(BankGuaranteeNumber);
+
     public Tender Tender { get; set; } = null!;
     public SupplierProfile SupplierProfile { get; set; } = null!;
     public ICollection<BidItem> BidItems { get; set; } = new List<BidItem>();

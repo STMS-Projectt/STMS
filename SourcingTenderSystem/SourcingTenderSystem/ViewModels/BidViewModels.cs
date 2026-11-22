@@ -19,6 +19,77 @@ public class BidFormViewModel
     [Range(1, 3650, ErrorMessage = "Validity days must be between 1 and 3650.")]
     [Display(Name = "Offer validity (days)")]
     public int ValidityDays { get; set; }
+
+    // 16% sales tax added on top of the item prices
+    [Display(Name = "Add 16% sales tax")]
+    public bool IncludesSalesTax { get; set; } = true;
+
+    [Display(Name = "Offer type")]
+    public string OfferNature { get; set; } = "Product";
+
+    [Range(1, 120, ErrorMessage = "Warranty must be between 1 and 120 months.")]
+    [Display(Name = "Legal warranty (months)")]
+    public int? LegalWarrantyMonths { get; set; }
+
+    [Display(Name = "Bank guarantee type")]
+    public string? BankGuaranteeType { get; set; }
+
+    [StringLength(60)]
+    [Display(Name = "Bank guarantee number")]
+    public string? BankGuaranteeNumber { get; set; }
+
+    [StringLength(120)]
+    [Display(Name = "Issuing bank")]
+    public string? BankName { get; set; }
+
+    [Range(0.01, 999999999.99, ErrorMessage = "Guarantee amount must be greater than 0.")]
+    [Display(Name = "Guarantee amount (JOD)")]
+    public decimal? BankGuaranteeAmount { get; set; }
+
+    [DataType(DataType.Date)]
+    [Display(Name = "Guarantee expiry date")]
+    public DateTime? BankGuaranteeExpiry { get; set; }
+
+    // Server-side checks for the warranty / guarantee fields. Returns (field, error) pairs.
+    public IEnumerable<(string Field, string Error)> GuaranteeErrors()
+    {
+        if (!Bid.OfferNatures.Contains(OfferNature))
+            yield return (nameof(OfferNature), "Choose Product or Service.");
+        if (LegalWarrantyMonths is int months && months < Bid.MinWarrantyMonths(OfferNature))
+            yield return (nameof(LegalWarrantyMonths), $"A {OfferNature} offer needs at least {Bid.MinWarrantyMonths(OfferNature)} months of warranty.");
+        if (string.IsNullOrWhiteSpace(BankGuaranteeNumber)) yield break;
+        if (BankGuaranteeType is null || !Bid.GuaranteeTypes.Contains(BankGuaranteeType))
+            yield return (nameof(BankGuaranteeType), "Choose the bank guarantee type.");
+        if (string.IsNullOrWhiteSpace(BankName))
+            yield return (nameof(BankName), "Enter the issuing bank.");
+        if (BankGuaranteeAmount is null)
+            yield return (nameof(BankGuaranteeAmount), "Enter the guarantee amount.");
+        if (BankGuaranteeExpiry is not DateTime expiry || expiry.Date <= DateTime.UtcNow.Date)
+            yield return (nameof(BankGuaranteeExpiry), "The guarantee expiry must be a future date.");
+    }
+
+    public static BidFormViewModel From(Bid bid) => new()
+    {
+        DeliveryDays = bid.DeliveryDays, ValidityDays = bid.ValidityDays, IncludesSalesTax = bid.IncludesSalesTax,
+        OfferNature = bid.OfferNature, LegalWarrantyMonths = bid.LegalWarrantyMonths, BankGuaranteeType = bid.BankGuaranteeType,
+        BankGuaranteeNumber = bid.BankGuaranteeNumber, BankName = bid.BankName,
+        BankGuaranteeAmount = bid.BankGuaranteeAmount, BankGuaranteeExpiry = bid.BankGuaranteeExpiry
+    };
+
+    public void CopyTo(Bid bid)
+    {
+        bid.DeliveryDays = DeliveryDays;
+        bid.ValidityDays = ValidityDays;
+        bid.IncludesSalesTax = IncludesSalesTax;
+        bid.OfferNature = OfferNature;
+        bid.LegalWarrantyMonths = LegalWarrantyMonths;
+        var hasGuarantee = !string.IsNullOrWhiteSpace(BankGuaranteeNumber);
+        bid.BankGuaranteeNumber = hasGuarantee ? BankGuaranteeNumber!.Trim() : null;
+        bid.BankGuaranteeType = hasGuarantee ? BankGuaranteeType : null;
+        bid.BankName = hasGuarantee ? BankName?.Trim() : null;
+        bid.BankGuaranteeAmount = hasGuarantee ? BankGuaranteeAmount : null;
+        bid.BankGuaranteeExpiry = hasGuarantee ? BankGuaranteeExpiry?.Date : null;
+    }
 }
 
 // Data for the Bids/MyBids page (two sections).
@@ -80,8 +151,8 @@ public class BidDocumentUploadViewModel
     public string DocumentType { get; set; } = string.Empty;
 
     // IFormFile = the file the user picked in <input type="file">
-    [Required(ErrorMessage = "Please choose a PDF file.")]
-    [Display(Name = "PDF file")]
+    [Required(ErrorMessage = "Please choose a file.")]
+    [Display(Name = "File (PDF, or image for samples)")]
     public IFormFile File { get; set; } = null!;
 }
 
