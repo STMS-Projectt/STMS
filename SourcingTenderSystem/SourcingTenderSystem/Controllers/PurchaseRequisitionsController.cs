@@ -136,7 +136,7 @@ public class PurchaseRequisitionsController : RequisitionBaseController
     {
         var employee = await CurrentEmployeeAsync();
         if (!HasDepartment(employee)) return Forbid();
-        var request = await RequestDetails().Include(x => x.Tenders).AsNoTracking()
+        var request = await RequestDetails().Include(x => x.Tenders).Include(x => x.Category).AsNoTracking()
             .SingleOrDefaultAsync(x => x.Id == id && x.DepartmentId == employee!.DepartmentId);
         if (request == null) return NotFound();
         ViewBag.CanEdit = Owns(request, employee!) && CanEdit(request);

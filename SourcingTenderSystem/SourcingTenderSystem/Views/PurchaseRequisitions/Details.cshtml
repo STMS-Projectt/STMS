@@ -4,61 +4,163 @@
     bool canEdit = ViewBag.CanEdit == true;
     bool returned = Model.Status == "Returned";
     bool overviewOnly = ViewBag.OverviewOnly == true;
+    var items = Model.Items.OrderBy(x => x.Id).ToList();
+    var daysLeft = (Model.TargetDate.Date - DateTime.Today).Days;
+    var priorityTone = Model.Priority switch { "Low" => "low", "High" => "high", "Urgent" => "urgent", _ => "normal" };
+
+    // Progress tracker: where the request is in its life cycle
+    var steps = new[] { "Draft", "Submitted", "Under Review", "Approved", "Converted to Tender" };
+    var current = Model.Status switch
+    {
+        "Draft" or "Returned" => 0, "Submitted" => 1, "Under Review" => 2, "Approved" => 3, "Converted to Tender" => 4, _ => -1
+    };
 }
+<div class="pr-create prd">
 <a class="back-link" asp-action="MyRequests"><partial name="_Icon" model='@("back")' /> @L.T("My Requests")</a>
-<header class="page-heading stms-hero admin-record-hero">
-    <div><p class="eyebrow">@L.F("Purchase request · PR-{0}", Model.Id)</p><h1>@Model.Title</h1><p>@Model.Department.Name · @L.F("Requested by {0}", Model.CreatedByEmployeeProfile.FullName)</p></div>
-    <partial name="_RequestStatus" model="Model.Status" />
+
+@* ---------- Hero ---------- *@
+<header class="pr-hero prd-hero">
+    <span class="pr-hero-icon"><partial name="_Icon" model='@("file")' /></span>
+    <div>
+        <p class="eyebrow">@L.F("Purchase request · PR-{0}", Model.Id)</p>
+        <h1>@Model.Title</h1>
+        <p class="prd-meta">
+            <span><partial name="_Icon" model='@("building")' /> @Model.Department.Name</span>
+            <span><partial name="_Icon" model='@("users")' /> @L.F("Requested by {0}", Model.CreatedByEmployeeProfile.FullName)</span>
+            @if (Model.Category != null) { <span><partial name="_Icon" model='@("inbox")' /> @Model.Category.Name</span> }
+        </p>
+    </div>
+    <div class="prd-status"><partial name="_RequestStatus" model="Model.Status" /></div>
+    @if (current >= 0)
+    {
+        <ol class="prd-track" aria-label="@L.T("Status")">
+            @for (var i = 0; i < steps.Length; i++)
+            {
+                <li class="@(i < current ? "is-done" : i == current ? "is-current" : "")"><span>@if (i < current) { <partial name="_Icon" model='@("check")' /> } else { @(i + 1) }</span>@L.T(steps[i])</li>
+            }
+        </ol>
+    }
 </header>
-@if (!overviewOnly) { <partial name="_RecordQr" model='@(Url.Action("Details", new { id = Model.Id })!)' /> }
+
 @if (TempData["RequestError"] is string error)
 {
     <div class="alert alert-danger" role="alert">@L.T(error)</div>
 }
 @if (!string.IsNullOrWhiteSpace(Model.ReviewNotes))
 {
-    <section class="surface detail-card request-review @(returned ? "request-returned" : "")">
-        <h2>@L.T(returned ? "Changes requested" : "Latest review notes")</h2>
-        <p class="request-prose mb-0">@Model.ReviewNotes</p>
-        @if (Model.ReviewedByEmployeeProfile != null) { <small class="subtle">@Model.ReviewedByEmployeeProfile.FullName</small> }
-        @if (returned && canEdit) { <p class="subtle mt-2 mb-0">@L.T("Update the request or its items, then submit it again.")</p> }
+    <section class="prd-note @(returned ? "is-returned" : "")">
+        <span class="pr-badge"><partial name="_Icon" model='@(returned ? "warning" : "mail")' /></span>
+        <div>
+            <h2>@L.T(returned ? "Changes requested" : "Latest review notes")</h2>
+            <p class="request-prose mb-1">@Model.ReviewNotes</p>
+            @if (Model.ReviewedByEmployeeProfile != null) { <small>— @Model.ReviewedByEmployeeProfile.FullName</small> }
+            @if (returned && canEdit) { <p class="mt-2 mb-0"><strong>@L.T("Update the request or its items, then submit it again.")</strong></p> }
+        </div>
     </section>
 }
-<section class="surface detail-card request-section">
-    <div class="card-heading"><h2>@L.T("Request overview")</h2>
-        @if (canEdit && !overviewOnly) { <a class="btn btn-outline-secondary" data-workspace-dialog asp-action="Edit" asp-route-id="@Model.Id"><partial name="_Icon" model='@("edit")' /> @L.T("Edit request")</a> }
-    </div>
-    <dl class="request-meta">
-        <div><dt>@L.T("Priority")</dt><dd>@L.T(Model.Priority)</dd></div>
-        <div><dt>@L.T("Target date")</dt><dd>@Model.TargetDate.ToString("dd MMM yyyy", L.DisplayCulture)</dd></div>
-        <div><dt>@L.T("Created")</dt><dd>@Model.CreatedAt.ToString("dd MMM yyyy", L.DisplayCulture)</dd></div>
-    </dl>
-    <h3>@L.T("Reason for purchase")</h3><p class="request-prose mb-0">@Model.Reason</p>
-</section>
-@if (!overviewOnly)
-{
-<section class="surface directory request-section">
-    <div class="directory-toolbar">
-        <div><h2 class="mb-0">@L.T("Requested items")</h2><span class="result-count">@Model.Items.Count line item(s)</span></div>
-        @if (canEdit) { <a class="btn btn-outline-secondary" data-workspace-dialog asp-controller="RequisitionItems" asp-action="Create" asp-route-requestId="@Model.Id"><partial name="_Icon" model='@("plus")' /> @L.T("Add item")</a> }
-    </div>
-    <partial name="_RequisitionItems" model="Model.Items" />
-</section>
-@if (canEdit && Model.Items.Count > 0)
-{
-    <form asp-action="Submit" asp-route-id="@Model.Id" method="post" class="surface detail-card request-submit">
-        <div><h2>@L.T(returned ? "Ready to send it back?" : "Ready for review?")</h2><p class="subtle mb-0">@L.T("You can make changes again if the reviewer returns this request.")</p></div>
-        <button type="submit" class="btn btn-primary">@L.T(returned ? "Resubmit for review" : "Submit for review") <partial name="_Icon" model='@("arrow")' /></button>
-    </form>
-}
 
-<div class="button-row mb-3">
-    @if (ViewData["ClarificationRequestIds"] is ISet<int> startable && startable.Contains(Model.Id))
+<div class="@(overviewOnly ? "" : "prd-layout")">
+<div class="prd-main">
+    @* ---------- Overview ---------- *@
+    <section class="pr-card prd-card">
+        <div class="prd-card-head">
+            <div class="pr-section-head mb-0"><span class="pr-badge"><partial name="_Icon" model='@("dashboard")' /></span><div><h2>@L.T("Request overview")</h2></div></div>
+            @if (canEdit && !overviewOnly) { <a class="btn btn-outline-secondary prd-btn" data-workspace-dialog asp-action="Edit" asp-route-id="@Model.Id"><partial name="_Icon" model='@("edit")' /> @L.T("Edit request")</a> }
+        </div>
+        <div class="prd-stats">
+            <div class="prd-stat">
+                <span>@L.T("Priority")</span>
+                <strong><span class="prd-priority pr-@priorityTone"><i></i>@L.T(Model.Priority)</span></strong>
+            </div>
+            <div class="prd-stat">
+                <span>@L.T("Target date")</span>
+                <strong>@Model.TargetDate.ToString("dd MMM yyyy", L.DisplayCulture)</strong>
+                <small class="@(daysLeft < 0 ? "is-late" : "")">@(daysLeft >= 0 ? L.F("{0} days left", daysLeft) : L.T("Past due"))</small>
+            </div>
+            <div class="prd-stat">
+                <span>@L.T("Created")</span>
+                <strong>@Model.CreatedAt.ToString("dd MMM yyyy", L.DisplayCulture)</strong>
+            </div>
+            <div class="prd-stat">
+                <span>@L.T("Requested items")</span>
+                <strong>@items.Count</strong>
+            </div>
+        </div>
+        <div class="prd-reason">
+            <h3>@L.T("Reason for purchase")</h3>
+            <p class="request-prose mb-0">@Model.Reason</p>
+        </div>
+    </section>
+
+    @if (!overviewOnly)
     {
-        <a data-workspace-page class="btn btn-outline-secondary" asp-controller="Clarifications" asp-action="StartRequest" asp-route-id="@Model.Id"><partial name="_Icon" model='@("mail")' /> @L.T("Start a clarification")</a>
+        @* ---------- Items ---------- *@
+        <section class="pr-card prd-card">
+            <div class="prd-card-head">
+                <div class="pr-section-head mb-0"><span class="pr-badge"><partial name="_Icon" model='@("briefcase")' /></span><div><h2>@L.T("Requested items")</h2><p>@L.F("{0} line item(s)", items.Count)</p></div></div>
+                @if (canEdit) { <a class="btn btn-outline-secondary prd-btn" data-workspace-dialog asp-controller="RequisitionItems" asp-action="Create" asp-route-requestId="@Model.Id"><partial name="_Icon" model='@("plus")' /> @L.T("Add item")</a> }
+            </div>
+            @if (items.Count == 0)
+            {
+                <div class="prd-empty"><span class="pr-badge"><partial name="_Icon" model='@("inbox")' /></span><h3>@L.T("No items yet")</h3><p>@L.T("Items appear here once they are added to the request.")</p></div>
+            }
+            else
+            {
+                <ol class="prd-items">
+                    @for (var i = 0; i < items.Count; i++)
+                    {
+                        var item = items[i];
+                        <li class="prd-item">
+                            <span class="pr-item-no">@(i + 1)</span>
+                            <div class="prd-item-body">
+                                <h3>@item.ItemName</h3>
+                                @if (!string.IsNullOrWhiteSpace(item.Specifications)) { <p class="request-prose">@item.Specifications</p> }
+                            </div>
+                            <span class="prd-qty">@item.Quantity <small>@L.T(item.Unit)</small></span>
+                            @if (canEdit)
+                            {
+                                <div class="record-action">
+                                    <a class="record-icon-action" data-workspace-dialog asp-controller="RequisitionItems" asp-action="Edit" asp-route-id="@item.Id" aria-label="@L.F("Edit {0}", item.ItemName)" data-tooltip="@L.T("Edit item")"><partial name="_Icon" model='@("edit")' /></a>
+                                    <a class="record-icon-action record-icon-danger" data-workspace-dialog asp-controller="RequisitionItems" asp-action="Delete" asp-route-id="@item.Id" aria-label="@L.F("Remove {0}", item.ItemName)" data-tooltip="@L.T("Remove item")"><partial name="_Icon" model='@("trash")' /></a>
+                                </div>
+                            }
+                        </li>
+                    }
+                </ol>
+            }
+        </section>
+
+        <partial name="_TenderHistory" model="Model.Tenders" />
     }
-    <a data-workspace-page class="btn btn-outline-secondary" asp-controller="Clarifications" asp-action="Index" asp-route-kind="request" asp-route-recordId="@Model.Id">@L.T("Clarification history")</a>
 </div>
 
-<partial name="_TenderHistory" model="Model.Tenders" />
+@if (!overviewOnly)
+{
+    @* ---------- Side: actions ---------- *@
+    <aside class="prd-side">
+        @if (canEdit && items.Count > 0)
+        {
+            <form asp-action="Submit" asp-route-id="@Model.Id" method="post" class="prd-submit">
+                <span class="pr-badge"><partial name="_Icon" model='@("arrow")' /></span>
+                <h2>@L.T(returned ? "Ready to send it back?" : "Ready for review?")</h2>
+                <p>@L.T("You can make changes again if the reviewer returns this request.")</p>
+                <button type="submit" class="btn btn-primary pr-submit w-100 justify-content-center">@L.T(returned ? "Resubmit for review" : "Submit for review") <partial name="_Icon" model='@("arrow")' /></button>
+            </form>
+        }
+        else if (canEdit)
+        {
+            <div class="pr-tip"><span class="pr-badge"><partial name="_Icon" model='@("warning")' /></span><h2>@L.T("Add items")</h2><p>@L.T("Add at least one item.")</p></div>
+        }
+
+        <div class="prd-links">
+            <h2>@L.T("Clarifications")</h2>
+            @if (ViewData["ClarificationRequestIds"] is ISet<int> startable && startable.Contains(Model.Id))
+            {
+                <a data-workspace-page class="prd-link" asp-controller="Clarifications" asp-action="StartRequest" asp-route-id="@Model.Id"><partial name="_Icon" model='@("mail")' /> @L.T("Start a clarification")</a>
+            }
+            <a data-workspace-page class="prd-link" asp-controller="Clarifications" asp-action="Index" asp-route-kind="request" asp-route-recordId="@Model.Id"><partial name="_Icon" model='@("clock")' /> @L.T("Clarification history")</a>
+        </div>
+    </aside>
 }
+</div>
+</div>
