@@ -13,9 +13,10 @@
         ("Under Review", "clock", "blue"), ("Returned", "back", "amber"), ("Approved", "check", "teal"),
         ("Rejected", "close", "amber"), ("Converted to Tender", "briefcase", "teal") };
 }
-<header class="page-heading stms-hero admin-overview">
+<header class="pr-hero cl-hero admin-overview">
+    <span class="pr-hero-icon"><partial name="_Icon" model='@("dashboard")' /></span>
     <div><p class="eyebrow">@L.T("DEPARTMENT WORKSPACE")</p><h1>@L.F("{0} dashboard", Model.Department)</h1><p>@L.T("Track your department’s purchase requests from draft to decision.")</p></div>
-    <a class="btn btn-primary" asp-action="Create"><partial name="_Icon" model='@("plus")' /> @L.T("New request")</a>
+    <div class="cl-hero-side"><div class="button-row"><a class="btn btn-primary" asp-action="Create"><partial name="_Icon" model='@("plus")' /> @L.T("New request")</a></div></div>
 </header>
 <div class="admin-analytics department-analytics">
     <section aria-labelledby="department-snapshot">

@@ -8,17 +8,18 @@
     string Json(object value) => System.Text.Json.JsonSerializer.Serialize(value, new System.Text.Json.JsonSerializerOptions(System.Text.Json.JsonSerializerDefaults.Web));
 }
 
-<header class="page-heading stms-hero">
+<header class="pr-hero cl-hero">
+    <span class="pr-hero-icon"><partial name="_Icon" model='@("chart")' /></span>
     <div>
         <p class="eyebrow">@L.T("AI INTELLIGENCE")</p>
         <h1>@L.T("AI Intelligence")</h1>
         <p>@L.T("Interactive analysis of tenders, bids and suppliers, built on the real system data you are allowed to see.")</p>
     </div>
-    <div class="ai-actions">
+    <div class="cl-hero-side"><div class="button-row ai-actions">
         <a class="btn btn-outline-secondary" data-full-page asp-action="ExportExcel" asp-route-tenderId="@selected?.Id"><partial name="_Icon" model='@("download")' /> Excel</a>
         <a class="btn btn-outline-secondary" data-full-page asp-action="ExportPdf" asp-route-tenderId="@selected?.Id"><partial name="_Icon" model='@("download")' /> PDF</a>
         <button type="button" class="btn btn-primary" data-ai-chat-open><partial name="_Icon" model='@("chart")' /> @L.T("Ask the AI")</button>
-    </div>
+    </div></div>
 </header>
 
 @* ------------------------------------------------ KPI / analysis cards *@

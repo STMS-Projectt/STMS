@@ -241,3 +241,7 @@
 .prd-card-head .pr-section-head { align-items: center; }
 .prd-stat small { color: light-dark(#08766c, #5eead4); }
 .pr-create .pr-badge { color: light-dark(#08766c, #5eead4); }
+.cl-hero { align-items: center; }
+.cl-hero h1 { color: #fff; }
+.cl-hero .btn { min-height: 44px; padding-inline: 18px; }
+.cl-hero .ai-actions { margin-top: 0; }

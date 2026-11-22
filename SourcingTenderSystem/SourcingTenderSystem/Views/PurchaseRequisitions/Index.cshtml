@@ -3,9 +3,10 @@
     ViewData["Title"] = L.T("My Requests");
     var editable = (ISet<int>)ViewBag.EditableRequestIds;
 }
-<header class="page-heading stms-hero">
+<header class="pr-hero cl-hero">
+    <span class="pr-hero-icon"><partial name="_Icon" model='@("file")' /></span>
     <div><p class="eyebrow">@L.T("REQUEST TRACKER")</p><h1>@L.T("My Requests")</h1><p>@L.F("Purchase requests from everyone in {0}.", Model.Department)</p></div>
-    <a class="btn btn-primary" asp-action="Create"><partial name="_Icon" model='@("plus")' /> @L.T("New request")</a>
+    <div class="cl-hero-side"><div class="button-row"><a class="btn btn-primary" asp-action="Create"><partial name="_Icon" model='@("plus")' /> @L.T("New request")</a></div></div>
 </header>
 <section class="surface directory dept-directory" aria-label="@L.T("Department requests")" data-directory>
     <div class="dept-directory-heading"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("file")' /></span><div><h2>@L.T("Purchase requests")</h2><p>@L.T("Find requests and manage the drafts you own.")</p></div></div>
