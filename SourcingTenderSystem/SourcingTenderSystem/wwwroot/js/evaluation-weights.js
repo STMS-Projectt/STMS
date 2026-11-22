@@ -19,6 +19,8 @@
                     points += groupPoints; possible += groupPossible;
                 }
                 total.textContent = format(points, possible);
+                // The page header shows the same running total
+                for (const mirror of document.querySelectorAll("[data-checklist-total-mirror]")) mirror.textContent = format(points, possible);
                 form.closest(".bid-checklist").querySelector(".checklist-meter-total")?.style.setProperty("--fill", `${possible ? points * 100 / possible : 0}%`);
             });
         }

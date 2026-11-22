@@ -656,3 +656,30 @@
 }
 #workspace-dialog .pr-hero { margin-top: 0; padding: 20px 22px; }
 #workspace-dialog .pr-hero h1 { font-size: 1.5rem; }
+
+/* ===== Committee bid review (CommitteeReviews/Bid) ===== */
+.rb .prd-status .tm-status { background: #fff; color: #065b53; box-shadow: 0 6px 16px #0000001f; }
+.rb .cm-stats strong { font-size: 1.35rem; }
+.rb-checklist { margin-bottom: 16px; }
+.rb-checklist .record-section-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 14px; }
+.rb-checklist .checklist-total { padding: 6px 14px; border-radius: 999px; background: var(--pr-accent); color: #fff; font-weight: 800; }
+.rb-checklist .checklist-columns { gap: 16px; }
+.rb-checklist .checklist-group { border-radius: 18px; border: 1px solid var(--pr-line); background: light-dark(#fbfdfe, #17212c); padding: 16px; }
+.rb-checklist .checklist-entry { border-radius: 14px; border: 1.5px solid var(--pr-line); background: var(--pr-card); transition: border-color .15s, box-shadow .15s; }
+.rb-checklist .checklist-entry:has(input[type=checkbox]:checked) { border-color: var(--pr-accent); background: color-mix(in srgb, var(--pr-accent) 6%, var(--pr-card)); box-shadow: 0 6px 16px light-dark(#08766c17, #00000040); }
+.rb-checklist .checklist-save { position: sticky; bottom: 0; z-index: 2; display: flex; justify-content: flex-end; margin: 16px -26px -26px; padding: 14px 26px;
+    background: color-mix(in srgb, light-dark(#f8fafc, #17212c) 92%, transparent); backdrop-filter: blur(8px); border-top: 1px solid var(--pr-line); }
+.rb-checklist .checklist-save .btn { min-height: 46px; border-radius: 13px; font-weight: 700; padding-inline: 22px; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 8px 18px #08766c33; }
+.rb-refs { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+.rb-docs { grid-template-columns: 1fr; }
+.rb .bd-item { grid-template-columns: auto minmax(0, 1fr) auto; }
+.rb .pr-item-no .icon { width: 16px; height: 16px; }
+.rb { container-type: inline-size; }
+@container (max-width: 900px) { .rb-refs { grid-template-columns: 1fr; } }
+.pr-create { --pr-accent: #08766c; --pr-soft: light-dark(#e9f8f5, #16302e); }
+.pr-create .btn-primary { --bs-btn-bg: #08766c; --bs-btn-border-color: #08766c; --bs-btn-hover-bg: #065b53; --bs-btn-hover-border-color: #065b53; --bs-btn-active-bg: #054a43; --bs-btn-disabled-bg: #08766c; --bs-btn-disabled-border-color: #08766c; }
+.rb-checklist .checklist-entry:has(input[type=checkbox]:checked) { border-color: #08766c; }
+.rb-checklist .checklist-choice input:checked { accent-color: #08766c; }
+.rb-checklist { overflow: hidden; }
+.rb-checklist .checklist-save { position: static; margin: 16px -26px -26px; }
+.rb .pr-item-no { background: #08766c; }

@@ -8,45 +8,27 @@
     decimal Earned(CommitteeScoreRow row) => row.Score.GetValueOrDefault() * row.WeightPercent / row.Criterion.MaxScore;
     string Fill(decimal earned, decimal possible) => (possible <= 0 ? 0 : Math.Min(100, earned * 100 / possible)).ToString("0.##", CultureInfo.InvariantCulture) + "%";
 }
+<div class="pr-create prd rb">
 <a class="back-link" asp-action="Details" asp-route-id="@Model.Bid.TenderId"><partial name="_Icon" model='@("back")' /> @L.T("Tender evaluation")</a>
-<header class="page-heading stms-hero admin-record-hero"><div><p class="eyebrow">@L.F("Bid #{0}", Model.Bid.Id) · @Model.Bid.Tender.Title</p><h1>@Model.Bid.SupplierProfile.CompanyName</h1><p>@Model.Bid.TotalPrice.ToString("N2") @Model.Bid.Currency · Delivery in @Model.Bid.DeliveryDays days</p></div></header>
-@if (TempData["ReviewError"] is string error) { <div class="alert alert-warning" role="alert">@L.T(error)</div> }
-<div class="review-workspace">
-<aside class="review-references" aria-label="@L.T("Bid reference materials")">
-<details class="surface detail-card mb-3 bid-evidence">
-    <summary><span class="icon-tile tone-teal"><partial name="_Icon" model='@("inbox")' /></span>@L.T("Offered items") <span class="record-panel-label">@Model.Bid.BidItems.Count</span></summary>
-    @if (Model.Bid.BidItems.Count == 0) { <div class="empty-state">@L.T("No items were attached to this bid.")</div> }
-    else
-    {
-        <div class="record-list">
-            @foreach (var item in Model.Bid.BidItems)
-            {
-                <article class="record-card"><div class="record-name">@if (item.SampleImagePath != null) { <a href="@Url.Action("ItemImage", "BidDocuments", new { id = item.Id })" target="_blank" rel="noopener"><img src="@Url.Action("ItemImage", "BidDocuments", new { id = item.Id })" alt="@item.SampleImageName" width="56" height="56" style="object-fit:cover;border-radius:8px" /></a> } else { <span class="avatar"><partial name="_Icon" model='@("inbox")' /></span> }<span>@item.PurchaseRequisitionItem.ItemName<small>@item.PurchaseRequisitionItem.Specifications</small></span></div>
-                    <dl class="record-facts"><div><dt>@L.T("Quantity")</dt><dd>@item.Quantity</dd></div><div><dt>@L.T("Unit price")</dt><dd>@item.UnitPrice.ToString("N2") @Model.Bid.Currency</dd></div>
-                        @if (!string.IsNullOrWhiteSpace(item.Notes)) { <div><dt>@L.T("Supplier notes")</dt><dd>@item.Notes</dd></div> }</dl>
-                </article>
-            }
-        </div>
-    }
-</details>
-<partial name="_BidGuaranteeSummary" model="Model.Bid" />
-<details class="surface detail-card mb-3 bid-evidence"><summary><span class="icon-tile tone-blue"><partial name="_Icon" model='@("file")' /></span>@L.T("Bid documents") <span class="record-panel-label">@Model.Bid.BidDocuments.Count</span></summary>
-    @if (Model.Bid.BidDocuments.Count == 0) { <p class="subtle mb-0">@L.T("No documents attached.")</p> }
-    else
-    {
-        <div class="record-list record-list-inset">
-            @foreach (var doc in Model.Bid.BidDocuments)
-            {
-                <article class="record-card"><div class="record-name"><span class="avatar"><partial name="_Icon" model='@("file")' /></span><span>@doc.FileName<small>@L.T(doc.DocumentType)</small></span></div>
-                    <div class="record-action"><a class="record-icon-action" asp-controller="BidDocuments" asp-action="Download" asp-route-id="@doc.Id" aria-label="@L.F("Download {0}", doc.FileName)" data-tooltip="@L.T("Download")"><partial name="_Icon" model='@("download")' /></a></div>
-                </article>
-            }
-        </div>
-    }
-</details>
-</aside>
-<section class="surface detail-card bid-checklist" aria-label="@L.T("Your evaluation")">
-    <div class="record-section-heading"><div><h2>@L.T("Your evaluation checklist")</h2><p>@L.T(locked ? "Saved scores are read-only." : "Check each criterion the offer meets, then save the checklist for this bid.")</p></div>
+<header class="pr-hero prd-hero">
+    <span class="pr-hero-icon"><partial name="_Icon" model='@("supplier")' /></span>
+    <div>
+        <p class="eyebrow">@L.F("Bid #{0}", Model.Bid.Id) · @Model.Bid.Tender.Title</p>
+        <h1>@Model.Bid.SupplierProfile.CompanyName</h1>
+        <p class="prd-meta"><span><partial name="_Icon" model='@("briefcase")' /> @Model.Bid.Tender.Title</span></p>
+    </div>
+    <div class="prd-status"><span class="tm-status"><i></i>@L.T(locked ? "Locked" : "In progress")</span></div>
+    <div class="cm-stats">
+        <div><strong>@Model.Bid.TotalPrice.ToString("N2")</strong><span>@L.T("Total price") · @Model.Bid.Currency</span></div>
+        <div><strong>@Model.Bid.TotalWithTax.ToString("N2")</strong><span>@L.T("Final cost (with tax)")</span></div>
+        <div><strong>@L.F("{0} days", Model.Bid.DeliveryDays)</strong><span>@L.T("Delivery")</span></div>
+        <div class="is-hot"><strong data-checklist-total-mirror>@Percent(Model.Scores.Sum(Earned)) / @Percent(Model.Scores.Sum(r => r.WeightPercent))</strong><span>@L.T("Your evaluation")</span></div>
+    </div>
+</header>
+@if (TempData["ReviewError"] is string error) { <div class="alert alert-warning tm-alert" role="alert"><partial name="_Icon" model='@("warning")' /> @L.T(error)</div> }
+
+<section class="pr-card prd-card bid-checklist rb-checklist" aria-label="@L.T("Your evaluation")">
+    <div class="record-section-heading"><div class="pr-section-head mb-0"><span class="pr-badge"><partial name="_Icon" model='@("check")' /></span><div><h2>@L.T("Your evaluation checklist")</h2><p>@L.T(locked ? "Saved scores are read-only." : "Check each criterion the offer meets, then save the checklist for this bid.")</p></div></div>
         <span class="record-panel-label checklist-total" data-checklist-total>@Percent(Model.Scores.Sum(Earned)) / @Percent(Model.Scores.Sum(r => r.WeightPercent))</span>
     </div>
     <div class="checklist-meter checklist-meter-total" data-checklist-meter style="--fill:@Fill(Model.Scores.Sum(Earned), Model.Scores.Sum(r => r.WeightPercent))" aria-hidden="true"><span></span></div>
@@ -110,4 +92,54 @@
         </form>
     }
 </section>
+
+<div class="rb-refs">
+    @* ---------- Offered items ---------- *@
+    <section class="pr-card prd-card">
+        <div class="prd-card-head"><div class="pr-section-head mb-0"><span class="pr-badge"><partial name="_Icon" model='@("inbox")' /></span><div><h2>@L.T("Offered items")</h2></div></div><span class="pr-count">@Model.Bid.BidItems.Count</span></div>
+        @if (Model.Bid.BidItems.Count == 0) { <div class="prd-empty"><h3>@L.T("No items were attached to this bid.")</h3></div> }
+        else
+        {
+            <ol class="prd-items">
+                @foreach (var item in Model.Bid.BidItems)
+                {
+                    <li class="prd-item bd-item">
+                        @if (item.SampleImagePath != null) { <a href="@Url.Action("ItemImage", "BidDocuments", new { id = item.Id })" target="_blank" rel="noopener"><img class="bd-thumb" src="@Url.Action("ItemImage", "BidDocuments", new { id = item.Id })" alt="@item.SampleImageName" /></a> }
+                        else { <span class="pr-item-no"><partial name="_Icon" model='@("inbox")' /></span> }
+                        <div class="prd-item-body">
+                            <h3>@item.PurchaseRequisitionItem.ItemName</h3>
+                            <p>@item.PurchaseRequisitionItem.Specifications</p>
+                            @if (!string.IsNullOrWhiteSpace(item.Notes)) { <p class="bd-note">@L.T("Supplier notes"): @item.Notes</p> }
+                        </div>
+                        <div class="bd-price"><small>@item.Quantity × @item.UnitPrice.ToString("N2")</small><strong>@((item.Quantity * item.UnitPrice).ToString("N2")) <small>@Model.Bid.Currency</small></strong></div>
+                    </li>
+                }
+            </ol>
+        }
+    </section>
+
+    @* ---------- Documents ---------- *@
+    <section class="pr-card prd-card">
+        <div class="prd-card-head"><div class="pr-section-head mb-0"><span class="pr-badge"><partial name="_Icon" model='@("file")' /></span><div><h2>@L.T("Bid documents")</h2></div></div><span class="pr-count">@Model.Bid.BidDocuments.Count</span></div>
+        @if (Model.Bid.BidDocuments.Count == 0) { <div class="prd-empty"><h3>@L.T("No documents attached.")</h3></div> }
+        else
+        {
+            <div class="bd-docs rb-docs">
+                @foreach (var doc in Model.Bid.BidDocuments)
+                {
+                    <article class="bd-doc">
+                        @if (doc.IsImage) { <img class="bd-thumb" src="@Url.Action("Download", "BidDocuments", new { id = doc.Id, preview = true })" alt="@doc.FileName" /> } else { <span class="bd-pdf">PDF</span> }
+                        <div class="bd-doc-body"><strong>@L.T(doc.DocumentType)</strong><small>@doc.FileName</small></div>
+                        <div class="record-action">
+                            <a class="record-icon-action" asp-controller="BidDocuments" asp-action="Download" asp-route-id="@doc.Id" asp-route-preview="true" target="_blank" rel="noopener" aria-label="@L.F("Preview {0}", doc.FileName)" data-tooltip="@L.T("Preview PDF")"><partial name="_Icon" model='@("eye")' /></a>
+                            <a class="record-icon-action" asp-controller="BidDocuments" asp-action="Download" asp-route-id="@doc.Id" aria-label="@L.F("Download {0}", doc.FileName)" data-tooltip="@L.T("Download")"><partial name="_Icon" model='@("download")' /></a>
+                        </div>
+                    </article>
+                }
+            </div>
+        }
+    </section>
+</div>
+
+<partial name="_BidGuaranteeSummary" model="Model.Bid" />
 </div>
