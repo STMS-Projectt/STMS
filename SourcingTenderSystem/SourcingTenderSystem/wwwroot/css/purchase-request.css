@@ -404,3 +404,6 @@
 .td-timeline h3 small { color: var(--muted); font-weight: 600; margin-inline-start: 6px; }
 .td-timeline p { margin: 0; color: var(--muted); font-size: .88rem; }
 .td-reason { margin-top: 4px !important; font-style: italic; }
+/* The directory script looks for .dept-directory-heading; keep our plain look for it */
+.cm-panel > .dept-directory-heading { padding: 0; background: none; border: 0; box-shadow: none; margin-bottom: 16px; border-radius: 0; }
+.cm-panel > .dept-directory-heading::before, .cm-panel > .dept-directory-heading::after { display: none; }

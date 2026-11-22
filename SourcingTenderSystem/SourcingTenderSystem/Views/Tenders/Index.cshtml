@@ -59,7 +59,7 @@
 }
 
 <section class="dept-directory cm-panel" data-directory>
-    <div class="cm-panel-head">
+    <div class="dept-directory-heading cm-panel-head">
         <div class="pr-section-head mb-0"><span class="pr-badge"><partial name="_Icon" model='@("briefcase")' /></span><div><h2>@L.T("All tenders")</h2><p>@L.T("Set evaluation criteria on drafts or close bidding on an open tender from its card.")</p></div></div>
     </div>
     <div class="cm-filters">
@@ -109,7 +109,6 @@ else
                 <div class="record-action tm-actions">
                     <a class="record-icon-action" data-workspace-dialog="details" asp-action="Details" asp-route-id="@t.Id" asp-route-panel="overview" aria-label="@L.F("View tender {0}", t.Title)" data-tooltip="@L.T("Tender summary")"><partial name="_Icon" model='@("eye")' /></a>
                     <a class="record-icon-action" data-workspace-dialog="details" asp-action="Details" asp-route-id="@t.Id" asp-route-panel="rounds" aria-label="@L.F("Bidding rounds for {0}", t.Title)" data-tooltip="@L.T("Bidding rounds")"><partial name="_Icon" model='@("clock")' /></a>
-                    <a class="record-icon-action" data-workspace-dialog="details" asp-action="Details" asp-route-id="@t.Id" asp-route-panel="qr" aria-label="@L.F("QR code for {0}", t.Title)" data-tooltip="@L.T("Tender QR code")"><partial name="_Icon" model='@("qr")' /></a>
                     <a class="record-icon-action" data-workspace-dialog asp-controller="Invitations" asp-action="Index" asp-route-tenderId="@t.Id" aria-label="@L.F("Invitations for {0}", t.Title)" data-tooltip="@L.T("Invitations")"><partial name="_Icon" model='@("mail")' /></a>
                     @if (t.Status == "Draft")
                     {

@@ -84,7 +84,7 @@
             setDialogLoading(false);
             dialogUrl = new URL(result.res.url);
             const heading = result.main.querySelector("h1");
-            const details = !!result.main.querySelector(".admin-record-hero");
+            const details = !!result.main.querySelector(".admin-record-hero, .pr-hero");
             dialog.classList.toggle("is-detail", details);
             dialogTitle.textContent = heading?.textContent || window.stmsT("Record");
             if (dialogContext) dialogContext.textContent = previousDialogs.length ? window.stmsT("Related action") : dialogContext.dataset.rootContext;

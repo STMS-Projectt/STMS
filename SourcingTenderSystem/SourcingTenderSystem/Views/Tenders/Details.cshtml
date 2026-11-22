@@ -3,7 +3,7 @@
 
 @{
     var panel = Context.Request.Query["panel"].ToString();
-    var full = panel is not ("overview" or "rounds" or "qr");
+    var full = panel is not ("overview" or "rounds");
     var label = panel switch { "rounds" => "Bidding rounds", "qr" => "Tender QR code", _ => Model.Title };
     ViewData["Title"] = full ? "Tender details" : label;
     int count = ViewBag.OfferCount;
@@ -113,11 +113,6 @@
         </details>
     </section>
 </div>
-}
-@if (panel == "qr")
-{
-    ViewData["RecordQrOpen"] = true;
-    <partial name="_RecordQr" model='@(Url.Action("Details", new { id = Model.Id })!)' />
 }
 @if (full || panel == "rounds")
 {
