@@ -282,7 +282,7 @@
                 return;
             }
             if (!sameWorkspace(result)) { fail(window.stmsT("The site did not return an editable page. Refresh to check the result before trying again.")); return; }
-            const redirectedToForm = result.res.redirected && /\/(Tenders\/Create|Tenders\/AssignCommittee)(\/|$)/i.test(new URL(result.res.url).pathname);
+            const redirectedToForm = result.res.redirected && /\/(Tenders\/Create|Tenders\/AssignCommittee|Tenders\/Criteria)(\/|$)/i.test(new URL(result.res.url).pathname);
             if ((redirectedToForm || form.hasAttribute("data-workspace-dialog")) && !dialog.open) {
                 // Refresh the originating page after the completed workflow action before opening its next form.
                 const nextForm = result;
@@ -290,7 +290,7 @@
                 if (sameWorkspace(origin)) await install(origin, "page", false);
                 await install(nextForm, "dialog");
             } else if (inDialog && result.res.redirected && (department || supplier || committee ||
-                (sourcing && (redirectedToForm || previousDialogs.length || content.querySelector(".admin-record-hero") ||
+                (sourcing && (redirectedToForm || previousDialogs.length || content.querySelector(".admin-record-hero, .pr-hero") ||
                     url.pathname.startsWith("/Clarifications/") && result.main.querySelector(".admin-record-hero") ||
                     url.pathname.startsWith("/Suppliers/Approve/"))) ||
                 (admin && result.main.querySelector(".admin-record-hero")))) {
