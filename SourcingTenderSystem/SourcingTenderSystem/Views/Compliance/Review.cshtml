@@ -5,65 +5,84 @@
     var now = DateTime.UtcNow;
     var canClose = tender.Status == "Open" && tender.OpenDate <= now && tender.CloseDate > now;
     ViewData["Title"] = L.T("Review & compare offers");
+    var waiting = Model.Bids.Count(b => b.Status == "Pending Clarification");
+    var unreviewed = Model.Bids.Count(b => b.Status == "Submitted");
+    var nonCompliant = Model.Bids.Count(b => b.Status == "Non-Compliant");
+    var eligible = (int)ViewBag.EligibleSuppliers;
 }
-<header class="page-heading stms-hero admin-record-hero"><div><p class="eyebrow">@L.T("BID COMPLIANCE")</p><h1>@L.T("Review & compare offers")</h1></div></header>
-<partial name="~/Views/Bids/_Alerts.cshtml" />
-
-@* Tender information *@
-<div class="card mb-3">
-    <div class="card-body">
-        <h2 class="h5 card-title">@tender.Title</h2>
-        <p class="card-text">@tender.Description</p>
-        <p class="card-text mb-0">
-            <small class="text-muted">@L.F("Scheduled deadline: {0} (UTC) · Tender status: {1}", tender.CloseDate.ToString("yyyy-MM-dd HH:mm", L.DisplayCulture), L.T(tender.Status))</small>
+<div class="pr-create prd cr">
+<header class="pr-hero prd-hero">
+    <span class="pr-hero-icon"><partial name="_Icon" model='@("shield")' /></span>
+    <div>
+        <p class="eyebrow">@L.T("BID COMPLIANCE")</p>
+        <h1>@L.T("Review & compare offers")</h1>
+        <p class="prd-meta">
+            <span><partial name="_Icon" model='@("briefcase")' /> @tender.Title</span>
+            <span><partial name="_Icon" model='@("clock")' /> @L.F("Scheduled deadline: {0} (UTC)", tender.CloseDate.ToString("dd MMM yyyy · HH:mm", L.DisplayCulture))</span>
         </p>
     </div>
-</div>
+    <div class="prd-status"><span class="tm-status"><i></i>@L.T(tender.Status)</span></div>
+    @if (Model.Bids.Count > 0)
+    {
+        <div class="cm-stats">
+            <div><strong>@Model.Bids.Count</strong><span>@L.T("Bids")</span></div>
+            <div class="@(unreviewed > 0 ? "is-hot" : "")"><strong>@unreviewed</strong><span>@L.T("To review")</span></div>
+            <div><strong>@waiting</strong><span>@L.T("Awaiting clarification")</span></div>
+            <div><strong>@Model.CompliantCount</strong><span>@L.T("Compliant")</span></div>
+        </div>
+    }
+</header>
+@if (TempData["Msg"] != null) { <div class="alert alert-success tm-alert" role="status"><partial name="_Icon" model='@("check")' /> @TempData["Msg"]</div> }
+@if (TempData["Error"] != null) { <div class="alert alert-danger tm-alert" role="alert"><partial name="_Icon" model='@("warning")' /> @TempData["Error"]</div> }
+
+@if (!string.IsNullOrWhiteSpace(tender.Description))
+{
+    <p class="cr-desc">@tender.Description</p>
+}
 
 @if (canClose)
 {
-    <details class="surface detail-card mb-3">
-        <summary class="fw-semibold">@L.T("Close tender early")</summary>
+    <details class="pr-card prd-card mb-3 cr-close">
+        <summary><partial name="_Icon" model='@("pause")' /> @L.T("Close tender early")</summary>
         <p class="mt-3">@L.T("Closing now stops new submissions immediately. You can then review offers already submitted.")</p>
         <form asp-action="Close" asp-route-tenderId="@tender.Id" method="post">
             <label class="form-check mb-3"><input class="form-check-input" type="checkbox" name="confirmClose" value="true" required /> @L.T("I confirm that bidding should end now.")</label>
-            <button class="btn btn-danger" type="submit">@L.T("Close")</button>
+            <button class="btn tm-btn tm-btn-danger" type="submit">@L.T("Close")</button>
         </form>
     </details>
 }
 @if (!Model.TenderIsClosed)
 {
-    <div class="alert alert-info" role="status">@L.F("Tender status: {0}. Compliance decisions are available after closing.", L.T(tender.Status))</div>
+    <p class="prd-note mb-3"><span>@L.F("Tender status: {0}. Compliance decisions are available after closing.", L.T(tender.Status))</span></p>
 }
-else if (Model.Bids.Count > 0)
+else if (Model.Bids.Count > 0 && waiting + unreviewed > 0)
 {
-    var waiting = Model.Bids.Count(b => b.Status == "Pending Clarification");
-    var unreviewed = Model.Bids.Count(b => b.Status == "Submitted");
-    if (waiting + unreviewed > 0)
-    {
-        <p class="callout" role="status"><strong>@L.T("Compliance still in progress.")</strong> @unreviewed to review · @waiting awaiting clarification. Only bids marked compliant are included in evaluation.</p>
-    }
+    <div class="cm-alert"><span class="pr-badge"><partial name="_Icon" model='@("warning")' /></span><div><strong>@L.T("Compliance still in progress.")</strong><p>@L.F("{0} to review · {1} awaiting clarification. Only bids marked compliant are included in evaluation.", unreviewed, waiting)</p></div></div>
 }
 @if (Model.MixedCurrencies)
 {
-    <div class="alert alert-warning" role="alert">@L.T("Older bids are shown in their original currencies. Prices are not compared across currencies.")</div>
+    <p class="prd-note is-returned mb-3"><span>@L.T("Older bids are shown in their original currencies. Prices are not compared across currencies.")</span></p>
 }
 
+<div class="cr-layout">
+<div class="cr-main">
+<section class="pr-card prd-card">
+    <div class="prd-card-head">
+        <div class="pr-section-head mb-0"><span class="pr-badge"><partial name="_Icon" model='@("chart")' /></span><div><h2>@L.T("Offer comparison")</h2>
+            <p>@L.T(Model.MixedCurrencies ? "One column per bid, sorted by total price within each currency (lowest first)." : "One column per bid, sorted by total price (lowest first).")</p></div></div>
+    </div>
 @if (tender.Status is "Draft" or "Published" or "Open")
 {
-    <p class="subtle">@L.T("Offers remain sealed until the tender is closed.")</p>
+    <div class="prd-empty"><span class="pr-badge"><partial name="_Icon" model='@("shield")' /></span><h3>@L.T("Offers remain sealed until the tender is closed.")</h3></div>
 }
 else if (Model.Bids.Count == 0)
 {
-    <p class="text-muted">@L.T("This tender has no submitted bids.")</p>
+    <div class="prd-empty"><span class="pr-badge"><partial name="_Icon" model='@("inbox")' /></span><h3>@L.T("This tender has no submitted bids.")</h3></div>
 }
 else
 {
-    <p class="text-muted">@L.T(Model.MixedCurrencies ? "One column per bid, sorted by total price within each currency (lowest first)." : "One column per bid, sorted by total price (lowest first).")</p>
-
-    @* Side-by-side table: rows = information, columns = bids *@
     var lowestPrice = Model.MixedCurrencies ? (decimal?)null : Model.Bids.Min(b => b.TotalPrice);
-    <div class="table-responsive mb-4 compare-wrap">
+<div class="table-responsive compare-wrap cr-table">
         <table class="table align-middle compare-table">
             <thead>
                 <tr>
@@ -88,6 +107,7 @@ else
                         <td><partial name="~/Views/Bids/_StatusBadge.cshtml" model="bid.Status" /></td>
                     }
                 </tr>
+                <tr class="cr-group"><th colspan="@(Model.Bids.Count + 1)">@L.T("Offer")</th></tr>
                 <tr class="compare-total">
                     <th scope="row">@L.T("Total price")</th>
                     @foreach (var bid in Model.Bids)
@@ -95,6 +115,28 @@ else
                         <td class="@(bid.TotalPrice == lowestPrice ? "is-lowest" : "")"><strong>@bid.TotalPrice.ToString("N2") <span>@bid.Currency</span></strong>@if (bid.TotalPrice == lowestPrice && Model.Bids.Count > 1) { <span class="compare-flag">@L.T("Lowest")</span> }</td>
                     }
                 </tr>
+                <tr>
+                    <th scope="row">@L.T("Final cost (with tax)")</th>
+                    @foreach (var bid in Model.Bids)
+                    {
+                        <td><strong>@bid.TotalWithTax.ToString("N2")</strong> <small class="text-muted">@bid.Currency</small>@if (!bid.IncludesSalesTax) { <small class="cr-muted d-block">@L.T("Tax not added")</small> }</td>
+                    }
+                </tr>
+                <tr>
+                    <th scope="row">@L.T("Legal warranty")</th>
+                    @foreach (var bid in Model.Bids)
+                    {
+                        <td>@(bid.LegalWarrantyMonths is int m ? L.F("{0} months", m) : "—")</td>
+                    }
+                </tr>
+                <tr>
+                    <th scope="row">@L.T("Bank guarantee")</th>
+                    @foreach (var bid in Model.Bids)
+                    {
+                        <td>@if (bid.HasBankGuarantee) { <span>@bid.BankName</span><small class="cr-muted d-block">@bid.BankGuaranteeAmount?.ToString("N2") @bid.Currency · @bid.BankGuaranteeExpiry?.ToString("dd MMM yyyy", L.DisplayCulture)</small> } else { <span class="text-muted">—</span> }</td>
+                    }
+                </tr>
+                <tr class="cr-group"><th colspan="@(Model.Bids.Count + 1)">@L.T("Schedule")</th></tr>
                 <tr>
                     <th scope="row">@L.T("Delivery")</th>
                     @foreach (var bid in Model.Bids)
@@ -117,6 +159,7 @@ else
                     }
                 </tr>
 
+                @if (Model.RequestedItems.Count > 0) { <tr class="cr-group"><th colspan="@(Model.Bids.Count + 1)">@L.T("Item prices")</th></tr> }
                 @* One row per requested item: the unit price of every bid *@
                 @foreach (var item in Model.RequestedItems)
                 {
@@ -146,6 +189,7 @@ else
                     </tr>
                 }
 
+                <tr class="cr-group"><th colspan="@(Model.Bids.Count + 1)">@L.T("Documents and compliance")</th></tr>
                 <tr>
                     <th scope="row">@L.T("Documents")</th>
                     @foreach (var bid in Model.Bids)
@@ -199,9 +243,6 @@ else
                                             <button type="submit" class="btn btn-sm btn-success"><partial name="_Icon" model='@("check")' /> @L.T("Compliant")</button>
                                         </form>
                                         <a data-workspace-dialog class="btn btn-sm btn-outline-danger" asp-action="MarkNonCompliant" asp-route-id="@bid.Id"><partial name="_Icon" model='@("close")' /> @L.T("Non-compliant")</a>
-                                        @* Placeholder: clarification requests belong to Person 4 (ClarificationsController).
-                                           Replace this with the real link when it is ready. *@
-                                        <a class="btn btn-sm btn-outline-secondary disabled" aria-disabled="true">@L.T("Request clarification")</a>
                                     </div>
                                 }
                                 else
@@ -216,71 +257,49 @@ else
         </table>
     </div>
 }
+</section>
+</div>
 
-@* Send to evaluation: only while the tender is Closed *@
+<aside class="cr-side prd-side">
 @if (Model.TenderIsClosed)
 {
-    <div class="card mb-3">
-        <div class="card-header">@L.F("Send to evaluation · Round {0} of {1}", tender.Counter, TenderRules.MaxRounds)</div>
-        <p class="px-3 pt-3">@L.F("Eligible suppliers: {0} · Required: {1}.", ViewBag.EligibleSuppliers, TenderRules.Minimum(tender))
-        @if (!TenderRules.CanEvaluate(tender, (int)ViewBag.EligibleSuppliers))
-        {
-            <span>@L.T("The bid minimum has not been met.")</span>
-            <a data-workspace-dialog="details" asp-controller="Tenders" asp-action="Details" asp-route-id="@tender.Id" asp-route-panel="rounds">@L.T("View bidding rounds")</a>
-        }</p>
-        <ul class="list-group list-group-flush">
-            <li class="list-group-item">
-                @if (Model.SubmittedCount == 0)
-                {
-                    <span class="badge bg-success">@L.T("OK")</span>
-                }
-                else
-                {
-                    <span class="badge bg-danger">@L.T("Missing")</span>
-                }
-                @L.F("All bids checked ({0} not checked)", Model.SubmittedCount)
-            </li>
-            <li class="list-group-item">
-                @if (Model.CompliantCount > 0)
-                {
-                    <span class="badge bg-success">@L.T("OK")</span>
-                }
-                else
-                {
-                    <span class="badge bg-danger">@L.T("Missing")</span>
-                }
-                @L.F("At least one compliant bid ({0} compliant)", Model.CompliantCount)
-            </li>
+    <section class="rv-decision">
+        <div class="pr-section-head"><span class="pr-badge"><partial name="_Icon" model='@("users")' /></span><div><h2>@L.T("Send to evaluation")</h2><p>@L.F("Round {0} of {1}", tender.Counter, TenderRules.MaxRounds) · @L.F("Eligible suppliers: {0} · Required: {1}.", eligible, TenderRules.Minimum(tender))</p></div></div>
+        <ul class="bd-checklist">
+            <li class="@(Model.SubmittedCount == 0 ? "is-ok" : "")"><span class="bd-tick"><partial name="_Icon" model='@(Model.SubmittedCount == 0 ? "check" : "close")' /></span>@L.F("All bids checked ({0} not checked)", Model.SubmittedCount)</li>
+            <li class="@(Model.CompliantCount > 0 ? "is-ok" : "")"><span class="bd-tick"><partial name="_Icon" model='@(Model.CompliantCount > 0 ? "check" : "close")' /></span>@L.F("At least one compliant bid ({0} compliant)", Model.CompliantCount)</li>
+            <li class="@(TenderRules.CanEvaluate(tender, eligible) ? "is-ok" : "")"><span class="bd-tick"><partial name="_Icon" model='@(TenderRules.CanEvaluate(tender, eligible) ? "check" : "close")' /></span>@L.F("Eligible suppliers: {0} · Required: {1}.", eligible, TenderRules.Minimum(tender))</li>
         </ul>
-        <div class="card-body">
-            @if (Model.CanSendToEvaluation)
-            {
-                <form asp-action="SendToEvaluation" asp-route-tenderId="@tender.Id" method="post" asp-antiforgery="true"
-                      data-workspace-confirm="@L.T("Send this tender to evaluation? The compliance check will be closed.")" onsubmit="return window.stmsWorkspaceReady || confirm(this.dataset.workspaceConfirm);">
-                    <button type="submit" class="btn btn-primary">@L.T("Assign evaluation committee")</button>
-                </form>
-            }
-            else
-            {
-                <button type="button" class="btn btn-primary" disabled>@L.T("Assign evaluation committee")</button>
-            }
-        </div>
-    </div>
+        @if (!TenderRules.CanEvaluate(tender, eligible))
+        {
+            <p class="rv-hint">@L.T("The bid minimum has not been met.") <a data-workspace-dialog="details" asp-controller="Tenders" asp-action="Details" asp-route-id="@tender.Id" asp-route-panel="rounds">@L.T("View bidding rounds")</a></p>
+        }
+        @if (Model.CanSendToEvaluation)
+        {
+            <form asp-action="SendToEvaluation" asp-route-tenderId="@tender.Id" method="post" asp-antiforgery="true"
+                  data-workspace-confirm="@L.T("Send this tender to evaluation? The compliance check will be closed.")" onsubmit="return window.stmsWorkspaceReady || confirm(this.dataset.workspaceConfirm);">
+                <button type="submit" class="btn btn-primary rv-main w-100 d-inline-flex justify-content-center gap-2"><partial name="_Icon" model='@("users")' /> @L.T("Assign evaluation committee")</button>
+            </form>
+        }
+        else
+        {
+            <button type="button" class="btn btn-primary w-100" disabled>@L.T("Assign evaluation committee")</button>
+        }
+    </section>
 }
-
-<a class="btn btn-outline-secondary back-link" asp-action="Pending">@L.T("Back to compliance list")</a>
-
-<section class="surface detail-card mt-3">
-    <h2>@L.T("Clarifications")</h2>
-    <div class="button-row">
-        <a class="btn btn-outline-secondary" asp-controller="Clarifications" asp-action="Index" asp-route-kind="tender" asp-route-recordId="@tender.Id">@L.T("Tender history")</a>
+    <div class="prd-links">
+        <h2>@L.T("Clarifications")</h2>
+        <a class="prd-link" asp-controller="Clarifications" asp-action="Index" asp-route-kind="tender" asp-route-recordId="@tender.Id"><partial name="_Icon" model='@("clock")' /> @L.T("Tender history")</a>
         @foreach (var bid in Model.Bids)
         {
-            <a data-workspace-dialog="details" class="btn btn-outline-secondary" asp-controller="Clarifications" asp-action="Index" asp-route-kind="bid" asp-route-recordId="@bid.Id">@L.F("Bid #{0} history", bid.Id)</a>
+            <a data-workspace-dialog="details" class="prd-link" asp-controller="Clarifications" asp-action="Index" asp-route-kind="bid" asp-route-recordId="@bid.Id"><partial name="_Icon" model='@("mail")' /> @L.F("Bid #{0} history", bid.Id) <small class="cr-muted">· @bid.SupplierProfile.CompanyName</small></a>
             @if (ViewData["CanRequestBidDocuments"] is true && bid.SubmittedAt.HasValue && bid.Status is ("Submitted" or "Pending Clarification"))
             {
-                <a data-workspace-dialog class="btn btn-outline-secondary" asp-controller="Clarifications" asp-action="Create" asp-route-kind="bid" asp-route-recordId="@bid.Id"><partial name="_Icon" model='@("file")' /> @L.F("Request a PDF for bid #{0}", bid.Id)</a>
+                <a data-workspace-dialog class="prd-link" asp-controller="Clarifications" asp-action="Create" asp-route-kind="bid" asp-route-recordId="@bid.Id"><partial name="_Icon" model='@("file")' /> @L.F("Request a PDF for bid #{0}", bid.Id)</a>
             }
         }
+        <a class="prd-link td-back" asp-action="Pending"><partial name="_Icon" model='@("back")' /> @L.T("Back to compliance list")</a>
     </div>
-</section>
+</aside>
+</div>
+</div>

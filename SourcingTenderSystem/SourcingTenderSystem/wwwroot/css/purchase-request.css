@@ -596,3 +596,27 @@
 .cw-verify-btn:hover { color: #fff; filter: brightness(1.05); }
 .cw { container-type: inline-size; }
 @container (max-width: 720px) { .cw-cards { grid-template-columns: 1fr; } .cw-verify { grid-template-columns: auto 1fr; } .cw-verify-btn { grid-column: 1 / -1; justify-content: center; } }
+
+/* ===== Compliance review (Compliance/Review) ===== */
+.cr .prd-status .tm-status { background: #fff; color: #065b53; box-shadow: 0 6px 16px #0000001f; }
+.cr-desc { margin: -4px 0 16px; color: var(--muted); }
+.cr-close summary { display: flex; align-items: center; gap: 8px; font-weight: 700; cursor: pointer; color: light-dark(#b42318, #ff8a80); }
+.cr-layout { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 16px; align-items: start; }
+.cr-main { min-width: 0; }
+.cr-muted { color: var(--muted); font-size: .8rem; }
+.cr-table { border: 1px solid var(--pr-line); border-radius: 16px; overflow: auto; }
+.cr-table .table { margin: 0; min-width: 520px; }
+.cr-table thead th { position: sticky; top: 0; z-index: 2; background: light-dark(#f4f7fa, #1b2733); border-bottom: 1px solid var(--pr-line); padding: 14px 16px; }
+.cr-table tbody th[scope=row] { position: sticky; inset-inline-start: 0; z-index: 1; background: var(--pr-card); color: var(--muted); font-size: .85rem; font-weight: 650; width: 170px; }
+.cr-table thead th:first-child { position: sticky; inset-inline-start: 0; z-index: 3; }
+.cr-table td, .cr-table th { padding: 12px 16px; border-color: var(--pr-line); }
+.cr-table tr.cr-group th { background: light-dark(#e9f8f5, #16302e) !important; color: var(--pr-accent) !important; font-size: .72rem; font-weight: 800; text-transform: uppercase; letter-spacing: .1em; padding-block: 8px; }
+.cr-table .compare-total td.is-lowest { background: light-dark(#ecfdf5, #0f2a22); }
+.cr-table .compare-actions td { background: light-dark(#fbfdfe, #17212c); }
+.cr-table .compare-action-buttons { display: flex; flex-wrap: wrap; gap: 6px; }
+.cr-table .compare-action-buttons form { margin: 0; }
+.cr-table .compare-action-buttons .btn { display: inline-flex; align-items: center; gap: 5px; border-radius: 10px; font-weight: 700; }
+.cr-side { display: grid; gap: 14px; position: sticky; top: 20px; }
+.cr-side .rv-hint { margin: 0 0 12px; }
+.cr .prd-links small { font-weight: 500; }
+@container (max-width: 1000px) { .cr-layout { grid-template-columns: 1fr; } .cr-side { position: static; } }
