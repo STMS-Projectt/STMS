@@ -9,7 +9,7 @@ namespace SourcingTenderSystem.Services;
 // Facts about the awarded tender (all numbers come from the database, never from the AI).
 public sealed record AwardEmailData(int TenderId, string TenderTitle, string WinnerCompany,
     decimal PriceBeforeTax, decimal Tax, decimal FinalCost, string Currency, int DeliveryDays,
-    string OfferNature, int? WarrantyMonths, string? GuaranteeType, string? GuaranteeNumber, string? BankName,
+    int? WarrantyMonths, string? BankName,
     decimal? GuaranteeAmount, DateTime? GuaranteeExpiry, string TenderLink, string? VerifyLink, string UploadLink,
     IReadOnlyList<string> AttachmentPaths);
 
@@ -62,7 +62,7 @@ public sealed class AwardEmailService(IHttpClientFactory httpClients, IConfigura
         var facts = JsonSerializer.Serialize(new
         {
             data.TenderTitle, data.WinnerCompany, data.FinalCost, data.Tax, data.Currency, data.DeliveryDays,
-            data.OfferNature, data.WarrantyMonths, data.GuaranteeType, data.BankName, data.GuaranteeAmount,
+            data.WarrantyMonths, data.BankName, data.GuaranteeAmount,
             GuaranteeExpiry = data.GuaranteeExpiry?.ToString("yyyy-MM-dd")
         });
         var payload = new JsonObject
@@ -75,7 +75,7 @@ public sealed class AwardEmailService(IHttpClientFactory httpClients, IConfigura
                 new JsonObject { ["role"] = "system", ["content"] =
                     "You write short, formal procurement e-mails. Write 2 short paragraphs of plain text (no markdown, no greeting line, no signature). " +
                     "Announce that the Top Committee approved the award, mention the winning supplier, the final cost including 16% tax, " +
-                    "and explain that the legal warranty and bank guarantee durations fit the offer type (product or service). " +
+                    "and mention the legal warranty duration and the bank guarantee validity. " +
                     "Use only the facts given. Never invent numbers." },
                 new JsonObject { ["role"] = "user", ["content"] = "Tender data: " + facts }
             }
@@ -102,9 +102,9 @@ public sealed class AwardEmailService(IHttpClientFactory httpClients, IConfigura
     public static string TemplateIntro(AwardEmailData d) =>
         $"We are pleased to inform you that the Top Committee has approved the award of tender \"{d.TenderTitle}\" " +
         $"to {d.WinnerCompany}, with a final cost of {d.FinalCost:N2} {d.Currency} (including {d.Tax:N2} {d.Currency} sales tax).\n\n" +
-        $"As this is a {d.OfferNature.ToLowerInvariant()} offer, the legal warranty is " +
+        "The legal warranty is " +
         (d.WarrantyMonths is int m ? $"{m} months" : "still to be provided") +
-        (d.GuaranteeNumber != null ? $" and the bank guarantee is valid until {d.GuaranteeExpiry:yyyy-MM-dd}." : " and the bank guarantee is still to be provided.");
+        (d.BankName != null ? $" and the bank guarantee is valid until {d.GuaranteeExpiry:yyyy-MM-dd}." : " and the bank guarantee is still to be provided.");
 
     public static string BuildHtml(AwardEmailData d, string intro, AwardRecipient to)
     {
@@ -123,11 +123,10 @@ public sealed class AwardEmailService(IHttpClientFactory httpClients, IConfigura
         html.Append(Row("Sales tax (16%)", $"{d.Tax:N2} {d.Currency}"));
         html.Append(Row("Final cost", $"{d.FinalCost:N2} {d.Currency}"));
         html.Append(Row("Delivery", $"{d.DeliveryDays} days"));
-        html.Append(Row("Offer type", d.OfferNature));
         html.Append(Row("Legal warranty", d.WarrantyMonths is int m ? $"{m} months" : "Not provided yet"));
-        if (d.GuaranteeNumber != null)
+        if (d.BankName != null)
         {
-            html.Append(Row("Bank guarantee", $"{d.GuaranteeType} #{d.GuaranteeNumber} – {d.BankName}"));
+            html.Append(Row("Bank guarantee", d.BankName));
             html.Append(Row("Guarantee amount", $"{d.GuaranteeAmount:N2} {d.Currency}"));
             html.Append(Row("Guarantee valid until", d.GuaranteeExpiry?.ToString("yyyy-MM-dd")));
         }

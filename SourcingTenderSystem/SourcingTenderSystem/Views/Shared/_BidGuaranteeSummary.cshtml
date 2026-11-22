@@ -2,7 +2,7 @@
 @model Bid
 @* Tax, legal warranty and bank guarantee of one bid + QR code to the e-guarantee verification page *@
 @{
-    var verifyPath = Url.Action("Index", "GuaranteeVerify", new { code = Model.GuaranteeVerificationCode.ToString("N"), number = Model.BankGuaranteeNumber });
+    var verifyPath = Url.Action("Index", "GuaranteeVerify", new { code = Model.GuaranteeVerificationCode.ToString("N") });
     var verifyLink = $"{Context.Request.Scheme}://{Context.Request.Host}{verifyPath}";
     string? qrImage = null;
     if (Model.HasBankGuarantee)
@@ -11,6 +11,8 @@
         using var qr = new PngByteQRCode(data);
         qrImage = Convert.ToBase64String(qr.GetGraphic(4));
     }
+    var warrantyFile = Model.BidDocuments.LastOrDefault(d => d.DocumentType == BidDocument.LegalWarranty);
+    var guaranteeFile = Model.BidDocuments.LastOrDefault(d => d.DocumentType == BidDocument.BankGuarantee);
 }
 <section class="surface detail-card record-section">
     <h2>@L.T("Cost, warranty and bank guarantee")</h2>
@@ -21,18 +23,18 @@
         <dd class="col-sm-7">@(Model.IncludesSalesTax ? Model.TaxAmount.ToString("N2") + " " + Model.Currency : L.T("Not added"))</dd>
         <dt class="col-sm-5">@L.T("Final cost")</dt>
         <dd class="col-sm-7"><strong>@Model.TotalWithTax.ToString("N2") @Model.Currency</strong></dd>
-        <dt class="col-sm-5">@L.T("Offer type")</dt>
-        <dd class="col-sm-7">@L.T(Model.OfferNature)</dd>
         <dt class="col-sm-5">@L.T("Legal warranty")</dt>
-        <dd class="col-sm-7">@(Model.LegalWarrantyMonths is int months ? L.F("{0} months", months) : L.T("Not provided"))</dd>
+        <dd class="col-sm-7">@(Model.LegalWarrantyMonths is int months ? L.F("{0} months", months) : L.T("Not provided"))
+            @if (warrantyFile != null) { <br /><a asp-controller="BidDocuments" asp-action="Download" asp-route-id="@warrantyFile.Id" asp-route-preview="true" target="_blank" rel="noopener">@L.T("View warranty file")</a> }</dd>
         <dt class="col-sm-5">@L.T("Bank guarantee")</dt>
         <dd class="col-sm-7">
             @if (Model.HasBankGuarantee)
             {
-                <span>@L.T(Model.BankGuaranteeType ?? "") · #@Model.BankGuaranteeNumber · @Model.BankName</span><br />
+                <span>@Model.BankName</span><br />
                 <span>@Model.BankGuaranteeAmount?.ToString("N2") @Model.Currency · @L.F("valid until {0}", Model.BankGuaranteeExpiry?.ToString("yyyy-MM-dd"))</span>
             }
             else { @L.T("Not provided") }
+            @if (guaranteeFile != null) { <br /><a asp-controller="BidDocuments" asp-action="Download" asp-route-id="@guaranteeFile.Id" asp-route-preview="true" target="_blank" rel="noopener">@L.T("View guarantee file")</a> }
         </dd>
     </dl>
     @if (qrImage != null)

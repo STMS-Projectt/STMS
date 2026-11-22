@@ -10,3 +10,14 @@
     <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
     <span asp-validation-for="Notes" class="text-danger"></span>
 </div>
+@{ var current = ViewBag.BidItem as BidItem; }
+<div class="mb-3">
+    <label asp-for="SampleImage" class="form-label"></label>
+    @if (current?.SampleImagePath != null)
+    {
+        <div class="mb-2"><img src="@Url.Action("ItemImage", "BidDocuments", new { id = current.Id })" alt="@current.SampleImageName" width="96" height="96" style="object-fit:cover;border-radius:8px" /></div>
+    }
+    <input asp-for="SampleImage" type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/png" class="form-control" />
+    <div class="form-text">@L.T("JPG or PNG photo of the sample, maximum 10 MB. A new photo replaces the current one.")</div>
+    <span asp-validation-for="SampleImage" class="text-danger"></span>
+</div>

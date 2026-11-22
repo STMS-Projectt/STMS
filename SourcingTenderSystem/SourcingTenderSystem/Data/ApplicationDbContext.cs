@@ -343,9 +343,8 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser>
             .HasFilter("[Decision] IN ('Top Committee Approved', 'Top Committee Rejected')").IsUnique();
         modelBuilder.Entity<Bid>().Property(b => b.TotalPrice).HasPrecision(18, 2);
         modelBuilder.Entity<Bid>().Property(b => b.BankGuaranteeAmount).HasPrecision(18, 2);
-        modelBuilder.Entity<Bid>().Property(b => b.OfferNature).HasMaxLength(20).HasDefaultValue("Product");
-        modelBuilder.Entity<Bid>().Property(b => b.BankGuaranteeType).HasMaxLength(60);
-        modelBuilder.Entity<Bid>().Property(b => b.BankGuaranteeNumber).HasMaxLength(60);
+        modelBuilder.Entity<BidItem>().Property(i => i.SampleImagePath).HasMaxLength(100);
+        modelBuilder.Entity<BidItem>().Property(i => i.SampleImageName).HasMaxLength(255);
         modelBuilder.Entity<Bid>().Property(b => b.BankName).HasMaxLength(120);
         modelBuilder.Entity<Bid>().Property(b => b.GuaranteeVerificationCode).HasDefaultValueSql("NEWID()");
         modelBuilder.Entity<Bid>().HasIndex(b => b.GuaranteeVerificationCode).IsUnique();

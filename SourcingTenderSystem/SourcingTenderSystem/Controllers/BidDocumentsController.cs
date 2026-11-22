@@ -102,9 +102,8 @@ public class BidDocumentsController : Controller
             ModelState.AddModelError(nameof(model.DocumentType), "Please choose a document type from the list.");
         }
 
-        // Check the file: type, size and content (sample images are JPG/PNG, everything else is PDF)
-        bool isImage = model.DocumentType == BidDocument.SampleImage;
-        string? fileError = isImage ? await CheckImageFileAsync(model.File) : await CheckPdfFileAsync(model.File);
+        // Check the file: type, size and content
+        string? fileError = await CheckPdfFileAsync(model.File);
         if (fileError != null)
         {
             ModelState.AddModelError(nameof(model.File), fileError);
@@ -118,7 +117,7 @@ public class BidDocumentsController : Controller
         }
 
         // 1) Save the file on the disk with a new GUID name (never with the user's file name)
-        string storedFileName = Guid.NewGuid().ToString("N") + (isImage ? Path.GetExtension(model.File.FileName).ToLowerInvariant() : ".pdf");
+        string storedFileName = Guid.NewGuid().ToString("N") + ".pdf";
         string folder = GetUploadFolder();
         Directory.CreateDirectory(folder); // creates the folder the first time (does nothing if it exists)
 
@@ -167,10 +166,24 @@ public class BidDocumentsController : Controller
         {
             // Sample images open in the browser (or download when preview is false)
             var stream = System.IO.File.OpenRead(fullPath);
-            return preview ? File(stream, ImageContentType(fullPath)) : File(stream, ImageContentType(fullPath), document.FileName);
+            return preview ? File(stream, BidFiles.ImageContentType(fullPath)) : File(stream, BidFiles.ImageContentType(fullPath), document.FileName);
         }
 
         return await pdf.Serve(this, System.IO.File.OpenRead(fullPath), document.FileName, preview);
+    }
+
+    // GET: /BidItems sample photo: /BidDocuments/ItemImage/12 (same access rules as the bid documents)
+    [HttpGet]
+    [Authorize(Roles = DownloadRoles)]
+    public async Task<IActionResult> ItemImage(int id, [FromServices] SourcingTenderSystem.Services.BidDocumentAccess access)
+    {
+        var item = await _context.BidItems.AsNoTracking()
+            .Include(i => i.Bid).ThenInclude(b => b.Tender)
+            .FirstOrDefaultAsync(i => i.Id == id);
+        if (item?.SampleImagePath is null || !await access.CanRead(User, item.Bid)) return NotFound();
+        string fullPath = BidFiles.FullPath(_environment, item.SampleImagePath);
+        if (!System.IO.File.Exists(fullPath)) return NotFound();
+        return File(System.IO.File.OpenRead(fullPath), BidFiles.ImageContentType(fullPath));
     }
 
     // POST: /BidDocuments/Delete/3
@@ -259,33 +272,6 @@ public class BidDocumentsController : Controller
     private static bool IsAwarded(Bid bid) => bid.AwardOutcome == "Awarded";
 
     private IReadOnlyList<string> AllowedTypes(Bid bid) => CanChangeBid(bid) ? DocumentTypes : BidDocument.AfterAwardTypes;
-
-    private static readonly string[] ImageExtensions = { ".jpg", ".jpeg", ".png" };
-
-    private static string ImageContentType(string path) =>
-        Path.GetExtension(path).ToLowerInvariant() == ".png" ? "image/png" : "image/jpeg";
-
-    // Returns an error message, or null if the file is a real JPG/PNG image with an allowed size
-    private async Task<string?> CheckImageFileAsync(IFormFile? file)
-    {
-        if (file == null) return null;
-        if (file.Length == 0) return "The file is empty.";
-        if (file.Length > MaxFileBytes) return "The file is too big. The maximum size is 10 MB.";
-        string extension = Path.GetExtension(file.FileName).ToLowerInvariant();
-        if (!ImageExtensions.Contains(extension)) return "Sample images must be JPG or PNG files.";
-
-        // Check the first bytes: JPG starts with FF D8 FF, PNG with 89 50 4E 47
-        var head = new byte[4];
-        int read;
-        using (var stream = file.OpenReadStream())
-        {
-            read = await stream.ReadAsync(head, 0, 4);
-        }
-        bool jpg = read >= 3 && head[0] == 0xFF && head[1] == 0xD8 && head[2] == 0xFF;
-        bool png = read == 4 && head[0] == 0x89 && head[1] == 0x50 && head[2] == 0x4E && head[3] == 0x47;
-        if (!(extension == ".png" ? png : jpg)) return "This file is not a real JPG/PNG image.";
-        return null;
-    }
 
     // <project folder>/App_Data/BidDocuments
     private string GetUploadFolder()

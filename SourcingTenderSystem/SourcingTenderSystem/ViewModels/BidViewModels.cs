@@ -24,19 +24,12 @@ public class BidFormViewModel
     [Display(Name = "Add 16% sales tax")]
     public bool IncludesSalesTax { get; set; } = true;
 
-    [Display(Name = "Offer type")]
-    public string OfferNature { get; set; } = "Product";
-
     [Range(1, 120, ErrorMessage = "Warranty must be between 1 and 120 months.")]
     [Display(Name = "Legal warranty (months)")]
     public int? LegalWarrantyMonths { get; set; }
 
-    [Display(Name = "Bank guarantee type")]
-    public string? BankGuaranteeType { get; set; }
-
-    [StringLength(60)]
-    [Display(Name = "Bank guarantee number")]
-    public string? BankGuaranteeNumber { get; set; }
+    [Display(Name = "Legal warranty file (PDF)")]
+    public IFormFile? LegalWarrantyFile { get; set; }
 
     [StringLength(120)]
     [Display(Name = "Issuing bank")]
@@ -50,16 +43,15 @@ public class BidFormViewModel
     [Display(Name = "Guarantee expiry date")]
     public DateTime? BankGuaranteeExpiry { get; set; }
 
-    // Server-side checks for the warranty / guarantee fields. Returns (field, error) pairs.
+    [Display(Name = "Bank guarantee file (PDF)")]
+    public IFormFile? BankGuaranteeFile { get; set; }
+
+    // Server-side checks for the bank guarantee fields. Returns (field, error) pairs.
     public IEnumerable<(string Field, string Error)> GuaranteeErrors()
     {
-        if (!Bid.OfferNatures.Contains(OfferNature))
-            yield return (nameof(OfferNature), "Choose Product or Service.");
-        if (LegalWarrantyMonths is int months && months < Bid.MinWarrantyMonths(OfferNature))
-            yield return (nameof(LegalWarrantyMonths), $"A {OfferNature} offer needs at least {Bid.MinWarrantyMonths(OfferNature)} months of warranty.");
-        if (string.IsNullOrWhiteSpace(BankGuaranteeNumber)) yield break;
-        if (BankGuaranteeType is null || !Bid.GuaranteeTypes.Contains(BankGuaranteeType))
-            yield return (nameof(BankGuaranteeType), "Choose the bank guarantee type.");
+        // The bank guarantee is optional, but if one field is filled the others are needed too.
+        bool any = !string.IsNullOrWhiteSpace(BankName) || BankGuaranteeAmount != null || BankGuaranteeExpiry != null || BankGuaranteeFile != null;
+        if (!any) yield break;
         if (string.IsNullOrWhiteSpace(BankName))
             yield return (nameof(BankName), "Enter the issuing bank.");
         if (BankGuaranteeAmount is null)
@@ -71,22 +63,19 @@ public class BidFormViewModel
     public static BidFormViewModel From(Bid bid) => new()
     {
         DeliveryDays = bid.DeliveryDays, ValidityDays = bid.ValidityDays, IncludesSalesTax = bid.IncludesSalesTax,
-        OfferNature = bid.OfferNature, LegalWarrantyMonths = bid.LegalWarrantyMonths, BankGuaranteeType = bid.BankGuaranteeType,
-        BankGuaranteeNumber = bid.BankGuaranteeNumber, BankName = bid.BankName,
+        LegalWarrantyMonths = bid.LegalWarrantyMonths, BankName = bid.BankName,
         BankGuaranteeAmount = bid.BankGuaranteeAmount, BankGuaranteeExpiry = bid.BankGuaranteeExpiry
     };
 
+    // Copies the typed values (not the files) into the bid.
     public void CopyTo(Bid bid)
     {
         bid.DeliveryDays = DeliveryDays;
         bid.ValidityDays = ValidityDays;
         bid.IncludesSalesTax = IncludesSalesTax;
-        bid.OfferNature = OfferNature;
         bid.LegalWarrantyMonths = LegalWarrantyMonths;
-        var hasGuarantee = !string.IsNullOrWhiteSpace(BankGuaranteeNumber);
-        bid.BankGuaranteeNumber = hasGuarantee ? BankGuaranteeNumber!.Trim() : null;
-        bid.BankGuaranteeType = hasGuarantee ? BankGuaranteeType : null;
-        bid.BankName = hasGuarantee ? BankName?.Trim() : null;
+        var hasGuarantee = !string.IsNullOrWhiteSpace(BankName);
+        bid.BankName = hasGuarantee ? BankName!.Trim() : null;
         bid.BankGuaranteeAmount = hasGuarantee ? BankGuaranteeAmount : null;
         bid.BankGuaranteeExpiry = hasGuarantee ? BankGuaranteeExpiry?.Date : null;
     }
@@ -138,6 +127,10 @@ public class BidItemFormViewModel
     [StringLength(500, ErrorMessage = "Notes can be at most 500 characters.")]
     [Display(Name = "Notes (optional)")]
     public string? Notes { get; set; }
+
+    // Optional photo of the sample (JPG/PNG). On Edit, an empty field keeps the current photo.
+    [Display(Name = "Sample image (optional)")]
+    public IFormFile? SampleImage { get; set; }
 }
 
 // ===== BidDocumentsController =====
@@ -152,7 +145,7 @@ public class BidDocumentUploadViewModel
 
     // IFormFile = the file the user picked in <input type="file">
     [Required(ErrorMessage = "Please choose a file.")]
-    [Display(Name = "File (PDF, or image for samples)")]
+    [Display(Name = "PDF file")]
     public IFormFile File { get; set; } = null!;
 }
 

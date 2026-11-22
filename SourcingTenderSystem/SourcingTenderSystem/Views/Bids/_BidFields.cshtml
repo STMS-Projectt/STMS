@@ -21,46 +21,26 @@
     <div class="form-text">@L.T("The tax is calculated on the total of your item prices and shown as the final cost.")</div>
 </div>
 
-@* ----- Legal warranty ----- *@
+@* ----- Legal warranty: duration + PDF ----- *@
 <fieldset class="mb-3">
     <legend class="h6">@L.T("Legal warranty")</legend>
-    <div class="mb-3">
-        <label asp-for="OfferNature" class="form-label"></label>
-        <select asp-for="OfferNature" class="form-select">
-            @foreach (var nature in Bid.OfferNatures)
-            {
-                <option value="@nature">@L.T(nature)</option>
-            }
-        </select>
-        <div class="form-text">@L.F("Minimum warranty: product {0} months, service {1} months.", Bid.MinWarrantyMonths("Product"), Bid.MinWarrantyMonths("Service"))</div>
-    </div>
     <div class="mb-3">
         <label asp-for="LegalWarrantyMonths" class="form-label"></label>
         <input asp-for="LegalWarrantyMonths" class="form-control" />
         <span asp-validation-for="LegalWarrantyMonths" class="text-danger"></span>
     </div>
+    <div class="mb-3">
+        <label asp-for="LegalWarrantyFile" class="form-label"></label>
+        <input asp-for="LegalWarrantyFile" type="file" accept=".pdf,application/pdf" class="form-control" />
+        <div class="form-text">@L.T("PDF, maximum 10 MB. A new file replaces the current one.")</div>
+        <span asp-validation-for="LegalWarrantyFile" class="text-danger"></span>
+    </div>
 </fieldset>
 
-@* ----- Bank guarantee (optional: leave the number empty to skip) ----- *@
+@* ----- Bank guarantee (optional): bank, amount, expiry + PDF ----- *@
 <fieldset class="mb-3">
     <legend class="h6">@L.T("Bank guarantee")</legend>
-    <p class="field-hint">@L.T("Leave the guarantee number empty if you will add the guarantee later.")</p>
-    <div class="mb-3">
-        <label asp-for="BankGuaranteeType" class="form-label"></label>
-        <select asp-for="BankGuaranteeType" class="form-select">
-            <option value="">@L.T("-- Choose a type --")</option>
-            @foreach (var type in Bid.GuaranteeTypes)
-            {
-                <option value="@type">@L.T(type)</option>
-            }
-        </select>
-        <span asp-validation-for="BankGuaranteeType" class="text-danger"></span>
-    </div>
-    <div class="mb-3">
-        <label asp-for="BankGuaranteeNumber" class="form-label"></label>
-        <input asp-for="BankGuaranteeNumber" class="form-control" />
-        <span asp-validation-for="BankGuaranteeNumber" class="text-danger"></span>
-    </div>
+    <p class="field-hint">@L.T("Leave these fields empty if you will add the guarantee later.")</p>
     <div class="mb-3">
         <label asp-for="BankName" class="form-label"></label>
         <input asp-for="BankName" class="form-control" />
@@ -75,5 +55,11 @@
         <label asp-for="BankGuaranteeExpiry" class="form-label"></label>
         <input asp-for="BankGuaranteeExpiry" type="date" class="form-control" />
         <span asp-validation-for="BankGuaranteeExpiry" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="BankGuaranteeFile" class="form-label"></label>
+        <input asp-for="BankGuaranteeFile" type="file" accept=".pdf,application/pdf" class="form-control" />
+        <div class="form-text">@L.T("PDF, maximum 10 MB. A new file replaces the current one.")</div>
+        <span asp-validation-for="BankGuaranteeFile" class="text-danger"></span>
     </div>
 </fieldset>

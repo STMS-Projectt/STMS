@@ -20,10 +20,13 @@ public class BidItemsController : Controller
 
     private const string CannotChangeMessage = "You can only change prices of a draft bid while the tender is still open.";
 
-    public BidItemsController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
+    private readonly IWebHostEnvironment _environment;
+
+    public BidItemsController(ApplicationDbContext context, UserManager<IdentityUser> userManager, IWebHostEnvironment environment)
     {
         _context = context;
         _userManager = userManager;
+        _environment = environment;
     }
 
     // GET: /BidItems/Create?bidId=4&purchaseRequisitionItemId=3
@@ -113,6 +116,12 @@ public class BidItemsController : Controller
             ModelState.AddModelError(nameof(model.UnitPrice), "Unit price can have at most 2 decimal places.");
         }
 
+        // The sample photo (optional) must be a real JPG/PNG
+        if (model.SampleImage != null && await BidFiles.CheckImageAsync(model.SampleImage) is string imageError)
+        {
+            ModelState.AddModelError(nameof(model.SampleImage), imageError);
+        }
+
         if (!ModelState.IsValid)
         {
             ViewBag.Bid = bid;
@@ -129,6 +138,11 @@ public class BidItemsController : Controller
             UnitPrice = model.UnitPrice,
             Notes = model.Notes
         };
+        if (model.SampleImage != null)
+        {
+            bidItem.SampleImagePath = await BidFiles.SaveAsync(_environment, model.SampleImage);
+            bidItem.SampleImageName = Path.GetFileName(model.SampleImage.FileName);
+        }
 
         _context.BidItems.Add(bidItem);
         await _context.SaveChangesAsync();
@@ -204,6 +218,12 @@ public class BidItemsController : Controller
             ModelState.AddModelError(nameof(model.UnitPrice), "Unit price can have at most 2 decimal places.");
         }
 
+        // The sample photo (optional) must be a real JPG/PNG
+        if (model.SampleImage != null && await BidFiles.CheckImageAsync(model.SampleImage) is string imageError)
+        {
+            ModelState.AddModelError(nameof(model.SampleImage), imageError);
+        }
+
         if (!ModelState.IsValid)
         {
             ViewBag.BidItem = bidItem;
@@ -214,11 +234,19 @@ public class BidItemsController : Controller
         bidItem.UnitPrice = model.UnitPrice;
         bidItem.Notes = model.Notes;
         bidItem.Quantity = bidItem.PurchaseRequisitionItem.Quantity;
+        string? oldImage = null;
+        if (model.SampleImage != null) // a new photo replaces the old one
+        {
+            oldImage = bidItem.SampleImagePath;
+            bidItem.SampleImagePath = await BidFiles.SaveAsync(_environment, model.SampleImage);
+            bidItem.SampleImageName = Path.GetFileName(model.SampleImage.FileName);
+        }
         await _context.SaveChangesAsync();
 
         await RecalculateTotalAsync(bidItem.Bid);
 
         await tx.CommitAsync();
+        BidFiles.Delete(_environment, oldImage);
         TempData["Msg"] = $"Price updated for {bidItem.PurchaseRequisitionItem.ItemName}.";
         return BackToBid(bidItem.BidId);
     }
@@ -252,6 +280,7 @@ public class BidItemsController : Controller
         // Keep what we need before the item is removed
         var bid = bidItem.Bid;
         string itemName = bidItem.PurchaseRequisitionItem.ItemName;
+        string? image = bidItem.SampleImagePath;
 
         _context.BidItems.Remove(bidItem);
         await _context.SaveChangesAsync();
@@ -259,6 +288,7 @@ public class BidItemsController : Controller
         await RecalculateTotalAsync(bid);
 
         await tx.CommitAsync();
+        BidFiles.Delete(_environment, image);
         TempData["Msg"] = $"Price removed for {itemName}.";
         return BackToBid(bid.Id);
     }

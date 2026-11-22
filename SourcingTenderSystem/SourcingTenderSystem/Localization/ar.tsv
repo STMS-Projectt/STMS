@@ -2015,3 +2015,13 @@ Guarantee amount must be greater than 0.|يجب أن تكون قيمة الكف�
 Sample images must be JPG or PNG files.|يجب أن تكون صور العينات بصيغة JPG أو PNG.
 This file is not a real JPG/PNG image.|هذا الملف ليس صورة JPG/PNG حقيقية.
 Please choose a file.|يرجى اختيار ملف.
+Legal warranty file (PDF)|ملف الكفالة العدلية (PDF)
+Bank guarantee file (PDF)|ملف الكفالة البنكية (PDF)
+PDF, maximum 10 MB. A new file replaces the current one.|ملف PDF بحد أقصى 10 ميغابايت. الملف الجديد يحل محل الملف الحالي.
+Leave these fields empty if you will add the guarantee later.|اترك هذه الحقول فارغة إذا كنت ستضيف الكفالة لاحقاً.
+Sample image (optional)|صورة العينة (اختياري)
+JPG or PNG photo of the sample, maximum 10 MB. A new photo replaces the current one.|صورة للعينة بصيغة JPG أو PNG بحد أقصى 10 ميغابايت. الصورة الجديدة تحل محل الصورة الحالية.
+Guarantee document|مستند الكفالة
+Attached|مرفق
+View warranty file|عرض ملف الكفالة العدلية
+View guarantee file|عرض ملف الكفالة البنكية

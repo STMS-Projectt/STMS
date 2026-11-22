@@ -41,14 +41,12 @@
                 @(Model.IsValid ? L.T("✔ This bank guarantee is genuine and valid.") : L.T("✖ This bank guarantee is expired or no longer valid."))
             </div>
             <dl>
-                <dt>@L.T("Guarantee number")</dt><dd>@Model.Number</dd>
                 <dt>@L.T("Issuing bank")</dt><dd>@Model.BankName</dd>
-                <dt>@L.T("Guarantee type")</dt><dd>@L.T(Model.Type ?? "")</dd>
+                <dt>@L.T("Guarantee document")</dt><dd>@(Model.HasDocument ? L.T("Attached") : L.T("Not provided"))</dd>
                 <dt>@L.T("Amount")</dt><dd>@Model.Amount?.ToString("N2") @Model.Currency</dd>
                 <dt>@L.T("Expiry date")</dt><dd>@Model.Expiry?.ToString("yyyy-MM-dd") @(Model.IsValid ? $"({L.F("{0} days left", days)})" : "")</dd>
                 <dt>@L.T("Principal (supplier)")</dt><dd>@Model.Principal</dd>
                 <dt>@L.T("Beneficiary tender")</dt><dd>@Model.TenderTitle</dd>
-                <dt>@L.T("Offer type")</dt><dd>@L.T(Model.OfferNature ?? "")</dd>
                 <dt>@L.T("Legal warranty")</dt><dd>@(Model.WarrantyMonths is int m ? L.F("{0} months", m) : "—")</dd>
             </dl>
         </section>
@@ -60,8 +58,6 @@
 
     <form class="card" method="get" asp-action="Index">
         <h2 style="margin-top:0;font-size:17px">@L.T("Verify a bank guarantee")</h2>
-        <label for="number">@L.T("Guarantee number")</label>
-        <input id="number" name="number" value="@Model.Number" />
         <label for="code">@L.T("Verification code")</label>
         <input id="code" name="code" value="@Model.Code" required />
         <button type="submit">@L.T("Verify")</button>

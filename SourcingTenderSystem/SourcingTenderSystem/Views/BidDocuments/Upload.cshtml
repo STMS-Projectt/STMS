@@ -21,8 +21,8 @@
 
     <div class="mb-3">
         <label asp-for="File" class="form-label"></label>
-        <input asp-for="File" type="file" accept=".pdf,application/pdf,.jpg,.jpeg,.png,image/jpeg,image/png" class="form-control" />
-        <div class="form-text">@L.T("PDF, maximum 10 MB. For sample images choose a JPG or PNG photo.")</div>
+        <input asp-for="File" type="file" accept=".pdf,application/pdf" class="form-control" />
+        <div class="form-text">@L.T("PDF only, maximum 10 MB.")</div>
         <span asp-validation-for="File" class="text-danger"></span>
     </div>
 

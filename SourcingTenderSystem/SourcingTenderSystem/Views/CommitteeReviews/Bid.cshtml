@@ -21,7 +21,7 @@
         <div class="record-list">
             @foreach (var item in Model.Bid.BidItems)
             {
-                <article class="record-card"><div class="record-name"><span class="avatar"><partial name="_Icon" model='@("inbox")' /></span><span>@item.PurchaseRequisitionItem.ItemName<small>@item.PurchaseRequisitionItem.Specifications</small></span></div>
+                <article class="record-card"><div class="record-name">@if (item.SampleImagePath != null) { <a href="@Url.Action("ItemImage", "BidDocuments", new { id = item.Id })" target="_blank" rel="noopener"><img src="@Url.Action("ItemImage", "BidDocuments", new { id = item.Id })" alt="@item.SampleImageName" width="56" height="56" style="object-fit:cover;border-radius:8px" /></a> } else { <span class="avatar"><partial name="_Icon" model='@("inbox")' /></span> }<span>@item.PurchaseRequisitionItem.ItemName<small>@item.PurchaseRequisitionItem.Specifications</small></span></div>
                     <dl class="record-facts"><div><dt>@L.T("Quantity")</dt><dd>@item.Quantity</dd></div><div><dt>@L.T("Unit price")</dt><dd>@item.UnitPrice.ToString("N2") @Model.Bid.Currency</dd></div>
                         @if (!string.IsNullOrWhiteSpace(item.Notes)) { <div><dt>@L.T("Supplier notes")</dt><dd>@item.Notes</dd></div> }</dl>
                 </article>

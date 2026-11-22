@@ -7,7 +7,7 @@
 <p>@L.T("Tender:") <strong>@bid.Tender.Title</strong> · @L.F("Closes {0} (UTC)", bid.Tender.CloseDate.ToString("yyyy-MM-dd HH:mm", L.DisplayCulture))</p>
 
 @* The bid id goes in the URL (/Bids/Edit/5); the controller loads the bid again and checks the owner *@
-<form asp-action="Edit" asp-route-id="@bid.Id" method="post" asp-antiforgery="true" class="admin-form">
+<form asp-action="Edit" asp-route-id="@bid.Id" method="post" enctype="multipart/form-data" asp-antiforgery="true" class="admin-form">
     <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
     <partial name="_BidFields" model="Model" />
     <button type="submit" class="btn btn-primary">@L.T("Save")</button>

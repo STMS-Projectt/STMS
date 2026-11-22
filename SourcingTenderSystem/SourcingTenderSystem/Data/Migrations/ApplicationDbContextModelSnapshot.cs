@@ -300,14 +300,6 @@ namespace SourcingTenderSystem.Data.Migrations
                     b.Property<DateTime?>("BankGuaranteeExpiry")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("BankGuaranteeNumber")
-                        .HasMaxLength(60)
-                        .HasColumnType("nvarchar(60)");
-
-                    b.Property<string>("BankGuaranteeType")
-                        .HasMaxLength(60)
-                        .HasColumnType("nvarchar(60)");
-
                     b.Property<string>("BankName")
                         .HasMaxLength(120)
                         .HasColumnType("nvarchar(120)");
@@ -335,13 +327,6 @@ namespace SourcingTenderSystem.Data.Migrations
 
                     b.Property<int?>("LegalWarrantyMonths")
                         .HasColumnType("int");
-
-                    b.Property<string>("OfferNature")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)")
-                        .HasDefaultValue("Product");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -435,6 +420,14 @@ namespace SourcingTenderSystem.Data.Migrations
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
+
+                    b.Property<string>("SampleImageName")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("SampleImagePath")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<decimal>("UnitPrice")
                         .HasPrecision(18, 2)

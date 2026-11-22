@@ -442,11 +442,11 @@ public sealed class EvaluationWorkflowController(ApplicationDbContext db, Suppli
         var guaranteeFolder = Path.Combine(HttpContext.RequestServices.GetRequiredService<IWebHostEnvironment>().ContentRootPath, "App_Data", "BidDocuments");
         var data = new AwardEmailData(tender.Id, tender.Title, winner.SupplierProfile.CompanyName,
             winner.TotalPrice, winner.TaxAmount, winner.TotalWithTax, winner.Currency, winner.DeliveryDays,
-            winner.OfferNature, winner.LegalWarrantyMonths, winner.BankGuaranteeType, winner.BankGuaranteeNumber, winner.BankName,
+            winner.LegalWarrantyMonths, winner.BankName,
             winner.BankGuaranteeAmount, winner.BankGuaranteeExpiry,
             Url.Action(nameof(Details), "EvaluationWorkflow", new { id = tender.Id }, Request.Scheme)!,
             winner.HasBankGuarantee ? Url.Action("Index", "GuaranteeVerify",
-                new { code = winner.GuaranteeVerificationCode.ToString("N"), number = winner.BankGuaranteeNumber }, Request.Scheme) : null,
+                new { code = winner.GuaranteeVerificationCode.ToString("N") }, Request.Scheme) : null,
             Url.Action("Upload", "BidDocuments", new { bidId = winner.Id }, Request.Scheme)!,
             // The warranty / guarantee documents already uploaded are attached to the winner's e-mail
             winner.BidDocuments.Where(d => BidDocument.AfterAwardTypes.Contains(d.DocumentType))

@@ -99,7 +99,7 @@ public class BidsController : Controller
     // POST: /Bids/Create?tenderId=5
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(int tenderId, BidFormViewModel model)
+    public async Task<IActionResult> Create(int tenderId, BidFormViewModel model, [FromServices] IWebHostEnvironment environment)
     {
         var supplier = await GetCurrentSupplierAsync();
         if (supplier == null || supplier.Status != "Approved")
@@ -122,7 +122,7 @@ public class BidsController : Controller
             return RedirectToAction(nameof(MyBids));
         }
 
-        AddGuaranteeErrors(model);
+        await AddGuaranteeErrorsAsync(model);
         if (!ModelState.IsValid)
         {
             ViewBag.Tender = tender;
@@ -141,6 +141,7 @@ public class BidsController : Controller
         };
 
         model.CopyTo(bid);
+        await SaveGuaranteeFilesAsync(bid, model, environment);
         _context.Bids.Add(bid);
         try
         {
@@ -190,7 +191,7 @@ public class BidsController : Controller
     // POST: /Bids/Edit/5
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, BidFormViewModel model)
+    public async Task<IActionResult> Edit(int id, BidFormViewModel model, [FromServices] IWebHostEnvironment environment)
     {
         var supplier = await GetCurrentSupplierAsync();
         if (supplier == null || supplier.Status != "Approved")
@@ -214,7 +215,7 @@ public class BidsController : Controller
             return RedirectToAction(nameof(Details), new { id = bid.Id });
         }
 
-        AddGuaranteeErrors(model);
+        await AddGuaranteeErrorsAsync(model);
         if (!ModelState.IsValid)
         {
             ViewBag.Bid = bid;
@@ -223,8 +224,11 @@ public class BidsController : Controller
 
         // The currency on an existing bid never changes when schedule details are edited.
         model.CopyTo(bid);
+        await _context.Entry(bid).Collection(b => b.BidDocuments).LoadAsync();
+        var replacedFiles = await SaveGuaranteeFilesAsync(bid, model, environment);
         await _context.SaveChangesAsync();
         await tx.CommitAsync();
+        foreach (var file in replacedFiles) BidFiles.Delete(environment, file);
 
         TempData["Msg"] = "Bid information updated.";
         return RedirectToAction(nameof(Details), new { id = bid.Id });
@@ -414,10 +418,42 @@ public class BidsController : Controller
 
     // ----------------- helper methods -----------------
 
-    private void AddGuaranteeErrors(BidFormViewModel model)
+    private async Task AddGuaranteeErrorsAsync(BidFormViewModel model)
     {
         foreach (var (field, error) in model.GuaranteeErrors())
             ModelState.AddModelError(field, error);
+        // The warranty / guarantee files must be real PDFs
+        if (model.LegalWarrantyFile != null && await BidFiles.CheckPdfAsync(model.LegalWarrantyFile) is string warrantyError)
+            ModelState.AddModelError(nameof(model.LegalWarrantyFile), warrantyError);
+        if (model.BankGuaranteeFile != null && await BidFiles.CheckPdfAsync(model.BankGuaranteeFile) is string guaranteeError)
+            ModelState.AddModelError(nameof(model.BankGuaranteeFile), guaranteeError);
+    }
+
+    // Saves the uploaded legal warranty / bank guarantee PDFs as bid documents.
+    // A new file replaces the old one of the same type; returns the old stored names (delete them after commit).
+    private async Task<List<string>> SaveGuaranteeFilesAsync(Bid bid, BidFormViewModel model, IWebHostEnvironment environment)
+    {
+        var replaced = new List<string>();
+        var uploads = new[] { (Type: BidDocument.LegalWarranty, File: model.LegalWarrantyFile),
+                              (Type: BidDocument.BankGuarantee, File: model.BankGuaranteeFile) };
+        foreach (var upload in uploads)
+        {
+            if (upload.File == null) continue;
+            foreach (var old in bid.BidDocuments.Where(d => d.DocumentType == upload.Type).ToList())
+            {
+                replaced.Add(old.FilePath);
+                bid.BidDocuments.Remove(old);
+                _context.BidDocuments.Remove(old);
+            }
+            bid.BidDocuments.Add(new BidDocument
+            {
+                DocumentType = upload.Type,
+                FileName = Path.GetFileName(upload.File.FileName),
+                FilePath = await BidFiles.SaveAsync(environment, upload.File),
+                UploadedAt = DateTime.UtcNow
+            });
+        }
+        return replaced;
     }
 
     // The supplier profile of the logged-in user (or null)
