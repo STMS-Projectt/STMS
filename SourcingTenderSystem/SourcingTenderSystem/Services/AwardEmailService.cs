@@ -30,6 +30,10 @@ public sealed class AwardEmailService(IHttpClientFactory httpClients, IConfigura
     {
         try
         {
+            logger.LogInformation("Sending award e-mails for tender {TenderId} to: {Emails}", data.TenderId,
+                string.Join(", ", recipients.Select(r => r.Email)));
+            if (!recipients.Any(r => r.IsWinner))
+                logger.LogWarning("The winning supplier of tender {TenderId} has no e-mail address.", data.TenderId);
             var intro = await ComposeWithAiAsync(data, cancellationToken) ?? TemplateIntro(data);
             foreach (var recipient in recipients.DistinctBy(r => r.Email.ToLowerInvariant()))
             {
@@ -165,5 +169,10 @@ public sealed class AwardEmailService(IHttpClientFactory httpClients, IConfigura
             smtp.PickupDirectoryLocation = folder;
         }
         await smtp.SendMailAsync(message, cancellationToken);
+        if (smtp.DeliveryMethod == SmtpDeliveryMethod.SpecifiedPickupDirectory)
+            logger.LogWarning("Smtp:Host is empty, so the award e-mail to {Email} was NOT sent. It was saved in {Folder}.",
+                to.Email, smtp.PickupDirectoryLocation);
+        else
+            logger.LogInformation("Award e-mail sent to {Email}.", to.Email);
     }
 }
