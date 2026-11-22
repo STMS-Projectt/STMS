@@ -70,7 +70,7 @@
 
 @if (!fragment)
 {
-    var classes = (workspace ? "workspace" : "portal") + (department ? " department-workspace" : "") + (sourcing ? " sourcing-workspace" : "") +
+    var classes = (workspace ? "workspace" : "portal") + (department ? " department-workspace" : "") + (sourcing ? " sourcing-workspace" : "") + (supplier ? " supplier-workspace" : "") +
         (!workspace && (controller is "Account" or "SupplierRegistration") ? " stms-auth-portal" : "");
     @Html.Raw("<body class='" + classes + "'>")
 }
