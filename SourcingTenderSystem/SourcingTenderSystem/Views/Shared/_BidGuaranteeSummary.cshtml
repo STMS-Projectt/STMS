@@ -1,9 +1,12 @@
 @using QRCoder
 @model Bid
+@inject IConfiguration Config
 @* Tax, legal warranty and bank guarantee of one bid + QR code to the e-guarantee verification page *@
 @{
     var verifyPath = Url.Action("Index", "GuaranteeVerify", new { code = Model.GuaranteeVerificationCode.ToString("N") });
-    var verifyLink = $"{Context.Request.Scheme}://{Context.Request.Host}{verifyPath}";
+    // "PublicBaseUrl" (e.g. a Cloudflare Tunnel link) lets a phone open the QR; otherwise the current site address is used.
+    var baseUrl = Config["PublicBaseUrl"] is { Length: > 0 } publicUrl ? publicUrl.TrimEnd('/') : $"{Context.Request.Scheme}://{Context.Request.Host}";
+    var verifyLink = baseUrl + verifyPath;
     string? qrImage = null;
     if (Model.HasBankGuarantee)
     {
@@ -44,7 +47,7 @@
             <div style="min-width:0">
                 <p class="subtle mb-1">@L.T("Scan to verify this bank guarantee on the e-guarantee verification page.")</p>
                 <p class="small mb-1">@L.T("Verification code"): <code>@Model.GuaranteeVerificationCode.ToString("N")</code></p>
-                <a class="btn btn-sm btn-outline-secondary" href="@verifyPath" target="_blank" rel="noopener">@L.T("Open verification page")</a>
+                <a class="btn btn-sm btn-outline-secondary" href="@verifyLink" target="_blank" rel="noopener">@L.T("Open verification page")</a>
             </div>
         </div>
     }

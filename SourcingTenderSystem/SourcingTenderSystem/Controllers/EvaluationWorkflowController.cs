@@ -445,8 +445,8 @@ public sealed class EvaluationWorkflowController(ApplicationDbContext db, Suppli
             winner.LegalWarrantyMonths, winner.BankName,
             winner.BankGuaranteeAmount, winner.BankGuaranteeExpiry,
             Url.Action(nameof(Details), "EvaluationWorkflow", new { id = tender.Id }, Request.Scheme)!,
-            winner.HasBankGuarantee ? Url.Action("Index", "GuaranteeVerify",
-                new { code = winner.GuaranteeVerificationCode.ToString("N") }, Request.Scheme) : null,
+            winner.HasBankGuarantee ? PublicBaseUrl() + Url.Action("Index", "GuaranteeVerify",
+                new { code = winner.GuaranteeVerificationCode.ToString("N") }) : null,
             Url.Action("Upload", "BidDocuments", new { bidId = winner.Id }, Request.Scheme)!,
             // The warranty / guarantee documents already uploaded are attached to the winner's e-mail
             winner.BidDocuments.Where(d => BidDocument.AfterAwardTypes.Contains(d.DocumentType))
@@ -454,6 +454,11 @@ public sealed class EvaluationWorkflowController(ApplicationDbContext db, Suppli
 
         _ = Task.Run(() => mailer.SendAsync(data, recipients));
     }
+
+    // Public address for links opened outside this computer (e.g. a Cloudflare Tunnel link), or the current site address.
+    private string PublicBaseUrl() =>
+        HttpContext.RequestServices.GetRequiredService<IConfiguration>()["PublicBaseUrl"] is { Length: > 0 } url
+            ? url.TrimEnd('/') : $"{Request.Scheme}://{Request.Host}";
 
     private void NotifyHandoff(int employeeId, Tender tender, string title, string message, string? link) =>
         Db.Notifications.Add(new Notification { EmployeeProfileId = employeeId, Title = title,
