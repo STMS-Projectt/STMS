@@ -247,32 +247,24 @@
 .cl-hero .ai-actions { margin-top: 0; }
 
 /* ===== Sourcing officer + supplier pages: every page hero uses the same green gradient design ===== */
-.sourcing-workspace .stms-hero, .supplier-workspace .stms-hero {
+:is(.sourcing-workspace, .supplier-workspace) .stms-hero {
     background: radial-gradient(circle at 85% 20%, #39d5bd55, transparent 45%), linear-gradient(135deg, #065b53, #0b8a7c 60%, #19a891);
     border: 0; border-radius: 24px; box-shadow: 0 18px 40px #065b5333; color: #fff;
 }
-.sourcing-workspace .stms-hero::after, .supplier-workspace .stms-hero::after { right: -60px; bottom: -80px; width: 260px; height: 260px; border: 40px solid #ffffff12; box-shadow: none; }
-.sourcing-workspace .stms-hero :is(h1, .supplier-workspace .stms-hero :is(h1, h2, h3, strong, dd) { color: #fff; }
-.sourcing-workspace .stms-hero :is(p, .supplier-workspace .stms-hero :is(p, small, dt, span:not(.status-pill):not(.status-pill *):not(.badge)) { color: #e3fbf6; }
-.sourcing-workspace .stms-hero .eyebrow, .supplier-workspace .stms-hero .eyebrow { color: #b9f3e8; letter-spacing: .14em; }
-.sourcing-workspace .stms-hero a:not(.btn), .supplier-workspace .stms-hero a:not(.btn) { color: #fff; }
-.sourcing-workspace .stms-hero .btn, .supplier-workspace .stms-hero .btn { border-radius: 12px; font-weight: 650; min-height: 44px; display: inline-flex; align-items: center; gap: 6px; }
-.sourcing-workspace .stms-hero .btn-primary, .supplier-workspace .stms-hero .btn-primary, .sourcing-workspace .stms-hero .btn-success, .supplier-workspace .stms-hero .btn-success { background: #fff; border-color: #fff; color: #065b53; box-shadow: 0 8px 20px #0000001f; }
-.sourcing-workspace .stms-hero .btn-primary:hover, .supplier-workspace .stms-hero .btn-primary:hover, .sourcing-workspace .stms-hero .btn-success:hover, .supplier-workspace .stms-hero .btn-success:hover { background: #e9f8f5; color: #065b53; }
-.sourcing-workspace .stms-hero :is(.btn-outline-secondary, .supplier-workspace .stms-hero :is(.btn-outline-secondary, .btn-outline-primary, .btn-light) { color: #fff; border-color: #ffffff66; background: #ffffff12; }
-.sourcing-workspace .stms-hero :is(.btn-outline-secondary, .supplier-workspace .stms-hero :is(.btn-outline-secondary, .btn-outline-primary, .btn-light):hover { background: #ffffff26; color: #fff; }
-.sourcing-workspace .stms-hero .status-pill, .supplier-workspace .stms-hero .status-pill, .sourcing-workspace .stms-hero .badge, .supplier-workspace .stms-hero .badge { background: #fff; color: #065b53; box-shadow: 0 6px 16px #0000001f; }
-.sourcing-workspace .stms-hero .icon-tile, .supplier-workspace .stms-hero .icon-tile { background: #ffffff22; color: #fff; }
-
-/* Gradient heroes inside the workspace dialog (the dialog's own light header style must not win) */
-#workspace-dialog .pr-hero, .sourcing-workspace #workspace-dialog .stms-hero, .supplier-workspace #workspace-dialog .stms-hero {
-    background: radial-gradient(circle at 85% 20%, #39d5bd55, transparent 45%), linear-gradient(135deg, #065b53, #0b8a7c 60%, #19a891); border: 0; color: #fff;
-}
-#workspace-dialog .pr-hero { margin-top: 0; padding: 20px 22px; }
-#workspace-dialog .pr-hero h1 { font-size: 1.5rem; }
-
-.supplier-workspace .stms-hero .record-icon-action, .sourcing-workspace .stms-hero .record-icon-action { background: #ffffff1f; border-color: #ffffff40; color: #fff; }
-.supplier-workspace .stms-hero .record-icon-action:hover, .sourcing-workspace .stms-hero .record-icon-action:hover { background: #ffffff33; color: #fff; }
+:is(.sourcing-workspace, .supplier-workspace) .stms-hero::after { right: -60px; bottom: -80px; width: 260px; height: 260px; border: 40px solid #ffffff12; box-shadow: none; }
+:is(.sourcing-workspace, .supplier-workspace) .stms-hero :is(h1, h2, h3, strong, dd) { color: #fff; }
+:is(.sourcing-workspace, .supplier-workspace) .stms-hero :is(p, small, dt, span:not(.status-pill):not(.status-pill *):not(.badge)) { color: #e3fbf6; }
+:is(.sourcing-workspace, .supplier-workspace) .stms-hero .eyebrow { color: #b9f3e8; letter-spacing: .14em; }
+:is(.sourcing-workspace, .supplier-workspace) .stms-hero a:not(.btn):not(.record-icon-action) { color: #fff; }
+:is(.sourcing-workspace, .supplier-workspace) .stms-hero .btn { border-radius: 12px; font-weight: 650; min-height: 44px; display: inline-flex; align-items: center; gap: 6px; }
+:is(.sourcing-workspace, .supplier-workspace) .stms-hero :is(.btn-primary, .btn-success) { background: #fff; border-color: #fff; color: #065b53; box-shadow: 0 8px 20px #0000001f; }
+:is(.sourcing-workspace, .supplier-workspace) .stms-hero :is(.btn-primary, .btn-success):hover { background: #e9f8f5; color: #065b53; }
+:is(.sourcing-workspace, .supplier-workspace) .stms-hero :is(.btn-outline-secondary, .btn-outline-primary, .btn-light) { color: #fff; border-color: #ffffff66; background: #ffffff12; }
+:is(.sourcing-workspace, .supplier-workspace) .stms-hero :is(.btn-outline-secondary, .btn-outline-primary, .btn-light):hover { background: #ffffff26; color: #fff; }
+:is(.sourcing-workspace, .supplier-workspace) .stms-hero :is(.status-pill, .badge) { background: #fff; color: #065b53; box-shadow: 0 6px 16px #0000001f; }
+:is(.sourcing-workspace, .supplier-workspace) .stms-hero .icon-tile { background: #ffffff22; color: #fff; }
+:is(.sourcing-workspace, .supplier-workspace) .stms-hero .record-icon-action { background: #ffffff1f; border-color: #ffffff40; color: #fff; }
+:is(.sourcing-workspace, .supplier-workspace) .stms-hero .record-icon-action:hover { background: #ffffff33; color: #fff; }
 
 /* ===== Sourcing: review a purchase request (RequisitionReviews/Details) ===== */
 .rv .pr-count { margin-inline-start: auto; }
