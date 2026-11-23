@@ -4,7 +4,18 @@
     ViewData["Title"] = "AI Intelligence";
     AiTenderRow? selected = ViewBag.Selected;
     var selectedBids = selected is null ? new List<AiBidRow>() : Model.Bids.Where(b => b.TenderId == selected.Id).OrderBy(b => b.Price).ToList();
-    var charts = new[] { AiInsights.StatusChart(Model), AiInsights.BidsPerTenderChart(Model), AiInsights.SupplierChart(Model), AiInsights.MonthlyChart(Model) };
+    // Each chart card: the chart, an icon, a one-line explanation and how it is drawn (bars, or columns for time).
+    var charts = new (AiChart Chart, string Icon, string Note, string Kind)[]
+    {
+        (AiInsights.StatusChart(Model), "dashboard", "Where every tender is in the workflow", "bars"),
+        (AiInsights.BidsPerTenderChart(Model), "file", "Competition on the latest tenders", "bars"),
+        (AiInsights.SupplierChart(Model), "supplier", "Who bids the most", "bars"),
+        (AiInsights.MonthlyChart(Model), "calendar", "Last six months", "columns")
+    };
+    var kpis = AiInsights.Kpis(Model);
+    // Icon + colour tile for each KPI, in the order AiInsights.Kpis returns them.
+    var kpiLook = new[] { ("briefcase", "teal"), ("clock", "amber"), ("trophy", "violet"), ("inbox", "blue"), ("supplier", "teal"), ("chart", "blue"), ("calendar", "amber") };
+    var recommendations = selected is null ? AiInsights.Recommendations(Model) : AiInsights.TenderRecommendations(selected, Model);
     string Json(object value) => System.Text.Json.JsonSerializer.Serialize(value, new System.Text.Json.JsonSerializerOptions(System.Text.Json.JsonSerializerDefaults.Web));
 }
 
@@ -22,77 +33,131 @@
     </div></div>
 </header>
 
-@* ------------------------------------------------ KPI / analysis cards *@
-<section aria-labelledby="ai-kpis">
-    <div class="section-heading"><h2 id="ai-kpis">@L.T("Key performance indicators")</h2><span>@L.T("Live from the system")</span></div>
-    <div class="ai-cards">
-        @foreach (var card in AiInsights.Kpis(Model))
+@* ------------------------------------------------ KPI tiles *@
+<section class="ai-section" aria-labelledby="ai-kpis">
+    <div class="ai-section-head">
+        <div><h2 id="ai-kpis">@L.T("Key performance indicators")</h2><p>@L.T("Live from the system")</p></div>
+        <span class="ai-live"><i></i>@L.T("Live")</span>
+    </div>
+    <div class="ai-kpis">
+        @for (var i = 0; i < kpis.Count; i++)
         {
-            <div class="surface ai-card"><strong>@card.Value</strong><span>@L.T(card.Label)</span></div>
+            var (icon, tone) = kpiLook[i % kpiLook.Length];
+            <div class="ai-kpi @(i == 0 ? "is-lead" : "")">
+                <span class="icon-tile tone-@tone"><partial name="_Icon" model="icon" /></span>
+                <strong>@kpis[i].Value</strong>
+                <span>@L.T(kpis[i].Label)</span>
+            </div>
         }
     </div>
 </section>
 
 @* ------------------------------------------------ Choose a tender *@
-<section class="surface dashboard-card ai-block">
-    <div class="card-heading"><div><h2>@L.T("Tender analysis report")</h2><p>@L.T("Choose any tender to see its visual report.")</p></div></div>
-    <form method="get" asp-action="Index" class="ai-select">
-        <select name="tenderId" class="form-select" data-ai-autosubmit aria-label="@L.T("Choose a tender")">
-            <option value="">@L.T("All tenders (overview)")</option>
-            @foreach (var t in Model.Tenders)
-            {
-                <option value="@t.Id" selected="@(selected?.Id == t.Id)">#@t.Id · @t.Title (@L.T(t.Status))</option>
-            }
-        </select>
-    </form>
+<section class="ai-panel ai-picker @(selected is null ? "" : "has-selection")">
+    <div class="ai-picker-head">
+        <span class="pr-badge"><partial name="_Icon" model='@("search")' /></span>
+        <div><h2>@L.T("Tender analysis report")</h2><p>@L.T("Choose any tender to see its visual report.")</p></div>
+        <form method="get" asp-action="Index" class="ai-select">
+            <select name="tenderId" class="form-select" data-ai-autosubmit aria-label="@L.T("Choose a tender")">
+                <option value="">@L.T("All tenders (overview)")</option>
+                @foreach (var t in Model.Tenders)
+                {
+                    <option value="@t.Id" selected="@(selected?.Id == t.Id)">#@t.Id · @t.Title (@L.T(t.Status))</option>
+                }
+            </select>
+        </form>
+    </div>
 
     @if (selected is not null)
     {
-        <div class="ai-cards">
-            <div class="surface ai-card"><strong>@L.T(selected.Status)</strong><span>@L.T("Status")</span></div>
-            <div class="surface ai-card"><strong>@selected.BidCount</strong><span>@L.T("Bids")</span></div>
-            <div class="surface ai-card"><strong>@AiInsights.Money(selected.Lowest, selected.Currency)</strong><span>@L.T("Lowest price")</span><small>@selected.LowestSupplier</small></div>
-            <div class="surface ai-card"><strong>@AiInsights.Money(selected.Highest, selected.Currency)</strong><span>@L.T("Highest price")</span><small>@selected.HighestSupplier</small></div>
-            <div class="surface ai-card"><strong>@(selected.Winner ?? "-")</strong><span>@L.T("Winner")</span></div>
-            <div class="surface ai-card"><strong>@(selected.DaysToAward?.ToString("0.0") ?? "-")</strong><span>@L.T("Days from creation to award")</span></div>
+        <div class="ai-focus">
+            <div class="ai-focus-title">
+                <p class="eyebrow">@L.F("Tender #{0}", selected.Id) · @selected.Department</p>
+                <h3>@selected.Title</h3>
+                <span class="ai-pill" data-tone="@AiTone(selected.Status)">@L.T(selected.Status)</span>
+            </div>
+            <dl class="ai-focus-stats">
+                <div><dt>@L.T("Bids")</dt><dd>@selected.BidCount</dd></div>
+                <div><dt>@L.T("Lowest price")</dt><dd>@AiInsights.Money(selected.Lowest, selected.Currency)</dd>@if (selected.LowestSupplier != null) { <small>@selected.LowestSupplier</small> }</div>
+                <div><dt>@L.T("Highest price")</dt><dd>@AiInsights.Money(selected.Highest, selected.Currency)</dd>@if (selected.HighestSupplier != null) { <small>@selected.HighestSupplier</small> }</div>
+                <div><dt>@L.T("Winner")</dt><dd>@(selected.Winner ?? "—")</dd></div>
+                <div><dt>@L.T("Days from creation to award")</dt><dd>@(selected.DaysToAward?.ToString("0.0") ?? "—")</dd></div>
+            </dl>
         </div>
         @if (selectedBids.Count == 0)
         {
-            <p class="ai-empty">@L.T("No bids are visible for this tender. Bid prices stay sealed while the tender is open.")</p>
+            <p class="ai-empty"><partial name="_Icon" model='@("shield")' /> @L.T("No bids are visible for this tender. Bid prices stay sealed while the tender is open.")</p>
         }
         else
         {
-            <div class="ai-grid">
-                <div class="ai-chart" data-ai-chart="@Json(new AiChart(L.T("Bid prices"), selectedBids.Select(b => b.Supplier).ToList(), selectedBids.Select(b => b.Price).ToList()))"></div>
-                <div class="ai-chart" data-ai-chart="@Json(new AiChart(L.T("Delivery days"), selectedBids.Select(b => b.Supplier).ToList(), selectedBids.Select(b => (decimal)b.DeliveryDays).ToList()))"></div>
+            <div class="ai-charts ai-charts-2">
+                <div class="ai-chart-card">
+                    <div class="ai-chart-head"><span class="icon-tile tone-teal"><partial name="_Icon" model='@("chart")' /></span><div><h3>@L.T("Bid prices")</h3><p>@selected.Currency</p></div></div>
+                    <div class="ai-chart" data-ai-chart-bare data-ai-chart="@Json(new AiChart(L.T("Bid prices"), selectedBids.Select(b => b.Supplier).ToList(), selectedBids.Select(b => b.Price).ToList()))"></div>
+                </div>
+                <div class="ai-chart-card">
+                    <div class="ai-chart-head"><span class="icon-tile tone-amber"><partial name="_Icon" model='@("clock")' /></span><div><h3>@L.T("Delivery days")</h3><p>@L.T("Shorter is faster")</p></div></div>
+                    <div class="ai-chart" data-ai-chart-bare data-ai-chart="@Json(new AiChart(L.T("Delivery days"), selectedBids.Select(b => b.Supplier).ToList(), selectedBids.Select(b => (decimal)b.DeliveryDays).ToList()))"></div>
+                </div>
             </div>
-            <partial name="_AiTable" model="AiInsights.BidsTable(selectedBids)" />
+            <div class="ai-table-wrap"><partial name="_AiTable" model="AiInsights.BidsTable(selectedBids)" /></div>
         }
     }
 </section>
 
 @* ------------------------------------------------ Charts *@
-<div class="ai-grid">
-    @foreach (var chart in charts)
-    {
-        <section class="surface dashboard-card ai-chart" data-ai-chart="@Json(chart with { Title = L.T(chart.Title) })"></section>
-    }
+<section class="ai-section" aria-labelledby="ai-charts">
+    <div class="ai-section-head"><div><h2 id="ai-charts">@L.T("Visual overview")</h2><p>@L.T("Hover a bar to see its exact value.")</p></div></div>
+    <div class="ai-charts">
+        @foreach (var (chart, icon, note, kind) in charts)
+        {
+            <article class="ai-chart-card">
+                <div class="ai-chart-head">
+                    <span class="icon-tile tone-teal"><partial name="_Icon" model="icon" /></span>
+                    <div><h3>@L.T(chart.Title)</h3><p>@L.T(note)</p></div>
+                    <span class="ai-chart-total" title="@L.T("Total")">@chart.Values.Sum().ToString("0.##")</span>
+                </div>
+                <div class="ai-chart" data-ai-chart-bare data-ai-chart-kind="@kind" data-ai-chart="@Json(chart with { Title = L.T(chart.Title) })"></div>
+            </article>
+        }
+    </div>
+</section>
+
+@* ------------------------------------------------ Tables (tabs) + recommendations *@
+<div class="ai-bottom">
+    <section class="ai-panel ai-tables" data-ai-tabs>
+        <div class="ai-panel-head">
+            <span class="pr-badge"><partial name="_Icon" model='@("file")' /></span>
+            <div><h2>@L.T("Data tables")</h2><p>@L.T("The numbers behind the charts.")</p></div>
+            <div class="ai-tabs" role="tablist">
+                <button type="button" role="tab" aria-selected="true" data-ai-tab="tenders">@L.T("Tenders") <span>@Model.Tenders.Count</span></button>
+                <button type="button" role="tab" aria-selected="false" data-ai-tab="suppliers">@L.T("Suppliers") <span>@Model.Bids.Select(b => b.Supplier).Distinct().Count()</span></button>
+            </div>
+        </div>
+        <div class="ai-table-wrap" role="tabpanel" data-ai-panel="tenders"><partial name="_AiTable" model="AiInsights.TendersTable(Model.Tenders)" /></div>
+        <div class="ai-table-wrap" role="tabpanel" data-ai-panel="suppliers" hidden><partial name="_AiTable" model="AiInsights.SuppliersTable(Model)" /></div>
+    </section>
+
+    <section class="ai-panel ai-advice">
+        <div class="ai-panel-head">
+            <span class="pr-badge"><partial name="_Icon" model='@("shield")' /></span>
+            <div><h2>@L.T("AI recommendations")</h2><p>@L.T("Advice only. The AI does not take any decision or action on your behalf.")</p></div>
+        </div>
+        <ul class="ai-recommendations">
+            @foreach (var r in recommendations) { <li>@r</li> }
+        </ul>
+        <button type="button" class="btn ai-ask" data-ai-chat-open><partial name="_Icon" model='@("chart")' /> @L.T("Ask the AI a question")</button>
+    </section>
 </div>
 
-@* ------------------------------------------------ Tables *@
-<section class="surface dashboard-card ai-block">
-    <div class="card-heading"><div><h2>@L.T("Tenders table")</h2><p>@L.T("Bids, lowest, highest and average price for each tender.")</p></div></div>
-    <partial name="_AiTable" model="AiInsights.TendersTable(Model.Tenders)" />
-</section>
-<section class="surface dashboard-card ai-block">
-    <div class="card-heading"><div><h2>@L.T("Suppliers table")</h2><p>@L.T("How often each supplier participates and wins.")</p></div></div>
-    <partial name="_AiTable" model="AiInsights.SuppliersTable(Model)" />
-</section>
-
-@* ------------------------------------------------ Recommendations *@
-<section class="surface dashboard-card ai-block">
-    <div class="card-heading"><div><h2>@L.T("AI recommendations")</h2><p>@L.T("Advice only. The AI does not take any decision or action on your behalf.")</p></div></div>
-    <ul class="ai-recommendations">
-        @foreach (var r in selected is null ? AiInsights.Recommendations(Model) : AiInsights.TenderRecommendations(selected, Model)) { <li>@r</li> }
-    </ul>
-</section>
+@functions {
+    // Status colour for the tender pill (same words as the workflow statuses).
+    static string AiTone(string status) => status switch
+    {
+        "Awarded" => "good",
+        "Open" => "info",
+        "Cancelled" or "Non-Compliant" or "Unsuccessful" => "bad",
+        "Draft" => "muted",
+        _ => "warn"
+    };
+}

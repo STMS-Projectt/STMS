@@ -6,36 +6,74 @@
     const t = text => (window.stmsT ? window.stmsT(text) : text);
 
     // ------------------------------------------------------------ Charts
-    // Draws a horizontal bar chart inside "box" from { title, labels, values }.
-    function drawChart(box, chart) {
+    // Draws a chart inside "box" from { title, labels, values }.
+    // kind "bars" (default): horizontal bars, one row per label. kind "columns": vertical columns, used for time.
+    // bare: the card already shows the title, so none is drawn here.
+    function drawChart(box, chart, kind = "bars", bare = false) {
         box.innerHTML = "";
-        const title = document.createElement("h3");
-        title.className = "ai-chart-title";
-        title.textContent = chart.title;
-        box.append(title);
+        if (!bare) {
+            const title = document.createElement("h3");
+            title.className = "ai-chart-title";
+            title.textContent = chart.title;
+            box.append(title);
+        }
         if (!chart.values || chart.values.length === 0) {
             box.append(Object.assign(document.createElement("p"), { className: "ai-empty", textContent: t("No data yet.") }));
             return;
         }
         const max = Math.max(...chart.values, 1);
+        const number = v => Number(v).toLocaleString(undefined, { maximumFractionDigits: 2 });
+        const list = document.createElement("div");
+        list.className = kind === "columns" ? "ai-columns" : "ai-bars";
+        list.setAttribute("role", "list");
         chart.labels.forEach((label, i) => {
+            const value = chart.values[i];
             const row = document.createElement("div");
-            row.className = "ai-bar-row";
-            row.title = `${label}: ${chart.values[i]}`;
-            row.innerHTML = `<span class="ai-bar-label"></span><span class="ai-bar-track"><span class="ai-bar"></span></span><span class="ai-bar-value"></span>`;
+            row.className = kind === "columns" ? "ai-col" : "ai-bar-row";
+            row.setAttribute("role", "listitem");
+            row.tabIndex = 0;
+            row.dataset.tip = `${label}: ${number(value)}`;
+            row.setAttribute("aria-label", row.dataset.tip);
+            row.innerHTML = kind === "columns"
+                ? `<span class="ai-bar-value"></span><span class="ai-col-track"><span class="ai-bar"></span></span><span class="ai-bar-label"></span>`
+                : `<span class="ai-bar-label"></span><span class="ai-bar-track"><span class="ai-bar"></span></span><span class="ai-bar-value"></span>`;
             row.querySelector(".ai-bar-label").textContent = label;
-            row.querySelector(".ai-bar-value").textContent = Number(chart.values[i]).toLocaleString();
-            row.querySelector(".ai-bar").style.width = (100 * chart.values[i] / max) + "%";
-            box.append(row);
+            row.querySelector(".ai-bar-value").textContent = number(value);
+            const bar = row.querySelector(".ai-bar");
+            const size = value > 0 ? Math.max(2, 100 * value / max) + "%" : "0";
+            // Grow from zero once the box is drawn (skipped when the user prefers less motion).
+            if (matchMedia("(prefers-reduced-motion: reduce)").matches) bar.style.setProperty("--size", size);
+            else requestAnimationFrame(() => requestAnimationFrame(() => bar.style.setProperty("--size", size)));
+            if (value === 0) row.classList.add("is-zero");
+            list.append(row);
         });
+        box.append(list);
     }
 
     function drawPageCharts(root) {
-        root.querySelectorAll("[data-ai-chart]").forEach(box => drawChart(box, JSON.parse(box.dataset.aiChart)));
+        root.querySelectorAll("[data-ai-chart]").forEach(box =>
+            drawChart(box, JSON.parse(box.dataset.aiChart), box.dataset.aiChartKind || "bars", box.hasAttribute("data-ai-chart-bare")));
         // Choosing a tender in the list opens its report.
         root.querySelectorAll("[data-ai-autosubmit]:not([data-ready])").forEach(select => {
             select.dataset.ready = "true";
             select.addEventListener("change", () => select.form.requestSubmit());
+        });
+        // Tabs: Tenders / Suppliers tables
+        root.querySelectorAll("[data-ai-tabs]:not([data-ready])").forEach(tabs => {
+            tabs.dataset.ready = "true";
+            const buttons = [...tabs.querySelectorAll("[data-ai-tab]")];
+            const show = button => {
+                buttons.forEach(b => b.setAttribute("aria-selected", String(b === button)));
+                tabs.querySelectorAll("[data-ai-panel]").forEach(panel => { panel.hidden = panel.dataset.aiPanel !== button.dataset.aiTab; });
+            };
+            buttons.forEach((button, i) => {
+                button.addEventListener("click", () => show(button));
+                button.addEventListener("keydown", event => {
+                    if (event.key !== "ArrowRight" && event.key !== "ArrowLeft") return;
+                    const next = buttons[(i + (event.key === "ArrowRight" ? 1 : -1) + buttons.length) % buttons.length];
+                    next.focus(); show(next);
+                });
+            });
         });
     }
 

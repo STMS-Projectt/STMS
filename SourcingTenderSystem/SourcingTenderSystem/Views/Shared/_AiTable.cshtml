@@ -1,4 +1,19 @@
 @model SourcingTenderSystem.Services.AiTable
+@{
+    // Status-like columns are shown as coloured pills; numbers are right-aligned.
+    static string Tone(string value) => value switch
+    {
+        "Awarded" => "good",
+        "Open" => "info",
+        "Cancelled" or "Non-Compliant" or "Unsuccessful" => "bad",
+        "Draft" or "-" => "muted",
+        _ => "warn"
+    };
+    var pillColumns = Model.Columns.Select((c, i) => (c, i)).Where(x => x.c is "Status" or "Result").Select(x => x.i).ToHashSet();
+    var numberColumns = Enumerable.Range(0, Model.Columns.Count)
+        .Where(i => !pillColumns.Contains(i) && i > 0 && Model.Rows.Count > 0 && Model.Rows.All(r => r.Count > i && (r[i] == "-" || char.IsDigit(r[i].FirstOrDefault()))))
+        .ToHashSet();
+}
 @if (Model.Rows.Count == 0)
 {
     <p class="ai-empty">@L.T("No data yet.")</p>
@@ -7,11 +22,15 @@ else
 {
     <div class="table-responsive">
         <table class="table table-sm align-middle ai-table">
-            <thead><tr>@foreach (var c in Model.Columns) { <th>@L.T(c)</th> }</tr></thead>
+            <thead><tr>@for (var i = 0; i < Model.Columns.Count; i++) { <th class="@(numberColumns.Contains(i) ? "is-num" : "")">@L.T(Model.Columns[i])</th> }</tr></thead>
             <tbody>
                 @foreach (var row in Model.Rows)
                 {
-                    <tr>@foreach (var cell in row) { <td>@L.T(cell)</td> }</tr>
+                    <tr>@for (var i = 0; i < row.Count; i++)
+                        {
+                            if (pillColumns.Contains(i)) { <td><span class="ai-pill" data-tone="@Tone(row[i])">@L.T(row[i])</span></td> }
+                            else { <td class="@(numberColumns.Contains(i) ? "is-num" : "")">@L.T(row[i])</td> }
+                        }</tr>
                 }
             </tbody>
         </table>
