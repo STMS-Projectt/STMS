@@ -111,9 +111,6 @@ public sealed class AwardEmailService(IHttpClientFactory httpClients, IConfigura
         string Row(string label, string value, bool last = false) =>
             $"<tr><td style=\"padding:12px 0;color:{Muted};font-size:14px;{(last ? "" : $"border-bottom:1px solid {Line};")}\">{E(label)}</td>" +
             $"<td align=\"right\" style=\"padding:12px 0;color:{Ink};font-size:14px;font-weight:600;{(last ? "" : $"border-bottom:1px solid {Line};")}\">{value}</td></tr>";
-        string Button(string text, string link, bool primary) =>
-            $"<a href=\"{E(link)}\" style=\"display:inline-block;padding:13px 24px;border-radius:10px;font-weight:700;font-size:14px;text-decoration:none;" +
-            (primary ? $"background:{Green};color:#ffffff;" : $"background:#ffffff;color:{Green};border:1.5px solid {Green};") + $"\">{E(text)}</a>";
 
         var h = new StringBuilder();
         h.Append($"<div style=\"margin:0;padding:24px 12px;background:#eef3f6;font-family:'Segoe UI',Tahoma,Arial,sans-serif;\">");
@@ -127,7 +124,6 @@ public sealed class AwardEmailService(IHttpClientFactory httpClients, IConfigura
 
         // Body
         h.Append("<tr><td style=\"background:#ffffff;padding:28px 32px;\">");
-        h.Append($"<p style=\"margin:0 0 14px;font-size:16px;color:{Ink};font-weight:600;\">Dear {E(to.Name)},</p>");
         foreach (var paragraph in intro.Split('\n', StringSplitOptions.RemoveEmptyEntries))
             h.Append($"<p style=\"margin:0 0 12px;font-size:15px;line-height:1.6;color:#334155;\">{E(paragraph.Trim())}</p>");
 
@@ -160,13 +156,8 @@ public sealed class AwardEmailService(IHttpClientFactory httpClients, IConfigura
         else h.Append(Row("Bank guarantee", "<span style=\"color:#b45309;\">Not provided yet</span>", last: true));
         h.Append("</table>");
 
-        // Buttons
-        h.Append("<div style=\"margin:26px 0 4px;\">");
-        h.Append(to.IsWinner ? Button("Upload warranty / guarantee", d.UploadLink, true) : Button("Open the tender", d.TenderLink, true));
-        if (d.VerifyLink != null) h.Append("&nbsp;&nbsp;" + Button("Verify bank guarantee", d.VerifyLink, false));
-        h.Append("</div>");
         if (to.IsWinner)
-            h.Append($"<p style=\"margin:16px 0 0;font-size:13px;color:{Muted};\">Please upload the signed legal warranty and bank guarantee documents if you have not done so yet.</p>");
+            h.Append($"<p style=\"margin:22px 0 0;font-size:13px;color:{Muted};\">Please upload the signed legal warranty and bank guarantee documents if you have not done so yet.</p>");
         h.Append("</td></tr>");
 
         // Footer
