@@ -79,6 +79,9 @@ public class ReportSection
     public string Description { get; set; } = "";
     public List<ReportKpi> Kpis { get; set; } = new List<ReportKpi>();
     public List<ReportTable> Tables { get; set; } = new List<ReportTable>();
+    // Optional free-text points printed after the tables in the PDF (for example the AI recommendations).
+    public string? NotesTitle { get; set; }
+    public List<string> Notes { get; set; } = new List<string>();
 }
 
 public class ReportsPage

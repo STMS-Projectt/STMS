@@ -1,8 +1,7 @@
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PdfSharp.Drawing;
-using PdfSharp.Pdf;
+using SourcingTenderSystem.ViewModels;
 using SourcingTenderSystem.Security;
 using SourcingTenderSystem.Services;
 
@@ -62,57 +61,43 @@ public class AiIntelligenceController(AiInsights insights, UiText text) : Contro
     }
 
     // GET /AiIntelligence/ExportPdf?tenderId=5
-    public async Task<IActionResult> ExportPdf(int? tenderId)
+    // Same template and watermark as the Reports PDFs (navy header band, KPI tiles, tables).
+    public async Task<IActionResult> ExportPdf(int? tenderId, [FromServices] ProtectedPdf pdf)
     {
         var data = await insights.LoadAsync(User);
         var tender = data.Tenders.FirstOrDefault(t => t.Id == tenderId);
 
-        var document = new PdfDocument();
-        var page = document.AddPage();
-        var gfx = XGraphics.FromPdfPage(page);
-        var title = new XFont("Arial", 18, XFontStyleEx.Bold);
-        var bold = new XFont("Arial", 10, XFontStyleEx.Bold);
-        var normal = new XFont("Arial", 9);
-        double y = 50;
-
-        void Line(string value, XFont font, double gap = 16)
+        var section = new ReportSection
         {
-            if (y > page.Height.Point - 50)   // new page when this one is full
-            {
-                gfx.Dispose();
-                page = document.AddPage();
-                gfx = XGraphics.FromPdfPage(page);
-                y = 50;
-            }
-            gfx.DrawString(value.Length > 110 ? value[..110] + "..." : value, font, XBrushes.Black, 40, y);
-            y += gap;
-        }
-
-        Line(tender is null ? "AI Intelligence - Tenders report" : $"AI Intelligence - Tender #{tender.Id} {tender.Title}", title, 30);
-        Line($"Generated: {DateTime.Now:yyyy-MM-dd HH:mm}", normal, 24);
-
-        Line("Key figures", bold);
+            Title = tender is null ? "AI Intelligence - Tenders report" : $"AI Intelligence - Tender #{tender.Id} {tender.Title}",
+            NotesTitle = "AI recommendations (advice only)",
+            Notes = tender is null ? AiInsights.Recommendations(data) : AiInsights.TenderRecommendations(tender, data)
+        };
         var cards = tender is null ? AiInsights.Kpis(data) :
         [
             new("Status", tender.Status), new("Bids", tender.BidCount.ToString()),
             new("Lowest", AiInsights.Money(tender.Lowest, tender.Currency)), new("Highest", AiInsights.Money(tender.Highest, tender.Currency)),
             new("Winner", tender.Winner ?? "-")
         ];
-        foreach (var card in cards) Line($"- {card.Label}: {card.Value}", normal);
-        y += 10;
+        section.Kpis.AddRange(cards.Select(c => new ReportKpi { Label = c.Label, Value = c.Value }));
 
-        var table = tender is null ? AiInsights.TendersTable(data.Tenders) : AiInsights.BidsTable(data.Bids.Where(b => b.TenderId == tender.Id));
-        Line(tender is null ? "Tenders" : "Bids", bold);
-        Line(string.Join("  |  ", table.Columns), bold);
-        foreach (var row in table.Rows) Line(string.Join("  |  ", row), normal, 14);
-        y += 10;
+        if (tender is null)
+        {
+            section.Tables.Add(Table("Tenders", AiInsights.TendersTable(data.Tenders), "No tenders to show."));
+            section.Tables.Add(Table("Suppliers", AiInsights.SuppliersTable(data), "No supplier bids to show."));
+        }
+        else
+            section.Tables.Add(Table("Bids", AiInsights.BidsTable(data.Bids.Where(b => b.TenderId == tender.Id)), "No visible bids for this tender."));
 
-        Line("AI recommendations (advice only)", bold);
-        foreach (var r in AiInsights.Recommendations(data)) Line("- " + r, normal);
+        var scope = tender is null ? $"All tenders you can see ({data.Tenders.Count})" : $"Tender #{tender.Id}";
+        return await ReportExport.PdfFileAsync(this, pdf, section, scope,
+            tender is null ? "ai-tenders-report" : $"ai-tender-{tender.Id}-report", "AI INTELLIGENCE");
 
-        gfx.Dispose();
-        using var output = new MemoryStream();
-        document.Save(output);
-        return File(output.ToArray(), "application/pdf", tenderId is null ? "ai-tenders-report.pdf" : $"ai-tender-{tenderId}-report.pdf");
+        static ReportTable Table(string title, AiTable source, string empty)
+        {
+            var table = new ReportTable { Title = title, Headers = source.Columns.ToArray(), Empty = empty };
+            foreach (var row in source.Rows) table.Add(null, row.Cast<object?>().ToArray());
+            return table;
+        }
     }
 }

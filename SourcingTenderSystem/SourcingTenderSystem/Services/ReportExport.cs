@@ -23,10 +23,10 @@ public static class ReportExport
 
     // PDFs get the same watermark (user + time) as every other downloaded document in the system.
     public static async Task<FileContentResult> PdfFileAsync(Controller controller, ProtectedPdf pdf, ReportSection section,
-        string filters, string fileName)
+        string filters, string fileName, string kicker = "REPORTS")
     {
         byte[] bytes;
-        using (var document = Pdf(section, filters))
+        using (var document = Pdf(section, filters, kicker))
         {
             pdf.AddWatermark(document, controller.User, DateTime.UtcNow);
             bytes = await pdf.Render(document, null);
@@ -190,7 +190,7 @@ public static class ReportExport
     private static readonly XColor LineColor = XColor.FromArgb(226, 232, 240);
     private const double Margin = 36;
 
-    public static PdfDocument Pdf(ReportSection section, string filters)
+    public static PdfDocument Pdf(ReportSection section, string filters, string kicker = "REPORTS")
     {
         var document = new PdfDocument();
         document.Info.Title = section.Title;
@@ -199,7 +199,7 @@ public static class ReportExport
 
         // Header band
         w.Gfx.DrawRectangle(new XSolidBrush(Navy), 0, 0, w.Width, 92);
-        w.Text("SOURCING DESK  |  REPORTS", new XFont("Arial", 9), XBrushes.White, Margin, 22, fullWidth);
+        w.Text("SOURCING DESK  |  " + kicker, new XFont("Arial", 9), XBrushes.White, Margin, 22, fullWidth);
         w.Text(section.Title, new XFont("Arial", 20, XFontStyleEx.Bold), XBrushes.White, Margin, 38, fullWidth);
         var generated = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture);
         w.Text(filters + "  |  Generated " + generated + " UTC", new XFont("Arial", 9), XBrushes.White, Margin, 68, fullWidth);
@@ -229,6 +229,8 @@ public static class ReportExport
         {
             DrawTable(w, table);
         }
+
+        if (section.Notes.Count > 0) DrawNotes(w, section.NotesTitle ?? "Notes", section.Notes);
 
         w.Close();
         return document;
@@ -278,6 +280,35 @@ public static class ReportExport
             w.Y += 16;
         }
         w.Y += 10;
+    }
+
+    // Bulleted points that wrap over several lines (a table cell would cut them).
+    private static void DrawNotes(PdfWriter w, string title, IReadOnlyList<string> notes)
+    {
+        var total = w.Width - 2 * Margin;
+        var ink = new XSolidBrush(Navy);
+        var font = new XFont("Arial", 9.5);
+        w.Ensure(60);
+        w.Y += 8;
+        w.Text(title, new XFont("Arial", 12, XFontStyleEx.Bold), ink, Margin, w.Y, total);
+        w.Y += 18;
+        w.Gfx.DrawLine(new XPen(LineColor, 1), Margin, w.Y, Margin + total, w.Y);
+        w.Y += 8;
+        foreach (var note in notes)
+        {
+            var lines = w.Wrap(note, font, total - 30);
+            var height = lines.Count * 14 + 12;
+            w.Ensure(height + 6);
+            w.Gfx.DrawRectangle(new XSolidBrush(Soft), Margin, w.Y, total, height);
+            w.Gfx.DrawRectangle(new XSolidBrush(XColor.FromArgb(8, 118, 108)), Margin, w.Y, 3, height);
+            var y = w.Y + 6;
+            foreach (var line in lines)
+            {
+                w.Text(line, font, ink, Margin + 16, y, total - 24);
+                y += 14;
+            }
+            w.Y += height + 6;
+        }
     }
 
     private static void DrawHeaderRow(PdfWriter w, ReportTable table, double[] widths)
@@ -376,6 +407,25 @@ public static class ReportExport
                 text += "…";
             }
             Gfx.DrawString(text, font, brush, new XRect(x, y, width, font.Size + 4), XStringFormats.TopLeft);
+        }
+
+        // Splits text into lines that fit the width (very long words are cut).
+        public List<string> Wrap(string value, XFont font, double width)
+        {
+            var lines = new List<string>();
+            var line = "";
+            foreach (var word in value.Split(' ', StringSplitOptions.RemoveEmptyEntries))
+            {
+                var candidate = line.Length == 0 ? word : line + " " + word;
+                if (line.Length > 0 && Gfx.MeasureString(candidate, font).Width > width)
+                {
+                    lines.Add(line);
+                    line = word;
+                }
+                else line = candidate;
+            }
+            if (line.Length > 0) lines.Add(line);
+            return lines;
         }
 
         public void Close()
