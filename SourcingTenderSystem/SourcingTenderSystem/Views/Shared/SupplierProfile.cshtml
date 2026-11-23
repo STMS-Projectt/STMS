@@ -1,4 +1,6 @@
 @model CommitteeSupplier
+@* Supplier profile modal, shared by the evaluation committee (CommitteeReviews/Supplier)
+   and the top committee for the recommended winner (EvaluationWorkflow/RecommendedSupplier). *@
 @{
     ViewData["Title"] = L.T("Supplier profile");
     var s = Model.Supplier;
@@ -6,11 +8,11 @@
         values.Count == 0 ? "0.00" : string.Join(" + ", values.Select(v => $"{v.Amount:N2} {v.Currency}"));
 }
 <div class="pr-create prd rb sp">
-<a class="back-link" asp-action="Details" asp-route-id="@Model.TenderId"><partial name="_Icon" model='@("back")' /> @L.T("Tender evaluation")</a>
+@if (Model.BackUrl != null) { <a class="back-link" href="@Model.BackUrl"><partial name="_Icon" model='@("back")' /> @L.T("Back")</a> }
 <header class="pr-hero prd-hero">
     <span class="pr-hero-icon"><partial name="_Icon" model='@("supplier")' /></span>
     <div>
-        <p class="eyebrow">@L.T("Supplier profile") · @L.F("Bid #{0}", Model.BidId)</p>
+        <p class="eyebrow">@L.T(Model.IsRecommendedWinner ? "Recommended winner" : "Supplier profile") · @L.F("Bid #{0}", Model.BidId)</p>
         <h1>@s.CompanyName</h1>
         <p class="prd-meta"><span><partial name="_Icon" model='@("calendar")' /> @L.F("Registered {0}", s.CreatedAt.ToString("dd MMM yyyy", L.DisplayCulture))</span></p>
     </div>
@@ -66,6 +68,6 @@
 
 <div class="sp-download">
     <div><strong>@L.T("Full supplier report")</strong><small>@L.T("Every award with its amount, the full bid history and the compliance record, as a PDF.")</small></div>
-    <a class="btn btn-primary pr-submit" asp-action="DownloadSupplierProfile" asp-route-id="@Model.BidId" download><partial name="_Icon" model='@("download")' /> @L.T("Download PDF")</a>
+    <a class="btn btn-primary pr-submit" href="@Model.DownloadUrl" download><partial name="_Icon" model='@("download")' /> @L.T("Download PDF")</a>
 </div>
 </div>

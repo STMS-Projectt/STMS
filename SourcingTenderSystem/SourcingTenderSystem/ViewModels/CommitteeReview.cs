@@ -58,6 +58,12 @@ public sealed class CommitteeSupplier
     public int InvitationsDeclined { get; init; }
     public IReadOnlyList<SupplierHistoryRow> Bids { get; init; } = [];
 
+    // Who the profile is for (PDF header) and where the modal links go; set by the controller.
+    public string Audience { get; set; } = "Evaluation committee";
+    public bool IsRecommendedWinner { get; set; }
+    public string? BackUrl { get; set; }
+    public string? DownloadUrl { get; set; }
+
     public int BidsSubmitted => Bids.Count;
     public int Compliant => Bids.Count(b => b.Status == "Compliant");
     public int NonCompliant => Bids.Count(b => b.Status == "Non-Compliant");

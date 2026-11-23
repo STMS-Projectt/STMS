@@ -824,3 +824,6 @@
 .sp-download .btn { min-height: 46px; border-radius: 13px; font-weight: 700; padding-inline: 20px; }
 .sp { container-type: inline-size; }
 @container (max-width: 700px) { .sp-grid { grid-template-columns: 1fr; } .sp-facts > div { grid-template-columns: 1fr; gap: 2px; } }
+/* Supplier profile button on the recommended winner card (EvaluationWorkflow/Details) */
+.final-report-winner .final-report-profile { margin-inline-start: auto; flex: none; display: inline-flex; align-items: center; gap: 6px; border-radius: 12px; font-weight: 700; }
+@media (max-width: 575px) { .final-report-winner { flex-wrap: wrap; } .final-report-winner .final-report-profile { margin-inline-start: 0; width: 100%; justify-content: center; } }

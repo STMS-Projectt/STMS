@@ -119,6 +119,10 @@ else if (report == null && User.IsInRole("SourcingOfficer"))
         <div class="final-report-winner">
             <span class="icon-tile tone-teal"><partial name="_Icon" model='@("trophy")' /></span>
             <div><span>@L.T("Recommended supplier")</span><strong>@(tender.Bids.FirstOrDefault(b => b.Id == report.RecommendedBidId)?.SupplierProfile.CompanyName ?? "—")</strong></div>
+            @if ((User.IsInRole("TopCommittee") || User.IsInRole("Admin")) && report.ResultsSnapshot != null && report.Status is "Pending Top Committee" or "Awarded")
+            {
+                <a class="btn btn-outline-secondary final-report-profile" data-workspace-dialog="details" asp-action="RecommendedSupplier" asp-route-id="@tender.Id"><partial name="_Icon" model='@("supplier")' /> @L.T("Supplier profile")</a>
+            }
         </div>
         @if (User.IsInRole("TopCommittee") && tender.CommitteeMembers.Any(m => m.CommitteeType == "Top"))
         {

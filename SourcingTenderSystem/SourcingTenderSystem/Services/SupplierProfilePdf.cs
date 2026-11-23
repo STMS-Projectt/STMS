@@ -36,10 +36,10 @@ public static class SupplierProfilePdf
 
         // Header band
         w.Gfx.DrawRectangle(new XSolidBrush(Navy), 0, 0, w.Width, 118);
-        w.Gfx.DrawString("SOURCING DESK  |  EVALUATION COMMITTEE", new XFont("Arial", 10), white, Margin, 36);
+        w.Gfx.DrawString("SOURCING DESK  |  " + m.Audience.ToUpperInvariant(), new XFont("Arial", 10), white, Margin, 36);
         var title = new XFont("Arial", 24, XFontStyleEx.Bold);
         w.Gfx.DrawString(WinnerBriefPdf.Fit(w.Gfx, s.CompanyName, title, w.Width - 2 * Margin), title, white, Margin, 70);
-        w.Gfx.DrawString(WinnerBriefPdf.Fit(w.Gfx, $"Supplier profile  |  Reviewed for tender #{m.TenderId} {m.TenderTitle}  |  Bid #{m.BidId}", new XFont("Arial", 11), w.Width - 2 * Margin),
+        w.Gfx.DrawString(WinnerBriefPdf.Fit(w.Gfx, (m.IsRecommendedWinner ? "Recommended winner" : "Supplier profile") + $"  |  Tender #{m.TenderId} {m.TenderTitle}  |  Bid #{m.BidId}", new XFont("Arial", 11), w.Width - 2 * Margin),
             new XFont("Arial", 11), white, Margin, 96);
         w.Y = 140;
 
@@ -111,7 +111,7 @@ public static class SupplierProfilePdf
 
         w.Y += 10;
         w.Paragraph($"Generated {nowUtc:yyyy-MM-dd HH:mm} UTC from the records in the Sourcing Desk. Amounts are bid totals before sales tax. " +
-            "The win rate counts only tenders that reached a decision. For the evaluation committee only; it does not change any score.",
+            "The win rate counts only tenders that reached a decision. " + $"For the {m.Audience.ToLowerInvariant()} only; it does not change any score or vote.",
             new XFont("Arial", 8.5, XFontStyleEx.Italic), Muted);
     }
 }

@@ -237,6 +237,50 @@ public sealed class EvaluationWorkflowController(ApplicationDbContext db, Suppli
 
     private static bool HasWinner(string status) => status is Top or Approved;
 
+    /// <summary>Supplier profile of the recommended winner only (same modal as the evaluation committee's).</summary>
+    [HttpGet, Authorize(Roles = Roles.TopCommittee + "," + Roles.Admin)]
+    public async Task<IActionResult> RecommendedSupplier(int id)
+    {
+        var model = await RecommendedSupplierAsync(id);
+        return model is null ? NotFound() : View("SupplierProfile", model);
+    }
+
+    [HttpGet, Authorize(Roles = Roles.TopCommittee + "," + Roles.Admin)]
+    public async Task<IActionResult> DownloadRecommendedSupplier(int id, [FromServices] ProtectedPdf pdf, [FromServices] ILogger<EvaluationWorkflowController> logger)
+    {
+        var model = await RecommendedSupplierAsync(id);
+        if (model is null) return NotFound();
+        try
+        {
+            using var document = SupplierProfilePdf.Build(model, DateTime.UtcNow);
+            pdf.AddWatermark(document, User, DateTime.UtcNow);
+            var bytes = await pdf.Render(document, null);
+            Response.Headers.CacheControl = "private, no-store";
+            return File(bytes, "application/pdf", $"recommended-supplier-tender-{id}.pdf");
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "Could not build the recommended supplier PDF for tender {TenderId}", id);
+            return StatusCode(422, new UiText().T("The supplier profile PDF could not be created. Please try again."));
+        }
+    }
+
+    // id = tender id. Only the bid the final report recommends, and only once the report has reached the top committee.
+    private async Task<CommitteeSupplier?> RecommendedSupplierAsync(int tenderId)
+    {
+        var employee = await CurrentEmployeeAsync();
+        if (employee is null) return null;
+        var report = await Visible(employee.Id).AsNoTracking().Where(t => t.Id == tenderId && t.EvaluationReport != null)
+            .Select(t => new { t.EvaluationReport!.Status, t.EvaluationReport.RecommendedBidId, t.EvaluationReport.ResultsSnapshot }).SingleOrDefaultAsync();
+        if (report is null || report.ResultsSnapshot is null || !HasWinner(report.Status)) return null;
+        var model = await SupplierSnapshots.BuildAsync(Db, report.RecommendedBidId);
+        if (model is null || model.TenderId != tenderId) return null;
+        model.Audience = "Top committee";
+        model.IsRecommendedWinner = true;
+        model.DownloadUrl = Url.Action(nameof(DownloadRecommendedSupplier), new { id = tenderId });
+        return model;
+    }
+
     private async Task<WinnerBriefInput?> WinnerInputAsync(int id, int employeeId)
     {
         var tender = await Visible(employeeId).AsNoTracking().AsSplitQuery()

@@ -253,7 +253,7 @@ public sealed class CommitteeReviewsController(ApplicationDbContext db, BidAiAdv
         var employee = await CurrentEmployeeAsync();
         if (employee is null) return Forbid();
         var model = await SupplierSnapshotAsync(id, employee.Id);
-        return model is null ? NotFound() : View(model);
+        return model is null ? NotFound() : View("SupplierProfile", model);
     }
 
     /// <summary>The full supplier profile as a PDF (award history, earnings, compliance record, bid history).</summary>
@@ -283,39 +283,14 @@ public sealed class CommitteeReviewsController(ApplicationDbContext db, BidAiAdv
     // Same access rule as the bid review: a compliant, submitted bid in a tender where I sit on the evaluation committee.
     private async Task<CommitteeSupplier?> SupplierSnapshotAsync(int bidId, int employeeId)
     {
-        var bid = await Db.Bids.Where(b => b.Status == "Compliant" && b.SubmittedAt != null && Memberships(employeeId).Any(m => m.TenderId == b.TenderId))
-            .AsNoTracking().Include(b => b.Tender)
-            .Include(b => b.SupplierProfile).ThenInclude(s => s.User)
-            .Include(b => b.SupplierProfile).ThenInclude(s => s.Categories)
-            .AsSplitQuery()
-            .SingleOrDefaultAsync(b => b.Id == bidId);
-        if (bid is null) return null;
-        var supplierId = bid.SupplierProfileId;
-
-        // Every bid the supplier actually submitted (drafts and withdrawn bids are not history)
-        var history = await Db.Bids.AsNoTracking()
-            .Where(b => b.SupplierProfileId == supplierId && b.SubmittedAt != null && b.Status != "Draft" && b.Status != "Withdrawn")
-            .OrderByDescending(b => b.SubmittedAt)
-            .Select(b => new SupplierHistoryRow(b.TenderId, b.Tender.Title, b.SubmittedAt, b.TotalPrice, b.Currency, b.DeliveryDays,
-                b.Status, b.AwardOutcome, b.Tender.EvaluationReport != null ? b.Tender.EvaluationReport.FinalizedAt : null))
-            .ToListAsync();
-        var invitations = await Db.Invitations.AsNoTracking().Where(i => i.SupplierProfileId == supplierId)
-            .GroupBy(i => i.Status).Select(g => new { Status = g.Key, Count = g.Count() }).ToListAsync();
-
-        return new CommitteeSupplier
-        {
-            BidId = bid.Id,
-            TenderId = bid.TenderId,
-            TenderTitle = bid.Tender.Title,
-            Supplier = bid.SupplierProfile,
-            Email = bid.SupplierProfile.User?.Email,
-            Categories = bid.SupplierProfile.Categories.Select(c => c.Name).OrderBy(n => n).ToList(),
-            DocumentCount = await Db.SupplierDocuments.CountAsync(d => d.SupplierProfileId == supplierId),
-            Invitations = invitations.Sum(i => i.Count),
-            InvitationsAccepted = invitations.Where(i => i.Status == "Accepted").Sum(i => i.Count),
-            InvitationsDeclined = invitations.Where(i => i.Status == "Declined").Sum(i => i.Count),
-            Bids = history
-        };
+        var allowed = await Db.Bids.AnyAsync(b => b.Id == bidId && b.Status == "Compliant" && b.SubmittedAt != null &&
+            Memberships(employeeId).Any(m => m.TenderId == b.TenderId));
+        if (!allowed) return null;
+        var model = await SupplierSnapshots.BuildAsync(Db, bidId);
+        if (model is null) return null;
+        model.BackUrl = Url.Action(nameof(Details), new { id = model.TenderId });
+        model.DownloadUrl = Url.Action(nameof(DownloadSupplierProfile), new { id = bidId });
+        return model;
     }
 
     // ------------------------------------------------------------ AI assistant (advisory only)
