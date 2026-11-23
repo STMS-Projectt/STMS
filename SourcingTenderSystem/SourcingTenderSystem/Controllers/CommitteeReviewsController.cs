@@ -244,6 +244,80 @@ public sealed class CommitteeReviewsController(ApplicationDbContext db, BidAiAdv
         return RedirectToAction(nameof(Details), new { id });
     }
 
+    // ------------------------------------------------------------ Supplier snapshot
+
+    /// <summary>Short supplier profile for a compliant bid the reviewer can see (opens in the workspace dialog).</summary>
+    [HttpGet]
+    public async Task<IActionResult> Supplier(int id)
+    {
+        var employee = await CurrentEmployeeAsync();
+        if (employee is null) return Forbid();
+        var model = await SupplierSnapshotAsync(id, employee.Id);
+        return model is null ? NotFound() : View(model);
+    }
+
+    /// <summary>The full supplier profile as a PDF (award history, earnings, compliance record, bid history).</summary>
+    [HttpGet]
+    public async Task<IActionResult> DownloadSupplierProfile(int id, [FromServices] ProtectedPdf pdf, [FromServices] ILogger<CommitteeReviewsController> logger)
+    {
+        var employee = await CurrentEmployeeAsync();
+        if (employee is null) return Forbid();
+        var model = await SupplierSnapshotAsync(id, employee.Id);
+        if (model is null) return NotFound();
+        try
+        {
+            using var document = SupplierProfilePdf.Build(model, DateTime.UtcNow);
+            pdf.AddWatermark(document, User, DateTime.UtcNow);
+            var bytes = await pdf.Render(document, null);
+            Response.Headers.CacheControl = "private, no-store";
+            return File(bytes, "application/pdf", $"supplier-profile-{model.Supplier.Id}-bid-{id}.pdf");
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "Could not build the supplier profile PDF for bid {BidId}", id);
+            TempData["ReviewError"] = "The supplier profile PDF could not be created. Please try again.";
+            return RedirectToAction(nameof(Details), new { id = model.TenderId });
+        }
+    }
+
+    // Same access rule as the bid review: a compliant, submitted bid in a tender where I sit on the evaluation committee.
+    private async Task<CommitteeSupplier?> SupplierSnapshotAsync(int bidId, int employeeId)
+    {
+        var bid = await Db.Bids.Where(b => b.Status == "Compliant" && b.SubmittedAt != null && Memberships(employeeId).Any(m => m.TenderId == b.TenderId))
+            .AsNoTracking().Include(b => b.Tender)
+            .Include(b => b.SupplierProfile).ThenInclude(s => s.User)
+            .Include(b => b.SupplierProfile).ThenInclude(s => s.Categories)
+            .AsSplitQuery()
+            .SingleOrDefaultAsync(b => b.Id == bidId);
+        if (bid is null) return null;
+        var supplierId = bid.SupplierProfileId;
+
+        // Every bid the supplier actually submitted (drafts and withdrawn bids are not history)
+        var history = await Db.Bids.AsNoTracking()
+            .Where(b => b.SupplierProfileId == supplierId && b.SubmittedAt != null && b.Status != "Draft" && b.Status != "Withdrawn")
+            .OrderByDescending(b => b.SubmittedAt)
+            .Select(b => new SupplierHistoryRow(b.TenderId, b.Tender.Title, b.SubmittedAt, b.TotalPrice, b.Currency, b.DeliveryDays,
+                b.Status, b.AwardOutcome, b.Tender.EvaluationReport != null ? b.Tender.EvaluationReport.FinalizedAt : null))
+            .ToListAsync();
+        var invitations = await Db.Invitations.AsNoTracking().Where(i => i.SupplierProfileId == supplierId)
+            .GroupBy(i => i.Status).Select(g => new { Status = g.Key, Count = g.Count() }).ToListAsync();
+
+        return new CommitteeSupplier
+        {
+            BidId = bid.Id,
+            TenderId = bid.TenderId,
+            TenderTitle = bid.Tender.Title,
+            Supplier = bid.SupplierProfile,
+            Email = bid.SupplierProfile.User?.Email,
+            Categories = bid.SupplierProfile.Categories.Select(c => c.Name).OrderBy(n => n).ToList(),
+            DocumentCount = await Db.SupplierDocuments.CountAsync(d => d.SupplierProfileId == supplierId),
+            Invitations = invitations.Sum(i => i.Count),
+            InvitationsAccepted = invitations.Where(i => i.Status == "Accepted").Sum(i => i.Count),
+            InvitationsDeclined = invitations.Where(i => i.Status == "Declined").Sum(i => i.Count),
+            Bids = history
+        };
+    }
+
     // ------------------------------------------------------------ AI assistant (advisory only)
 
     /// <summary>The recommendation box on the tender page. Loaded in the background because the model can be slow.</summary>

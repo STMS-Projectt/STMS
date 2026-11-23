@@ -1,0 +1,71 @@
+@model CommitteeSupplier
+@{
+    ViewData["Title"] = L.T("Supplier profile");
+    var s = Model.Supplier;
+    string Money(IReadOnlyList<(string Currency, decimal Amount)> values) =>
+        values.Count == 0 ? "0.00" : string.Join(" + ", values.Select(v => $"{v.Amount:N2} {v.Currency}"));
+}
+<div class="pr-create prd rb sp">
+<a class="back-link" asp-action="Details" asp-route-id="@Model.TenderId"><partial name="_Icon" model='@("back")' /> @L.T("Tender evaluation")</a>
+<header class="pr-hero prd-hero">
+    <span class="pr-hero-icon"><partial name="_Icon" model='@("supplier")' /></span>
+    <div>
+        <p class="eyebrow">@L.T("Supplier profile") · @L.F("Bid #{0}", Model.BidId)</p>
+        <h1>@s.CompanyName</h1>
+        <p class="prd-meta"><span><partial name="_Icon" model='@("calendar")' /> @L.F("Registered {0}", s.CreatedAt.ToString("dd MMM yyyy", L.DisplayCulture))</span></p>
+    </div>
+    <div class="prd-status"><span class="tm-status"><i></i>@L.T(s.Status)</span></div>
+    <div class="cm-stats">
+        <div class="is-hot"><strong>@Model.Awards.Count</strong><span>@L.T("Tenders won")</span></div>
+        <div><strong>@Money(Model.AwardedValue)</strong><span>@L.T("Total earned from awards")</span></div>
+        <div><strong>@(Model.WinRate is decimal rate ? rate.ToString("0.#") + "%" : "—")</strong><span>@L.T("Win rate")</span></div>
+        <div><strong>@Model.BidsSubmitted</strong><span>@L.T("Bids submitted")</span></div>
+    </div>
+</header>
+
+<div class="sp-grid">
+    <section class="pr-card prd-card">
+        <div class="pr-section-head"><span class="pr-badge"><partial name="_Icon" model='@("building")' /></span><div><h2>@L.T("Company details")</h2></div></div>
+        <dl class="sp-facts">
+            @if (!string.IsNullOrWhiteSpace(Model.Email)) { <div><dt><partial name="_Icon" model='@("mail")' /> @L.T("E-mail")</dt><dd dir="ltr"><a href="mailto:@Model.Email">@Model.Email</a></dd></div> }
+            @if (!string.IsNullOrWhiteSpace(s.ContactPhone)) { <div><dt><partial name="_Icon" model='@("users")' /> @L.T("Phone")</dt><dd dir="ltr">@s.ContactPhone</dd></div> }
+            @if (!string.IsNullOrWhiteSpace(s.Address)) { <div><dt><partial name="_Icon" model='@("building")' /> @L.T("Address")</dt><dd>@s.Address</dd></div> }
+            <div><dt><partial name="_Icon" model='@("file")' /> @L.T("Commercial reg. no.")</dt><dd>@(string.IsNullOrWhiteSpace(s.CommercialRegNo) ? "—" : s.CommercialRegNo)</dd></div>
+        </dl>
+        @if (Model.Categories.Count > 0)
+        {
+            <div class="sp-tags">@foreach (var category in Model.Categories) { <span>@category</span> }</div>
+        }
+    </section>
+
+    <section class="pr-card prd-card">
+        <div class="pr-section-head"><span class="pr-badge"><partial name="_Icon" model='@("chart")' /></span><div><h2>@L.T("Track record")</h2></div></div>
+        <ul class="sp-track">
+            <li><span>@L.T("Compliant / non-compliant bids")</span><strong>@Model.Compliant / @Model.NonCompliant</strong></li>
+            <li><span>@L.T("Tenders won / lost")</span><strong>@Model.Awards.Count / @Model.Unsuccessful</strong></li>
+            <li><span>@L.T("Invitations accepted")</span><strong>@Model.InvitationsAccepted / @Model.Invitations</strong></li>
+            <li><span>@L.T("Average delivery promised")</span><strong>@(Model.AverageDelivery is decimal d ? L.F("{0} days", d.ToString("0.#")) : "—")</strong></li>
+            <li><span>@L.T("Last award")</span><strong>@(Model.LastAwardAt?.ToString("dd MMM yyyy", L.DisplayCulture) ?? "—")</strong></li>
+        </ul>
+    </section>
+</div>
+
+<section class="pr-card prd-card">
+    <div class="pr-section-head"><span class="pr-badge"><partial name="_Icon" model='@("trophy")' /></span><div><h2>@L.T("Recent awards")</h2></div><span class="pr-count">@Model.Awards.Count</span></div>
+    @if (Model.Awards.Count == 0) { <p class="subtle mb-0">@L.T("This supplier has not won a tender yet.")</p> }
+    else
+    {
+        <ul class="sp-awards">
+            @foreach (var award in Model.Awards.Take(3))
+            {
+                <li><span class="sp-award-icon"><partial name="_Icon" model='@("trophy")' /></span><span><strong>@award.TenderTitle</strong><small>@L.F("Tender #{0}", award.TenderId)@(award.AwardedAt is DateTime at ? " · " + at.ToString("dd MMM yyyy", L.DisplayCulture) : "")</small></span><b>@award.TotalPrice.ToString("N2") <small>@award.Currency</small></b></li>
+            }
+        </ul>
+    }
+</section>
+
+<div class="sp-download">
+    <div><strong>@L.T("Full supplier report")</strong><small>@L.T("Every award with its amount, the full bid history and the compliance record, as a PDF.")</small></div>
+    <a class="btn btn-primary pr-submit" asp-action="DownloadSupplierProfile" asp-route-id="@Model.BidId" download><partial name="_Icon" model='@("download")' /> @L.T("Download PDF")</a>
+</div>
+</div>

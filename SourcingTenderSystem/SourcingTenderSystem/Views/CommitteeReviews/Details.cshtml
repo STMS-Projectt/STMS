@@ -35,7 +35,7 @@
                     <div class="record-name"><span class="avatar"><partial name="_Icon" model='@("supplier")' /></span><span>@bid.SupplierProfile.CompanyName<small>@L.F("Bid #{0}", bid.Id)</small></span></div>
                     <dl class="record-facts"><div><dt>@L.T("Quoted total")</dt><dd>@bid.TotalPrice.ToString("N2") @bid.Currency</dd></div>
                         <div><dt>@L.T("Criteria scored")</dt><dd>@Model.ReviewedCriteria.GetValueOrDefault(bid.Id) / @Model.Weights.Count</dd></div></dl>
-                    <div class="record-action"><a class="record-icon-action" data-workspace-dialog="details" asp-action="Bid" asp-route-id="@bid.Id" aria-label="@L.F("Review bid from {0}", bid.SupplierProfile.CompanyName)" data-tooltip="@L.T("Review bid")"><partial name="_Icon" model='@("eye")' /></a></div>
+                    <div class="record-action"><a class="record-icon-action" data-workspace-dialog="details" asp-action="Supplier" asp-route-id="@bid.Id" aria-label="@L.F("Supplier profile of {0}", bid.SupplierProfile.CompanyName)" data-tooltip="@L.T("Supplier profile")"><partial name="_Icon" model='@("supplier")' /></a><a class="record-icon-action" data-workspace-dialog="details" asp-action="Bid" asp-route-id="@bid.Id" aria-label="@L.F("Review bid from {0}", bid.SupplierProfile.CompanyName)" data-tooltip="@L.T("Review bid")"><partial name="_Icon" model='@("eye")' /></a></div>
                 </article>
             }
         </div>

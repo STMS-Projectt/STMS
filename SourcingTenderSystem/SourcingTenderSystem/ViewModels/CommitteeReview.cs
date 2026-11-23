@@ -38,3 +38,37 @@ public sealed class CommitteeCriterionInput
     [Range(1, 100)] public int MaxScore { get; set; } = 100;
     [Range(typeof(decimal), "0.01", "100")] public decimal WeightPercent { get; set; } = 50;
 }
+
+// Supplier snapshot for the evaluation committee (CommitteeReviews/Supplier modal + DownloadSupplierProfile PDF).
+// Built from the supplier's whole bid history, not only the tender under review.
+public sealed record SupplierHistoryRow(int TenderId, string TenderTitle, DateTime? SubmittedAt, decimal TotalPrice, string Currency,
+    int DeliveryDays, string Status, string? AwardOutcome, DateTime? AwardedAt);
+
+public sealed class CommitteeSupplier
+{
+    public int BidId { get; init; }
+    public int TenderId { get; init; }
+    public string TenderTitle { get; init; } = "";
+    public SupplierProfile Supplier { get; init; } = null!;
+    public string? Email { get; init; }
+    public IReadOnlyList<string> Categories { get; init; } = [];
+    public int DocumentCount { get; init; }
+    public int Invitations { get; init; }
+    public int InvitationsAccepted { get; init; }
+    public int InvitationsDeclined { get; init; }
+    public IReadOnlyList<SupplierHistoryRow> Bids { get; init; } = [];
+
+    public int BidsSubmitted => Bids.Count;
+    public int Compliant => Bids.Count(b => b.Status == "Compliant");
+    public int NonCompliant => Bids.Count(b => b.Status == "Non-Compliant");
+    public IReadOnlyList<SupplierHistoryRow> Awards => Bids.Where(b => b.AwardOutcome == "Awarded").OrderByDescending(b => b.AwardedAt ?? b.SubmittedAt).ToList();
+    public int Unsuccessful => Bids.Count(b => b.AwardOutcome == "Unsuccessful");
+    // Tenders that reached a decision (won or lost); open tenders do not count against the supplier.
+    public int Decided => Awards.Count + Unsuccessful;
+    public decimal? WinRate => Decided == 0 ? null : Math.Round(Awards.Count * 100m / Decided, 1);
+    public IReadOnlyList<(string Currency, decimal Amount)> AwardedValue => Awards.GroupBy(b => b.Currency)
+        .Select(g => (g.Key, g.Sum(b => b.TotalPrice))).OrderByDescending(x => x.Item2).ToList();
+    public decimal? AverageDelivery => Bids.Count == 0 ? null : Math.Round((decimal)Bids.Average(b => b.DeliveryDays), 1);
+    public decimal? InvitationAcceptRate => Invitations == 0 ? null : Math.Round(InvitationsAccepted * 100m / Invitations, 1);
+    public DateTime? LastAwardAt => Awards.FirstOrDefault()?.AwardedAt;
+}

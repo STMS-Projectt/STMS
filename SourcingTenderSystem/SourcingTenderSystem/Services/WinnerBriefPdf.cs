@@ -1,4 +1,4 @@
-﻿using PdfSharp.Drawing;
+using PdfSharp.Drawing;
 using PdfSharp.Pdf;
 
 namespace SourcingTenderSystem.Services;
@@ -96,7 +96,7 @@ public static class WinnerBriefPdf
             new XFont("Arial", 8.5, XFontStyleEx.Italic), Muted);
     }
 
-    private static string Fit(XGraphics gfx, string text, XFont font, double width)
+    internal static string Fit(XGraphics gfx, string text, XFont font, double width)
     {
         text = Clean(text);
         if (gfx.MeasureString(text, font).Width <= width) return text;
@@ -106,7 +106,7 @@ public static class WinnerBriefPdf
 
     private static string Clean(string text) => new(text.Replace("\r", "").Where(c => c == '\n' || !char.IsControl(c)).ToArray());
 
-    private sealed class Writer : IDisposable
+    internal sealed class Writer : IDisposable
     {
         private readonly PdfDocument document;
         private PdfPage page;
