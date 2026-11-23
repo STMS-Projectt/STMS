@@ -1,6 +1,6 @@
 @model ContactInbox
 @{ ViewData["Title"] = "Contact inbox"; }
-<header class="page-heading stms-hero"><div><h1>@L.T("Contact inbox")</h1><p>@L.T("Read messages from the public contact form and publish a reply on the sender's private tracking page.")</p></div></header>
+<header class="page-heading stms-hero adm-hero"><span class="pr-hero-icon"><partial name="_Icon" model='@("mail")' /></span><div><p class="eyebrow">@L.T("ADMINISTRATION")</p><h1>@L.T("Contact inbox")</h1><p>@L.T("Read messages from the public contact form and publish a reply on the sender's private tracking page.")</p></div></header>
 @if (TempData["ContactError"] is string error) { <p class="alert alert-warning" role="alert">@L.T(error)</p> }
 @if (TempData["ContactSuccess"] is string success) { <p class="alert alert-success" role="status">@L.T(success)</p> }
 @if (Model.Messages.Count == 0) { <section class="surface detail-card"><p>@L.T("No contact messages yet.")</p></section> }

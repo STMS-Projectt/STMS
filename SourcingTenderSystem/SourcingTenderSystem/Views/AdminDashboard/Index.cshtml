@@ -26,7 +26,7 @@
     var supplierMax = 1;
     foreach (var row in topSuppliers) { if (row.Count > supplierMax) supplierMax = row.Count; }
 }
-<header class="page-heading stms-hero admin-overview">
+<header class="page-heading stms-hero admin-overview adm-hero"><span class="pr-hero-icon"><partial name="_Icon" model='@("dashboard")' /></span>
     <div>
         <p class="eyebrow">@L.T("ADMIN WORKSPACE")</p>
         <h1>@L.T("Analytics & Statistics")</h1>

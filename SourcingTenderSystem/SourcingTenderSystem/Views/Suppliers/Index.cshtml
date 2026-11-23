@@ -4,7 +4,7 @@
     var counts = (Dictionary<string, int>)ViewBag.SupplierCounts;
     var metrics = new[] { ("Registered suppliers", counts.Values.Sum(), "supplier", "blue"), ("Approved", counts.GetValueOrDefault(SupplierStatus.Approved), "check", "teal"), ("Pending review", counts.GetValueOrDefault(SupplierStatus.Pending), "clock", "amber"), ("Suspended", counts.GetValueOrDefault(SupplierStatus.Suspended), "shield", "violet") };
 }
-<header class="page-heading stms-hero"><div><p class="eyebrow">@L.T(User.IsInRole("Admin") ? "ADMINISTRATION" : "SOURCING WORKSPACE")</p><h1>@L.T("Supplier Directory")</h1><p>@L.T("Track supplier applications and review supporting documents.")</p></div></header>
+<header class="page-heading stms-hero adm-hero"><span class="pr-hero-icon"><partial name="_Icon" model='@("supplier")' /></span><div><p class="eyebrow">@L.T(User.IsInRole("Admin") ? "ADMINISTRATION" : "SOURCING WORKSPACE")</p><h1>@L.T("Supplier Directory")</h1><p>@L.T("Track supplier applications and review supporting documents.")</p></div></header>
 <partial name="_DesignMetrics" model="metrics" />
 <details class="surface dashboard-card supplier-health mb-3">
     <summary><span class="icon-tile tone-teal"><partial name="_Icon" model='@("shield")' /></span><span><strong>@L.T("Supplier health")</strong><small>@L.T("Registration status across all suppliers")</small></span></summary>

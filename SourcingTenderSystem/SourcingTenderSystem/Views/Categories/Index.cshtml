@@ -1,6 +1,6 @@
 @model IReadOnlyList<Category>
 @{ ViewData["Title"] = L.T("Supply categories"); }
-<header class="page-heading stms-hero"><div><p class="eyebrow">@L.T("ADMINISTRATION")</p><h1>@L.T("Supply categories")</h1><p>@L.T("Manage the categories that connect purchase requests to eligible suppliers.")</p></div>
+<header class="page-heading stms-hero adm-hero"><span class="pr-hero-icon"><partial name="_Icon" model='@("filter")' /></span><div><p class="eyebrow">@L.T("ADMINISTRATION")</p><h1>@L.T("Supply categories")</h1><p>@L.T("Manage the categories that connect purchase requests to eligible suppliers.")</p></div>
     <a class="btn btn-primary" data-workspace-dialog asp-action="Create"><partial name="_Icon" model='@("plus")' /> @L.T("Add category")</a>
 </header>
 <section class="surface directory dept-directory" data-directory>

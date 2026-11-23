@@ -5,7 +5,7 @@
     string? DateValue(DateOnly? date) => date?.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
     var filtered = !string.IsNullOrWhiteSpace(Model.Query) || Model.Status != null || activity?.Event != null || activity?.From != null || activity?.To != null;
 }
-<header class="page-heading stms-hero admin-record-hero"><div><p class="eyebrow">@L.T("ADMINISTRATION")</p><h1>@L.T(Model.Title)</h1><p>@L.T(Model.Description)</p></div></header>
+<header class="page-heading stms-hero admin-record-hero adm-hero"><span class="pr-hero-icon"><partial name="_Icon" model='@("file")' /></span><div><p class="eyebrow">@L.T("ADMINISTRATION")</p><h1>@L.T(Model.Title)</h1><p>@L.T(Model.Description)</p></div></header>
 <section class="surface directory dept-directory" data-directory>
     <div class="dept-directory-heading"><h2>@L.T("Records")</h2><p>@L.T("Browse or search this register.")</p></div>
     <div class="directory-filter-panel">
