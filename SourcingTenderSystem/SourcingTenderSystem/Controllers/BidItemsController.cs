@@ -22,6 +22,9 @@ public class BidItemsController : Controller
 
     private readonly IWebHostEnvironment _environment;
 
+    // All photos of one item in one request, plus room for the other form fields
+    private const long MaxUploadBytes = BidItem.MaxImages * BidFiles.MaxBytes + 1024 * 1024;
+
     public BidItemsController(ApplicationDbContext context, UserManager<IdentityUser> userManager, IWebHostEnvironment environment)
     {
         _context = context;
@@ -74,6 +77,7 @@ public class BidItemsController : Controller
     // POST: /BidItems/Create?bidId=4&purchaseRequisitionItemId=3
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [RequestSizeLimit(MaxUploadBytes), RequestFormLimits(MultipartBodyLengthLimit = MaxUploadBytes)]
     public async Task<IActionResult> Create(int bidId, int purchaseRequisitionItemId, BidItemFormViewModel model)
     {
         var supplier = await GetCurrentSupplierAsync();
@@ -116,11 +120,8 @@ public class BidItemsController : Controller
             ModelState.AddModelError(nameof(model.UnitPrice), "Unit price can have at most 2 decimal places.");
         }
 
-        // The sample photo (optional) must be a real JPG/PNG
-        if (model.SampleImage != null && await BidFiles.CheckImageAsync(model.SampleImage) is string imageError)
-        {
-            ModelState.AddModelError(nameof(model.SampleImage), imageError);
-        }
+        // The sample photos (optional) must be real JPG/PNG files, at most BidItem.MaxImages
+        var newImages = await CheckImagesAsync(model, 0);
 
         if (!ModelState.IsValid)
         {
@@ -138,11 +139,7 @@ public class BidItemsController : Controller
             UnitPrice = model.UnitPrice,
             Notes = model.Notes
         };
-        if (model.SampleImage != null)
-        {
-            bidItem.SampleImagePath = await BidFiles.SaveAsync(_environment, model.SampleImage);
-            bidItem.SampleImageName = Path.GetFileName(model.SampleImage.FileName);
-        }
+        await AddImagesAsync(bidItem, newImages);
 
         _context.BidItems.Add(bidItem);
         await _context.SaveChangesAsync();
@@ -190,6 +187,7 @@ public class BidItemsController : Controller
     // POST: /BidItems/Edit/12
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [RequestSizeLimit(MaxUploadBytes), RequestFormLimits(MultipartBodyLengthLimit = MaxUploadBytes)]
     public async Task<IActionResult> Edit(int id, BidItemFormViewModel model)
     {
         var supplier = await GetCurrentSupplierAsync();
@@ -218,11 +216,9 @@ public class BidItemsController : Controller
             ModelState.AddModelError(nameof(model.UnitPrice), "Unit price can have at most 2 decimal places.");
         }
 
-        // The sample photo (optional) must be a real JPG/PNG
-        if (model.SampleImage != null && await BidFiles.CheckImageAsync(model.SampleImage) is string imageError)
-        {
-            ModelState.AddModelError(nameof(model.SampleImage), imageError);
-        }
+        // Photos ticked for removal (only this item's own photos), then the new photos within the limit
+        var removed = bidItem.Images.Where(i => model.RemoveImageIds.Contains(i.Id)).ToList();
+        var newImages = await CheckImagesAsync(model, bidItem.Images.Count - removed.Count);
 
         if (!ModelState.IsValid)
         {
@@ -234,19 +230,14 @@ public class BidItemsController : Controller
         bidItem.UnitPrice = model.UnitPrice;
         bidItem.Notes = model.Notes;
         bidItem.Quantity = bidItem.PurchaseRequisitionItem.Quantity;
-        string? oldImage = null;
-        if (model.SampleImage != null) // a new photo replaces the old one
-        {
-            oldImage = bidItem.SampleImagePath;
-            bidItem.SampleImagePath = await BidFiles.SaveAsync(_environment, model.SampleImage);
-            bidItem.SampleImageName = Path.GetFileName(model.SampleImage.FileName);
-        }
+        _context.BidItemImages.RemoveRange(removed);
+        await AddImagesAsync(bidItem, newImages);
         await _context.SaveChangesAsync();
 
         await RecalculateTotalAsync(bidItem.Bid);
 
         await tx.CommitAsync();
-        BidFiles.Delete(_environment, oldImage);
+        foreach (var image in removed) BidFiles.Delete(_environment, image.FilePath);
         TempData["Msg"] = $"Price updated for {bidItem.PurchaseRequisitionItem.ItemName}.";
         return BackToBid(bidItem.BidId);
     }
@@ -280,7 +271,7 @@ public class BidItemsController : Controller
         // Keep what we need before the item is removed
         var bid = bidItem.Bid;
         string itemName = bidItem.PurchaseRequisitionItem.ItemName;
-        string? image = bidItem.SampleImagePath;
+        var images = bidItem.Images.Select(i => i.FilePath).ToList();
 
         _context.BidItems.Remove(bidItem);
         await _context.SaveChangesAsync();
@@ -288,12 +279,46 @@ public class BidItemsController : Controller
         await RecalculateTotalAsync(bid);
 
         await tx.CommitAsync();
-        BidFiles.Delete(_environment, image);
+        foreach (var image in images) BidFiles.Delete(_environment, image);
         TempData["Msg"] = $"Price removed for {itemName}.";
         return BackToBid(bid.Id);
     }
 
     // ----------------- helper methods -----------------
+
+    // The chosen sample photos (empty file inputs ignored). Each must be a real JPG/PNG and
+    // keptCount + new photos may not pass BidItem.MaxImages. Errors go into ModelState.
+    private async Task<List<IFormFile>> CheckImagesAsync(BidItemFormViewModel model, int keptCount)
+    {
+        var ui = new UiText(); // messages are built here, so translate them here
+        var files = model.SampleImages.Where(f => f != null && !string.IsNullOrEmpty(f.FileName)).ToList();
+        if (keptCount + files.Count > BidItem.MaxImages)
+        {
+            ModelState.AddModelError(nameof(model.SampleImages), ui.F("An item can have at most {0} photos.", BidItem.MaxImages));
+        }
+        foreach (var file in files)
+        {
+            if (await BidFiles.CheckImageAsync(file) is string error)
+            {
+                ModelState.AddModelError(nameof(model.SampleImages), $"{Path.GetFileName(file.FileName)}: {ui.T(error)}");
+            }
+        }
+        return files;
+    }
+
+    // Saves the photos to disk and adds them to the item (saved with the next SaveChanges)
+    private async Task AddImagesAsync(BidItem bidItem, List<IFormFile> files)
+    {
+        foreach (var file in files)
+        {
+            bidItem.Images.Add(new BidItemImage
+            {
+                FilePath = await BidFiles.SaveAsync(_environment, file),
+                FileName = Path.GetFileName(file.FileName),
+                UploadedAt = DateTime.UtcNow
+            });
+        }
+    }
 
     // The supplier profile of the logged-in user (or null)
     private async Task<SupplierProfile?> GetCurrentSupplierAsync()
@@ -323,6 +348,7 @@ public class BidItemsController : Controller
         return await _context.BidItems
             .Include(bi => bi.Bid.Tender)
             .Include(bi => bi.PurchaseRequisitionItem)
+            .Include(bi => bi.Images.OrderBy(i => i.Id))
             .FirstOrDefaultAsync(bi => bi.Id == bidItemId && bi.Bid.SupplierProfileId == supplierProfileId);
     }
 

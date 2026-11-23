@@ -247,8 +247,9 @@ public class BidsController : Controller
         // Only my bid: the Id AND the owner must match
         var bid = await _context.Bids
             .Include(b => b.Tender)
-            .Include(b => b.BidItems)
+            .Include(b => b.BidItems).ThenInclude(i => i.Images.OrderBy(x => x.Id))
             .Include(b => b.BidDocuments)
+            .AsSplitQuery()
             .FirstOrDefaultAsync(b => b.Id == id && b.SupplierProfileId == supplier.Id);
         if (bid == null)
         {

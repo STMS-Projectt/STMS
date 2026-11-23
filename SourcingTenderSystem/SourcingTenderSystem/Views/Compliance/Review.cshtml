@@ -183,6 +183,10 @@ else
                                     {
                                         <small class="compare-note">@bidItem.Notes</small>
                                     }
+                                    @if (bidItem.Images.Count > 0)
+                                    {
+                                        <partial name="_ItemPhotos" model="bidItem.Images" view-data='@(new ViewDataDictionary(ViewData) { ["Visible"] = 3, ["GalleryTitle"] = item.ItemName + " · " + bid.SupplierProfile.CompanyName })' />
+                                    }
                                 }
                             </td>
                         }

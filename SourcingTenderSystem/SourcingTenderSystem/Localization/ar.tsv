@@ -2078,3 +2078,19 @@ Send to evaluation|الإرسال للتقييم
 {0} to review · {1} awaiting clarification. Only bids marked compliant are included in evaluation.|{0} للمراجعة · {1} بانتظار الاستيضاح. فقط العروض المطابقة تدخل التقييم.
 Scheduled deadline: {0} (UTC)|الموعد المحدد: {0} (UTC)
 Locked|مقفل
+Your price|سعرك
+Enter the price of one unit. The line total is worked out for you.|أدخل سعر الوحدة الواحدة، وسيُحسب إجمالي البند تلقائياً.
+Brand, model, warranty or anything the committee should know|العلامة التجارية، الموديل، الكفالة أو أي شيء يجب أن تعرفه اللجنة
+Sample photos|صور العينة
+Up to {0} JPG or PNG photos, maximum 10 MB each. The sourcing officer and the committee see them when they review your bid.|حتى {0} صور بصيغة JPG أو PNG، بحد أقصى 10 ميغابايت لكل صورة. يراها موظف المشتريات واللجنة عند مراجعة عرضك.
+Undo|تراجع
+Add photos|إضافة صور
+Click or drop files here|انقر أو أسقط الملفات هنا
+An item can have at most {0} photos.|يمكن أن يحتوي البند على {0} صور كحد أقصى.
+Sample images (optional)|صور العينة (اختياري)
+Open photo {0} of {1}|فتح الصورة {0} من {1}
+Photo {0} of {1}|الصورة {0} من {1}
+Previous photo|الصورة السابقة
+Next photo|الصورة التالية
+Open full size|فتح بالحجم الكامل
+New|جديدة

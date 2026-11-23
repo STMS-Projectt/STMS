@@ -1,0 +1,25 @@
+@model IEnumerable<BidItemImage>
+@* Sample photos of one bid item. Clicking a photo opens the viewer (site.js, [data-gallery]); without JS it opens in a new tab.
+   ViewData["Visible"] = how many thumbnails to show (the rest are reachable in the viewer, shown as "+N"). *@
+@{
+    var images = Model.ToList();
+    var visible = ViewData["Visible"] as int? ?? images.Count;
+    var title = ViewData["GalleryTitle"] as string ?? "";
+}
+@if (images.Count > 0)
+{
+    <div class="ig" data-gallery data-gallery-title="@title">
+        @for (var i = 0; i < images.Count; i++)
+        {
+            var image = images[i];
+            var url = Url.Action("ItemImage", "BidDocuments", new { id = image.Id });
+            var more = images.Count - visible;
+            var isLastVisible = i == visible - 1 && more > 0;
+            <a class="ig-thumb" href="@url" target="_blank" rel="noopener" data-gallery-item data-name="@image.FileName" hidden="@(i >= visible)"
+               aria-label="@L.F("Open photo {0} of {1}", i + 1, images.Count)" title="@image.FileName">
+                <img src="@url" alt="@image.FileName" loading="lazy" />
+                @if (isLastVisible) { <span class="ig-more">+@more</span> }
+            </a>
+        }
+    </div>
+}

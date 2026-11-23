@@ -214,3 +214,59 @@
     initialize(document);
     document.addEventListener("workspace:load", event => initialize(event.detail));
 })();
+
+// Photo viewer for bid item sample photos (Views/Shared/_ItemPhotos.cshtml): [data-gallery] > [data-gallery-item].
+// Opens on top of everything (also on top of the workspace dialog), with previous/next, arrow keys and Esc.
+(() => {
+    let viewer, img, caption, position, items = [], index = 0;
+    const t = text => window.stmsT ? window.stmsT(text) : text;
+    function build() {
+        viewer = document.createElement("dialog");
+        viewer.className = "ig-viewer";
+        viewer.setAttribute("aria-label", t("Sample photos"));
+        viewer.innerHTML =
+            '<button type="button" class="ig-close" data-ig="close"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12 M18 6 6 18"/></svg></button>' +
+            '<button type="button" class="ig-nav ig-prev" data-ig="-1"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button>' +
+            '<figure><img alt=""><figcaption><strong></strong><span></span><a target="_blank" rel="noopener"></a></figcaption></figure>' +
+            '<button type="button" class="ig-nav ig-next" data-ig="1"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>';
+        viewer.querySelector('[data-ig="close"]').setAttribute("aria-label", t("Close"));
+        viewer.querySelector('[data-ig="-1"]').setAttribute("aria-label", t("Previous photo"));
+        viewer.querySelector('[data-ig="1"]').setAttribute("aria-label", t("Next photo"));
+        viewer.querySelector("figcaption a").textContent = t("Open full size");
+        img = viewer.querySelector("img");
+        caption = viewer.querySelector("figcaption strong");
+        position = viewer.querySelector("figcaption span");
+        viewer.addEventListener("click", event => {
+            const action = event.target.closest("[data-ig]")?.dataset.ig;
+            if (action === "close" || event.target === viewer) viewer.close();
+            else if (action) show(index + Number(action));
+        });
+        viewer.addEventListener("keydown", event => {
+            const rtl = document.documentElement.dir === "rtl";
+            if (event.key === "ArrowRight") show(index + (rtl ? -1 : 1));
+            if (event.key === "ArrowLeft") show(index + (rtl ? 1 : -1));
+        });
+        viewer.addEventListener("close", () => { img.removeAttribute("src"); });
+        document.body.append(viewer);
+    }
+    function show(next) {
+        index = (next + items.length) % items.length;
+        const item = items[index];
+        img.src = item.href;
+        img.alt = item.dataset.name || "";
+        caption.textContent = item.closest("[data-gallery]").dataset.galleryTitle || item.dataset.name || "";
+        position.textContent = window.stmsFormat ? window.stmsFormat("Photo {0} of {1}", index + 1, items.length) : `${index + 1} / ${items.length}`;
+        viewer.querySelector("figcaption a").href = item.href;
+        viewer.querySelectorAll(".ig-nav").forEach(button => { button.hidden = items.length < 2; });
+    }
+    document.addEventListener("click", event => {
+        const link = event.target.closest?.("[data-gallery-item]");
+        if (!link || event.ctrlKey || event.metaKey || event.shiftKey || event.button !== 0) return;
+        event.preventDefault();
+        event.stopPropagation();
+        if (!viewer) build();
+        items = [...link.closest("[data-gallery]").querySelectorAll("[data-gallery-item]")];
+        show(items.indexOf(link));
+        if (!viewer.open) viewer.showModal();
+    }, true);
+})();

@@ -85,8 +85,9 @@ public class ComplianceController : Controller
         var bids = await _context.Bids
             .Include(b => b.SupplierProfile)
             .Include(b => b.ComplianceClarification)
-            .Include(b => b.BidItems)
+            .Include(b => b.BidItems).ThenInclude(i => i.Images.OrderBy(x => x.Id))
             .Include(b => b.BidDocuments)
+            .AsSplitQuery()
             .Where(b => b.TenderId == tender.Id && b.Status != "Draft" && b.Status != "Withdrawn")
             .OrderBy(b => b.Currency).ThenBy(b => b.TotalPrice).ThenBy(b => b.Id)
             .ToListAsync();

@@ -92,15 +92,12 @@
                 {
                     var row = Model.Rows[i];
                     <li class="prd-item bd-item @(row.BidItem == null ? "is-missing" : "")">
-                        @if (row.BidItem?.SampleImagePath != null)
-                        {
-                            <a href="@Url.Action("ItemImage", "BidDocuments", new { id = row.BidItem.Id })" target="_blank" rel="noopener"><img class="bd-thumb" src="@Url.Action("ItemImage", "BidDocuments", new { id = row.BidItem.Id })" alt="@row.BidItem.SampleImageName" /></a>
-                        }
-                        else { <span class="pr-item-no">@(i + 1)</span> }
+                        <span class="pr-item-no">@(i + 1)</span>
                         <div class="prd-item-body">
                             <h3>@row.RequestedItem.ItemName</h3>
                             <p>@row.RequestedItem.Specifications</p>
                             @if (!string.IsNullOrWhiteSpace(row.BidItem?.Notes)) { <p class="bd-note">@row.BidItem.Notes</p> }
+                            @if (row.BidItem?.Images.Count > 0) { <partial name="_ItemPhotos" model="row.BidItem.Images" view-data='@(new ViewDataDictionary(ViewData) { ["GalleryTitle"] = row.RequestedItem.ItemName })' /> }
                         </div>
                         <div class="bd-price">
                             <small>@row.RequestedItem.Quantity @L.T(row.RequestedItem.Unit) × @(row.BidItem?.UnitPrice.ToString("N2") ?? "—")</small>

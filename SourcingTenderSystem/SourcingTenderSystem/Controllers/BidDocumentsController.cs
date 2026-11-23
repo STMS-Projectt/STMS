@@ -172,16 +172,16 @@ public class BidDocumentsController : Controller
         return await pdf.Serve(this, System.IO.File.OpenRead(fullPath), document.FileName, preview);
     }
 
-    // GET: /BidItems sample photo: /BidDocuments/ItemImage/12 (same access rules as the bid documents)
+    // GET: one sample photo of a bid item: /BidDocuments/ItemImage/12 (id = BidItemImage.Id, same access rules as the bid documents)
     [HttpGet]
     [Authorize(Roles = DownloadRoles)]
     public async Task<IActionResult> ItemImage(int id, [FromServices] SourcingTenderSystem.Services.BidDocumentAccess access)
     {
-        var item = await _context.BidItems.AsNoTracking()
-            .Include(i => i.Bid).ThenInclude(b => b.Tender)
+        var image = await _context.BidItemImages.AsNoTracking()
+            .Include(i => i.BidItem).ThenInclude(bi => bi.Bid).ThenInclude(b => b.Tender)
             .FirstOrDefaultAsync(i => i.Id == id);
-        if (item?.SampleImagePath is null || !await access.CanRead(User, item.Bid)) return NotFound();
-        string fullPath = BidFiles.FullPath(_environment, item.SampleImagePath);
+        if (image is null || !await access.CanRead(User, image.BidItem.Bid)) return NotFound();
+        string fullPath = BidFiles.FullPath(_environment, image.FilePath);
         if (!System.IO.File.Exists(fullPath)) return NotFound();
         return File(System.IO.File.OpenRead(fullPath), BidFiles.ImageContentType(fullPath));
     }

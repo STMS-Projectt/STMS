@@ -24,6 +24,7 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser>
     public DbSet<TenderCommitteeMember> TenderCommitteeMembers => Set<TenderCommitteeMember>();
     public DbSet<Invitation> Invitations => Set<Invitation>();
     public DbSet<BidItem> BidItems => Set<BidItem>();
+    public DbSet<BidItemImage> BidItemImages => Set<BidItemImage>();
     public DbSet<Bid> Bids => Set<Bid>();
     public DbSet<BidDocument> BidDocuments => Set<BidDocument>();
     public DbSet<EvaluationSubmission> EvaluationSubmissions => Set<EvaluationSubmission>();
@@ -343,8 +344,13 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser>
             .HasFilter("[Decision] IN ('Top Committee Approved', 'Top Committee Rejected')").IsUnique();
         modelBuilder.Entity<Bid>().Property(b => b.TotalPrice).HasPrecision(18, 2);
         modelBuilder.Entity<Bid>().Property(b => b.BankGuaranteeAmount).HasPrecision(18, 2);
-        modelBuilder.Entity<BidItem>().Property(i => i.SampleImagePath).HasMaxLength(100);
-        modelBuilder.Entity<BidItem>().Property(i => i.SampleImageName).HasMaxLength(255);
+        modelBuilder.Entity<BidItemImage>()
+            .HasOne(x => x.BidItem)
+            .WithMany(x => x.Images)
+            .HasForeignKey(x => x.BidItemId)
+            .OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<BidItemImage>().Property(i => i.FilePath).HasMaxLength(100);
+        modelBuilder.Entity<BidItemImage>().Property(i => i.FileName).HasMaxLength(255);
         modelBuilder.Entity<Bid>().Property(b => b.BankName).HasMaxLength(120);
         modelBuilder.Entity<Bid>().Property(b => b.GuaranteeVerificationCode).HasDefaultValueSql("NEWID()");
         modelBuilder.Entity<Bid>().HasIndex(b => b.GuaranteeVerificationCode).IsUnique();

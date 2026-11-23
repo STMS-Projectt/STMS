@@ -1,0 +1,91 @@
+@model BidItemFormViewModel
+@* Shared by BidItems/Create and BidItems/Edit. Quantity is NOT a field: it is fixed (the requested quantity).
+   The view sets ViewData: Bid, RequestedItem, FormAction, SubmitText and (Edit only) BidItem. *@
+@{
+    var bid = (Bid)ViewData["Bid"]!;
+    var item = (PurchaseRequisitionItem)ViewData["RequestedItem"]!;
+    var current = ViewData["BidItem"] as BidItem;
+    var images = current?.Images ?? new List<BidItemImage>();
+    var removing = Model.RemoveImageIds;
+}
+<div class="pr-create bf bi" data-bi data-bi-quantity="@item.Quantity" data-bi-max="@BidItem.MaxImages">
+<header class="iv-intro">
+    <span class="pr-badge"><partial name="_Icon" model='@("file")' /></span>
+    <div><p class="eyebrow">@L.T("SUPPLIER BID")</p><h1>@ViewData["Title"]</h1><p>@L.T("Bid for:") <strong>@bid.Tender.Title</strong></p></div>
+</header>
+
+@* The requested item (read only) *@
+<section class="bi-item" aria-label="@L.T("Requested item")">
+    <span class="bi-item-icon"><partial name="_Icon" model='@("inbox")' /></span>
+    <div class="bi-item-body">
+        <p class="bi-eyebrow">@L.T("Requested item") · @bid.Tender.Title</p>
+        <h2>@item.ItemName</h2>
+        @if (!string.IsNullOrWhiteSpace(item.Specifications)) { <p class="bi-specs">@item.Specifications</p> }
+    </div>
+    <dl class="bi-facts">
+        <div><dt>@L.T("Quantity")</dt><dd>@item.Quantity <small>@L.T(item.Unit)</small></dd><span class="bi-fixed" title="@L.T("(fixed by the requesting department)")"><partial name="_Icon" model='@("shield")' /> @L.T("Fixed")</span></div>
+        <div><dt>@L.T("Currency")</dt><dd>@bid.Currency</dd></div>
+    </dl>
+</section>
+
+<form action="@ViewData["FormAction"]" method="post" enctype="multipart/form-data" asp-antiforgery="true" class="pr-card bf-card">
+    <div asp-validation-summary="ModelOnly" class="text-danger px-4 pt-3" role="alert"></div>
+
+    <div class="pr-section">
+        <div class="pr-section-head">
+            <span class="pr-badge"><partial name="_Icon" model='@("chart")' /></span>
+            <div><h2>@L.T("Your price")</h2><p>@L.T("Enter the price of one unit. The line total is worked out for you.")</p></div>
+        </div>
+        <div class="bi-price">
+            <div class="pr-field">
+                <label asp-for="UnitPrice" class="form-label"></label>
+                <div class="bf-suffix"><input asp-for="UnitPrice" type="number" step="0.01" min="0.01" inputmode="decimal" placeholder="0.00" class="form-control bi-price-input" data-bi-price /><span>@bid.Currency</span></div>
+                <span asp-validation-for="UnitPrice" class="text-danger"></span>
+            </div>
+            <div class="bi-total" aria-live="polite">
+                <small>@L.T("Line total")</small>
+                <strong><span data-bi-total>@(Model.UnitPrice > 0 ? (Model.UnitPrice * item.Quantity).ToString("N2") : "0.00")</span> <em>@bid.Currency</em></strong>
+                <span class="bi-formula">@L.F("Line total = unit price × {0}", item.Quantity)</span>
+            </div>
+        </div>
+        <div class="pr-field">
+            <div class="pr-label-row"><label asp-for="Notes" class="form-label"></label><small class="pr-counter"><span data-bi-count>@(Model.Notes?.Length ?? 0)</span>/500</small></div>
+            <textarea asp-for="Notes" class="form-control" rows="3" maxlength="500" data-bi-notes placeholder="@L.T("Brand, model, warranty or anything the committee should know")"></textarea>
+            <span asp-validation-for="Notes" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="pr-section">
+        <div class="pr-section-head bi-photos-head">
+            <span class="pr-badge"><partial name="_Icon" model='@("camera")' /></span>
+            <div><h2>@L.T("Sample photos")</h2><p>@L.F("Up to {0} JPG or PNG photos, maximum 10 MB each. The sourcing officer and the committee see them when they review your bid.", BidItem.MaxImages)</p></div>
+            <span class="pr-count bi-photo-count"><span data-bi-photo-count>@(images.Count(i => !removing.Contains(i.Id)))</span>/@BidItem.MaxImages</span>
+        </div>
+
+        <div class="bi-gallery" data-bi-gallery>
+            @foreach (var image in images)
+            {
+                var url = Url.Action("ItemImage", "BidDocuments", new { id = image.Id });
+                <label class="bi-tile is-saved" title="@image.FileName">
+                    <img src="@url" alt="@image.FileName" loading="lazy" />
+                    <input type="checkbox" name="RemoveImageIds" value="@image.Id" checked="@removing.Contains(image.Id)" data-bi-remove />
+                    <span class="bi-tile-remove"><partial name="_Icon" model='@("trash")' /><span class="bi-remove-text">@L.T("Remove")</span><span class="bi-undo-text">@L.T("Undo")</span></span>
+                </label>
+            }
+            <label class="bi-add" data-bi-add>
+                <input asp-for="SampleImages" type="file" multiple accept=".jpg,.jpeg,.png,image/jpeg,image/png" data-bi-files />
+                <span class="bi-add-icon"><partial name="_Icon" model='@("upload")' /></span>
+                <strong>@L.T("Add photos")</strong>
+                <small>@L.T("Click or drop files here")</small>
+            </label>
+        </div>
+        <p class="bi-limit text-danger" data-bi-limit hidden role="alert">@L.F("An item can have at most {0} photos.", BidItem.MaxImages)</p>
+        <span asp-validation-for="SampleImages" class="text-danger"></span>
+    </div>
+
+    <div class="pr-actions">
+        <a class="btn btn-outline-secondary" data-dialog-cancel asp-controller="Bids" asp-action="Details" asp-route-id="@bid.Id">@L.T("Cancel")</a>
+        <button type="submit" class="btn btn-primary pr-submit"><partial name="_Icon" model='@("check")' /> @ViewData["SubmitText"]</button>
+    </div>
+</form>
+</div>

@@ -128,9 +128,12 @@ public class BidItemFormViewModel
     [Display(Name = "Notes (optional)")]
     public string? Notes { get; set; }
 
-    // Optional photo of the sample (JPG/PNG). On Edit, an empty field keeps the current photo.
-    [Display(Name = "Sample image (optional)")]
-    public IFormFile? SampleImage { get; set; }
+    // Optional photos of the sample (JPG/PNG), several at once. On Edit they are added to the current photos.
+    [Display(Name = "Sample images (optional)")]
+    public List<IFormFile> SampleImages { get; set; } = new();
+
+    // Edit only: ids of current photos the supplier ticked for removal (checked against the item on the server)
+    public List<int> RemoveImageIds { get; set; } = new();
 }
 
 // ===== BidDocumentsController =====

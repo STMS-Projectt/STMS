@@ -133,6 +133,7 @@ public sealed class CommitteeReviewsController(ApplicationDbContext db, BidAiAdv
         var bid = await Db.Bids.Where(b => b.Status == "Compliant" && b.SubmittedAt != null && Memberships(employeeId).Any(m => m.TenderId == b.TenderId)).AsNoTracking().AsSplitQuery().Include(b => b.SupplierProfile)
             .Include(b => b.Tender).ThenInclude(t => t.EvaluationCriteria)
             .Include(b => b.BidItems).ThenInclude(i => i.PurchaseRequisitionItem)
+            .Include(b => b.BidItems).ThenInclude(i => i.Images.OrderBy(x => x.Id))
             .Include(b => b.BidDocuments)
             .Include(b => b.TechnicalEvaluations.Where(e => e.EvaluatorEmployeeProfileId == employeeId))
             .Include(b => b.FinancialEvaluations.Where(e => e.EvaluatorEmployeeProfileId == employeeId))

@@ -421,14 +421,6 @@ namespace SourcingTenderSystem.Data.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.Property<string>("SampleImageName")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<string>("SampleImagePath")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
                     b.Property<decimal>("UnitPrice")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
@@ -440,6 +432,37 @@ namespace SourcingTenderSystem.Data.Migrations
                     b.HasIndex("PurchaseRequisitionItemId");
 
                     b.ToTable("BidItems");
+                });
+
+            modelBuilder.Entity("SourcingTenderSystem.Models.BidItemImage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BidItemId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("UploadedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BidItemId");
+
+                    b.ToTable("BidItemImages");
                 });
 
             modelBuilder.Entity("SourcingTenderSystem.Models.Category", b =>
@@ -1524,6 +1547,17 @@ namespace SourcingTenderSystem.Data.Migrations
                     b.Navigation("PurchaseRequisitionItem");
                 });
 
+            modelBuilder.Entity("SourcingTenderSystem.Models.BidItemImage", b =>
+                {
+                    b.HasOne("SourcingTenderSystem.Models.BidItem", "BidItem")
+                        .WithMany("Images")
+                        .HasForeignKey("BidItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BidItem");
+                });
+
             modelBuilder.Entity("SourcingTenderSystem.Models.ClarificationRequest", b =>
                 {
                     b.HasOne("SourcingTenderSystem.Models.Bid", "Bid")
@@ -1952,6 +1986,11 @@ namespace SourcingTenderSystem.Data.Migrations
                     b.Navigation("SelectedInTenderApprovals");
 
                     b.Navigation("TechnicalEvaluations");
+                });
+
+            modelBuilder.Entity("SourcingTenderSystem.Models.BidItem", b =>
+                {
+                    b.Navigation("Images");
                 });
 
             modelBuilder.Entity("SourcingTenderSystem.Models.Department", b =>

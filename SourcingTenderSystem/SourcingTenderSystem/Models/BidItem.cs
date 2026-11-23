@@ -14,9 +14,9 @@ public class BidItem
     public int Quantity { get; set; }
     public string? Notes { get; set; }
 
-    // Photo of the sample for this item (JPG/PNG in App_Data/BidDocuments)
-    public string? SampleImagePath { get; set; }
-    public string? SampleImageName { get; set; }
+    // Photos of the sample for this item (JPG/PNG in App_Data/BidDocuments), up to MaxImages
+    public const int MaxImages = 6;
+    public List<BidItemImage> Images { get; set; } = new();
 
     public Bid Bid { get; set; } = null!;
     public PurchaseRequisitionItem PurchaseRequisitionItem { get; set; } = null!;

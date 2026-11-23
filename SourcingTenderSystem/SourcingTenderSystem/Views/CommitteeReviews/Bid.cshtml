@@ -104,12 +104,12 @@
                 @foreach (var item in Model.Bid.BidItems)
                 {
                     <li class="prd-item bd-item">
-                        @if (item.SampleImagePath != null) { <a href="@Url.Action("ItemImage", "BidDocuments", new { id = item.Id })" target="_blank" rel="noopener"><img class="bd-thumb" src="@Url.Action("ItemImage", "BidDocuments", new { id = item.Id })" alt="@item.SampleImageName" /></a> }
-                        else { <span class="pr-item-no"><partial name="_Icon" model='@("inbox")' /></span> }
+                        <span class="pr-item-no"><partial name="_Icon" model='@("inbox")' /></span>
                         <div class="prd-item-body">
                             <h3>@item.PurchaseRequisitionItem.ItemName</h3>
                             <p>@item.PurchaseRequisitionItem.Specifications</p>
                             @if (!string.IsNullOrWhiteSpace(item.Notes)) { <p class="bd-note">@L.T("Supplier notes"): @item.Notes</p> }
+                            @if (item.Images.Count > 0) { <partial name="_ItemPhotos" model="item.Images" view-data='@(new ViewDataDictionary(ViewData) { ["GalleryTitle"] = item.PurchaseRequisitionItem.ItemName })' /> }
                         </div>
                         <div class="bd-price"><small>@item.Quantity × @item.UnitPrice.ToString("N2")</small><strong>@((item.Quantity * item.UnitPrice).ToString("N2")) <small>@Model.Bid.Currency</small></strong></div>
                     </li>
