@@ -11,27 +11,31 @@ namespace SourcingTenderSystem.Services;
 public record AiChatTurn(string Role, string Content);
 
 /// <summary>
-/// The chatbot brain: the Qwen3.5-397B-A17B model, called through the Hugging Face Inference Providers API
-/// (OpenAI compatible "chat/completions"). The model is far too big to run on a normal server, so it runs at Hugging Face.
+/// The chatbot brain: a Qwen model.
+/// - Default: Qwen3.5 9B running LOCALLY on this computer's GPU with Ollama ("ollama pull qwen3.5:9b"),
+///   with thinking turned OFF for fast answers.
+/// - Optional: the big Qwen3.5-397B-A17B on Hugging Face (set Qwen:Provider = "HuggingFace" and a token).
 ///
 /// Everything happens in ONE function: <see cref="GenerateAsync"/>.
 /// It receives the user's prompt + the data from the database (+ an uploaded file), and returns a ready answer:
 /// text, analysis cards, a table, a chart and recommendations.
-///
-/// Settings (appsettings.json "Qwen" section). The token is a secret: put it in user-secrets or the HF_TOKEN
-/// environment variable, never in appsettings.json:
-///   dotnet user-secrets set "Qwen:ApiKey" "hf_xxx"
 /// </summary>
 public class QwenChatbot(IHttpClientFactory httpClients, IConfiguration configuration, ILogger<QwenChatbot> logger)
 {
     public const string HttpClientName = "Qwen";
-    public const string DefaultModel = "Qwen/Qwen3.5-397B-A17B";
+    public const string DefaultModel = "qwen3.5:9b";
 
+    /// <summary>True = local Ollama (default). False = Hugging Face Inference Providers.</summary>
+    public bool Local => !string.Equals(configuration["Qwen:Provider"], "HuggingFace", StringComparison.OrdinalIgnoreCase);
     private string? ApiKey => configuration["Qwen:ApiKey"] is { Length: > 0 } key ? key : Environment.GetEnvironmentVariable("HF_TOKEN");
     private string Model => configuration["Qwen:Model"] is { Length: > 0 } m ? m : DefaultModel;
 
-    /// <summary>True when a Hugging Face token is configured.</summary>
-    public bool Enabled => !string.IsNullOrWhiteSpace(ApiKey);
+    /// <summary>The local model needs no key; Hugging Face needs a token.</summary>
+    public bool Enabled => Local || !string.IsNullOrWhiteSpace(ApiKey);
+
+    // How much database data is sent. A small local model on an 8 GB GPU gets less, so it stays fast and accurate.
+    public int MaxTenders => configuration.GetValue("Qwen:MaxTenders", Local ? 40 : 150);
+    public int MaxBids => configuration.GetValue("Qwen:MaxBids", Local ? 200 : 600);
 
     private const string Instructions = """
         You are the AI analyst of a Sourcing & Tender Management System (STMS).
@@ -103,32 +107,56 @@ public class QwenChatbot(IHttpClientFactory httpClients, IConfiguration configur
 
     private async Task<string?> CallModelAsync(JsonArray messages, CancellationToken cancellationToken)
     {
-        // Thinking mode is slower; the data is already pre-calculated, so it is off unless enabled in the settings.
+        // Thinking is OFF by default: the numbers are already calculated, so the answer comes much faster.
         var thinking = configuration.GetValue("Qwen:EnableThinking", false);
+        var maxTokens = configuration.GetValue("Qwen:MaxTokens", 2000);
         for (var attempt = 0; attempt < 2; attempt++)
         {
-            var payload = new JsonObject
+            // attempt 0 asks for JSON output; attempt 1 is a plain request in case the server rejects that option.
+            JsonObject payload;
+            if (Local)
             {
-                ["model"] = Model,
-                ["messages"] = messages.DeepClone(),
-                ["temperature"] = 0.2,
-                ["max_tokens"] = configuration.GetValue("Qwen:MaxTokens", 2500),
-                ["stream"] = false
-            };
-            // Some providers reject extra options: the second attempt sends the plain request.
-            if (attempt == 0)
+                // Ollama's own API: "think": false really switches thinking off, num_ctx sets how much text fits.
+                payload = new JsonObject
+                {
+                    ["model"] = Model,
+                    ["messages"] = messages.DeepClone(),
+                    ["stream"] = false,
+                    ["think"] = thinking,
+                    ["keep_alive"] = "30m",   // keep the model on the GPU between questions
+                    ["options"] = new JsonObject
+                    {
+                        ["temperature"] = 0.2,
+                        ["num_ctx"] = configuration.GetValue("Qwen:ContextLength", 16384),
+                        ["num_predict"] = maxTokens
+                    }
+                };
+                if (attempt == 0) payload["format"] = "json";
+            }
+            else
             {
-                payload["response_format"] = new JsonObject { ["type"] = "json_object" };
-                if (!thinking) payload["chat_template_kwargs"] = new JsonObject { ["enable_thinking"] = false };
+                payload = new JsonObject
+                {
+                    ["model"] = Model,
+                    ["messages"] = messages.DeepClone(),
+                    ["temperature"] = 0.2,
+                    ["max_tokens"] = maxTokens,
+                    ["stream"] = false
+                };
+                if (attempt == 0)
+                {
+                    payload["response_format"] = new JsonObject { ["type"] = "json_object" };
+                    payload["chat_template_kwargs"] = new JsonObject { ["enable_thinking"] = thinking };
+                }
             }
             try
             {
                 var client = httpClients.CreateClient(HttpClientName);
-                using var request = new HttpRequestMessage(HttpMethod.Post, "chat/completions")
+                using var request = new HttpRequestMessage(HttpMethod.Post, Local ? "api/chat" : "chat/completions")
                 {
                     Content = new StringContent(payload.ToJsonString(), Encoding.UTF8, "application/json")
                 };
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", ApiKey);
+                if (!Local) request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", ApiKey);
                 using var response = await client.SendAsync(request, cancellationToken);
                 var body = await response.Content.ReadAsStringAsync(cancellationToken);
                 if ((int)response.StatusCode is 400 or 422 && attempt == 0) continue;
@@ -137,12 +165,13 @@ public class QwenChatbot(IHttpClientFactory httpClients, IConfiguration configur
                     logger.LogWarning("Qwen request failed with {Status}: {Body}", (int)response.StatusCode, Trim(body, 300));
                     return null;
                 }
-                var text = JsonNode.Parse(body)?["choices"]?[0]?["message"]?["content"]?.GetValue<string>();
+                var reply = JsonNode.Parse(body);
+                var text = (Local ? reply?["message"]?["content"] : reply?["choices"]?[0]?["message"]?["content"])?.GetValue<string>();
                 return string.IsNullOrWhiteSpace(text) ? null : text;
             }
             catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or JsonException or InvalidOperationException)
             {
-                logger.LogInformation("Qwen is not available for the chatbot: {Message}", ex.Message);
+                logger.LogInformation("Qwen is not available for the chatbot (is Ollama running?): {Message}", ex.Message);
                 return null;
             }
         }

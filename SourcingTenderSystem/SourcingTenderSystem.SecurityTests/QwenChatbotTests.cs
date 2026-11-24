@@ -67,10 +67,38 @@ public sealed class QwenChatbotTests
     }
 
     [Fact]
-    public async Task GenerateAsync_sends_prompt_data_file_and_history_then_retries_plain_request()
+    public async Task Local_ollama_gets_prompt_data_file_and_history_with_thinking_off()
     {
-        var handler = new FakeHandler();
-        var bot = Bot(handler, "hf_test");
+        var handler = new FakeHandler("http://localhost:11434/api/chat", ollama: true);
+        var bot = Bot(handler, null, provider: null);
+        Assert.True(bot.Local);
+        var answer = await bot.GenerateAsync("Who is cheapest?", AiInsights.Facts(Sample()), "File name: a.csv\nx,y",
+            [new AiChatTurn("user", "hi"), new AiChatTurn("assistant", "hello")], arabic: true);
+
+        Assert.Equal("Alpha.", answer!.Answer);
+        Assert.Equal(2, handler.Requests.Count);   // first request rejected (400), second without the JSON format option
+        var first = handler.Requests[0];
+        Assert.Null(first.Auth);
+        Assert.Equal("qwen3.5:9b", first.Body["model"]!.GetValue<string>());
+        Assert.False(first.Body["think"]!.GetValue<bool>());
+        Assert.Equal("json", first.Body["format"]!.GetValue<string>());
+        Assert.Equal(16384, first.Body["options"]!["num_ctx"]!.GetValue<int>());
+        Assert.Null(handler.Requests[1].Body["format"]);
+        Assert.False(handler.Requests[1].Body["think"]!.GetValue<bool>());
+        var messages = first.Body["messages"]!.AsArray();
+        Assert.Contains("Arabic", messages[0]!["content"]!.GetValue<string>());
+        Assert.Equal("hi", messages[1]!["content"]!.GetValue<string>());
+        var user = messages[^1]!["content"]!.GetValue<string>();
+        Assert.Contains("\"lowestSupplier\":\"Alpha\"", user);
+        Assert.Contains("FILE CONTENT", user);
+        Assert.Contains("QUESTION: Who is cheapest?", user);
+    }
+
+    [Fact]
+    public async Task Hugging_face_provider_sends_token_and_openai_request()
+    {
+        var handler = new FakeHandler("https://router.example/v1/chat/completions", ollama: false);
+        var bot = Bot(handler, "hf_test", provider: "HuggingFace", model: "Qwen/Qwen3.5-397B-A17B");
         var answer = await bot.GenerateAsync("Who is cheapest?", AiInsights.Facts(Sample()), "File name: a.csv\nx,y",
             [new AiChatTurn("user", "hi"), new AiChatTurn("assistant", "hello")], arabic: true);
 
@@ -78,7 +106,7 @@ public sealed class QwenChatbotTests
         Assert.Equal(2, handler.Requests.Count);   // first request rejected (400), second without extra options
         var first = handler.Requests[0];
         Assert.Equal("Bearer hf_test", first.Auth);
-        Assert.Equal(QwenChatbot.DefaultModel, first.Body["model"]!.GetValue<string>());
+        Assert.Equal("Qwen/Qwen3.5-397B-A17B", first.Body["model"]!.GetValue<string>());
         Assert.False(first.Body["chat_template_kwargs"]!["enable_thinking"]!.GetValue<bool>());
         Assert.Null(handler.Requests[1].Body["chat_template_kwargs"]);
         var messages = first.Body["messages"]!.AsArray();
@@ -93,10 +121,10 @@ public sealed class QwenChatbotTests
     [Fact]
     public async Task GenerateAsync_returns_null_without_token()
     {
-        var handler = new FakeHandler();
+        var handler = new FakeHandler("https://router.example/v1/chat/completions", ollama: false);
         var previous = Environment.GetEnvironmentVariable("HF_TOKEN");
         Environment.SetEnvironmentVariable("HF_TOKEN", null);
-        try { Assert.Null(await Bot(handler, null).GenerateAsync("x", new { }, null, [], false)); }
+        try { Assert.Null(await Bot(handler, null, provider: "HuggingFace").GenerateAsync("x", new { }, null, [], false)); }
         finally { Environment.SetEnvironmentVariable("HF_TOKEN", previous); }
         Assert.Empty(handler.Requests);
     }
@@ -121,33 +149,31 @@ public sealed class QwenChatbotTests
         Assert.Contains("\"Alpha, Ltd\",900", AiInsights.FileText("offers.xlsx", table));
     }
 
-    private static QwenChatbot Bot(HttpMessageHandler handler, string? key)
+    private static QwenChatbot Bot(HttpMessageHandler handler, string? key, string? provider, string? model = null)
     {
-        var configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?> { ["Qwen:ApiKey"] = key }).Build();
-        return new QwenChatbot(new Factory(handler), configuration, NullLogger<QwenChatbot>.Instance);
+        var configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
+            { ["Qwen:ApiKey"] = key, ["Qwen:Provider"] = provider, ["Qwen:Model"] = model }).Build();
+        var baseUrl = provider == "HuggingFace" ? "https://router.example/v1/" : "http://localhost:11434/";
+        return new QwenChatbot(new Factory(handler, baseUrl), configuration, NullLogger<QwenChatbot>.Instance);
     }
 
-    private sealed class Factory(HttpMessageHandler handler) : IHttpClientFactory
+    private sealed class Factory(HttpMessageHandler handler, string baseUrl) : IHttpClientFactory
     {
-        public HttpClient CreateClient(string name) => new(handler, false) { BaseAddress = new Uri("https://router.example/v1/") };
+        public HttpClient CreateClient(string name) => new(handler, false) { BaseAddress = new Uri(baseUrl) };
     }
 
-    private sealed class FakeHandler : HttpMessageHandler
+    private sealed class FakeHandler(string url, bool ollama) : HttpMessageHandler
     {
         public List<(string? Auth, JsonNode Body)> Requests { get; } = [];
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            Assert.Equal("https://router.example/v1/chat/completions", request.RequestUri!.ToString());
+            Assert.Equal(url, request.RequestUri!.ToString());
             Requests.Add((request.Headers.Authorization?.ToString(), JsonNode.Parse(await request.Content!.ReadAsStringAsync(cancellationToken))!));
             if (Requests.Count == 1) return new HttpResponseMessage(HttpStatusCode.BadRequest) { Content = new StringContent("{}") };
-            var reply = new JsonObject
-            {
-                ["choices"] = new JsonArray(new JsonObject
-                {
-                    ["message"] = new JsonObject { ["content"] = "{\"answer\":\"Alpha.\",\"cards\":[],\"table\":null,\"chart\":null}" }
-                })
-            };
+            var message = new JsonObject { ["content"] = "{\"answer\":\"Alpha.\",\"cards\":[],\"table\":null,\"chart\":null}" };
+            var reply = ollama ? new JsonObject { ["message"] = message }
+                : new JsonObject { ["choices"] = new JsonArray(new JsonObject { ["message"] = message }) };
             return new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(reply.ToJsonString(), Encoding.UTF8, "application/json") };
         }
     }

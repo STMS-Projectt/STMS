@@ -230,7 +230,7 @@ public class AiInsights(ApplicationDbContext db, QwenChatbot chatbot)
         var fileTable = file is { Length: > 0 } ? ReadFile(file) : null;
         var focus = FindTender(data, question.ToLowerInvariant());
 
-        var answer = await chatbot.GenerateAsync(question, Facts(data, focus), fileTable is null ? null : FileText(file!.FileName, fileTable),
+        var answer = await chatbot.GenerateAsync(question, Facts(data, focus, chatbot.MaxTenders, chatbot.MaxBids), fileTable is null ? null : FileText(file!.FileName, fileTable),
             history ?? [], arabic, cancellationToken);
         if (answer is null) return RuleBasedAnswer(data, question, file, fileTable, focus);
 
@@ -244,11 +244,11 @@ public class AiInsights(ApplicationDbContext db, QwenChatbot chatbot)
     /// % above the lowest, wins ...) so the model only has to read them, which keeps the answers accurate.
     /// When the question is about one tender, only that tender's details are sent.
     /// </summary>
-    public static object Facts(AiData data, AiTenderRow? focus = null)
+    public static object Facts(AiData data, AiTenderRow? focus = null, int maxTenders = 150, int maxBids = 600)
     {
-        var tenders = focus is null ? data.Tenders.Take(150).ToList() : [focus];
+        var tenders = focus is null ? data.Tenders.Take(maxTenders).ToList() : [focus];
         var ids = tenders.Select(t => t.Id).ToHashSet();
-        var bids = data.Bids.Where(b => ids.Contains(b.TenderId)).Take(600).ToList();
+        var bids = data.Bids.Where(b => ids.Contains(b.TenderId)).Take(maxBids).ToList();
         var byTender = data.Tenders.ToDictionary(t => t.Id);
 
         return new
@@ -285,13 +285,13 @@ public class AiInsights(ApplicationDbContext db, QwenChatbot chatbot)
                 var lowest = g.Min(b => b.Price);
                 return g.OrderBy(b => b.Price).Select((b, i) => new
                 {
-                    b.TenderId, b.TenderTitle, b.Supplier, b.Price, b.Currency, b.DeliveryDays, b.ValidityDays,
+                    b.TenderId, b.Supplier, b.Price, b.Currency, b.DeliveryDays, b.ValidityDays,
                     result = b.Outcome, rankByPrice = i + 1,
                     percentAboveLowest = lowest > 0 ? Math.Round((b.Price / lowest - 1) * 100, 1) : 0
                 });
             }),
             suppliers = data.Bids.Where(b => focus is null || b.TenderId == focus.Id).GroupBy(b => b.Supplier)
-                .OrderByDescending(g => g.Count()).Take(100).Select(g => new
+                .OrderByDescending(g => g.Count()).Take(Math.Max(20, maxTenders)).Select(g => new
                 {
                     name = g.Key,
                     bids = g.Count(),
