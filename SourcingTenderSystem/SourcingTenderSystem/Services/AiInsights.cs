@@ -1,9 +1,5 @@
-using System.IO.Compression;
 using System.Security.Claims;
 using System.Text;
-using System.Text.Json;
-using System.Text.Json.Nodes;
-using System.Xml.Linq;
 using Microsoft.EntityFrameworkCore;
 using SourcingTenderSystem.Data;
 using SourcingTenderSystem.Security;
@@ -26,7 +22,8 @@ public record AiData(List<AiTenderRow> Tenders, List<AiBidRow> Bids);
 
 public record AiCard(string Label, string Value);
 public record AiTable(List<string> Columns, List<List<string>> Rows);
-public record AiChart(string Title, List<string> Labels, List<decimal> Values);
+// Kind: "bars" (compare items) or "columns" (values over time).
+public record AiChart(string Title, List<string> Labels, List<decimal> Values, string Kind = "bars");
 
 /// <summary>What the chatbot sends back to the browser: text + optional cards, table and chart.</summary>
 public class AiAnswer
@@ -37,16 +34,19 @@ public class AiAnswer
     public AiChart? Chart { get; set; }
     public List<string> Recommendations { get; set; } = [];
     public bool UsedAiModel { get; set; }
+    // Id used to download this answer as Excel or PDF (the answer is kept on the server for a while).
+    public string? Id { get; set; }
 }
 
 /// <summary>
 /// AI Intelligence service.
 /// 1) Loads the REAL tenders and bids from the database, but only the ones the current user is allowed to see.
 /// 2) Calculates numbers (lowest / highest price, KPIs ...) in C# so they are always correct.
-/// 3) Asks the local AI model (Ollama) to explain the numbers in words. If Ollama is off, a simple text is used.
+/// 3) The chatbot sends the question + those numbers to the Qwen model (see QwenChatbot.GenerateAsync).
+///    If Qwen is not configured or not reachable, a simple rule based answer is used.
 /// The AI only gives advice. It never changes data or takes decisions.
 /// </summary>
-public class AiInsights(ApplicationDbContext db, IHttpClientFactory httpClients, IConfiguration configuration, ILogger<AiInsights> logger)
+public class AiInsights(ApplicationDbContext db, QwenChatbot chatbot)
 {
     // While a tender is still open, bid prices are sealed and must not be shown to anyone.
     private static readonly string[] SealedStatuses = ["Draft", "Published", "Open"];
@@ -219,34 +219,115 @@ public class AiInsights(ApplicationDbContext db, IHttpClientFactory httpClients,
 
     // ============================================================ 3) Chatbot
 
-    public async Task<AiAnswer> AskAsync(AiData data, string question, IFormFile? file, bool arabic)
+    /// <summary>
+    /// Answers one chat message. The real work is done by QwenChatbot.GenerateAsync (prompt + database data + file);
+    /// when Qwen is not available, the simple rule based answer below is returned instead.
+    /// </summary>
+    public async Task<AiAnswer> AskAsync(AiData data, string question, IFormFile? file, bool arabic,
+        IReadOnlyList<AiChatTurn>? history = null, CancellationToken cancellationToken = default)
     {
         question = (question ?? "").Trim();
+        var fileTable = file is { Length: > 0 } ? ReadFile(file) : null;
+        var focus = FindTender(data, question.ToLowerInvariant());
+
+        var answer = await chatbot.GenerateAsync(question, Facts(data, focus), fileTable is null ? null : FileText(file!.FileName, fileTable),
+            history ?? [], arabic, cancellationToken);
+        if (answer is null) return RuleBasedAnswer(data, question, file, fileTable, focus);
+
+        // Always show what was read from the file, even if the model did not return a table.
+        if (fileTable is not null && answer.Table is null && fileTable.Rows.Count > 0) answer.Table = fileTable;
+        return answer;
+    }
+
+    /// <summary>
+    /// The database data sent to the model. Every number is calculated here in C# (lowest, highest, average, rank,
+    /// % above the lowest, wins ...) so the model only has to read them, which keeps the answers accurate.
+    /// When the question is about one tender, only that tender's details are sent.
+    /// </summary>
+    public static object Facts(AiData data, AiTenderRow? focus = null)
+    {
+        var tenders = focus is null ? data.Tenders.Take(150).ToList() : [focus];
+        var ids = tenders.Select(t => t.Id).ToHashSet();
+        var bids = data.Bids.Where(b => ids.Contains(b.TenderId)).Take(600).ToList();
+        var byTender = data.Tenders.ToDictionary(t => t.Id);
+
+        return new
+        {
+            today = DateTime.UtcNow.ToString("yyyy-MM-dd"),
+            note = "Bid prices of Draft/Published/Open tenders are sealed and not included. Prices are in the currency shown.",
+            focusTenderId = focus?.Id,
+            summary = new
+            {
+                totalTenders = data.Tenders.Count,
+                tendersByStatus = data.Tenders.GroupBy(t => t.Status).ToDictionary(g => g.Key, g => g.Count()),
+                totalBids = data.Bids.Count,
+                participatingSuppliers = data.Bids.Select(b => b.Supplier).Distinct().Count(),
+                averageBidsPerTender = data.Tenders.Any(t => t.BidCount > 0) ? Math.Round(data.Tenders.Where(t => t.BidCount > 0).Average(t => t.BidCount), 1) : (double?)null,
+                averageDaysToAward = data.Tenders.Any(t => t.DaysToAward != null) ? Math.Round(data.Tenders.Where(t => t.DaysToAward != null).Average(t => t.DaysToAward!.Value), 1) : (double?)null,
+                // Lowest and highest bid overall, per currency (never mix currencies).
+                priceExtremesByCurrency = data.Bids.GroupBy(b => b.Currency).Select(g => new
+                {
+                    currency = g.Key,
+                    lowest = g.MinBy(b => b.Price) is { } lo ? new { lo.Price, lo.Supplier, lo.TenderId, lo.TenderTitle } : null,
+                    highest = g.MaxBy(b => b.Price) is { } hi ? new { hi.Price, hi.Supplier, hi.TenderId, hi.TenderTitle } : null
+                })
+            },
+            tenders = tenders.Select(t => new
+            {
+                t.Id, t.Title, t.Status, t.Department, t.Category,
+                created = t.CreatedAt.ToString("yyyy-MM-dd"), closes = t.CloseDate.ToString("yyyy-MM-dd"),
+                t.BidCount, t.Currency, t.Lowest, t.LowestSupplier, t.Highest, t.HighestSupplier, t.Average,
+                spreadPercent = t.Lowest > 0 && t.Highest is decimal h ? Math.Round((h / t.Lowest.Value - 1) * 100, 1) : (decimal?)null,
+                t.Winner, t.DaysToAward
+            }),
+            bids = bids.GroupBy(b => b.TenderId).SelectMany(g =>
+            {
+                var lowest = g.Min(b => b.Price);
+                return g.OrderBy(b => b.Price).Select((b, i) => new
+                {
+                    b.TenderId, b.TenderTitle, b.Supplier, b.Price, b.Currency, b.DeliveryDays, b.ValidityDays,
+                    result = b.Outcome, rankByPrice = i + 1,
+                    percentAboveLowest = lowest > 0 ? Math.Round((b.Price / lowest - 1) * 100, 1) : 0
+                });
+            }),
+            suppliers = data.Bids.Where(b => focus is null || b.TenderId == focus.Id).GroupBy(b => b.Supplier)
+                .OrderByDescending(g => g.Count()).Take(100).Select(g => new
+                {
+                    name = g.Key,
+                    bids = g.Count(),
+                    tendersParticipated = g.Select(b => b.TenderId).Distinct().Count(),
+                    wins = g.Count(b => b.Outcome == "Awarded"),
+                    lowestOfferIn = g.Count(b => byTender.TryGetValue(b.TenderId, out var t) && t.LowestSupplier == g.Key),
+                    averageDeliveryDays = Math.Round(g.Average(b => b.DeliveryDays), 1),
+                    participationPercent = data.Tenders.Count(t => t.BidCount > 0) is > 0 and var n
+                        ? Math.Round(g.Select(b => b.TenderId).Distinct().Count() * 100m / n, 1) : 0
+                })
+        };
+    }
+
+    // Simple answer used when the Qwen model is not available. Numbers are calculated in C#.
+    private static AiAnswer RuleBasedAnswer(AiData data, string question, IFormFile? file, AiTable? fileTable, AiTenderRow? focus)
+    {
         var q = question.ToLowerInvariant();
         var answer = new AiAnswer();
-        string fallback;
-        AiTenderRow? focus = null;   // the tender the question is about (if any)
+        string text;
 
-        // --- A file was uploaded: read it and show its content as a table.
-        if (file is { Length: > 0 })
+        if (file is not null && fileTable is not null)
         {
-            var table = ReadFile(file);
-            answer.Table = table;
-            answer.Cards = [new("File", file.FileName), new("Rows", table.Rows.Count.ToString()), new("Columns", table.Columns.Count.ToString())];
-            answer.Chart = NumberColumnChart(table);
-            fallback = $"I read the file \"{file.FileName}\": {table.Rows.Count} rows and {table.Columns.Count} columns." +
-                       (answer.Chart is null ? "" : $" The chart shows the column \"{answer.Chart.Title}\".");
+            answer.Table = fileTable;
+            answer.Cards = [new("File", file.FileName), new("Rows", fileTable.Rows.Count.ToString()), new("Columns", fileTable.Columns.Count.ToString())];
+            answer.Chart = NumberColumnChart(fileTable);
+            text = $"I read the file \"{file.FileName}\": {fileTable.Rows.Count} rows and {fileTable.Columns.Count} columns." +
+                   (answer.Chart is null ? "" : $" The chart shows the column \"{answer.Chart.Title}\".");
         }
-        // --- A specific tender: "tender 12", "#12", "مناقصة 12"
-        else if (FindTender(data, q) is AiTenderRow t)
+        else if (focus is AiTenderRow t)
         {
-            focus = t;
             var bids = data.Bids.Where(b => b.TenderId == t.Id).ToList();
             answer.Cards = [new("Status", t.Status), new("Bids", t.BidCount.ToString()), new("Lowest", Money(t.Lowest, t.Currency)),
                 new("Highest", Money(t.Highest, t.Currency)), new("Winner", t.Winner ?? "-")];
             answer.Table = BidsTable(bids);
             answer.Chart = Chart($"Bid prices - tender #{t.Id}", bids.OrderBy(b => b.Price).Select(b => (b.Supplier, b.Price)));
-            fallback = bids.Count == 0
+            text = bids.Count == 0
                 ? $"Tender #{t.Id} \"{t.Title}\" is {t.Status} and has no visible bids yet (bids stay sealed while a tender is open)."
                 : $"Tender #{t.Id} \"{t.Title}\" is {t.Status} with {t.BidCount} bids. The lowest offer is {Money(t.Lowest, t.Currency)} from {t.LowestSupplier}" +
                   $" and the highest is {Money(t.Highest, t.Currency)} from {t.HighestSupplier}.";
@@ -256,98 +337,48 @@ public class AiInsights(ApplicationDbContext db, IHttpClientFactory httpClients,
             var list = data.Tenders.Where(t => t.Lowest != null).ToList();
             answer.Table = new(["Tender", "Lowest price", "Supplier"], list.Select(t => new List<string> { $"#{t.Id} {t.Title}", Money(t.Lowest, t.Currency), t.LowestSupplier ?? "-" }).ToList());
             answer.Chart = Chart("Lowest price per tender", list.Take(8).Select(t => ($"#{t.Id}", t.Lowest!.Value)));
-            fallback = list.Count == 0 ? "There are no visible bids yet." : $"I listed the lowest offer for {list.Count} tenders.";
+            text = list.Count == 0 ? "There are no visible bids yet." : $"I listed the lowest offer for {list.Count} tenders.";
         }
         else if (Has(q, "highest", "maximum", "expensive", "أعلى", "اعلى", "أغلى", "اغلى"))
         {
             var list = data.Tenders.Where(t => t.Highest != null).ToList();
             answer.Table = new(["Tender", "Highest price", "Supplier"], list.Select(t => new List<string> { $"#{t.Id} {t.Title}", Money(t.Highest, t.Currency), t.HighestSupplier ?? "-" }).ToList());
             answer.Chart = Chart("Highest price per tender", list.Take(8).Select(t => ($"#{t.Id}", t.Highest!.Value)));
-            fallback = list.Count == 0 ? "There are no visible bids yet." : $"I listed the highest offer for {list.Count} tenders.";
+            text = list.Count == 0 ? "There are no visible bids yet." : $"I listed the highest offer for {list.Count} tenders.";
         }
         else if (Has(q, "supplier", "participation", "offer", "مورد", "موردين", "مشاركة", "عروض"))
         {
             answer.Table = SuppliersTable(data);
             answer.Chart = SupplierChart(data);
-            fallback = $"{answer.Table.Rows.Count} suppliers submitted bids. The table shows how many bids and wins each supplier has.";
+            text = $"{answer.Table.Rows.Count} suppliers submitted bids. The table shows how many bids and wins each supplier has.";
         }
         else if (Has(q, "status", "state", "حالة", "وضع"))
         {
             answer.Chart = StatusChart(data);
             answer.Table = new(["Status", "Tenders"], answer.Chart.Labels.Select((l, i) => new List<string> { l, answer.Chart.Values[i].ToString("0") }).ToList());
-            fallback = "Here is the number of tenders in each status.";
+            text = "Here is the number of tenders in each status.";
         }
         else if (Has(q, "compare", "comparison", "vs", "قارن", "مقارنة", "قارنة"))
         {
             answer.Table = TendersTable(data.Tenders.Where(t => t.BidCount > 0).Take(10));
             answer.Chart = Chart("Average bid price per tender", data.Tenders.Where(t => t.Average != null).Take(8).Select(t => ($"#{t.Id}", t.Average!.Value)));
-            fallback = "Here is a comparison of the tenders that have bids: number of bids, lowest, highest and average price.";
+            text = "Here is a comparison of the tenders that have bids: number of bids, lowest, highest and average price.";
         }
         else if (Has(q, "recommend", "advice", "suggest", "توصية", "توصيات", "نصيحة", "اقتراح"))
         {
-            fallback = "Here are my recommendations based on the current data.";
+            text = "Here are my recommendations based on the current data.";
         }
         else
         {
             answer.Cards = Kpis(data).Take(4).ToList();
             answer.Table = TendersTable(data.Tenders.Take(10));
-            fallback = "Here is a general overview of the tenders you can see.";
+            text = "Here is a general overview of the tenders you can see.";
         }
 
         // Question about one tender -> recommendations for that tender only.
         answer.Recommendations = focus is null ? Recommendations(data) : TenderRecommendations(focus, data);
-
-        // Ask the AI model to write the answer in words, using ONLY the numbers we calculated.
-        var aiText = await AskModelAsync(question, data, answer, arabic, focus);
-        answer.UsedAiModel = aiText is not null;
-        answer.Answer = aiText ?? fallback;
+        answer.Answer = text;
         return answer;
-    }
-
-    private async Task<string?> AskModelAsync(string question, AiData data, AiAnswer answer, bool arabic, AiTenderRow? focus)
-    {
-        var facts = new
-        {
-            kpis = focus is null ? Kpis(data) : null,
-            bids = focus is null ? null : data.Bids.Where(b => b.TenderId == focus.Id).Select(b => new { b.Supplier, b.Price, b.Currency, b.DeliveryDays, b.ValidityDays, b.Outcome }),
-            recommendations = answer.Recommendations,
-            tenders = (focus is null ? data.Tenders.Take(30) : [focus]).Select(t => new { t.Id, t.Title, t.Status, t.Department, t.BidCount, t.Lowest, t.Highest, t.Average, t.Currency, t.LowestSupplier, t.Winner, t.DaysToAward }),
-            result = new { answer.Cards, answer.Table, answer.Chart }
-        };
-        var system = "You are the AI assistant of a Sourcing & Tender Management System. " +
-                     "Answer the user's question using ONLY the JSON data given to you. Never invent numbers, tenders or suppliers. " +
-                     "If the question is about one tender, talk ONLY about that tender and its bids. " +
-                     "If the data does not contain the answer, say that clearly. You only give advice and analysis; you cannot approve, " +
-                     "award, edit or delete anything. Keep the answer short (max 6 sentences). " +
-                     (arabic ? "Answer in Arabic." : "Answer in the same language as the question.");
-        var payload = new JsonObject
-        {
-            ["model"] = configuration["Ollama:Model"] is { Length: > 0 } m ? m : "llama3.1",
-            ["stream"] = false,
-            ["options"] = new JsonObject { ["temperature"] = 0.2 },
-            ["messages"] = new JsonArray
-            {
-                new JsonObject { ["role"] = "system", ["content"] = system },
-                new JsonObject { ["role"] = "user", ["content"] = $"DATA:\n{JsonSerializer.Serialize(facts)}\n\nQUESTION: {question}" }
-            }
-        };
-        try
-        {
-            using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(60));
-            var client = httpClients.CreateClient(BidAiAdvisor.HttpClientName);
-            using var response = await client.PostAsync("api/chat",
-                new StringContent(payload.ToJsonString(), Encoding.UTF8, "application/json"), timeout.Token);
-            if (!response.IsSuccessStatusCode) return null;
-            var body = await response.Content.ReadAsStringAsync(timeout.Token);
-            var text = JsonNode.Parse(body)?["message"]?["content"]?.GetValue<string>();
-            return string.IsNullOrWhiteSpace(text) ? null : text.Trim();
-        }
-        catch (Exception ex)
-        {
-            // Ollama is not running: the page still works with the simple text answer.
-            logger.LogInformation("AI model not available for the chatbot: {Message}", ex.Message);
-            return null;
-        }
     }
 
     // ============================================================ 4) Reading uploaded Excel / CSV / PDF files
@@ -362,12 +393,26 @@ public class AiInsights(ApplicationDbContext db, IHttpClientFactory httpClients,
             ".pdf" => ReadPdf(stream).Select(l => new List<string> { l }).ToList(),
             _ => ReadCsv(stream)
         };
-        lines = lines.Where(l => l.Any(c => !string.IsNullOrWhiteSpace(c))).Take(201).ToList();
+        lines = lines.Where(l => l.Any(c => !string.IsNullOrWhiteSpace(c))).Take(extension == ".pdf" ? 600 : 301).ToList();
         if (lines.Count == 0) return new(["Content"], []);
         if (extension == ".pdf") return new(["Text"], lines);
         var columns = lines[0];
         var rows = lines.Skip(1).Select(r => Enumerable.Range(0, columns.Count).Select(i => i < r.Count ? r[i] : "").ToList()).ToList();
         return new(columns, rows);
+    }
+
+    /// <summary>The uploaded file as plain text for the model (CSV style for tables, lines for PDFs).</summary>
+    public static string FileText(string fileName, AiTable table)
+    {
+        var text = new StringBuilder($"File name: {fileName}\n");
+        if (table.Columns is ["Text"]) text.AppendJoin('\n', table.Rows.Select(r => r[0]));
+        else
+        {
+            static string Cell(string v) => v.Contains(',') || v.Contains('"') ? "\"" + v.Replace("\"", "\"\"") + "\"" : v;
+            text.AppendLine(string.Join(",", table.Columns.Select(Cell)));
+            foreach (var row in table.Rows) text.AppendLine(string.Join(",", row.Select(Cell)));
+        }
+        return text.ToString();
     }
 
     private static List<List<string>> ReadCsv(Stream stream)
@@ -382,83 +427,42 @@ public class AiInsights(ApplicationDbContext db, IHttpClientFactory httpClients,
         return result;
     }
 
-    // An .xlsx file is a zip file with XML inside. We read the first sheet only.
+    // Excel: the first sheet that has data (ClosedXML reads formulas' results, dates and numbers correctly).
     private static List<List<string>> ReadXlsx(Stream stream)
     {
-        using var zip = new ZipArchive(stream, ZipArchiveMode.Read);
-        XNamespace ns = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
-        var shared = new List<string>();
-        var sharedEntry = zip.GetEntry("xl/sharedStrings.xml");
-        if (sharedEntry != null)
+        try
         {
-            using var s = sharedEntry.Open();
-            shared = XDocument.Load(s).Descendants(ns + "si").Select(si => string.Concat(si.Descendants(ns + "t").Select(t => t.Value))).ToList();
+            using var book = new ClosedXML.Excel.XLWorkbook(stream);
+            var sheet = book.Worksheets.FirstOrDefault(w => w.RangeUsed() != null);
+            var range = sheet?.RangeUsed();
+            if (range is null) return [];
+            return range.Rows().Take(301).Select(r => r.Cells().Select(c => c.GetFormattedString().Trim()).ToList()).ToList();
         }
-        var sheetEntry = zip.GetEntry("xl/worksheets/sheet1.xml") ?? zip.Entries.First(e => e.FullName.StartsWith("xl/worksheets/sheet"));
-        using var sheetStream = sheetEntry.Open();
-        var result = new List<List<string>>();
-        foreach (var row in XDocument.Load(sheetStream).Descendants(ns + "row"))
+        catch (Exception)
         {
-            var cells = new List<string>();
-            foreach (var cell in row.Elements(ns + "c"))
-            {
-                var column = ColumnIndex(cell.Attribute("r")?.Value ?? "");
-                while (cells.Count < column) cells.Add("");   // fill empty cells
-                var value = cell.Element(ns + "v")?.Value ?? string.Concat(cell.Descendants(ns + "t").Select(t => t.Value));
-                if (cell.Attribute("t")?.Value == "s" && int.TryParse(value, out var index) && index < shared.Count) value = shared[index];
-                cells.Add(value);
-            }
-            result.Add(cells);
+            return [["This Excel file could not be read."]];
         }
-        return result;
     }
 
-    private static int ColumnIndex(string reference)
-    {
-        var index = 0;
-        foreach (var c in reference.TakeWhile(char.IsLetter)) index = index * 26 + (char.ToUpperInvariant(c) - 'A' + 1);
-        return Math.Max(0, index - 1);
-    }
-
-    // Very simple PDF text reader: collects the text drawn on each page.
+    // PDF: the text of every page, line by line (PdfPig understands the fonts, so Arabic and tables read well).
     private static List<string> ReadPdf(Stream stream)
     {
         var lines = new List<string>();
         try
         {
-            using var document = PdfSharp.Pdf.IO.PdfReader.Open(stream, PdfSharp.Pdf.IO.PdfDocumentOpenMode.Import);
-            foreach (var page in document.Pages)
+            using var document = UglyToad.PdfPig.PdfDocument.Open(stream);
+            foreach (var page in document.GetPages().Take(30))
             {
-                var text = new StringBuilder();
-                CollectText(PdfSharp.Pdf.Content.ContentReader.ReadContent(page), text);
-                lines.AddRange(text.ToString().Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries));
+                var text = UglyToad.PdfPig.DocumentLayoutAnalysis.TextExtractor.ContentOrderTextExtractor.GetText(page);
+                lines.AddRange(text.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries));
             }
+            if (lines.Count == 0) lines.Add("This PDF has no readable text (it may be a scanned image).");
         }
         catch (Exception)
         {
             lines.Add("This PDF could not be read (it may be scanned or protected).");
         }
         return lines;
-    }
-
-    private static void CollectText(PdfSharp.Pdf.Content.Objects.CObject item, StringBuilder text)
-    {
-        switch (item)
-        {
-            case PdfSharp.Pdf.Content.Objects.COperator op:
-                if (op.OpCode.Name is "Tj" or "TJ" or "'" or "\"")
-                {
-                    foreach (var operand in op.Operands) CollectText(operand, text);
-                }
-                if (op.OpCode.Name is "Td" or "TD" or "T*" or "ET") text.Append('\n');
-                break;
-            case PdfSharp.Pdf.Content.Objects.CSequence sequence:
-                foreach (var child in sequence) CollectText(child, text);
-                break;
-            case PdfSharp.Pdf.Content.Objects.CString s:
-                text.Append(s.Value);
-                break;
-        }
     }
 
     // Finds the first column that contains numbers and draws it as a chart.

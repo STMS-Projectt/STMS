@@ -2129,3 +2129,15 @@ Enter the points this offer earns for each criterion (up to its weight), then sa
 The financial evaluation cannot total zero. Give the financial criteria some points, even if small.|لا يمكن أن يكون مجموع التقييم المالي صفرًا. امنح المعايير المالية نقاطًا ولو كانت قليلة.
 Enter points for every criterion between 0 and its weight, with up to two decimals.|أدخل نقاطًا لكل معيار بين 0 ووزن المعيار، بحد أقصى منزلتين عشريتين.
 Points for {0}|نقاط {0}
+Download as PDF|تنزيل كملف PDF
+Question: {0}|السؤال: {0}
+AI assistant answer|إجابة المساعد الذكي
+Answer table|جدول الإجابة
+Chart data|بيانات الرسم البياني
+AI answer|إجابة الذكاء الاصطناعي
+No rows.|لا توجد صفوف.
+No data.|لا توجد بيانات.
+The question is too long (max 2,000 characters).|السؤال طويل جدًا (الحد الأقصى 2,000 حرف).
+Analyse supplier offers|حلّل عروض الموردين
+Tender status and results|حالة المناقصات ونتائجها
+AI answer and recommendations (advice only)|إجابة الذكاء الاصطناعي والتوصيات (للاستشارة فقط)

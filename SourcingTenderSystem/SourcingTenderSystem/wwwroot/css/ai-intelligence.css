@@ -182,3 +182,6 @@
 .ai-file-name { padding: 0 12px 8px; color: light-dark(#56657a, #a9b7c6); }
 
 :is(.ai-block, .ai-table-wrap) .ai-table :is(th, td).is-num { text-align: end; }
+
+/* Download buttons under each chatbot answer (Excel / PDF) */
+.ai-downloads { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; white-space: normal; }

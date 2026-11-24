@@ -94,14 +94,16 @@
         return wrap;
     }
 
-    // Lets the user download the table of an answer as an Excel (CSV) file.
-    function downloadCsv(table) {
-        const quote = v => `"${String(v).replaceAll('"', '""')}"`;
-        const lines = [table.columns.map(quote).join(","), ...table.rows.map(r => r.map(quote).join(","))];
-        const blob = new Blob(["﻿" + lines.join("\n")], { type: "text/csv" });
-        const link = Object.assign(document.createElement("a"), { href: URL.createObjectURL(blob), download: "ai-answer.csv" });
-        link.click();
-        URL.revokeObjectURL(link.href);
+    // Download links for one answer: the server builds the Excel / PDF report (same template as the Reports page).
+    function downloadLinks(form, id) {
+        const bar = document.createElement("div");
+        bar.className = "ai-downloads";
+        const base = form.action.replace(/\/Ask$/, "/DownloadAnswer/") + encodeURIComponent(id);
+        for (const [format, label] of [["excel", "Download as Excel"], ["pdf", "Download as PDF"]]) {
+            bar.append(Object.assign(document.createElement("a"),
+                { className: "btn btn-sm btn-outline-secondary", href: `${base}?format=${format}`, textContent: t(label) }));
+        }
+        return bar;
     }
 
     // ------------------------------------------------------------ Chatbot
@@ -112,6 +114,13 @@
         const question = chat.querySelector("[data-ai-question]");
         const file = chat.querySelector("[data-ai-file]");
         const fileName = chat.querySelector("[data-ai-file-name]");
+        // The last messages are sent with each question so the AI understands follow-ups ("and the highest?").
+        const history = [];
+        const remember = (role, content) => {
+            if (!content) return;
+            history.push({ role, content: content.slice(0, 1500) });
+            if (history.length > 6) history.shift();
+        };
 
         document.addEventListener("click", event => {
             if (event.target.closest("[data-ai-chat-open]")) { chat.hidden = false; question.focus(); }
@@ -137,6 +146,8 @@
             addMessage("user", question.value.trim() || file.files[0].name);
             const waiting = addMessage("bot", t("Thinking…"));
             const data = new FormData(form);
+            data.append("history", JSON.stringify(history));
+            remember("user", question.value.trim() || `[file] ${file.files[0]?.name ?? ""}`);
             question.value = "";
             file.value = "";
             fileName.textContent = "";
@@ -146,6 +157,7 @@
                 const answer = await response.json();
                 waiting.remove();
                 showAnswer(answer);
+                if (response.ok) remember("assistant", answer.answer);
             } catch {
                 waiting.textContent = t("Sorry, something went wrong. Please try again.");
             }
@@ -170,15 +182,11 @@
             if (answer.chart?.values?.length) {
                 const chartBox = document.createElement("div");
                 chartBox.className = "ai-chart";
-                drawChart(chartBox, { ...answer.chart, title: t(answer.chart.title) });
+                drawChart(chartBox, { ...answer.chart, title: t(answer.chart.title) }, answer.chart.kind === "columns" ? "columns" : "bars");
                 box.append(chartBox);
             }
             if (answer.table?.rows?.length) {
                 box.append(buildTable(answer.table));
-                const download = Object.assign(document.createElement("button"),
-                    { type: "button", className: "btn btn-sm btn-outline-secondary", textContent: t("Download as Excel") });
-                download.addEventListener("click", () => downloadCsv(answer.table));
-                box.append(download);
             }
             if (answer.recommendations?.length) {
                 const title = Object.assign(document.createElement("strong"), { className: "d-block mt-2", textContent: t("AI recommendations (advice only)") });
@@ -186,6 +194,7 @@
                 answer.recommendations.forEach(r => list.append(Object.assign(document.createElement("li"), { textContent: r })));
                 box.append(title, list);
             }
+            if (answer.id) box.append(downloadLinks(form, answer.id));
             messages.scrollTop = messages.scrollHeight;
         }
     }

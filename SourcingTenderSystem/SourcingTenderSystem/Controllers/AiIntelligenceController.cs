@@ -1,5 +1,8 @@
+using System.Security.Claims;
 using System.Text;
+using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.AspNetCore.Mvc;
 using SourcingTenderSystem.ViewModels;
 using SourcingTenderSystem.Security;
@@ -13,7 +16,7 @@ namespace SourcingTenderSystem.Controllers;
 /// Each user only sees the tenders they are allowed to see (see AiInsights.LoadAsync).
 /// </summary>
 [Authorize(Roles = StaffRoles)]
-public class AiIntelligenceController(AiInsights insights, UiText text) : Controller
+public class AiIntelligenceController(AiInsights insights, UiText text, IMemoryCache cache) : Controller
 {
     public const string StaffRoles = Roles.Admin + ",RequestingDepartment," + Roles.SourcingOfficer + "," +
         Roles.EvaluationCommittee + "," + Roles.SourcingManager + "," + Roles.TechnicalCommittee + "," +
@@ -30,16 +33,64 @@ public class AiIntelligenceController(AiInsights insights, UiText text) : Contro
     // POST /AiIntelligence/Ask  (used by the chatbot)
     [HttpPost]
     [RequestSizeLimit(5 * 1024 * 1024)]
-    public async Task<IActionResult> Ask(string? question, IFormFile? file)
+    // history: the last chat messages as JSON [{ "role": "user"|"assistant", "content": "..." }] for follow-up questions.
+    public async Task<IActionResult> Ask(string? question, IFormFile? file, string? history, CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(question) && file is null)
             return BadRequest(new { answer = text.T("Please write a question or attach a file.") });
+        if (question?.Length > 2000)
+            return BadRequest(new { answer = text.T("The question is too long (max 2,000 characters).") });
         if (file is not null && !new[] { ".csv", ".txt", ".xlsx", ".pdf" }.Contains(Path.GetExtension(file.FileName).ToLowerInvariant()))
             return BadRequest(new { answer = text.T("Only Excel (.xlsx, .csv) and PDF files are supported.") });
 
         var data = await insights.LoadAsync(User);
-        var answer = await insights.AskAsync(data, question ?? "", file, text.Arabic);
+        var answer = await insights.AskAsync(data, question ?? "", file, text.Arabic, ReadHistory(history), cancellationToken);
+
+        // Keep the answer for one hour so the user can download it as Excel or PDF. Only the same user can download it.
+        answer.Id = Guid.NewGuid().ToString("N");
+        cache.Set(AnswerKey(answer.Id), (Question: question ?? file?.FileName ?? "", Answer: answer), TimeSpan.FromHours(1));
         return Json(answer);
+    }
+
+    // GET /AiIntelligence/DownloadAnswer/{id}?format=excel|pdf  -> one chatbot answer as a report file.
+    public async Task<IActionResult> DownloadAnswer(string id, string format, [FromServices] ProtectedPdf pdf)
+    {
+        if (!cache.TryGetValue(AnswerKey(id), out (string Question, AiAnswer Answer) saved)) return NotFound();
+        var answer = saved.Answer;
+        var section = new ReportSection
+        {
+            Title = "AI assistant answer",
+            Description = answer.Answer,
+            NotesTitle = "AI answer and recommendations (advice only)",
+            Notes = [answer.Answer, .. answer.Recommendations]
+        };
+        section.Kpis.AddRange(answer.Cards.Select(c => new ReportKpi { Label = c.Label, Value = c.Value }));
+        if (answer.Table is not null) section.Tables.Add(Table("Answer table", answer.Table, "No rows."));
+        if (answer.Chart is not null)
+            section.Tables.Add(Table(answer.Chart.Title is { Length: > 0 } t ? t : "Chart data",
+                new AiTable(["Item", "Value"], answer.Chart.Labels.Select((l, i) => new List<string> { l, answer.Chart.Values[i].ToString("N2") }).ToList()), "No data."));
+
+        // Excel has no notes area, so the answer text and recommendations get their own sheet.
+        if (format == "excel")
+            section.Tables.Insert(0, Table("AI answer", new AiTable(["Text"], section.Notes.Select(n => new List<string> { n }).ToList()), "-"));
+
+        var scope = text.F("Question: {0}", saved.Question.Length > 200 ? saved.Question[..200] + "…" : saved.Question);
+        return format == "excel"
+            ? ReportExport.ExcelFile(section, scope, text, "ai-answer")
+            : await ReportExport.PdfFileAsync(this, pdf, section, scope, "ai-answer", "AI INTELLIGENCE");
+    }
+
+    private string AnswerKey(string id) => $"ai-answer:{User.FindFirstValue(ClaimTypes.NameIdentifier)}:{id}";
+
+    private static List<AiChatTurn> ReadHistory(string? json)
+    {
+        if (string.IsNullOrWhiteSpace(json) || json.Length > 20000) return [];
+        try
+        {
+            return (JsonSerializer.Deserialize<List<AiChatTurn>>(json, new JsonSerializerOptions(JsonSerializerDefaults.Web)) ?? [])
+                .Where(t => t is { Role: "user" or "assistant", Content.Length: > 0 }).TakeLast(6).ToList();
+        }
+        catch (JsonException) { return []; }
     }
 
     // GET /AiIntelligence/ExportExcel?tenderId=5  -> a CSV file that opens in Excel
@@ -93,11 +144,12 @@ public class AiIntelligenceController(AiInsights insights, UiText text) : Contro
         return await ReportExport.PdfFileAsync(this, pdf, section, scope,
             tender is null ? "ai-tenders-report" : $"ai-tender-{tender.Id}-report", "AI INTELLIGENCE");
 
-        static ReportTable Table(string title, AiTable source, string empty)
-        {
-            var table = new ReportTable { Title = title, Headers = source.Columns.ToArray(), Empty = empty };
-            foreach (var row in source.Rows) table.Add(null, row.Cast<object?>().ToArray());
-            return table;
-        }
+    }
+
+    private static ReportTable Table(string title, AiTable source, string empty)
+    {
+        var table = new ReportTable { Title = title, Headers = source.Columns.ToArray(), Empty = empty };
+        foreach (var row in source.Rows) table.Add(null, row.Cast<object?>().ToArray());
+        return table;
     }
 }

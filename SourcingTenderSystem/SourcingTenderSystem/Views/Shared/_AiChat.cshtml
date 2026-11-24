@@ -12,7 +12,7 @@
             @L.T("Hi! Ask me about tenders, bids and suppliers. I can also read an Excel or PDF file.")
         </div>
         <div class="ai-suggestions">
-            @foreach (var s in new[] { "Compare the tenders", "Who offered the lowest prices?", "Who offered the highest prices?", "Supplier participation", "Tender status", "Give me recommendations" })
+            @foreach (var s in new[] { "Compare the tenders", "Analyse supplier offers", "Who offered the lowest prices?", "Who offered the highest prices?", "Supplier participation", "Tender status and results" })
             {
                 <button type="button" data-ai-suggestion>@L.T(s)</button>
             }

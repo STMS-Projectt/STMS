@@ -47,7 +47,14 @@ builder.Services.AddHttpClient(BidAiAdvisor.HttpClientName, client =>
 builder.Services.AddSingleton<BidAiAdvisor>();
 builder.Services.AddSingleton<WinnerAiBriefing>();
 builder.Services.AddSingleton<EvaluationWeightAdvisor>();
-// AI Intelligence page + chatbot
+// AI Intelligence page + chatbot. The chatbot uses Qwen3.5-397B-A17B through Hugging Face Inference Providers.
+// Token: dotnet user-secrets set "Qwen:ApiKey" "hf_xxx"  (or the HF_TOKEN environment variable).
+builder.Services.AddHttpClient(QwenChatbot.HttpClientName, client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["Qwen:BaseUrl"] is { Length: > 0 } url ? url.TrimEnd('/') + "/" : "https://router.huggingface.co/v1/");
+    client.Timeout = TimeSpan.FromSeconds(builder.Configuration.GetValue("Qwen:TimeoutSeconds", 90));
+});
+builder.Services.AddSingleton<QwenChatbot>();
 builder.Services.AddScoped<AiInsights>();
 // Free exchange-rate reference (Frankfurter v2) for USD-equivalent bid display only.
 builder.Services.AddMemoryCache();
