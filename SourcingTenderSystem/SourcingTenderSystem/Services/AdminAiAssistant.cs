@@ -32,13 +32,12 @@ public class AdminAiAction
 /// </summary>
 public class AdminAiAssistant(ApplicationDbContext db, QwenChatbot model)
 {
-    public static readonly string[] Actions = ["create_department", "create_category", "create_employee"];
 
     private const string Instructions = """
         You help the ADMIN of a Sourcing & Tender Management System create records.
-        Read the admin's request and reply with ONE JSON object only:
+        The system already knows WHAT the admin wants to create (see ACTION). Your job is to read the details from the request.
+        Reply with ONE JSON object only:
         {
-          "action": "create_department" | "create_category" | "create_employee" | "none",
           "message": "one short sentence for the admin",
           "fields": { ... }
         }
@@ -49,7 +48,7 @@ public class AdminAiAssistant(ApplicationDbContext db, QwenChatbot model)
         Rules:
         - Copy names exactly as the admin wrote them. Do not invent emails or other details the admin did not give; leave them "".
         - Never include a password.
-        - If the request is not about creating a department, category or employee, use "action": "none".
+        - If the admin did not give a detail, leave it "". It is fine to return all fields empty: the admin fills them in.
         - Write "message" in the same language as the request.
         """;
 
@@ -59,15 +58,19 @@ public class AdminAiAssistant(ApplicationDbContext db, QwenChatbot model)
     /// </summary>
     public async Task<(AdminAiAction Action, string Message)?> GenerateAsync(string prompt, CancellationToken cancellationToken = default)
     {
+        // 0) WHAT to create is decided here from the words of the request (reliable); the model only reads the details.
+        if (DetectAction(prompt) is not { } name) return null;
+
         // 1) Give the model the lists it may choose from.
         var departments = await db.Departments.AsNoTracking().Where(d => d.IsActive).OrderBy(d => d.Name)
             .Select(d => new AdminAiOption(d.Id.ToString(), d.Name)).ToListAsync(cancellationToken);
         var roles = Roles.EmployeeRoles.Select(r => new AdminAiOption(r, r)).ToList();
-        var context = $"DEPARTMENTS: {JsonSerializer.Serialize(departments.Select(d => d.Label))}\nROLES: {JsonSerializer.Serialize(Roles.EmployeeRoles)}\n\nREQUEST: {prompt}";
+        var context = $"ACTION: {name}\nDEPARTMENTS: {JsonSerializer.Serialize(departments.Select(d => d.Label))}\nROLES: {JsonSerializer.Serialize(Roles.EmployeeRoles)}\n\nREQUEST: {prompt}";
 
-        // 2) Ask the model.
+        // 2) Ask the model for the details. If it is off or gives no usable reply, the admin gets an empty form to fill in.
         var reply = await model.CompleteAsync(Instructions, context, cancellationToken);
-        if (reply is null || Parse(reply) is not (var name, var message, var fields)) return null;
+        var (message, fields) = (reply is null ? null : Parse(reply)) ?? ("", new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase));
+        if (message.Length == 0) message = "Fill in the details, then confirm.";
 
         // 3) Turn the reply into a safe suggestion: known fields only, department/role checked against the real lists.
         var action = new AdminAiAction { Action = name, Departments = departments, Roles = roles };
@@ -100,8 +103,8 @@ public class AdminAiAssistant(ApplicationDbContext db, QwenChatbot model)
         return (action, message);
     }
 
-    /// <summary>Reads the model's JSON reply. Returns null when it is not one of the create actions.</summary>
-    public static (string Action, string Message, Dictionary<string, string> Fields)? Parse(string reply)
+    /// <summary>Reads the model's JSON reply: the message and the fields. Returns null when it is not JSON.</summary>
+    public static (string Message, Dictionary<string, string> Fields)? Parse(string reply)
     {
         reply = Regex.Replace(reply, "<think>.*?</think>", "", RegexOptions.Singleline);
         var start = reply.IndexOf('{');
@@ -110,19 +113,26 @@ public class AdminAiAssistant(ApplicationDbContext db, QwenChatbot model)
         try
         {
             if (JsonNode.Parse(reply[start..(end + 1)]) is not JsonObject json) return null;
-            var action = json["action"]?.ToString() ?? "";
-            if (!Actions.Contains(action)) return null;
             var fields = (json["fields"] as JsonObject ?? new JsonObject()).Where(p => p.Value is JsonValue)
                 .ToDictionary(p => p.Key, p => p.Value!.ToString(), StringComparer.OrdinalIgnoreCase);
             fields.Remove("password");   // a password never comes from the AI
-            return (action, json["message"]?.ToString() ?? "", fields);
+            return (json["message"]?.ToString() ?? "", fields);
         }
         catch (JsonException) { return null; }
     }
 
-    /// <summary>Cheap check so normal questions do not wait for an extra model call.</summary>
-    // It needs a verb ("create", "add", "اعمل", "ضيف" ...) AND a target ("department", "employee", "قسم", "موظف" ...).
-    public static bool LooksLikeCreateRequest(string prompt) =>
-        Regex.IsMatch(prompt, @"\b(create|add|new|register|make)\b|اعمل|إعمل|انشئ|أنشئ|إنشاء|انشاء|ضيف|اضف|أضف|إضافة|اضافة|جديد|سجّل|سجل", RegexOptions.IgnoreCase) &&
-        Regex.IsMatch(prompt, @"\b(department|category|employee|staff|user)\b|قسم|دائرة|إدارة|ادارة|فئة|تصنيف|كاتيجوري|موظف|مستخدم", RegexOptions.IgnoreCase);
+    /// <summary>
+    /// Which record the admin wants to create, from the words of the request, or null for a normal question.
+    /// It needs a verb ("create", "add", "اعمل", "ضيف" ...) AND a target ("employee", "category", "department", "موظف", "قسم" ...).
+    /// The employee is checked first: "add an employee to the IT department" creates an employee.
+    /// </summary>
+    public static string? DetectAction(string prompt)
+    {
+        if (!Regex.IsMatch(prompt, @"\b(create|add|new|register|make)\b|اعمل|إعمل|انشئ|أنشئ|إنشاء|انشاء|ضيف|اضف|أضف|إضافة|اضافة|جديد|سجّل|سجل", RegexOptions.IgnoreCase))
+            return null;
+        if (Regex.IsMatch(prompt, @"\b(employees?|staff|users?)\b|موظف|مستخدم", RegexOptions.IgnoreCase)) return "create_employee";
+        if (Regex.IsMatch(prompt, @"\b(categor(y|ies))\b|فئة|تصنيف|كاتيجوري|كاتيقوري", RegexOptions.IgnoreCase)) return "create_category";
+        if (Regex.IsMatch(prompt, @"\b(departments?)\b|قسم|دائرة|إدارة|ادارة", RegexOptions.IgnoreCase)) return "create_department";
+        return null;
+    }
 }

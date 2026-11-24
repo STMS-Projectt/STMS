@@ -4,36 +4,32 @@ using Xunit;
 public sealed class AdminAiAssistantTests
 {
     [Theory]
-    [InlineData("اعمل قسم جديد اسمه المشتريات", true)]
-    [InlineData("ضيف موظف اسمه أحمد علي", true)]
-    [InlineData("Create a category called Laptops", true)]
-    [InlineData("add employee Sara, sourcing officer", true)]
-    [InlineData("كم مناقصة جديدة عنا؟", false)]
-    [InlineData("Who offered the lowest prices?", false)]
-    public void Only_create_requests_call_the_admin_assistant(string prompt, bool expected) =>
-        Assert.Equal(expected, AdminAiAssistant.LooksLikeCreateRequest(prompt));
+    [InlineData("i want to add new department", "create_department")]
+    [InlineData("اعمل قسم جديد اسمه المشتريات", "create_department")]
+    [InlineData("Create a category called Laptops", "create_category")]
+    [InlineData("ضيف تصنيف جديد", "create_category")]
+    [InlineData("add employee Sara to the IT department", "create_employee")]
+    [InlineData("ضيف موظف اسمه أحمد علي بقسم المشتريات", "create_employee")]
+    [InlineData("كم مناقصة جديدة عنا؟", null)]
+    [InlineData("Who offered the lowest prices?", null)]
+    [InlineData("Supplier participation", null)]
+    public void The_action_is_decided_from_the_words_of_the_request(string prompt, string? expected) =>
+        Assert.Equal(expected, AdminAiAssistant.DetectAction(prompt));
 
     [Fact]
-    public void Parse_reads_the_action_and_never_keeps_a_password()
+    public void Parse_reads_the_fields_and_never_keeps_a_password()
     {
         var parsed = AdminAiAssistant.Parse("""
             <think>x</think>```json
-            { "action": "create_employee", "message": "Review the new employee.",
+            { "message": "Review the new employee.",
               "fields": { "fullName": "Ahmad Ali", "email": "ahmad@example.com", "role": "SourcingOfficer", "password": "123456", "nested": { "x": 1 } } }
             ```
             """);
-        var (action, message, fields) = parsed!.Value;
-        Assert.Equal("create_employee", action);
+        var (message, fields) = parsed!.Value;
         Assert.Equal("Review the new employee.", message);
         Assert.Equal("Ahmad Ali", fields["FULLNAME"]);
         Assert.False(fields.ContainsKey("password"));
         Assert.False(fields.ContainsKey("nested"));
+        Assert.Null(AdminAiAssistant.Parse("not json"));
     }
-
-    [Theory]
-    [InlineData("{ \"action\": \"none\", \"message\": \"hi\" }")]
-    [InlineData("{ \"action\": \"delete_department\", \"fields\": { \"name\": \"IT\" } }")]
-    [InlineData("not json")]
-    public void Parse_ignores_anything_that_is_not_a_create_action(string reply) =>
-        Assert.Null(AdminAiAssistant.Parse(reply));
 }

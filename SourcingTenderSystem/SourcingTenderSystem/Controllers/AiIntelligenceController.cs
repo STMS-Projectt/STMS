@@ -52,7 +52,7 @@ public class AiIntelligenceController(AiInsights insights, AdminAiAssistant admi
             return BadRequest(new { answer = text.T("Only Excel (.xlsx, .csv) and PDF files are supported.") });
 
         // Admin asking to create a department / category / employee: the AI suggests it, the admin confirms it.
-        if (User.IsInRole(Roles.Admin) && file is null && AdminAiAssistant.LooksLikeCreateRequest(question ?? "") &&
+        if (User.IsInRole(Roles.Admin) && file is null && AdminAiAssistant.DetectAction(question ?? "") is not null &&
             await adminAssistant.GenerateAsync(question!, cancellationToken) is var (action, message))
         {
             action.Url = action.Action switch
