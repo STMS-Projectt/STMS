@@ -186,8 +186,8 @@
 .aic-welcome-icon .icon { width: 32px; height: 32px; }
 .aic-welcome h2 { margin: 0 0 6px; font-size: clamp(1.3rem, 2.6vw, 1.7rem); }
 .aic-welcome > p { margin: 0 auto 22px; max-width: 560px; color: var(--muted); }
-.aic-suggestions { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; text-align: start; }
-.aic-suggestion { display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto auto; column-gap: 12px; row-gap: 2px; align-items: center;
+.aic-suggestions { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; max-width: 900px; margin-inline: auto; text-align: start; }
+.aic-suggestion { display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto 1fr; column-gap: 12px; row-gap: 2px; align-items: start; align-content: start;
     padding: 14px; border-radius: 18px; border: 1px solid var(--aic-line); background: var(--aic-card); color: inherit; text-align: start;
     box-shadow: 0 4px 14px light-dark(#14324a0a, #00000033); transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease; }
 .aic-suggestion:hover, .aic-suggestion:focus-visible { transform: translateY(-2px); border-color: light-dark(#9ad8c4, #2d6958); box-shadow: 0 10px 22px light-dark(#163b4d17, #00000055); outline: none; }
