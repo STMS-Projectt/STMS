@@ -177,15 +177,16 @@ public sealed class CommitteeReviewsController(ApplicationDbContext db, BidAiAdv
         }
         var byId = published.ToDictionary(c => c.Id);
         // Reviewers award part of each criterion's weight (e.g. 30 of 50). Points must stay within 0..weight
-        // with at most two decimals, and every financial criterion must earn more than zero.
+        // with at most two decimals, and the financial criteria together must earn more than zero.
         if (checks.Any(c => c.Points is not decimal p || p < 0 || p > weights[c.CriterionId] || p != EvaluationRules.Round(p)))
         {
             TempData["ReviewError"] = "Enter points for every criterion between 0 and its weight, with up to two decimals.";
             return RedirectToAction(nameof(Bid), new { id });
         }
-        if (checks.Any(c => byId[c.CriterionId].Type == "Financial" && c.Points <= 0))
+        var financialChecks = checks.Where(c => byId[c.CriterionId].Type == "Financial").ToList();
+        if (financialChecks.Count > 0 && financialChecks.Sum(c => c.Points!.Value) <= 0)
         {
-            TempData["ReviewError"] = "Financial criteria cannot be scored zero. Give each financial criterion some points, even if small.";
+            TempData["ReviewError"] = "The financial evaluation cannot total zero. Give the financial criteria some points, even if small.";
             return RedirectToAction(nameof(Bid), new { id });
         }
         var technical = await Db.TechnicalEvaluations.Where(e => e.BidId == id && e.EvaluatorEmployeeProfileId == employee.Id)
@@ -197,7 +198,8 @@ public sealed class CommitteeReviewsController(ApplicationDbContext db, BidAiAdv
             var criterion = byId[check.CriterionId];
             // Stored on the criterion's own scale: points / weight * MaxScore.
             var score = Math.Round(check.Points!.Value * criterion.MaxScore / weights[criterion.Id], 2, MidpointRounding.AwayFromZero);
-            if (score <= 0 && criterion.Type == "Financial") score = 0.01m;
+            // Tiny points must not round away to zero (that could leave the financial total at zero).
+            if (score <= 0 && check.Points > 0) score = 0.01m;
             if (criterion.Type == "Technical")
             {
                 if (!technical.TryGetValue(criterion.Id, out var row))
@@ -250,9 +252,9 @@ public sealed class CommitteeReviewsController(ApplicationDbContext db, BidAiAdv
             return RedirectToAction(nameof(Details), new { id });
         }
         var financialIds = selected.Where(c => c.Type == "Financial").Select(c => c.Id).ToHashSet();
-        if (scores.Any(s => financialIds.Contains(s.CriterionId) && bids.Contains(s.BidId) && s.Score <= 0))
+        if (financialIds.Count > 0 && bids.Any(b => scores.Where(s => s.BidId == b && financialIds.Contains(s.CriterionId)).Sum(s => s.Score) <= 0))
         {
-            TempData["ReviewError"] = "Financial criteria cannot be scored zero. Give each financial criterion some points, even if small.";
+            TempData["ReviewError"] = "The financial evaluation cannot total zero. Give the financial criteria some points, even if small.";
             return RedirectToAction(nameof(Details), new { id });
         }
         var now = DateTime.UtcNow;

@@ -200,7 +200,7 @@ public sealed partial class BiddingRoundTests
             var checklistPath = $"/CommitteeReviews/SaveChecklist/{seed.Bid}";
             Assert.Equal(HttpStatusCode.Conflict, await Send(manager,managerToken,checklistPath,Checklist([cost],true)));
             Assert.Equal(HttpStatusCode.Conflict, await Send(manager,managerToken,checklistPath,Checklist([quality,quality],true)));
-            // Partial points above the weight, and a zero financial score, are both rejected without saving anything.
+            // Partial points above the weight, and a zero financial total, are both rejected without saving anything.
             var technicalToken = await Token(technical);
             await Send(technical,technicalToken,checklistPath,Checklist(criteria,true,fullWeight:1000));
             await Send(technical,technicalToken,checklistPath,Checklist(criteria,true,financialPoints:"0"));

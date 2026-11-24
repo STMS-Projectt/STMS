@@ -38,7 +38,7 @@
         <form asp-action="SaveChecklist" asp-route-id="@Model.Bid.Id" method="post" data-bid-checklist>
             @if (!locked && Model.Scores.Any(r => r.Criterion.Type == "Financial"))
             {
-                <p class="alert alert-info">@L.T("Financial criteria cannot be scored zero. Give each financial criterion some points, even if small.")</p>
+                <p class="alert alert-info">@L.T("The financial evaluation cannot total zero. Give the financial criteria some points, even if small.")</p>
             }
             <div class="checklist-columns">
                 @foreach (var (kind, icon) in new[] { ("Technical", "briefcase"), ("Financial", "chart") })
@@ -58,7 +58,7 @@
                                     <span>@row.Criterion.Name</span>
                                     <label class="checklist-points-field">
                                         <input class="form-control" type="number" name="checks[@index].Points" required disabled="@locked"
-                                               min="@(kind == "Financial" ? "0.01" : "0")" max="@row.WeightPercent.ToString(CultureInfo.InvariantCulture)" step="0.01" inputmode="decimal"
+                                               min="0" max="@row.WeightPercent.ToString(CultureInfo.InvariantCulture)" step="0.01" inputmode="decimal"
                                                value="@(row.Score.HasValue ? EvaluationRules.Round(Earned(row)).ToString("0.##", CultureInfo.InvariantCulture) : "")"
                                                aria-label="@L.F("Points for {0}", row.Criterion.Name)"
                                                data-checklist-choice data-weight="@row.WeightPercent.ToString(CultureInfo.InvariantCulture)" />
