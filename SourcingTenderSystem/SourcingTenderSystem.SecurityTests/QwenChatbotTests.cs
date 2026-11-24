@@ -87,12 +87,23 @@ public sealed class QwenChatbotTests
         Assert.False(handler.Requests[1].Body["think"]!.GetValue<bool>());
         var messages = first.Body["messages"]!.AsArray();
         Assert.Contains("Arabic", messages[0]!["content"]!.GetValue<string>());
+        Assert.Contains("did NOT ask for recommendations", messages[0]!["content"]!.GetValue<string>());
         Assert.Equal("hi", messages[1]!["content"]!.GetValue<string>());
         var user = messages[^1]!["content"]!.GetValue<string>();
         Assert.Contains("\"lowestSupplier\":\"Alpha\"", user);
         Assert.Contains("FILE CONTENT", user);
         Assert.Contains("QUESTION: Who is cheapest?", user);
     }
+
+    [Theory]
+    [InlineData("Supplier participation", false)]
+    [InlineData("مين أقل سعر؟", false)]
+    [InlineData("Give me recommendations for tender #7", true)]
+    [InlineData("اعطيني توصيات", true)]
+    [InlineData("شو بتنصحني؟", true)]
+    [InlineData("بدي اقتراحات للموردين", true)]
+    public void Recommendations_only_when_asked(string question, bool expected) =>
+        Assert.Equal(expected, AiInsights.AsksForRecommendations(question));
 
     [Fact]
     public async Task Hugging_face_provider_sends_token_and_openai_request()

@@ -58,12 +58,12 @@ public class QwenChatbot(IHttpClientFactory httpClients, IConfiguration configur
           "cards": [ { "label": "Lowest price", "value": "1,200.00 JOD" } ],
           "table": { "columns": ["Supplier", "Price"], "rows": [["ABC Ltd", "1,200.00 JOD"]] },
           "chart": { "title": "Bid prices", "kind": "bars", "labels": ["ABC Ltd"], "values": [1200] },
-          "recommendations": ["advice sentence"]
+          "recommendations": []
         }
         - "cards": 0 to 6 key numbers (analysis cards). "table": use it when listing or comparing several items (max 50 rows).
         - "chart": use it when a comparison of numbers helps. "kind" is "bars" (compare items) or "columns" (values over time).
           "values" must be plain numbers in the same order as "labels" (max 15 points). Use null for table/chart when not useful.
-        - "recommendations": 0 to 4 short practical advice sentences.
+        - "recommendations": short practical advice sentences ONLY when the user asks for advice/recommendations, otherwise [].
         - Every table cell and card value is a string. Format money as "1,234.50 JOD".
         - Write "answer", labels, table text and recommendations in the language requested below.
         """;
@@ -76,9 +76,10 @@ public class QwenChatbot(IHttpClientFactory httpClients, IConfiguration configur
     /// <param name="fileContent">Text of an uploaded Excel/PDF file, or null.</param>
     /// <param name="history">The last messages of the chat (for follow-up questions).</param>
     /// <param name="arabic">Answer in Arabic.</param>
+    /// <param name="wantsRecommendations">The user asked for advice. Otherwise no recommendations are given.</param>
     /// <returns>The answer, or null when the model is not configured or not reachable (the caller then uses a simple answer).</returns>
     public async Task<AiAnswer?> GenerateAsync(string prompt, object databaseData, string? fileContent,
-        IReadOnlyList<AiChatTurn> history, bool arabic, CancellationToken cancellationToken = default)
+        IReadOnlyList<AiChatTurn> history, bool arabic, bool wantsRecommendations = false, CancellationToken cancellationToken = default)
     {
         if (!Enabled) return null;
 
@@ -86,7 +87,9 @@ public class QwenChatbot(IHttpClientFactory httpClients, IConfiguration configur
         var messages = new JsonArray
         {
             new JsonObject { ["role"] = "system", ["content"] = Instructions + "\nLanguage of the answer: " +
-                (arabic ? "Arabic." : "the same language as the user's question.") }
+                (arabic ? "Arabic." : "the same language as the user's question.") +
+                (wantsRecommendations ? "\nThe user asked for recommendations: give 1 to 4 in \"recommendations\"."
+                    : "\nThe user did NOT ask for recommendations: \"recommendations\" must be [] and the answer must not give advice.") }
         };
         foreach (var turn in history.TakeLast(6))
             messages.Add(new JsonObject { ["role"] = turn.Role == "user" ? "user" : "assistant", ["content"] = Trim(turn.Content, 1500) });

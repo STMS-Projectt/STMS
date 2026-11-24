@@ -230,14 +230,22 @@ public class AiInsights(ApplicationDbContext db, QwenChatbot chatbot)
         var fileTable = file is { Length: > 0 } ? ReadFile(file) : null;
         var focus = FindTender(data, question.ToLowerInvariant());
 
+        var wantsAdvice = AsksForRecommendations(question);
         var answer = await chatbot.GenerateAsync(question, Facts(data, focus, chatbot.MaxTenders, chatbot.MaxBids), fileTable is null ? null : FileText(file!.FileName, fileTable),
-            history ?? [], arabic, cancellationToken);
-        if (answer is null) return RuleBasedAnswer(data, question, file, fileTable, focus);
+            history ?? [], arabic, wantsAdvice, cancellationToken)
+            ?? RuleBasedAnswer(data, question, file, fileTable, focus);
 
+        // Recommendations are shown ONLY when the user asked for them.
+        if (!wantsAdvice) answer.Recommendations = [];
         // Always show what was read from the file, even if the model did not return a table.
         if (fileTable is not null && answer.Table is null && fileTable.Rows.Count > 0) answer.Table = fileTable;
         return answer;
     }
+
+    /// <summary>True when the question asks for advice / recommendations (English or Arabic).</summary>
+    public static bool AsksForRecommendations(string question) =>
+        Has(question.ToLowerInvariant(), "recommend", "advice", "advise", "suggest", "what should",
+            "توص", "نصيح", "نصائح", "انصح", "تنصح", "نصح", "اقتراح", "اقترح", "تقترح", "مقترح");
 
     /// <summary>
     /// The database data sent to the model. Every number is calculated here in C# (lowest, highest, average, rank,
@@ -364,7 +372,7 @@ public class AiInsights(ApplicationDbContext db, QwenChatbot chatbot)
             answer.Chart = Chart("Average bid price per tender", data.Tenders.Where(t => t.Average != null).Take(8).Select(t => ($"#{t.Id}", t.Average!.Value)));
             text = "Here is a comparison of the tenders that have bids: number of bids, lowest, highest and average price.";
         }
-        else if (Has(q, "recommend", "advice", "suggest", "توصية", "توصيات", "نصيحة", "اقتراح"))
+        else if (AsksForRecommendations(q))
         {
             text = "Here are my recommendations based on the current data.";
         }
