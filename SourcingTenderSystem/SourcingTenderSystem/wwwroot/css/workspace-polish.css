@@ -423,3 +423,11 @@
 .compare-action-buttons .btn .icon{width:15px;height:15px}
 .compare-action-buttons .btn-success{--bs-btn-bg:#007858;--bs-btn-border-color:#007858;--bs-btn-hover-bg:#006148;--bs-btn-hover-border-color:#006148;box-shadow:0 4px 10px #0078582b}
 .compare-action-buttons .btn.disabled{border-style:dashed;opacity:.55}
+
+/* Committee checklist: reviewers type points out of each criterion's weight */
+.checklist-points{cursor:default}
+.checklist-points .checklist-points-field{display:inline-flex;align-items:center;gap:6px;margin:0}
+.checklist-points .checklist-points-field input{width:92px;min-height:34px;padding:4px 8px;text-align:center;font-weight:700;font-variant-numeric:tabular-nums}
+.checklist-points .checklist-points-field input:invalid{border-color:light-dark(#c2410c, #f59e0b)}
+.checklist-points{grid-template-columns:minmax(0,1fr) auto}
+.checklist-entry.is-scored{border-color:light-dark(#8fcfb7, #3a7d65)}

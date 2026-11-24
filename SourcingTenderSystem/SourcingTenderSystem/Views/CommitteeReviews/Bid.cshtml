@@ -28,7 +28,7 @@
 @if (TempData["ReviewError"] is string error) { <div class="alert alert-warning tm-alert" role="alert"><partial name="_Icon" model='@("warning")' /> @L.T(error)</div> }
 
 <section class="pr-card prd-card bid-checklist rb-checklist" aria-label="@L.T("Your evaluation")">
-    <div class="record-section-heading"><div class="pr-section-head mb-0"><span class="pr-badge"><partial name="_Icon" model='@("check")' /></span><div><h2>@L.T("Your evaluation checklist")</h2><p>@L.T(locked ? "Saved scores are read-only." : "Check each criterion the offer meets, then save the checklist for this bid.")</p></div></div>
+    <div class="record-section-heading"><div class="pr-section-head mb-0"><span class="pr-badge"><partial name="_Icon" model='@("check")' /></span><div><h2>@L.T("Your evaluation checklist")</h2><p>@L.T(locked ? "Saved scores are read-only." : "Enter the points this offer earns for each criterion (up to its weight), then save the checklist for this bid.")</p></div></div>
         <span class="record-panel-label checklist-total" data-checklist-total>@Percent(Model.Scores.Sum(Earned)) / @Percent(Model.Scores.Sum(r => r.WeightPercent))</span>
     </div>
     <div class="checklist-meter checklist-meter-total" data-checklist-meter style="--fill:@Fill(Model.Scores.Sum(Earned), Model.Scores.Sum(r => r.WeightPercent))" aria-hidden="true"><span></span></div>
@@ -36,9 +36,9 @@
     else
     {
         <form asp-action="SaveChecklist" asp-route-id="@Model.Bid.Id" method="post" data-bid-checklist>
-            @if (!locked && Model.Scores.Any(r => r.Score is decimal score && score > 0 && score < r.Criterion.MaxScore))
+            @if (!locked && Model.Scores.Any(r => r.Criterion.Type == "Financial"))
             {
-                <p class="alert alert-info">@L.T("This bid has older partial scores. Saving this checklist replaces them with full weight or zero.")</p>
+                <p class="alert alert-info">@L.T("Financial criteria cannot be scored zero. Give each financial criterion some points, even if small.")</p>
             }
             <div class="checklist-columns">
                 @foreach (var (kind, icon) in new[] { ("Technical", "briefcase"), ("Financial", "chart") })
@@ -53,13 +53,18 @@
                         @foreach (var (row, index) in rows)
                         {
                             <div class="checklist-entry">
-                                <label class="checklist-choice">
+                                <div class="checklist-choice checklist-points">
                                     <input type="hidden" name="checks[@index].CriterionId" value="@row.Criterion.Id" />
-                                    <input type="checkbox" name="checks[@index].Met" value="true" checked="@(row.Score == row.Criterion.MaxScore)" disabled="@locked"
-                                           data-checklist-choice data-weight="@row.WeightPercent.ToString(CultureInfo.InvariantCulture)" />
                                     <span>@row.Criterion.Name</span>
-                                    <strong>+@Percent(row.WeightPercent)</strong>
-                                </label>
+                                    <label class="checklist-points-field">
+                                        <input class="form-control" type="number" name="checks[@index].Points" required disabled="@locked"
+                                               min="@(kind == "Financial" ? "0.01" : "0")" max="@row.WeightPercent.ToString(CultureInfo.InvariantCulture)" step="0.01" inputmode="decimal"
+                                               value="@(row.Score.HasValue ? EvaluationRules.Round(Earned(row)).ToString("0.##", CultureInfo.InvariantCulture) : "")"
+                                               aria-label="@L.F("Points for {0}", row.Criterion.Name)"
+                                               data-checklist-choice data-weight="@row.WeightPercent.ToString(CultureInfo.InvariantCulture)" />
+                                        <strong>/ @Percent(row.WeightPercent)</strong>
+                                    </label>
+                                </div>
                                 @if (locked)
                                 {
                                     @if (row.Score.HasValue) { <p class="field-hint mb-0">@L.F("Earned {0}", Percent(Earned(row)))</p> }

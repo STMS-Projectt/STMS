@@ -184,25 +184,34 @@ public sealed partial class BiddingRoundTests
             Assert.Equal(HttpStatusCode.OK, await Send(manager,managerToken,planPath,Plan(int.MaxValue,"100")));
             Assert.False(await db.EvaluationWeightPlans.AnyAsync(p=>p.TenderId==tenderId));
             Assert.Equal(HttpStatusCode.Redirect, await Send(manager,managerToken,planPath,Plan(quality.Id,"100")));
-            static Dictionary<string,string> Checklist(IEnumerable<EvaluationCriterion> selected, bool met)
+            // met: award the criterion's full weight; otherwise technical earns 0 and financial the smallest allowed points.
+            static Dictionary<string,string> Checklist(IEnumerable<EvaluationCriterion> selected, bool met, decimal? fullWeight = null, string? financialPoints = null)
             {
                 var fields = new Dictionary<string,string>();
                 foreach (var (item, index) in selected.Select((item, index) => (item, index)))
                 {
                     fields[$"checks[{index}].CriterionId"] = item.Id.ToString();
-                    if (met) fields[$"checks[{index}].Met"] = "true";
+                    fields[$"checks[{index}].Points"] = financialPoints is not null && item.Type == "Financial" ? financialPoints
+                        : met ? (fullWeight ?? item.WeightPercent).ToString(System.Globalization.CultureInfo.InvariantCulture)
+                        : item.Type == "Financial" ? "0.01" : "0";
                 }
                 return fields;
             }
             var checklistPath = $"/CommitteeReviews/SaveChecklist/{seed.Bid}";
             Assert.Equal(HttpStatusCode.Conflict, await Send(manager,managerToken,checklistPath,Checklist([cost],true)));
             Assert.Equal(HttpStatusCode.Conflict, await Send(manager,managerToken,checklistPath,Checklist([quality,quality],true)));
+            // Partial points above the weight, and a zero financial score, are both rejected without saving anything.
+            var technicalToken = await Token(technical);
+            await Send(technical,technicalToken,checklistPath,Checklist(criteria,true,fullWeight:1000));
+            await Send(technical,technicalToken,checklistPath,Checklist(criteria,true,financialPoints:"0"));
+            Assert.False(await db.TechnicalEvaluations.AnyAsync(e=>e.BidId==seed.Bid));
+            Assert.False(await db.FinancialEvaluations.AnyAsync(e=>e.BidId==seed.Bid));
             foreach (var c in new[] { manager,technical,financial,department })
             {
                 var token = c==manager ? managerToken : await Token(c);
                 foreach (var bid in new[]{seed.Bid,runnerUp.Id})
                     Assert.Equal(HttpStatusCode.Redirect, await Send(c,token,$"/CommitteeReviews/SaveChecklist/{bid}",
-                        Checklist(criteria.Where(item => c != manager || item.Id == quality.Id), bid==seed.Bid || c==manager)));
+                        Checklist(criteria.Where(item => c != manager || item.Id == quality.Id), bid==seed.Bid || c==manager, c==manager ? 100m : null)));
                 if (c == manager)
                     Assert.False(await db.EvaluationSubmissions.AnyAsync(s=>s.TenderId==tenderId));
                 await Send(c,token,$"/CommitteeReviews/SubmitEvaluation/{tenderId}");
@@ -233,7 +242,8 @@ public sealed partial class BiddingRoundTests
             Assert.Contains("ReviewerWeights",report.ResultsSnapshot);
             var comparisonRows = System.Text.Json.JsonSerializer.Deserialize<List<SupplierEvaluationResult>>(report.SupplierComparison)!;
             Assert.Equal(100m, comparisonRows.Single(r => r.BidId == seed.Bid).Total);
-            Assert.Equal(25m, comparisonRows.Single(r => r.BidId == runnerUp.Id).Total);
+            // Three reviewers gave the runner-up only the minimum financial points, so it lands just above 25.
+            Assert.InRange(comparisonRows.Single(r => r.BidId == runnerUp.Id).Total!.Value, 25m, 25.1m);
             var approve = $"/EvaluationWorkflow/Approve/{tenderId}";
             Dictionary<string,string> Decision(string stage,string? vote=null,string? reason=null)
             {

@@ -2125,3 +2125,7 @@ Data tables|جداول البيانات
 The numbers behind the charts.|الأرقام التي بُنيت عليها الرسوم.
 Ask the AI a question|اسأل الذكاء الاصطناعي
 Shorter is faster|الأقل هو الأسرع
+Enter the points this offer earns for each criterion (up to its weight), then save the checklist for this bid.|أدخل النقاط التي يستحقها العرض لكل معيار (بحدّ أقصى وزن المعيار) ثم احفظ قائمة تقييمه.
+Financial criteria cannot be scored zero. Give each financial criterion some points, even if small.|لا يمكن أن يكون تقييم المعايير المالية صفرًا. امنح كل معيار مالي نقاطًا ولو كانت قليلة.
+Enter points for every criterion between 0 and its weight, with up to two decimals.|أدخل نقاطًا لكل معيار بين 0 ووزن المعيار، بحد أقصى منزلتين عشريتين.
+Points for {0}|نقاط {0}

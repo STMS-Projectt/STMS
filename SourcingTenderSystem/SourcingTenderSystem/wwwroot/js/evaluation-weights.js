@@ -4,7 +4,7 @@
             const total = form.closest(".bid-checklist").querySelector("[data-checklist-total]");
             const groups = [...form.querySelectorAll("[data-checklist-group]")];
             const format = (points, possible) => `${points / 100}% / ${possible / 100}%`;
-            form.addEventListener("change", event => {
+            const refresh = event => {
                 if (!event.target.matches("[data-checklist-choice]")) return;
                 let points = 0, possible = 0;
                 for (const group of groups) {
@@ -12,7 +12,10 @@
                     for (const input of group.querySelectorAll("[data-checklist-choice]")) {
                         const weight = Math.round(Number(input.dataset.weight) * 100);
                         groupPossible += weight;
-                        if (input.checked) groupPoints += weight;
+                        // Points awarded for this criterion, clamped to 0..weight
+                        const value = Math.round(Number(input.value) * 100);
+                        if (input.value !== "" && Number.isFinite(value)) groupPoints += Math.min(weight, Math.max(0, value));
+                        input.closest(".checklist-entry")?.classList.toggle("is-scored", input.value !== "" && value > 0);
                     }
                     group.querySelector("[data-checklist-subtotal]").textContent = format(groupPoints, groupPossible);
                     group.querySelector("[data-checklist-meter]")?.style.setProperty("--fill", `${groupPossible ? groupPoints * 100 / groupPossible : 0}%`);
@@ -22,7 +25,9 @@
                 // The page header shows the same running total
                 for (const mirror of document.querySelectorAll("[data-checklist-total-mirror]")) mirror.textContent = format(points, possible);
                 form.closest(".bid-checklist").querySelector(".checklist-meter-total")?.style.setProperty("--fill", `${possible ? points * 100 / possible : 0}%`);
-            });
+            };
+            form.addEventListener("input", refresh);
+            form.addEventListener("change", refresh);
         }
         for (const form of root.querySelectorAll("[data-weight-plan]")) {
             const rows = [...form.querySelectorAll("[data-weight-row]")].map(row => ({

@@ -25,7 +25,7 @@ public sealed class EvaluationWeightInput
 public sealed class CommitteeCheckInput
 {
     public int CriterionId { get; set; }
-    public bool Met { get; set; }
+    public decimal? Points { get; set; }
     [Range(typeof(decimal), "0", "999999999.99")] public decimal Taxes { get; set; }
     [Range(typeof(decimal), "0", "999999999.99")] public decimal Extras { get; set; }
     [StringLength(1000)] public string? Notes { get; set; }
