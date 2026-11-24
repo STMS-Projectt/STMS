@@ -225,6 +225,19 @@
 .aic-recs ul { margin: 6px 0 0; padding-inline-start: 1.2rem; }
 .ai-downloads { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
 
+/* Admin: confirmation card for what the AI suggests to create */
+.aic-action { margin-top: 14px; padding: 16px; border-radius: 16px; border: 1.5px solid light-dark(#9ad8c4, #2d6958); background: light-dark(#f6fcfa, #15232b); }
+.aic-action-head strong { display: block; font-size: 1rem; }
+.aic-action-head span { color: var(--muted); font-size: .84rem; }
+.aic-action-warnings { margin: 10px 0 0; padding: 8px 12px 8px 28px; border-radius: 10px; background: light-dark(#fff4e0, #33270f); color: light-dark(#8a550b, #eed4af); font-size: .85rem; }
+.aic-action-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-top: 14px; }
+.aic-action-fields .field { display: flex; flex-direction: column; gap: 4px; margin: 0; font-size: .85rem; font-weight: 600; }
+.aic-action-fields .field-wide { grid-column: 1 / -1; }
+.aic-action-check { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; font-size: .9rem; }
+.aic-action-check input { width: 18px; height: 18px; accent-color: var(--aic-accent); }
+.aic-action-buttons { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.aic-action-cancelled { margin: 12px 0 0; color: var(--muted); font-style: italic; }
+
 /* Composer: stays at the bottom of the screen while the page scrolls */
 .aic-composer { position: sticky; bottom: 0; z-index: 2; padding: 10px 0 12px; background: linear-gradient(transparent, var(--canvas) 30%); }
 .aic-input { display: flex; align-items: flex-end; gap: 8px; padding: 8px; border-radius: 20px; background: var(--aic-card); border: 1.5px solid var(--aic-line);

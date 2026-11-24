@@ -16,7 +16,7 @@ namespace SourcingTenderSystem.Controllers;
 /// Each user only sees the tenders they are allowed to see (see AiInsights.LoadAsync).
 /// </summary>
 [Authorize(Roles = StaffRoles)]
-public class AiIntelligenceController(AiInsights insights, UiText text, IMemoryCache cache) : Controller
+public class AiIntelligenceController(AiInsights insights, AdminAiAssistant adminAssistant, UiText text, IMemoryCache cache) : Controller
 {
     public const string StaffRoles = Roles.Admin + ",RequestingDepartment," + Roles.SourcingOfficer + "," +
         Roles.EvaluationCommittee + "," + Roles.SourcingManager + "," + Roles.TechnicalCommittee + "," +
@@ -50,6 +50,19 @@ public class AiIntelligenceController(AiInsights insights, UiText text, IMemoryC
             return BadRequest(new { answer = text.T("The question is too long (max 2,000 characters).") });
         if (file is not null && !new[] { ".csv", ".txt", ".xlsx", ".pdf" }.Contains(Path.GetExtension(file.FileName).ToLowerInvariant()))
             return BadRequest(new { answer = text.T("Only Excel (.xlsx, .csv) and PDF files are supported.") });
+
+        // Admin asking to create a department / category / employee: the AI suggests it, the admin confirms it.
+        if (User.IsInRole(Roles.Admin) && file is null && AdminAiAssistant.LooksLikeCreateRequest(question ?? "") &&
+            await adminAssistant.GenerateAsync(question!, cancellationToken) is var (action, message))
+        {
+            action.Url = action.Action switch
+            {
+                "create_department" => Url.Action("Create", "Departments")!,
+                "create_category" => Url.Action("Create", "Categories")!,
+                _ => Url.Action("Create", "Employees")!
+            };
+            return Json(new AiAnswer { Answer = message, Action = action, UsedAiModel = true });
+        }
 
         var data = await insights.LoadAsync(User);
         var answer = await insights.AskAsync(data, question ?? "", file, text.Arabic, ReadHistory(history), cancellationToken);

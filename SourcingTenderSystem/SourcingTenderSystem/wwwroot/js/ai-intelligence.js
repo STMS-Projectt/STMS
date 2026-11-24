@@ -111,6 +111,77 @@
         return bar;
     }
 
+    // ------------------------------------------------------------ Admin: confirm what the AI suggests to create
+    // The card is a normal form that posts to the Departments / Categories / Employees "Create" page,
+    // so nothing is saved until the admin presses Confirm, and the usual validation still runs.
+    function actionForm(action, chatForm) {
+        const titles = { create_department: "Create department", create_category: "Create category", create_employee: "Create employee" };
+        const form = Object.assign(document.createElement("form"), { method: "post", action: action.url, className: "aic-action" });
+        form.innerHTML = `<div class="aic-action-head"><strong></strong><span></span></div><div class="aic-action-fields"></div>`;
+        form.querySelector("strong").textContent = t(titles[action.action]);
+        form.querySelector(".aic-action-head span").textContent = t("Review the details, then confirm. Nothing is saved until you confirm.");
+        const token = chatForm.querySelector("input[name=__RequestVerificationToken]");
+        if (token) form.append(token.cloneNode());
+
+        if (action.warnings?.length) {
+            const warning = document.createElement("ul");
+            warning.className = "aic-action-warnings";
+            action.warnings.forEach(w => warning.append(Object.assign(document.createElement("li"), { textContent: t(w) })));
+            form.querySelector(".aic-action-head").after(warning);
+        }
+
+        const fields = form.querySelector(".aic-action-fields");
+        const value = name => action.fields?.[name] ?? "";
+        const add = (label, control, wide = false) => {
+            const wrap = document.createElement("label");
+            wrap.className = "field" + (wide ? " field-wide" : "");
+            wrap.append(t(label), control);
+            fields.append(wrap);
+        };
+        const input = (name, attrs = {}) => Object.assign(document.createElement(attrs.tag || "input"),
+            { name, className: "form-control", value: value(name), ...attrs, tag: undefined });
+        const select = (name, options, empty) => {
+            const list = Object.assign(document.createElement("select"), { name, className: "form-select" });
+            if (empty) list.append(new Option(t(empty), ""));
+            options.forEach(o => list.append(new Option(t(o.label), o.value, false, o.value === value(name))));
+            return list;
+        };
+        const active = () => {   // checkbox + hidden "false", the usual ASP.NET MVC pattern
+            const wrap = document.createElement("label");
+            wrap.className = "aic-action-check";
+            wrap.append(Object.assign(document.createElement("input"), { type: "checkbox", name: "IsActive", value: "true", checked: true }), t("Active"));
+            fields.append(wrap, Object.assign(document.createElement("input"), { type: "hidden", name: "IsActive", value: "false" }));
+        };
+
+        if (action.action === "create_department") {
+            add("Name", input("Name", { required: true, maxLength: 200 }));
+            add("Description", input("Description", { tag: "textarea", rows: 2, maxLength: 2000 }), true);
+            active();
+        } else if (action.action === "create_category") {
+            add("Name", input("name", { required: true, maxLength: 120 }));
+        } else {
+            add("Full name", input("FullName", { required: true, maxLength: 200 }));
+            add("Email", input("Email", { type: "email", required: true, maxLength: 256 }));
+            add("Job title", input("JobTitle", { maxLength: 150 }));
+            add("Department", select("DepartmentId", action.departments || [], "No department"));
+            const role = select("Role", action.roles || [], "Select a role");
+            role.required = true;
+            add("Role", role);
+            add("Password", input("Password", { type: "password", required: true, minLength: 6, maxLength: 128, autocomplete: "new-password", value: "" }));
+            active();
+        }
+
+        const buttons = document.createElement("div");
+        buttons.className = "aic-action-buttons";
+        buttons.innerHTML = `<button type="submit" class="btn btn-primary"></button><button type="button" class="btn btn-outline-secondary"></button>`;
+        buttons.children[0].textContent = t("Confirm and create");
+        buttons.children[1].textContent = t("Cancel");
+        buttons.children[1].addEventListener("click", () =>
+            form.replaceWith(Object.assign(document.createElement("p"), { className: "aic-action-cancelled", textContent: t("Cancelled. Nothing was created.") })));
+        form.append(buttons);
+        return form;
+    }
+
     // ------------------------------------------------------------ AI Assistant page (chatbot)
     function setupChat(chat) {
         const thread = chat.querySelector("[data-ai-messages]");
@@ -242,6 +313,7 @@
                 recs.append(list);
                 box.append(recs);
             }
+            if (answer.action) box.append(actionForm(answer.action, form));
             if (answer.id) box.append(downloadLinks(form, answer.id));
             box.closest(".aic-msg").scrollIntoView({ behavior: "auto", block: "start" });
         }

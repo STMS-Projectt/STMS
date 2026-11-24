@@ -36,6 +36,8 @@ public class AiAnswer
     public bool UsedAiModel { get; set; }
     // Id used to download this answer as Excel or PDF (the answer is kept on the server for a while).
     public string? Id { get; set; }
+    // Admin only: a suggested create action shown as a confirmation form (nothing is saved until the admin confirms).
+    public AdminAiAction? Action { get; set; }
 }
 
 /// <summary>

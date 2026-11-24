@@ -2161,3 +2161,12 @@ Compare the tenders by number of bids and prices|قارن المناقصات ح�
 Analyse the supplier offers on the latest tenders|حلّل عروض الموردين على آخر المناقصات
 How much does each supplier take part in tenders?|ما مدى مشاركة كل مورد في المناقصات؟
 What is the status and result of each tender?|ما حالة ونتيجة كل مناقصة؟
+Create category|إنشاء فئة
+Review the details, then confirm. Nothing is saved until you confirm.|راجع البيانات ثم أكّد. لن يُحفظ أي شيء قبل التأكيد.
+No department|بدون قسم
+Confirm and create|تأكيد وإنشاء
+Cancelled. Nothing was created.|تم الإلغاء. لم يُنشأ أي شيء.
+A department with this name already exists.|يوجد قسم بهذا الاسم مسبقًا.
+That category already exists.|هذه الفئة موجودة مسبقًا.
+A user with this email already exists.|يوجد مستخدم بهذا البريد الإلكتروني مسبقًا.
+The department you wrote was not found. Choose one from the list.|القسم الذي كتبته غير موجود. اختر قسمًا من القائمة.

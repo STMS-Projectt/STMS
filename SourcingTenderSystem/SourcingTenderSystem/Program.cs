@@ -55,6 +55,7 @@ builder.Services.AddHttpClient(QwenChatbot.HttpClientName, client =>
 });
 builder.Services.AddSingleton<QwenChatbot>();
 builder.Services.AddScoped<AiInsights>();
+builder.Services.AddScoped<AdminAiAssistant>();   // admin: AI suggests new departments / categories / employees
 // Free exchange-rate reference (Frankfurter v2) for USD-equivalent bid display only.
 builder.Services.AddMemoryCache();
 

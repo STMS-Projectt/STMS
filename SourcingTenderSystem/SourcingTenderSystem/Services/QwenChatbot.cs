@@ -110,6 +110,14 @@ public class QwenChatbot(IHttpClientFactory httpClients, IConfiguration configur
         return answer;
     }
 
+    /// <summary>Sends one system message + one user message and returns the model's raw reply (JSON text), or null.</summary>
+    public Task<string?> CompleteAsync(string system, string user, CancellationToken cancellationToken = default) =>
+        Enabled ? CallModelAsync(new JsonArray
+        {
+            new JsonObject { ["role"] = "system", ["content"] = system },
+            new JsonObject { ["role"] = "user", ["content"] = user }
+        }, cancellationToken) : Task.FromResult<string?>(null);
+
     private async Task<string?> CallModelAsync(JsonArray messages, CancellationToken cancellationToken)
     {
         // Thinking is OFF by default: the numbers are already calculated, so the answer comes much faster.
