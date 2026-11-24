@@ -211,8 +211,7 @@
         }
         @if (admin || sourcing || department || committee)
         {
-            @* AI chatbot for employees only (suppliers never get it) *@
-            <partial name="_AiChat" />
+            @* AI Intelligence charts + the AI assistant page (employees only, suppliers never get it) *@
             <script src="~/js/ai-intelligence.js" asp-append-version="true" defer></script>
         }
     }

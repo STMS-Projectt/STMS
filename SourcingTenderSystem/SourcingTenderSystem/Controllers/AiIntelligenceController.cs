@@ -30,6 +30,14 @@ public class AiIntelligenceController(AiInsights insights, UiText text, IMemoryC
         return View(data);
     }
 
+    // GET /AiIntelligence/Chat  -> the AI assistant (chatbot) page, opened from the sidebar.
+    public IActionResult Chat([FromServices] QwenChatbot chatbot)
+    {
+        ViewBag.ModelName = chatbot.ModelName;
+        ViewBag.Local = chatbot.Local;
+        return View();
+    }
+
     // POST /AiIntelligence/Ask  (used by the chatbot)
     [HttpPost]
     [RequestSizeLimit(5 * 1024 * 1024)]

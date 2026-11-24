@@ -29,7 +29,7 @@
     <div class="cl-hero-side"><div class="button-row ai-actions">
         <a class="btn btn-outline-secondary" data-full-page asp-action="ExportExcel" asp-route-tenderId="@selected?.Id"><partial name="_Icon" model='@("download")' /> Excel</a>
         <a class="btn btn-outline-secondary" data-full-page asp-action="ExportPdf" asp-route-tenderId="@selected?.Id"><partial name="_Icon" model='@("download")' /> PDF</a>
-        <button type="button" class="btn btn-primary" data-ai-chat-open><partial name="_Icon" model='@("chart")' /> @L.T("Ask the AI")</button>
+        <a class="btn btn-primary" asp-action="Chat"><partial name="_Icon" model='@("chat")' /> @L.T("Ask the AI")</a>
     </div></div>
 </header>
 
@@ -146,7 +146,7 @@
         <ul class="ai-recommendations">
             @foreach (var r in recommendations) { <li>@r</li> }
         </ul>
-        <button type="button" class="btn ai-ask" data-ai-chat-open><partial name="_Icon" model='@("chart")' /> @L.T("Ask the AI a question")</button>
+        <a class="btn ai-ask" asp-action="Chat"><partial name="_Icon" model='@("chat")' /> @L.T("Ask the AI a question")</a>
     </section>
 </div>
 

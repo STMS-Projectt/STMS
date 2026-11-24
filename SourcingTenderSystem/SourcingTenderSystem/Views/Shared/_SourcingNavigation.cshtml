@@ -5,10 +5,11 @@
         "RequisitionReviews" => action == "Index" ? "Index" : "Pending",
         "Tenders" or "Invitations" => "Index",
         "Compliance" => "Pending",
+        "AiIntelligence" => action == "Chat" ? "Chat" : "Index",
         _ => "Index"
     };
     var groups = new[] {
-        ("OVERVIEW", new[] { ("SourcingDashboard", "Index", "Dashboard", "dashboard"), ("AiIntelligence", "Index", "AI Intelligence", "chart") }),
+        ("OVERVIEW", new[] { ("SourcingDashboard", "Index", "Dashboard", "dashboard"), ("AiIntelligence", "Index", "AI Intelligence", "chart"), ("AiIntelligence", "Chat", "AI Assistant", "chat") }),
         ("PURCHASE REQUESTS", new[] { ("RequisitionReviews", "Pending", "Review queue", "clock"),
             ("RequisitionReviews", "Index", "All requests", "file") }),
         ("SUPPLIERS", new[] { ("Suppliers", "Index", "Supplier directory", "supplier") }),

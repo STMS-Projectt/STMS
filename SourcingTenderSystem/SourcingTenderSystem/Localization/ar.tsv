@@ -2141,3 +2141,23 @@ The question is too long (max 2,000 characters).|السؤال طويل جدًا 
 Analyse supplier offers|حلّل عروض الموردين
 Tender status and results|حالة المناقصات ونتائجها
 AI answer and recommendations (advice only)|إجابة الذكاء الاصطناعي والتوصيات (للاستشارة فقط)
+Ask about tenders, bids and suppliers. Answers use only the data you are allowed to see.|اسأل عن المناقصات والعروض والموردين. الإجابات تعتمد فقط على البيانات المسموح لك برؤيتها.
+Runs on this computer|يعمل على هذا الجهاز
+Runs on Hugging Face|يعمل على Hugging Face
+Local|محلي
+Cloud|سحابي
+New chat|محادثة جديدة
+How can I help you today?|كيف أقدر أساعدك اليوم؟
+Pick a question to start, or write your own. You can also attach an Excel or PDF file to analyse it.|اختر سؤالًا للبدء أو اكتب سؤالك. يمكنك أيضًا إرفاق ملف Excel أو PDF لتحليله.
+Compare tenders|مقارنة المناقصات
+Supplier offers|عروض الموردين
+Lowest prices|أقل الأسعار
+Highest prices|أعلى الأسعار
+Status & results|الحالة والنتائج
+Remove file|إزالة الملف
+Your question|سؤالك
+Enter to send, Shift + Enter for a new line. AI answers are advice only and can make mistakes.|اضغط Enter للإرسال و Shift + Enter لسطر جديد. إجابات الذكاء الاصطناعي استشارية فقط وقد تحتوي على أخطاء.
+Compare the tenders by number of bids and prices|قارن المناقصات حسب عدد العروض والأسعار
+Analyse the supplier offers on the latest tenders|حلّل عروض الموردين على آخر المناقصات
+How much does each supplier take part in tenders?|ما مدى مشاركة كل مورد في المناقصات؟
+What is the status and result of each tender?|ما حالة ونتيجة كل مناقصة؟

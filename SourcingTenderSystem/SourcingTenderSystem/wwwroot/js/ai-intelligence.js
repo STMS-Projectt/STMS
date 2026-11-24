@@ -1,4 +1,4 @@
-// AI Intelligence: simple bar charts + the AI chatbot.
+// AI Intelligence: simple bar charts + the AI Assistant (chatbot) page.
 (() => {
     if (window.__aiIntelligenceReady) return;
     window.__aiIntelligenceReady = true;
@@ -79,6 +79,8 @@
 
     // ------------------------------------------------------------ Table helpers
     function buildTable(table) {
+        const outer = document.createElement("div");
+        outer.className = "ai-table-wrap";
         const wrap = document.createElement("div");
         wrap.className = "table-responsive";
         const el = document.createElement("table");
@@ -91,7 +93,8 @@
             r.forEach(cell => tr.insertCell().textContent = cell);
         });
         wrap.append(el);
-        return wrap;
+        outer.append(wrap);
+        return outer;
     }
 
     // Download links for one answer: the server builds the Excel / PDF report (same template as the Reports page).
@@ -100,78 +103,122 @@
         bar.className = "ai-downloads";
         const base = form.action.replace(/\/Ask$/, "/DownloadAnswer/") + encodeURIComponent(id);
         for (const [format, label] of [["excel", "Download as Excel"], ["pdf", "Download as PDF"]]) {
-            bar.append(Object.assign(document.createElement("a"),
-                { className: "btn btn-sm btn-outline-secondary", href: `${base}?format=${format}`, textContent: t(label) }));
+            const link = Object.assign(document.createElement("a"),
+                { className: "btn btn-sm btn-outline-secondary", href: `${base}?format=${format}`, textContent: t(label) });
+            link.setAttribute("data-full-page", "");   // a file download, not a workspace page
+            bar.append(link);
         }
         return bar;
     }
 
-    // ------------------------------------------------------------ Chatbot
-    const chat = document.querySelector("[data-ai-chat]");
-    if (chat) {
-        const messages = chat.querySelector("[data-ai-messages]");
+    // ------------------------------------------------------------ AI Assistant page (chatbot)
+    function setupChat(chat) {
+        const thread = chat.querySelector("[data-ai-messages]");
+        const welcome = chat.querySelector("[data-ai-welcome]");
         const form = chat.querySelector("[data-ai-form]");
         const question = chat.querySelector("[data-ai-question]");
+        const send = chat.querySelector("[data-ai-send]");
         const file = chat.querySelector("[data-ai-file]");
+        const fileChip = chat.querySelector("[data-ai-file-chip]");
         const fileName = chat.querySelector("[data-ai-file-name]");
+        let busy = false;
+
         // The last messages are sent with each question so the AI understands follow-ups ("and the highest?").
-        const history = [];
+        let history = [];
         const remember = (role, content) => {
             if (!content) return;
             history.push({ role, content: content.slice(0, 1500) });
             if (history.length > 6) history.shift();
         };
 
-        document.addEventListener("click", event => {
-            if (event.target.closest("[data-ai-chat-open]")) { chat.hidden = false; question.focus(); }
-            if (event.target.closest("[data-ai-chat-close]")) chat.hidden = true;
-            const suggestion = event.target.closest("[data-ai-suggestion]");
-            if (suggestion) { question.value = suggestion.textContent.trim(); form.requestSubmit(); }
+        // The text box grows with the text (up to 8 lines).
+        const resize = () => { question.style.height = "auto"; question.style.height = Math.min(question.scrollHeight, 200) + "px"; };
+        question.addEventListener("input", resize);
+        question.addEventListener("keydown", event => {
+            if (event.key === "Enter" && !event.shiftKey && !event.isComposing) { event.preventDefault(); form.requestSubmit(); }
         });
 
-        file.addEventListener("change", () => fileName.textContent = file.files[0]?.name ?? "");
+        const showFile = () => {
+            fileName.textContent = file.files[0]?.name ?? "";
+            fileChip.hidden = !file.files.length;
+        };
+        file.addEventListener("change", showFile);
 
+        chat.addEventListener("click", event => {
+            const suggestion = event.target.closest("[data-ai-suggestion]");
+            if (suggestion) { question.value = suggestion.dataset.question; form.requestSubmit(); }
+            if (event.target.closest("[data-ai-file-clear]")) { file.value = ""; showFile(); question.focus(); }
+            if (event.target.closest("[data-ai-new-chat]")) {
+                thread.querySelectorAll(".aic-msg").forEach(m => m.remove());
+                history = [];
+                welcome.hidden = false;
+                question.focus();
+            }
+        });
+
+        // One chat message: an avatar (bot only) and a bubble. Returns the bubble.
         function addMessage(kind, text) {
-            const div = document.createElement("div");
-            div.className = "ai-msg ai-msg-" + kind;
-            div.textContent = text;
-            messages.append(div);
-            messages.scrollTop = messages.scrollHeight;
-            return div;
+            welcome.hidden = true;
+            const message = document.createElement("article");
+            message.className = "aic-msg is-" + kind;
+            if (kind === "bot") {
+                const avatar = document.createElement("span");
+                avatar.className = "aic-avatar";
+                avatar.innerHTML = chat.querySelector(".aic-logo").innerHTML;
+                message.append(avatar);
+            }
+            const bubble = document.createElement("div");
+            bubble.className = "aic-bubble";
+            if (text) bubble.append(Object.assign(document.createElement("p"), { className: "aic-text", textContent: text }));
+            message.append(bubble);
+            thread.append(message);
+            message.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "end" });
+            return bubble;
         }
 
         form.addEventListener("submit", async event => {
             event.preventDefault();
-            if (!question.value.trim() && !file.files.length) return;
-            addMessage("user", question.value.trim() || file.files[0].name);
-            const waiting = addMessage("bot", t("Thinking…"));
+            const text = question.value.trim();
+            if (busy || (!text && !file.files.length)) return;
+
+            const userBubble = addMessage("user", text);
+            if (file.files.length) {
+                const tag = Object.assign(document.createElement("span"), { className: "aic-file-tag", textContent: file.files[0].name });
+                userBubble.append(tag);
+            }
             const data = new FormData(form);
             data.append("history", JSON.stringify(history));
-            remember("user", question.value.trim() || `[file] ${file.files[0]?.name ?? ""}`);
-            question.value = "";
-            file.value = "";
-            fileName.textContent = "";
+            remember("user", text || `[file] ${file.files[0]?.name ?? ""}`);
+            question.value = ""; resize();
+            file.value = ""; showFile();
 
+            busy = true; send.disabled = true;
+            const waiting = addMessage("bot");
+            waiting.closest(".aic-msg").classList.add("is-typing");
+            waiting.innerHTML = `<span class="aic-dots" aria-label="${t("Thinking…")}"><i></i><i></i><i></i></span>`;
             try {
                 const response = await fetch(form.action, { method: "POST", body: data });
                 const answer = await response.json();
-                waiting.remove();
+                waiting.closest(".aic-msg").remove();
                 showAnswer(answer);
                 if (response.ok) remember("assistant", answer.answer);
             } catch {
+                waiting.closest(".aic-msg").classList.remove("is-typing");
                 waiting.textContent = t("Sorry, something went wrong. Please try again.");
+            } finally {
+                busy = false; send.disabled = false; question.focus();
             }
         });
 
-        // Shows text, cards, chart, table and recommendations of one answer.
+        // Shows text, analysis cards, chart, table, recommendations and download links of one answer.
         function showAnswer(answer) {
             const box = addMessage("bot", answer.answer || "");
             if (answer.cards?.length) {
                 const cards = document.createElement("div");
-                cards.className = "ai-cards ai-cards-small";
+                cards.className = "aic-cards";
                 answer.cards.forEach(c => {
                     const card = document.createElement("div");
-                    card.className = "ai-card";
+                    card.className = "aic-card";
                     card.innerHTML = "<strong></strong><span></span>";
                     card.querySelector("strong").textContent = c.value;
                     card.querySelector("span").textContent = t(c.label);
@@ -181,25 +228,34 @@
             }
             if (answer.chart?.values?.length) {
                 const chartBox = document.createElement("div");
-                chartBox.className = "ai-chart";
+                chartBox.className = "ai-chart aic-chart";
                 drawChart(chartBox, { ...answer.chart, title: t(answer.chart.title) }, answer.chart.kind === "columns" ? "columns" : "bars");
                 box.append(chartBox);
             }
-            if (answer.table?.rows?.length) {
-                box.append(buildTable(answer.table));
-            }
+            if (answer.table?.rows?.length) box.append(buildTable(answer.table));
             if (answer.recommendations?.length) {
-                const title = Object.assign(document.createElement("strong"), { className: "d-block mt-2", textContent: t("AI recommendations (advice only)") });
+                const recs = document.createElement("div");
+                recs.className = "aic-recs";
+                recs.append(Object.assign(document.createElement("strong"), { textContent: t("AI recommendations (advice only)") }));
                 const list = document.createElement("ul");
                 answer.recommendations.forEach(r => list.append(Object.assign(document.createElement("li"), { textContent: r })));
-                box.append(title, list);
+                recs.append(list);
+                box.append(recs);
             }
             if (answer.id) box.append(downloadLinks(form, answer.id));
-            messages.scrollTop = messages.scrollHeight;
+            box.closest(".aic-msg").scrollIntoView({ behavior: "auto", block: "start" });
         }
+    }
+
+    function initChat(root) {
+        root.querySelectorAll("[data-ai-chat]:not([data-ready])").forEach(chat => {
+            chat.dataset.ready = "true";
+            setupChat(chat);
+        });
     }
 
     // Run on the first page load and every time the workspace loads a new page.
     drawPageCharts(document);
-    document.addEventListener("workspace:load", event => drawPageCharts(event.detail || document));
+    initChat(document);
+    document.addEventListener("workspace:load", event => { drawPageCharts(event.detail || document); initChat(event.detail || document); });
 })();

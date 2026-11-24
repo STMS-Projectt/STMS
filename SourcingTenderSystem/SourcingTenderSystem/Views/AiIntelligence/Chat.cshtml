@@ -1,0 +1,66 @@
+@{
+    ViewData["Title"] = "AI Assistant";
+    string modelName = ViewBag.ModelName ?? "";
+    var local = ViewBag.Local is true;
+    // Quick start cards: icon, title, the question that is sent when the card is clicked.
+    var suggestions = new[]
+    {
+        ("chart", "Compare tenders", "Compare the tenders by number of bids and prices"),
+        ("supplier", "Supplier offers", "Analyse the supplier offers on the latest tenders"),
+        ("download", "Lowest prices", "Who offered the lowest prices?"),
+        ("upload", "Highest prices", "Who offered the highest prices?"),
+        ("users", "Supplier participation", "How much does each supplier take part in tenders?"),
+        ("trophy", "Status & results", "What is the status and result of each tender?")
+    };
+}
+
+<section class="aic" data-ai-chat aria-label="@L.T("AI Assistant")">
+    <header class="aic-head">
+        <span class="aic-logo"><partial name="_Icon" model='@("sparkle")' /></span>
+        <div class="aic-title">
+            <h1>@L.T("AI Assistant")</h1>
+            <p>@L.T("Ask about tenders, bids and suppliers. Answers use only the data you are allowed to see.")</p>
+        </div>
+        <div class="aic-head-side">
+            <span class="aic-model" title="@L.T(local ? "Runs on this computer" : "Runs on Hugging Face")"><i></i>@modelName · @L.T(local ? "Local" : "Cloud")</span>
+            <button type="button" class="btn btn-outline-secondary btn-sm" data-ai-new-chat><partial name="_Icon" model='@("refresh")' /> @L.T("New chat")</button>
+        </div>
+    </header>
+
+    <div class="aic-thread" data-ai-messages aria-live="polite">
+        <div class="aic-welcome" data-ai-welcome>
+            <span class="aic-welcome-icon"><partial name="_Icon" model='@("sparkle")' /></span>
+            <h2>@L.T("How can I help you today?")</h2>
+            <p>@L.T("Pick a question to start, or write your own. You can also attach an Excel or PDF file to analyse it.")</p>
+            <div class="aic-suggestions">
+                @foreach (var (icon, title, question) in suggestions)
+                {
+                    <button type="button" class="aic-suggestion" data-ai-suggestion data-question="@L.T(question)">
+                        <span class="icon-tile tone-teal"><partial name="_Icon" model="icon" /></span>
+                        <strong>@L.T(title)</strong>
+                        <span>@L.T(question)</span>
+                    </button>
+                }
+            </div>
+        </div>
+    </div>
+
+    <form class="aic-composer" data-ai-form asp-controller="AiIntelligence" asp-action="Ask" method="post" enctype="multipart/form-data">
+        <div class="aic-file-chip" data-ai-file-chip hidden>
+            <partial name="_Icon" model='@("file")' />
+            <span data-ai-file-name></span>
+            <button type="button" data-ai-file-clear aria-label="@L.T("Remove file")"><partial name="_Icon" model='@("close")' /></button>
+        </div>
+        <div class="aic-input">
+            <label class="aic-attach" title="@L.T("Attach Excel or PDF")">
+                <partial name="_Icon" model='@("upload")' />
+                <span class="visually-hidden">@L.T("Attach Excel or PDF")</span>
+                <input type="file" name="file" accept=".xlsx,.csv,.pdf" hidden data-ai-file>
+            </label>
+            <textarea name="question" rows="1" maxlength="2000" autocomplete="off" data-ai-question
+                      placeholder="@L.T("Ask a question, e.g. tender #5")" aria-label="@L.T("Your question")"></textarea>
+            <button type="submit" class="aic-send" data-ai-send aria-label="@L.T("Send")"><partial name="_Icon" model='@("send")' /></button>
+        </div>
+        <p class="aic-note">@L.T("Enter to send, Shift + Enter for a new line. AI answers are advice only and can make mistakes.")</p>
+    </form>
+</section>

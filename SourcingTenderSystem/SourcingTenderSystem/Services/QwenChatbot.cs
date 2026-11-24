@@ -29,6 +29,8 @@ public class QwenChatbot(IHttpClientFactory httpClients, IConfiguration configur
     public bool Local => !string.Equals(configuration["Qwen:Provider"], "HuggingFace", StringComparison.OrdinalIgnoreCase);
     private string? ApiKey => configuration["Qwen:ApiKey"] is { Length: > 0 } key ? key : Environment.GetEnvironmentVariable("HF_TOKEN");
     private string Model => configuration["Qwen:Model"] is { Length: > 0 } m ? m : DefaultModel;
+    /// <summary>The model name shown on the chat page.</summary>
+    public string ModelName => Model;
 
     /// <summary>The local model needs no key; Hugging Face needs a token.</summary>
     public bool Enabled => Local || !string.IsNullOrWhiteSpace(ApiKey);
