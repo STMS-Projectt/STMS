@@ -44,6 +44,11 @@ public sealed class QwenChatbotTests
         Assert.Equal(["Check delivery."], answer.Recommendations);
 
         Assert.Null(QwenChatbot.ParseAnswer("Sorry, I cannot help."));
+        // A question outside the system: flagged, with nothing else to show
+        var offTopic = QwenChatbot.ParseAnswer("{ \"offTopic\": true, \"answer\": \"JavaScript is a language\" }")!;
+        Assert.True(offTopic.OffTopic);
+        Assert.Equal("", offTopic.Answer);
+        Assert.Null(offTopic.Table);
         Assert.Null(QwenChatbot.ParseAnswer("{ \"cards\": [] }"));
     }
 
@@ -88,6 +93,7 @@ public sealed class QwenChatbotTests
         var messages = first.Body["messages"]!.AsArray();
         Assert.Contains("Arabic", messages[0]!["content"]!.GetValue<string>());
         Assert.Contains("did NOT ask for recommendations", messages[0]!["content"]!.GetValue<string>());
+        Assert.Contains("offTopic", messages[0]!["content"]!.GetValue<string>());
         Assert.Equal("hi", messages[1]!["content"]!.GetValue<string>());
         var user = messages[^1]!["content"]!.GetValue<string>();
         Assert.Contains("\"lowestSupplier\":\"Alpha\"", user);

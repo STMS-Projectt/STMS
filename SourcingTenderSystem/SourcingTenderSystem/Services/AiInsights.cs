@@ -36,6 +36,8 @@ public class AiAnswer
     public bool UsedAiModel { get; set; }
     // Id used to download this answer as Excel or PDF (the answer is kept on the server for a while).
     public string? Id { get; set; }
+    // True when the question is not about the system (the AI does not answer it).
+    public bool OffTopic { get; set; }
     // Admin only: a suggested create action shown as a confirmation form (nothing is saved until the admin confirms).
     public AdminAiAction? Action { get; set; }
 }
@@ -237,6 +239,7 @@ public class AiInsights(ApplicationDbContext db, QwenChatbot chatbot)
             history ?? [], arabic, wantsAdvice, cancellationToken)
             ?? RuleBasedAnswer(data, question, file, fileTable, focus);
 
+        if (answer.OffTopic) return answer;   // nothing else is shown for a question outside the system
         // Recommendations are shown ONLY when the user asked for them.
         if (!wantsAdvice) answer.Recommendations = [];
         // Always show what was read from the file, even if the model did not return a table.

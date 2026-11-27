@@ -53,6 +53,13 @@ public class QwenChatbot(IHttpClientFactory httpClients, IConfiguration configur
         - If the data does not contain the answer, say that clearly instead of guessing.
         - You only advise. You cannot approve, award, edit or delete anything.
 
+        SCOPE (VERY IMPORTANT)
+        - Answer ONLY questions about this system and its data: tenders, purchase requests, bids / offers, suppliers,
+          prices, invitations, evaluations, committees, awards and reports, or about the uploaded file.
+        - A short greeting or "thank you" is fine: reply briefly and say what you can help with.
+        - For ANY other question (general knowledge, programming, maths, news, people, health, jokes, translation ...),
+          do NOT answer it, even if you know the answer. Reply exactly: { "offTopic": true, "answer": "" }
+
         HOW TO ANSWER
         Reply with ONE JSON object only (no markdown, no text outside the JSON), in this exact shape:
         {
@@ -206,7 +213,11 @@ public class QwenChatbot(IHttpClientFactory httpClients, IConfiguration configur
         JsonObject? json;
         try { json = JsonNode.Parse(content[start..(end + 1)]) as JsonObject; }
         catch (JsonException) { return null; }
-        if (json is null || Text(json["answer"]) is not { Length: > 0 } text) return null;
+        if (json is null) return null;
+        // The question is not about the system: the caller shows a fixed "I only answer questions about the system" message.
+        if (json["offTopic"] is JsonValue flag && flag.TryGetValue<bool>(out var offTopic) && offTopic)
+            return new AiAnswer { OffTopic = true, UsedAiModel = true };
+        if (Text(json["answer"]) is not { Length: > 0 } text) return null;
 
         var answer = new AiAnswer { Answer = text, UsedAiModel = true };
 

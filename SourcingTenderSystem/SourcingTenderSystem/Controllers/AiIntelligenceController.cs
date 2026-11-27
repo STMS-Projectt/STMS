@@ -66,6 +66,12 @@ public class AiIntelligenceController(AiInsights insights, AdminAiAssistant admi
 
         var data = await insights.LoadAsync(User);
         var answer = await insights.AskAsync(data, question ?? "", file, text.Arabic, ReadHistory(history), cancellationToken);
+        if (answer.OffTopic)
+        {
+            // A question that has nothing to do with the system: fixed message, no tables / downloads.
+            answer.Answer = text.T(OffTopicMessage);
+            return Json(answer);
+        }
 
         // Keep the answer for one hour so the user can download it as Excel or PDF. Only the same user can download it.
         answer.Id = Guid.NewGuid().ToString("N");
@@ -100,6 +106,8 @@ public class AiIntelligenceController(AiInsights insights, AdminAiAssistant admi
             ? ReportExport.ExcelFile(section, scope, text, "ai-answer")
             : await ReportExport.PdfFileAsync(this, pdf, section, scope, "ai-answer", "AI INTELLIGENCE");
     }
+
+    public const string OffTopicMessage = "I can only answer questions about this system: tenders, purchase requests, bids, suppliers, evaluations and awards. Please ask a question related to the system.";
 
     private string AnswerKey(string id) => $"ai-answer:{User.FindFirstValue(ClaimTypes.NameIdentifier)}:{id}";
 
