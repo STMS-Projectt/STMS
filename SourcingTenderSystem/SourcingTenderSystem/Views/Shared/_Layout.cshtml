@@ -213,6 +213,20 @@
         {
             @* AI Intelligence charts + the AI assistant page (employees only, suppliers never get it) *@
             <script src="~/js/ai-intelligence.js" asp-append-version="true" defer></script>
+            @* Floating robot button (bottom right): opens the AI Assistant page. Hidden on that page itself. *@
+            <a class="ai-robot-fab" asp-controller="AiIntelligence" asp-action="Chat" aria-label="@L.T("AI Assistant")" title="@L.T("AI Assistant")">
+                <svg viewBox="0 0 64 64" width="34" height="34" aria-hidden="true">
+                    <line x1="32" y1="6" x2="32" y2="14" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+                    <circle cx="32" cy="5" r="3.5" fill="currentColor" />
+                    <rect x="12" y="14" width="40" height="32" rx="11" fill="currentColor" />
+                    <rect x="5" y="25" width="6" height="12" rx="3" fill="currentColor" />
+                    <rect x="53" y="25" width="6" height="12" rx="3" fill="currentColor" />
+                    <circle class="ai-robot-eye" cx="24.5" cy="28" r="4.5" />
+                    <circle class="ai-robot-eye" cx="39.5" cy="28" r="4.5" />
+                    <rect class="ai-robot-eye" x="24" y="37" width="16" height="3.5" rx="1.75" />
+                    <rect x="20" y="48" width="24" height="10" rx="5" fill="currentColor" opacity=".85" />
+                </svg>
+            </a>
         }
     }
     <div data-page-scripts hidden>@await RenderSectionAsync("Scripts", required: false)</div>

@@ -268,3 +268,19 @@
 @media (prefers-reduced-motion: reduce) { .aic-msg, .aic-dots i { animation: none; } .aic-suggestion { transition: none; } }
 
 :is(.ai-block, .ai-table-wrap) .ai-table :is(th, td).is-num { text-align: end; }
+
+/* ---------- Floating robot button: opens the AI Assistant page ---------- */
+.ai-robot-fab { position: fixed; right: 22px; bottom: 22px; z-index: 1040; display: grid; place-items: center; width: 62px; height: 62px;
+    border-radius: 50%; color: #fff; text-decoration: none;
+    background: radial-gradient(circle at 30% 25%, #39d5bd, transparent 60%), linear-gradient(135deg, #065b53, #0b8a7c 60%, #19a891);
+    box-shadow: 0 10px 26px #065b5359, 0 2px 6px #0003; transition: transform .18s ease, box-shadow .18s ease; }
+.ai-robot-fab:hover, .ai-robot-fab:focus-visible { color: #fff; transform: translateY(-3px) scale(1.05); box-shadow: 0 16px 32px #065b5373, 0 2px 8px #0003; }
+.ai-robot-fab:focus-visible { outline: 3px solid #7cf2c9; outline-offset: 3px; }
+.ai-robot-fab .ai-robot-eye { fill: #0b8a7c; }
+.ai-robot-fab svg { animation: ai-robot-float 3s ease-in-out infinite; }
+@keyframes ai-robot-float { 50% { transform: translateY(-2px); } }
+/* Not needed on the AI Assistant page itself; moved up when a list filter bar sits at the bottom */
+body:has([data-ai-chat]) .ai-robot-fab { display: none; }
+@media (max-width: 700px) { body:has(.dept-filter-dock) .ai-robot-fab { bottom: 84px; } .ai-robot-fab { width: 54px; height: 54px; right: 16px; } }
+@media (prefers-reduced-motion: reduce) { .ai-robot-fab, .ai-robot-fab svg { transition: none; animation: none; } }
+@media print { .ai-robot-fab { display: none; } }
