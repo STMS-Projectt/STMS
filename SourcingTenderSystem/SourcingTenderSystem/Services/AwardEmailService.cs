@@ -13,10 +13,12 @@ public sealed record AwardEmailData(int TenderId, string TenderTitle, string Win
     decimal? GuaranteeAmount, DateTime? GuaranteeExpiry, string TenderLink, string? VerifyLink, string UploadLink,
     IReadOnlyList<string> AttachmentPaths);
 
-public sealed record AwardRecipient(string Email, string Name, bool IsWinner);
+// Unsuccessful = a supplier whose bid was not selected: gets a short "result of your bid" e-mail instead.
+public sealed record AwardRecipient(string Email, string Name, bool IsWinner, bool Unsuccessful = false, string? BidLink = null);
 
 /// <summary>
-/// Sends the "tender awarded" e-mail to everyone involved as soon as the Top Committee approves.
+/// Sends the "tender awarded" e-mail to everyone involved as soon as the Top Committee approves,
+/// and a short "your bid was not selected" e-mail to the suppliers who did not win.
 /// 1) The local Ollama model writes the e-mail text from the tender data (fallback: a fixed template).
 /// 2) A facts table (final cost, warranty, bank guarantee) is always added by the system.
 /// 3) Sent by SMTP when "Smtp:Host" is configured, otherwise saved as .eml files in App_Data/OutgoingEmails.
@@ -39,8 +41,12 @@ public sealed class AwardEmailService(IHttpClientFactory httpClients, IConfigura
             {
                 try
                 {
-                    await SendOneAsync(recipient, $"Tender #{data.TenderId} awarded: {data.TenderTitle}",
-                        BuildHtml(data, intro, recipient), recipient.IsWinner ? data.AttachmentPaths : [], cancellationToken);
+                    if (recipient.Unsuccessful)
+                        await SendOneAsync(recipient, $"Tender #{data.TenderId}: result of your bid - {data.TenderTitle}",
+                            BuildUnsuccessfulHtml(data, recipient), [], cancellationToken);
+                    else
+                        await SendOneAsync(recipient, $"Tender #{data.TenderId} awarded: {data.TenderTitle}",
+                            BuildHtml(data, intro, recipient), recipient.IsWinner ? data.AttachmentPaths : [], cancellationToken);
                 }
                 catch (Exception ex)
                 {
@@ -158,6 +164,38 @@ public sealed class AwardEmailService(IHttpClientFactory httpClients, IConfigura
 
         if (to.IsWinner)
             h.Append($"<p style=\"margin:22px 0 0;font-size:13px;color:{Muted};\">Please upload the signed legal warranty and bank guarantee documents if you have not done so yet.</p>");
+        h.Append("</td></tr>");
+
+        // Footer
+        h.Append($"<tr><td style=\"background:#f8fafc;border-top:1px solid {Line};border-radius:0 0 18px 18px;padding:16px 32px;text-align:center;font-size:12px;color:#94a3b8;\">");
+        h.Append("This is an automatic message from the Sourcing &amp; Tender Management System. Please do not reply.</td></tr>");
+        h.Append("</table></div>");
+        return h.ToString();
+    }
+
+    // E-mail for a supplier whose bid was not selected. It does not show the winner's price.
+    public static string BuildUnsuccessfulHtml(AwardEmailData d, AwardRecipient to)
+    {
+        static string E(string? s) => WebUtility.HtmlEncode(s ?? "—");
+        const string Green = "#08766c", Line = "#e2e8f0";
+        var h = new StringBuilder();
+        h.Append("<div style=\"margin:0;padding:24px 12px;background:#eef3f6;font-family:'Segoe UI',Tahoma,Arial,sans-serif;\">");
+        h.Append("<table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"max-width:620px;margin:0 auto;\">");
+
+        // Header band
+        h.Append($"<tr><td style=\"background:{Green};background-image:linear-gradient(135deg,#065b53,#0b8a7c 60%,#19a891);border-radius:18px 18px 0 0;padding:28px 32px;color:#ffffff;\">");
+        h.Append("<div style=\"font-size:12px;letter-spacing:2px;font-weight:700;color:#b9f3e8;\">SOURCING &amp; TENDER MANAGEMENT</div>");
+        h.Append("<div style=\"font-size:26px;font-weight:800;margin-top:8px;\">Result of your bid</div>");
+        h.Append($"<div style=\"font-size:15px;margin-top:6px;color:#e3fbf6;\">Tender #{d.TenderId} &middot; {E(d.TenderTitle)}</div></td></tr>");
+
+        // Body
+        h.Append("<tr><td style=\"background:#ffffff;padding:28px 32px;\">");
+        h.Append($"<p style=\"margin:0 0 12px;font-size:15px;line-height:1.6;color:#334155;\">Dear {E(to.Name)},</p>");
+        h.Append($"<p style=\"margin:0 0 12px;font-size:15px;line-height:1.6;color:#334155;\">Thank you for taking part in tender \"{E(d.TenderTitle)}\". " +
+                 "After the evaluation, the Top Committee awarded the tender to another supplier, so your bid was not selected this time.</p>");
+        h.Append("<p style=\"margin:0 0 12px;font-size:15px;line-height:1.6;color:#334155;\">We appreciate your offer and look forward to your participation in our future tenders.</p>");
+        if (to.BidLink is { Length: > 0 } link)
+            h.Append($"<p style=\"margin:22px 0 0;\"><a href=\"{E(link)}\" style=\"display:inline-block;padding:12px 22px;border-radius:10px;background:{Green};color:#ffffff;font-weight:700;font-size:14px;text-decoration:none;\">View your bid</a></p>");
         h.Append("</td></tr>");
 
         // Footer

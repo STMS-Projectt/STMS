@@ -482,6 +482,13 @@ public sealed class EvaluationWorkflowController(ApplicationDbContext db, Suppli
             .Select(e => new AwardRecipient(e.User.Email!, e.FullName, false)).ToListAsync();
         if (winner.SupplierProfile.User.Email is { Length: > 0 } supplierEmail)
             recipients.Add(new AwardRecipient(supplierEmail, winner.SupplierProfile.CompanyName, true));
+        // The other suppliers who submitted a bid get a short "your bid was not selected" e-mail.
+        var unsuccessful = await Db.Bids.AsNoTracking()
+            .Where(b => b.TenderId == tender.Id && b.Id != winnerBidId && b.SubmittedAt != null && b.Status != "Withdrawn" &&
+                        b.SupplierProfile.User.Email != null)
+            .Select(b => new { b.Id, Email = b.SupplierProfile.User.Email!, b.SupplierProfile.CompanyName }).ToListAsync();
+        recipients.AddRange(unsuccessful.Select(u => new AwardRecipient(u.Email, u.CompanyName, false, Unsuccessful: true,
+            BidLink: PublicBaseUrl() + Url.Action("Details", "Bids", new { id = u.Id }))));
 
         var guaranteeFolder = Path.Combine(HttpContext.RequestServices.GetRequiredService<IWebHostEnvironment>().ContentRootPath, "App_Data", "BidDocuments");
         var data = new AwardEmailData(tender.Id, tender.Title, winner.SupplierProfile.CompanyName,
