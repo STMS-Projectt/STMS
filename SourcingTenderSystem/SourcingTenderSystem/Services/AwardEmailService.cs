@@ -14,7 +14,7 @@ public sealed record AwardEmailData(int TenderId, string TenderTitle, string Win
     IReadOnlyList<string> AttachmentPaths);
 
 // Unsuccessful = a supplier whose bid was not selected: gets a short "result of your bid" e-mail instead.
-public sealed record AwardRecipient(string Email, string Name, bool IsWinner, bool Unsuccessful = false, string? BidLink = null);
+public sealed record AwardRecipient(string Email, string Name, bool IsWinner, bool Unsuccessful = false);
 
 /// <summary>
 /// Sends the "tender awarded" e-mail to everyone involved as soon as the Top Committee approves,
@@ -194,8 +194,6 @@ public sealed class AwardEmailService(IHttpClientFactory httpClients, IConfigura
         h.Append($"<p style=\"margin:0 0 12px;font-size:15px;line-height:1.6;color:#334155;\">Thank you for taking part in tender \"{E(d.TenderTitle)}\". " +
                  "After the evaluation, the Top Committee awarded the tender to another supplier, so your bid was not selected this time.</p>");
         h.Append("<p style=\"margin:0 0 12px;font-size:15px;line-height:1.6;color:#334155;\">We appreciate your offer and look forward to your participation in our future tenders.</p>");
-        if (to.BidLink is { Length: > 0 } link)
-            h.Append($"<p style=\"margin:22px 0 0;\"><a href=\"{E(link)}\" style=\"display:inline-block;padding:12px 22px;border-radius:10px;background:{Green};color:#ffffff;font-weight:700;font-size:14px;text-decoration:none;\">View your bid</a></p>");
         h.Append("</td></tr>");
 
         // Footer

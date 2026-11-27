@@ -10,11 +10,12 @@ public sealed class AwardEmailTests
     public void Unsuccessful_supplier_email_says_not_selected_and_hides_the_winning_price()
     {
         var html = AwardEmailService.BuildUnsuccessfulHtml(Data(),
-            new AwardRecipient("ahmad@test.com", "ahmad ali", false, Unsuccessful: true, BidLink: "https://stms.test/Bids/Details/7"));
+            new AwardRecipient("ahmad@test.com", "ahmad ali", false, Unsuccessful: true));
         Assert.Contains("Result of your bid", html);
         Assert.Contains("Dear ahmad ali", html);
         Assert.Contains("not selected", html);
-        Assert.Contains("https://stms.test/Bids/Details/7", html);
+        Assert.DoesNotContain("View your bid", html);
+        Assert.DoesNotContain("<a ", html);
         Assert.DoesNotContain("15,138", html);
         Assert.DoesNotContain("eyad mansur", html);
     }
