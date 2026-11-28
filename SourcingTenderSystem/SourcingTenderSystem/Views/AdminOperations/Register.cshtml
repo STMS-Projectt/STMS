@@ -59,14 +59,12 @@
                             {
                                 case "Requests":
                                     <a data-workspace-dialog="details" class="record-icon-action" asp-action="RequestDetails" asp-route-id="@row.Id" aria-label="@L.T("View request details and items")" data-tooltip="@L.T("View request details and items")" title="@L.T("View request details and items")"><partial name="_Icon" model='@("eye")' /></a>
-                                    <a data-workspace-dialog="details" class="record-icon-action" asp-action="RequestQr" asp-route-id="@row.Id" aria-label="@L.T("Show request QR code")" data-tooltip="@L.T("Show request QR code")" title="@L.T("Show request QR code")"><partial name="_Icon" model='@("qr")' /></a>
                                     break;
                                 case "Tenders":
                                     @foreach (var (panel, label, icon) in new[] { ("overview", "Tender summary", "eye"), ("committee", "Committee members", "users"), ("invitations", "Tender invitations", "mail"), ("bids", "Submitted bids", "inbox") })
                                     {
                                         <a data-workspace-dialog="details" class="record-icon-action" asp-action="Tender" asp-route-id="@row.Id" asp-route-panel="@panel" aria-label="@L.T(label): @row.Name" data-tooltip="@L.T(label)"><partial name="_Icon" model="icon" /></a>
                                     }
-                                    <a data-workspace-dialog="details" class="record-icon-action" asp-action="TenderQr" asp-route-id="@row.Id" aria-label="@L.T("Show tender QR code")" data-tooltip="@L.T("Show tender QR code")" title="@L.T("Show tender QR code")"><partial name="_Icon" model='@("qr")' /></a>
                                     break;
                                 case "Invitations":
                                     <a data-workspace-dialog="details" class="record-icon-action" asp-action="InvitationDetails" asp-route-id="@row.Id" aria-label="@L.T("View invitation details")" data-tooltip="@L.T("View invitation details")" title="@L.T("View invitation details")"><partial name="_Icon" model='@("eye")' /></a>
